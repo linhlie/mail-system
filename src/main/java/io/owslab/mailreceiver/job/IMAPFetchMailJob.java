@@ -134,10 +134,41 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCreatedAt(new Date());
             email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
+            email.setOriginalBody(getContentText(message));
             return email;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private String getContentText(Part p) throws Exception {
+
+        if (p.isMimeType("text/plain")) {
+            return (String) p.getContent();
+        }
+        //check if the content has attachment
+        else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart) p.getContent();
+            int count = mp.getCount();
+            String result = "";
+            for (int i = 0; i < count; i++) {
+                result = result + "\n"  + getContentText(mp.getBodyPart(i));
+            }
+            return result;
+        }
+        //check if the content is a nested message
+        else if (p.isMimeType("message/rfc822")) {
+            return getContentText((Part) p.getContent());
+        }
+        else {
+            Object o = p.getContent();
+            if (o instanceof String) {
+                return (String) o;
+            }
+            else {
+                return o.toString();
+            }
         }
     }
 
