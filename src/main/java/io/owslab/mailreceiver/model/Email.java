@@ -10,19 +10,20 @@ import java.util.Date;
 public class Email {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String messageId;
 
     @NotNull
-    private String accountId;
+    private long accountId;
 
     @NotNull
+    @Column(name="[from]")
     private String from;
 
     @NotNull
     private String subject;
 
     @NotNull
+    @Column(name="[to]")
     private String to;
 
     private String cc;
@@ -58,7 +59,7 @@ public class Email {
         this.messageId = messageId;
     }
 
-    public Email(String accountId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment, int contentType, String originalBody, String optimizedBody, String header, Date createdAt, String metaData) {
+    public Email(long accountId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment, int contentType, String originalBody, String optimizedBody, String header, Date createdAt, String metaData) {
         this.accountId = accountId;
         this.from = from;
         this.subject = subject;
@@ -85,11 +86,11 @@ public class Email {
         this.messageId = messageId;
     }
 
-    public String getAccountId() {
+    public long getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(long accountId) {
         this.accountId = accountId;
     }
 

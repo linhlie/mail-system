@@ -2,14 +2,17 @@ package io.owslab.mailreceiver.service.receive;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
-import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by khanhlvb on 1/19/18.
@@ -17,6 +20,7 @@ import java.util.List;
 @Service
 public class FetchMailsService {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailsService.class);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
     @Autowired
     private ReceiveEmailAccountSettingsDAO receiveEmailAccountSettingsDAO;
 
@@ -24,12 +28,15 @@ public class FetchMailsService {
     private EmailDAO emailDAO;
 
     public void start(){
-        logger.info("Starting fetch mails");
         List<ReceiveEmailAccountSetting> list = receiveEmailAccountSettingsDAO.findByDisabled(false);
-        ReceiveEmailAccountSetting receiveEmailAccountSetting = list.get(0);
-        System.out.println(receiveEmailAccountSetting.toString());
-        List<Email> listEmail = (List<Email>) emailDAO.findAll();
-        Email email =  listEmail.get(0);
-        System.out.println(email.toString());
+        if(list.size() > 0) {
+            for(int i = 0, n = list.size(); i < n; i++){
+                ReceiveEmailAccountSetting account = list.get(i);
+                if(account.getReceiveMailProtocol() == ReceiveMailProtocol.IMAP){
+                    executorService.execute(new IMAPFetchMailJob(emailDAO, account));
+                }
+            }
+        }
     }
 }
+

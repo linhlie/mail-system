@@ -12,8 +12,8 @@ import java.util.*;
 public class FetchMailScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(FetchMailScheduler.class);
-    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND = 5000L;
-    private static final int FETCH_MAIL_INTERVAL_IN_MINUTE = 1;
+    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND = 10000L;
+    private static final int FETCH_MAIL_INTERVAL_IN_MINUTE = 10;
 
     @Autowired
     private FetchMailsService fetchMailsService;

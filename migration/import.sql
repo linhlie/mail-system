@@ -21,8 +21,10 @@ CREATE TABLE `Receive_Email_Account_Settings` (
   UNIQUE KEY unique_account (account)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO Receive_Email_Account_Settings(id, account, password, mail_server_address, mail_server_port)
-    VALUES (1, 'khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
+INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
+    VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
+INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
+    VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993);
 
 DROP TABLE IF EXISTS `Emails`;
 CREATE TABLE `Emails` (
@@ -49,8 +51,8 @@ CREATE TABLE `Emails` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO Emails(message_id, account_id, `from`, subject, `to`, sent_at)
-VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
+# INSERT INTO Emails(message_id, account_id, `from`, subject, `to`, sent_at)
+# VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
 
 DROP TABLE IF EXISTS `Files`;
 
