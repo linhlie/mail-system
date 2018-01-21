@@ -1,4 +1,4 @@
-package io.owslab.mailreceiver.entity;
+package io.owslab.mailreceiver.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -43,8 +43,6 @@ public class ReceiveEmailAccountSetting {
 
     private Date updatedAt;
 
-    private String metaData;
-
     public ReceiveEmailAccountSetting() {
     }
 
@@ -52,7 +50,7 @@ public class ReceiveEmailAccountSetting {
         this.id = id;
     }
 
-    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, String encryptionProtocol, String authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, String metaData) {
+    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, String encryptionProtocol, String authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
         this.account = account;
         this.password = password;
         this.mailServerAddress = mailServerAddress;
@@ -64,14 +62,13 @@ public class ReceiveEmailAccountSetting {
         this.disabled = disabled;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.metaData = metaData;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -163,11 +160,8 @@ public class ReceiveEmailAccountSetting {
         this.updatedAt = updatedAt;
     }
 
-    public String getMetaData() {
-        return metaData;
-    }
-
-    public void setMetaData(String metaData) {
-        this.metaData = metaData;
+    @Override
+    public String toString(){
+        return this.getAccount() + " " + this.getPassword();
     }
 }

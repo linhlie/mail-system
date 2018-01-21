@@ -1,6 +1,4 @@
-package io.owslab.mailreceiver.entity;
-
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+package io.owslab.mailreceiver.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,13 +13,8 @@ public class Email {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String messageId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "account_id", nullable = false, //
-//            foreignKey = @ForeignKey(name = "fk_receive_email_account"))
-//    private ReceiveEmailAccountSetting receiveEmailAccountSetting;
-
     @NotNull
-    private String accounId;
+    private String accountId;
 
     @NotNull
     private String from;
@@ -65,8 +58,8 @@ public class Email {
         this.messageId = messageId;
     }
 
-    public Email(String accounId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment, int contentType, String originalBody, String optimizedBody, String header, Date createdAt, String metaData) {
-        this.accounId = accounId;
+    public Email(String accountId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment, int contentType, String originalBody, String optimizedBody, String header, Date createdAt, String metaData) {
+        this.accountId = accountId;
         this.from = from;
         this.subject = subject;
         this.to = to;
@@ -92,12 +85,12 @@ public class Email {
         this.messageId = messageId;
     }
 
-    public String getAccounId() {
-        return accounId;
+    public String getAccountId() {
+        return accountId;
     }
 
-    public void setAccounId(String accounId) {
-        this.accounId = accounId;
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public String getFrom() {
@@ -222,6 +215,6 @@ public class Email {
 
     @Override
     public String toString(){
-        return this.getMessageId() + " " + this.getFrom() + " " + this.getTo() + " " + this.getAccounId();
+        return this.getMessageId() + " " + this.getFrom() + " " + this.getTo() + " " + this.getAccountId();
     }
 }
