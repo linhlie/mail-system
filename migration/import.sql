@@ -53,4 +53,19 @@ CREATE TABLE `Emails` (
 INSERT INTO Emails(message_id, account_id, `from`, subject, `to`, sent_at)
 VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
 
+DROP TABLE IF EXISTS `Files`;
+
+CREATE TABLE `Files` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `message_id` VARCHAR(200) NOT NULL,
+  `file_name` VARCHAR(60) NOT NULL,
+  `storage_path` VARCHAR(200) NOT NULL,
+  `created_at` DATETIME DEFAULT NULL,
+  `meta_data` TEXT DEFAULT NULL,
+  FOREIGN KEY fk_receive_email_account(message_id)
+  REFERENCES Emails(message_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 COMMIT;
