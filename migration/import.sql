@@ -4,8 +4,8 @@ USE `mailsys`;
 
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS `ReceiveEmailAccountSettings`;
-CREATE TABLE `ReceiveEmailAccountSettings` (
+DROP TABLE IF EXISTS `Receive_Email_Account_Settings`;
+CREATE TABLE `Receive_Email_Account_Settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(60) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
@@ -18,11 +18,10 @@ CREATE TABLE `ReceiveEmailAccountSettings` (
   `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
-  `meta_data` TEXT DEFAULT NULL,
   UNIQUE KEY unique_account (account)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO ReceiveEmailAccountSettings(id, account, password, mail_server_address, mail_server_port)
+INSERT INTO Receive_Email_Account_Settings(id, account, password, mail_server_address, mail_server_port)
     VALUES (1, 'khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
 DROP TABLE IF EXISTS `Emails`;
@@ -45,7 +44,7 @@ CREATE TABLE `Emails` (
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES ReceiveEmailAccountSettings(id)
+  REFERENCES Receive_Email_Account_Settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -62,7 +61,7 @@ CREATE TABLE `Files` (
   `storage_path` VARCHAR(200) NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
-  FOREIGN KEY fk_receive_email_account(message_id)
+  FOREIGN KEY fk_receive_email(message_id)
   REFERENCES Emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
