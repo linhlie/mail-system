@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.service.schedulers;
 
-import io.owslab.mailreceiver.service.receive.FetchMailsService;
+import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class FetchMailScheduler {
 
     private void startFetchMail(){
         lastTimeFetchedMail = new Date();
-        fetchMailsService.start();
+//        fetchMailsService.start();
     }
 
     private Optional<Date> getLastTimeFetchMail(){

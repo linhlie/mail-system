@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.startup;
 
+import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,16 @@ public class ApplicationStartup {
     @Autowired
     private FetchMailScheduler fetchMailScheduler;
 
+    @Autowired
+    private DeleteOldMailsScheduler deleteOldMailsScheduler;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         //Start fetch mail scheduler
         fetchMailScheduler.startCheckTimeToFetchMailInterval();
+        deleteOldMailsScheduler.startDeleteOldMailInterval();
         return;
     }
 }

@@ -1,4 +1,4 @@
-package io.owslab.mailreceiver.service.receive;
+package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
