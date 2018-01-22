@@ -127,7 +127,7 @@ public class IMAPFetchMailJob implements Runnable {
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));
             email.setSubject(message.getSubject());
-            email.setTo(account.getAccount());
+            email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
             email.setSentAt(message.getSentDate());
 
             email.setReplyTo(getMailReplyTo(message));
@@ -135,7 +135,11 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCreatedAt(new Date());
             email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
-            email.setOriginalBody(getContentText(message));
+            String originalContent = getContentText(message);
+            if(originalContent != null){
+                email.setOriginalBody(originalContent);
+                email.setOptimizedBody(originalContent.toLowerCase()); //TODO: optimize japanese characters
+            }
             return email;
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +206,12 @@ public class IMAPFetchMailJob implements Runnable {
         Address[] recipients = message.getRecipients(type);
         if (recipients == null || recipients.length == 0) return  null;
         for (Address address : recipients) {
-            recipientAddresses.add(address.toString());
+            if (address instanceof InternetAddress) {
+                InternetAddress ia = (InternetAddress) address;
+                recipientAddresses.add(ia.toUnicodeString());
+            } else {
+                recipientAddresses.add(address.toString());
+            }
         }
         String recipientAddressesStr = String.join(";", recipientAddresses);
         return recipientAddressesStr;
