@@ -45,7 +45,7 @@ public class FetchMailScheduler {
 
     private void startFetchMail(){
         lastTimeFetchedMail = new Date();
-//        fetchMailsService.start();
+        fetchMailsService.start();
     }
 
     private Optional<Date> getLastTimeFetchMail(){
