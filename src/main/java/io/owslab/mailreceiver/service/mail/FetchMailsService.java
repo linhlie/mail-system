@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
+import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
 import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
@@ -27,13 +28,16 @@ public class FetchMailsService {
     @Autowired
     private EmailDAO emailDAO;
 
+    @Autowired
+    private FileDAO fileDAO;
+
     public void start(){
         List<ReceiveEmailAccountSetting> list = receiveEmailAccountSettingsDAO.findByDisabled(false);
         if(list.size() > 0) {
             for(int i = 0, n = list.size(); i < n; i++){
                 ReceiveEmailAccountSetting account = list.get(i);
                 if(account.getReceiveMailProtocol() == ReceiveMailProtocol.IMAP){
-                    executorService.execute(new IMAPFetchMailJob(emailDAO, account));
+                    executorService.execute(new IMAPFetchMailJob(emailDAO, fileDAO, account));
                 }
             }
         }

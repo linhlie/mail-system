@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Files")
-public class File {
+public class AttachmentFile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,7 +17,7 @@ public class File {
     private String messageId;
 
     @NotNull
-    private String fileMame;
+    private String fileName;
 
     @NotNull
     private String storagePath;
@@ -26,16 +26,16 @@ public class File {
 
     private String metaData;
 
-    public File() {
+    public AttachmentFile() {
     }
 
-    public File(long id) {
+    public AttachmentFile(long id) {
         this.id = id;
     }
 
-    public File(String messageId, String fileMame, String storagePath, Date createdAt, String metaData) {
+    public AttachmentFile(String messageId, String fileName, String storagePath, Date createdAt, String metaData) {
         this.messageId = messageId;
-        this.fileMame = fileMame;
+        this.fileName = fileName;
         this.storagePath = storagePath;
         this.createdAt = createdAt;
         this.metaData = metaData;
@@ -57,12 +57,12 @@ public class File {
         this.messageId = messageId;
     }
 
-    public String getFileMame() {
-        return fileMame;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFileMame(String fileMame) {
-        this.fileMame = fileMame;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getStoragePath() {
@@ -91,6 +91,6 @@ public class File {
 
     @Override
     public String toString(){
-        return this.getId() + " " + this.getFileMame() + " " + this.getStoragePath();
+        return this.getId() + " " + this.getFileName() + " " + this.getStoragePath();
     }
 }

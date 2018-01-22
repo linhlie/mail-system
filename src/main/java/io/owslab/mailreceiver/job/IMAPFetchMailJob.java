@@ -2,6 +2,8 @@ package io.owslab.mailreceiver.job;
 
 import antlr.StringUtils;
 import io.owslab.mailreceiver.dao.EmailDAO;
+import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
@@ -10,8 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.*;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -20,12 +24,15 @@ public class IMAPFetchMailJob implements Runnable {
     public static final boolean USING_POP3 = false;
 
     private final EmailDAO emailDAO;
-
+    private final FileDAO fileDAO;
     private final ReceiveEmailAccountSetting account;
+    public static final String saveDirectory = "./tmp/";
+
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, ReceiveEmailAccountSetting account) {
+    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, ReceiveEmailAccountSetting account) {
         this.emailDAO = emailDAO;
+        this.fileDAO = fileDAO;
         this.account = account;
     }
 
@@ -107,6 +114,7 @@ public class IMAPFetchMailJob implements Runnable {
                 System.out.println(message.getSubject());
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
+                saveFiles(message, email);
             } catch (Exception e) {
 //                e.printStackTrace();
             }
@@ -135,6 +143,7 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCreatedAt(new Date());
             email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
+            email.setHasAttachment(hasAttachments(message));
             String originalContent = getContentText(message);
             if(originalContent != null){
                 email.setOriginalBody(originalContent);
@@ -215,5 +224,41 @@ public class IMAPFetchMailJob implements Runnable {
         }
         String recipientAddressesStr = String.join(";", recipientAddresses);
         return recipientAddressesStr;
+    }
+
+    private boolean hasAttachments(Message msg) throws MessagingException, IOException {
+        if (msg.isMimeType("multipart/mixed")) {
+            Multipart mp = (Multipart)msg.getContent();
+            if (mp.getCount() > 1)
+                return true;
+        }
+        return false;
+    }
+
+    private void saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+        String contentType = message.getContentType();
+        if (contentType.contains("multipart")) {
+            // content may contain attachments
+            Multipart multiPart = (Multipart) message.getContent();
+            int numberOfParts = multiPart.getCount();
+            for (int partCount = 0; partCount < numberOfParts; partCount++) {
+                //TODO: try catch if fails or transaction
+                MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
+                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                    // this part is attachment
+                    String fileName = part.getFileName();
+                    part.saveFile(saveDirectory + File.separator + fileName);
+                    AttachmentFile attachmentFile = new AttachmentFile(
+                            email.getMessageId(),
+                            fileName,
+                            saveDirectory,
+                            new Date(),
+                            null
+                    );
+                    System.out.println("Save file: " + attachmentFile.toString());
+                    fileDAO.save(attachmentFile);
+                }
+            }
+        }
     }
 }
