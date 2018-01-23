@@ -5,6 +5,21 @@ USE `mailsys`;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
+DROP TABLE IF EXISTS `Users`;
+CREATE TABLE `Users` (
+  username VARCHAR(50)  NOT NULL PRIMARY KEY,
+  password VARCHAR(255) NOT NULL,
+  enabled  BOOLEAN      NOT NULL
+) ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS `Authorities`;
+CREATE TABLE `Authorities` (
+  username  VARCHAR(50) NOT NULL,
+  authority VARCHAR(50) NOT NULL,
+  FOREIGN KEY (username) REFERENCES users (username),
+  UNIQUE INDEX authorities_idx_1 (username, authority)
+) ENGINE = InnoDB;
+
 DROP TABLE IF EXISTS `Receive_Email_Account_Settings`;
 CREATE TABLE `Receive_Email_Account_Settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,10 +39,12 @@ CREATE TABLE `Receive_Email_Account_Settings` (
 
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
+
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
     VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993);
+
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
-VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
+    VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
 
 DROP TABLE IF EXISTS `Emails`;
 CREATE TABLE `Emails` (
