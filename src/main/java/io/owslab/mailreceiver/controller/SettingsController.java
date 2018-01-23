@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class SettingsController {
 
-    @RequestMapping("/")
-    public String index() {
+    @RequestMapping("/enviromentSettings")
+    public String enviromentSettings() {
         return "settings/enviroment_settings";
     }
 

@@ -22,23 +22,23 @@
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu">
         <li class="header">コントロールパネル</li>
-        <li class="active treeview">
-            <a href="/">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'enviromentSettings'})?'active':''">
+            <a href="#" th:href="@{/enviromentSettings}">
                 <i class="fa fa-cog"></i> <span>環境設定</span>
             </a>
         </li>
-        <li class="treeview">
-            <a href="/receiveSettings">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveSettings'})?'active':''">
+            <a href="#" th:href="@{/receiveSettings}">
                 <i class="fa fa-envelope"></i> <span>受信アカウント設定</span>
             </a>
         </li>
-        <li class="treeview">
-            <a href="/sendSettings">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendSettings'})?'active':''">
+            <a href="#" th:href="@{/sendSettings}">
                 <i class="fa fa-envelope-o"></i> <span>送信アカウント設定</span>
             </a>
         </li>
-        <li class="treeview">
-            <a href="/receiveRuleSettings">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveRuleSettings'})?'active':''">
+            <a href="#" th:href="@{/receiveRuleSettings}">
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
