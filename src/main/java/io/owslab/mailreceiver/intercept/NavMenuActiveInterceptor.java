@@ -17,10 +17,10 @@ public class NavMenuActiveInterceptor extends HandlerInterceptorAdapter {
         if(url.length()>2) {
             url=url.substring(1);
             String currentMenu = url;
-//            int index=url.indexOf("/");
-//            if(index>0) {
-//                currentMenu = url.substring(0, index);
-//            }
+            int index=url.indexOf("/");
+            if(index>0) {
+                currentMenu = url.substring(0, index);
+            }
             request.setAttribute("currentMenu",currentMenu);
         }
         return super.preHandle(request, response, handler);

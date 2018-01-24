@@ -33,32 +33,12 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr role="row" class="odd">
-                                            <td>Gecko</td>
+                                        <tr role="row" class="odd" th:each="item:${list}">
+                                            <td th:text="${item.account}"></td>
                                             <td>
                                                 <div class="checkbox">
                                                     <label>
-                                                        <input type="checkbox"/>
-                                                    </label>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr role="row" class="odd">
-                                            <td>Gecko</td>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input type="checkbox"/>
-                                                    </label>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr role="row" class="odd">
-                                            <td>Gecko</td>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input type="checkbox"/>
+                                                        <input type="checkbox" disabled="true" th:checked="${item.disabled}"/>
                                                     </label>
                                                 </div>
                                             </td>
@@ -67,75 +47,98 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-5">
-                                    <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
-                                        Showing 1 to 10 of 57 entries
-                                    </div>
-                                </div>
-                                <div class="col-sm-7">
-                                    <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
-                                        <ul class="pagination">
-                                            <li class="paginate_button previous disabled" id="example2_previous"><a
-                                                    href="#" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>
-                                            </li>
-                                            <li class="paginate_button active"><a href="#" aria-controls="example2"
-                                                                                  data-dt-idx="1" tabindex="0">1</a>
-                                            </li>
-                                            <li class="paginate_button "><a href="#" aria-controls="example2"
-                                                                            data-dt-idx="2" tabindex="0">2</a></li>
-                                            <li class="paginate_button "><a href="#" aria-controls="example2"
-                                                                            data-dt-idx="3" tabindex="0">3</a></li>
-                                            <li class="paginate_button next" id="example2_next"><a href="#"
-                                                                                                   aria-controls="example2"
-                                                                                                   data-dt-idx="4"
-                                                                                                   tabindex="0">Next</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            <!--TODO: pagination-->
+                            <!--<div class="row">-->
+                                <!--<div class="col-sm-5">-->
+                                    <!--<div class="dataTables_info" id="example2_info" role="status" aria-live="polite">-->
+                                        <!--Showing 1 to 10 of 57 entries-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="col-sm-7">-->
+                                    <!--<div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">-->
+                                        <!--<ul class="pagination">-->
+                                            <!--<li class="paginate_button previous disabled" id="example2_previous"><a-->
+                                                    <!--href="#" aria-controls="example2" data-dt-idx="0" tabindex="0">Previous</a>-->
+                                            <!--</li>-->
+                                            <!--<li class="paginate_button active"><a href="#" aria-controls="example2"-->
+                                                                                  <!--data-dt-idx="1" tabindex="0">1</a>-->
+                                            <!--</li>-->
+                                            <!--<li class="paginate_button "><a href="#" aria-controls="example2"-->
+                                                                            <!--data-dt-idx="2" tabindex="0">2</a></li>-->
+                                            <!--<li class="paginate_button "><a href="#" aria-controls="example2"-->
+                                                                            <!--data-dt-idx="3" tabindex="0">3</a></li>-->
+                                            <!--<li class="paginate_button next" id="example2_next"><a href="#"-->
+                                                                                                   <!--aria-controls="example2"-->
+                                                                                                   <!--data-dt-idx="4"-->
+                                                                                                   <!--tabindex="0">Next</a>-->
+                                            <!--</li>-->
+                                        <!--</ul>-->
+
+                                        <!--&lt;!&ndash;<ul class="pagination">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<li th:class="${contactsPage.number eq 0} ? 'disabled' : ''">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${not contactsPage.firstPage}" th:href="@{${'/contacts'}(page=${contactsPage.number-1},size=${contactsPage.size})}">Previous</a>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${contactsPage.firstPage}" href="javascript:void(0);">Previous</a>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+                                            <!--&lt;!&ndash;<li th:each="pageNo : ${#numbers.sequence(0, contactsPage.totalPages - 1)}" th:class="${contactsPage.number eq pageNo}? 'active' : ''">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${contactsPage.number  eq pageNo}" href="javascript:void(0);">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span th:text="${pageNo + 1}"></span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${not (contactsPage.number  eq pageNo)}" th:href="@{${'/contacts'}(page=${pageNo},size=${contactsPage.size})}">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span th:text="${pageNo + 1}"></span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</a>&ndash;&gt;-->
+
+                                            <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<li th:class="${contactsPage.number + 1 ge contactsPage.totalPages} ? 'disabled' : ''">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${not contactsPage.lastPage}" th:href="@{${'/contacts'}(page=${contactsPage.number+1},size=${contactsPage.size})}">Next</a>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<a th:if="${contactsPage.lastPage}" href="javascript:void(0);">Next</a>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</ul>&ndash;&gt;-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
                         </div>
                     </div>
                     <!-- /.box-body -->
                 </div>
                 <div class="box box-default">
                     <div class="box-body">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" th:action="@{/receiveSettings}"
+                              th:object="${receiveAccountForm}" method="POST">
                             <div class="form-group"></div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">受信メールサーバー</label>
 
                                 <div class="col-md-2 col-xs-3">
                                     <!--<input type="text" class="form-control"/>-->
-                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                        <option selected="selected">IMAP</option>
-                                        <option>POP3</option>
+                                    <select th:field="*{receiveMailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">IMAP</option>
+                                        <option value="1" >POP3</option>
                                     </select>
                                 </div>
                                 <div class="col-md-7 col-xs-6">
-                                    <input type="text" class="form-control"/>
+                                    <input th:field="*{mailServerAddress}" type="text" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input type="number" class="form-control"/>
+                                    <input th:field="*{mailServerPort}" type="number" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input type="email" class="form-control"/>
+                                    <input th:field="*{account}" type="email" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">パスワード</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input type="password" class="form-control"/>
+                                    <input th:field="*{password}" type="password" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -143,9 +146,9 @@
 
                                 <div class="col-xs-4">
                                     <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                        <option selected="selected">なし</option>
-                                        <option>SSL/TLS</option>
-                                        <option>STARTTLS</option>
+                                        <option value="0" selected="selected">なし</option>
+                                        <option value="1">SSL/TLS</option>
+                                        <option value="2">STARTTLS</option>
                                     </select>
                                 </div>
                             </div>
@@ -154,12 +157,12 @@
 
                                 <div class="col-xs-4">
                                     <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                        <option selected="selected">通常のパスワード認証</option>
-                                        <option>暗号化されたパスワード認証</option>
-                                        <option>Kerberos/GSSAPI</option>
-                                        <option>NTLM</option>
-                                        <option>TLS証明書</option>
-                                        <option>OAuth2</option>
+                                        <option value="0" selected="selected">通常のパスワード認証</option>
+                                        <option value="1">暗号化されたパスワード認証</option>
+                                        <option value="2">Kerberos/GSSAPI</option>
+                                        <option value="3">NTLM</option>
+                                        <option value="4">TLS証明書</option>
+                                        <option value="5">OAuth2</option>
                                     </select>
                                 </div>
                             </div>
@@ -167,7 +170,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">PROXYサーバー</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input type="text" class="form-control"/>
+                                    <input th:field="*{proxyServer}" type="text" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -176,7 +179,7 @@
                                 <div class="col-xs-6">
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox"/>
+                                            <input th:field="*{disabled}" type="checkbox"/>
                                         </label>
                                     </div>
                                 </div>

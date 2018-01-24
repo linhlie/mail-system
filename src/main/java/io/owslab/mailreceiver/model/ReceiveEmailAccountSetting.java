@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.form.ReceiveAccountForm;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -30,10 +32,10 @@ public class ReceiveEmailAccountSetting {
     private int receiveMailProtocol;
 
     @NotNull
-    private String encryptionProtocol;
+    private int encryptionProtocol;
 
     @NotNull
-    private String authenticationProtocol;
+    private int authenticationProtocol;
 
     private String proxyServer;
 
@@ -50,7 +52,24 @@ public class ReceiveEmailAccountSetting {
         this.id = id;
     }
 
-    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, String encryptionProtocol, String authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
+    public ReceiveEmailAccountSetting(ReceiveAccountForm form, boolean isUpdate){
+        this.account = form.getAccount();
+        this.password = form.getPassword();
+        this.mailServerAddress = form.getMailServerAddress();
+        this.mailServerPort = form.getMailServerPort();
+        this.receiveMailProtocol = form.getReceiveMailProtocol();
+        this.encryptionProtocol = form.getEncryptionProtocol();
+        this.authenticationProtocol = form.getAuthenticationProtocol();
+        this.proxyServer = form.getProxyServer();
+        this.disabled = form.isDisabled();
+        if(isUpdate){
+            this.updatedAt = new Date();
+        } else {
+            this.createdAt = new Date();
+        }
+    }
+
+    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
         this.account = account;
         this.password = password;
         this.mailServerAddress = mailServerAddress;
@@ -112,19 +131,19 @@ public class ReceiveEmailAccountSetting {
         this.receiveMailProtocol = receiveMailProtocol;
     }
 
-    public String getEncryptionProtocol() {
+    public int getEncryptionProtocol() {
         return encryptionProtocol;
     }
 
-    public void setEncryptionProtocol(String encryptionProtocol) {
+    public void setEncryptionProtocol(int encryptionProtocol) {
         this.encryptionProtocol = encryptionProtocol;
     }
 
-    public String getAuthenticationProtocol() {
+    public int getAuthenticationProtocol() {
         return authenticationProtocol;
     }
 
-    public void setAuthenticationProtocol(String authenticationProtocol) {
+    public void setAuthenticationProtocol(int authenticationProtocol) {
         this.authenticationProtocol = authenticationProtocol;
     }
 
