@@ -18,63 +18,29 @@
                         <h3 class="box-title">環境設定</h3>
                     </div>
                     <div class="box-body">
-                        <!-- Color Picker -->
-                        <!--<div class="form-group">-->
-                            <!--<label>Color picker:</label>-->
-                            <!--<input type="text" class="form-control my-colorpicker1 colorpicker-element"/>-->
-                        <!--</div>-->
-                        <!-- /.form group -->
-
-                        <!-- Color Picker -->
-                        <!--<div class="form-group">-->
-                            <!--<label>Color picker with addon:</label>-->
-
-                            <!--<div class="input-group my-colorpicker2 colorpicker-element">-->
-                                <!--<input type="text" class="form-control"/>-->
-
-                                <!--<div class="input-group-addon">-->
-                                    <!--<i></i>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <!--&lt;!&ndash; /.input group &ndash;&gt;-->
-                        <!--</div>-->
-                        <!-- /.form group -->
-
-                        <!-- time Picker -->
-                        <!--<div class="bootstrap-timepicker"><div class="bootstrap-timepicker-widget dropdown-menu"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="glyphicon glyphicon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td class="meridian-column"><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-up"></i></a></td></tr><tr><td><span class="bootstrap-timepicker-hour">11</span></td> <td class="separator">:</td><td><span class="bootstrap-timepicker-minute">45</span></td> <td class="separator">&nbsp;</td><td><span class="bootstrap-timepicker-meridian">PM</span></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="glyphicon glyphicon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="toggleMeridian"><i class="glyphicon glyphicon-chevron-down"></i></a></td></tr></tbody></table></div>-->
-                            <!--<div class="form-group">-->
-                                <!--<label>Time picker:</label>-->
-
-                                <!--<div class="input-group">-->
-                                    <!--<input type="text" class="form-control timepicker"/>-->
-
-                                    <!--<div class="input-group-addon">-->
-                                        <!--<i class="fa fa-clock-o"></i>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <!--&lt;!&ndash; /.input group &ndash;&gt;-->
-                            <!--</div>-->
-                            <!--&lt;!&ndash; /.form group &ndash;&gt;-->
-                        <!--</div>-->
                         <form class="form-horizontal">
                             <div class="form-group">
-                                <label for="inputName" class="col-sm-2 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
+                                <label for="inputName" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
 
-                                <div class="col-sm-10 col-xs-8">
-                                    <input type="email" class="form-control" id="inputName" placeholder="Name"/>
+                                <div class="col-sm-7 col-xs-6">
+                                    <input type="email" class="form-control" id="inputName" placeholder="File storage path"/>
+                                </div>
+                                <div class="col-sm-2 col-xs-2">
+                                    <button type="button" class="btn btn-default"><i class="fa fa-folder"></i></button>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputEmail" class="col-sm-2 col-xs-4 control-label text-left">新着メール確認間隔</label>
+                                <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔</label>
 
-                                <div class="col-sm-10 col-xs-8">
-                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email"/>
+                                <div class="col-md-2 col-sm-3 col-xs-3">
+                                    <input type="number" style="text-align:right;" class="form-control" placeholder="Minute" value="10"/>
                                 </div>
+                                <label class="col-sm-6 col-xs-5 control-label text-left">分</label>
                             </div>
                             <div class="form-group">
-                                <label class="col-md-3 col-sm-4 col-xs-5 control-label text-left">受信したメールはメールサーバーに残す</label>
+                                <label class="col-sm-4 col-xs-5 control-label text-left">受信したメールはメールサーバーに残す</label>
 
-                                <div class="col-md-9 col-sm-8 col-xs-7">
+                                <div class="col-sm-8 col-xs-7">
                                     <div class="checkbox">
                                         <label>
                                             <input type="checkbox"/>
@@ -83,9 +49,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputExperience" class="col-md-3 col-sm-4 col-xs-5 control-label text-left">受信した古いメールはPCから削除する</label>
+                                <label for="inputExperience" class="col-sm-4 col-xs-5 control-label text-left">受信した古いメールはPCから削除する</label>
 
-                                <div class="col-md-9 col-sm-8 col-xs-7">
+                                <div class="col-sm-8 col-xs-7">
                                     <div class="checkbox">
                                         <label>
                                             <input type="checkbox" id="inputExperience"/>
@@ -94,17 +60,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <div class="col-md-3 col-sm-4 col-xs-5">
+                                <div class="col-sm-4 col-xs-5">
                                     <div class="col-md-6 col-sm-8 col-xs-6" style="float: right;">
                                         <input type="number" style="text-align:right;" class="form-control " placeholder="Day" th:value="30"/>
                                     </div>
                                 </div>
-                                <label class="col-md-9 col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
+                                <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
                             </div>
                             <div class="form-group">
-                                <label for="inputSkills" class="col-sm-2 col-xs-4 control-label text-left">PC起動時に常駐する</label>
+                                <label for="inputSkills" class="col-sm-3 col-xs-4 control-label text-left">PC起動時に常駐する</label>
 
-                                <div class="col-sm-10 col-xs-8">
+                                <div class="col-sm-9 col-xs-8">
                                     <div class="checkbox">
                                         <label>
                                             <input type="checkbox" id="inputSkills"/>
