@@ -86,15 +86,9 @@
                                                                             data-dt-idx="2" tabindex="0">2</a></li>
                                             <li class="paginate_button "><a href="#" aria-controls="example2"
                                                                             data-dt-idx="3" tabindex="0">3</a></li>
-                                            <li class="paginate_button "><a href="#" aria-controls="example2"
-                                                                            data-dt-idx="4" tabindex="0">4</a></li>
-                                            <li class="paginate_button "><a href="#" aria-controls="example2"
-                                                                            data-dt-idx="5" tabindex="0">5</a></li>
-                                            <li class="paginate_button "><a href="#" aria-controls="example2"
-                                                                            data-dt-idx="6" tabindex="0">6</a></li>
                                             <li class="paginate_button next" id="example2_next"><a href="#"
                                                                                                    aria-controls="example2"
-                                                                                                   data-dt-idx="7"
+                                                                                                   data-dt-idx="4"
                                                                                                    tabindex="0">Next</a>
                                             </li>
                                         </ul>
@@ -113,7 +107,11 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">受信メールサーバー</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input type="text" class="form-control"/>
+                                    <!--<input type="text" class="form-control"/>-->
+                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option selected="selected">IMAP</option>
+                                        <option>POP3</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-7 col-xs-6">
                                     <input type="text" class="form-control"/>
@@ -123,35 +121,46 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input type="text" class="form-control"/>
+                                    <input type="number" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input type="text" class="form-control"/>
+                                    <input type="email" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">パスワード</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input type="text" class="form-control"/>
+                                    <input type="password" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">接続の保護</label>
 
                                 <div class="col-xs-4">
-                                    <input type="text" class="form-control"/>
+                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option selected="selected">なし</option>
+                                        <option>SSL/TLS</option>
+                                        <option>STARTTLS</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">認証方式</label>
 
                                 <div class="col-xs-4">
-                                    <input type="text" class="form-control"/>
+                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option selected="selected">通常のパスワード認証</option>
+                                        <option>暗号化されたパスワード認証</option>
+                                        <option>Kerberos/GSSAPI</option>
+                                        <option>NTLM</option>
+                                        <option>TLS証明書</option>
+                                        <option>OAuth2</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group">
