@@ -5,6 +5,12 @@ USE `mailsys`;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
+DROP TABLE IF EXISTS `Key_Values`;
+CREATE TABLE `Key_Values` (
+  `key` VARCHAR(200) PRIMARY KEY,
+  `value` TEXT DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `Users`;
 CREATE TABLE `Users` (
   username VARCHAR(50)  NOT NULL PRIMARY KEY,
@@ -40,8 +46,8 @@ CREATE TABLE `Receive_Email_Account_Settings` (
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
-INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
-    VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993);
+INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port, disabled)
+    VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993, true);
 
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
