@@ -1,7 +1,14 @@
 package io.owslab.mailreceiver.dao;
 
-/**
- * Created by khanhlvb on 1/26/18.
- */
-public class EnviromentSettingDAO {
+import io.owslab.mailreceiver.model.EnviromentSetting;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Transactional
+public interface EnviromentSettingDAO extends CrudRepository<EnviromentSetting, String> {
+
+    List<EnviromentSetting> findByKey(String key);
+
 }

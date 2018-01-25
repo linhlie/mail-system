@@ -1,14 +1,19 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
+import io.owslab.mailreceiver.model.EnviromentSetting;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class SettingsController {
@@ -16,9 +21,26 @@ public class SettingsController {
     @Autowired
     private ReceiveMailAccountsSettingsService accountsSettingsService;
 
-    @RequestMapping("/enviromentSettings")
-    public String enviromentSettings() {
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
+
+    @RequestMapping(value = "/enviromentSettings", method = RequestMethod.GET)
+    public String enviromentSettings(Model model) {
+        HashMap<String, String> map = enviromentSettingService.getAll();
+        EnviromentSettingForm enviromentSettingForm = new EnviromentSettingForm();
+        enviromentSettingForm.setMap(map);
+        model.addAttribute("enviromentSettingForm", enviromentSettingForm);
         return "settings/enviroment_settings";
+    }
+
+    @RequestMapping(value = "/enviromentSettings", method = RequestMethod.POST)
+    public String updateEnviromentSettings(Model model, @ModelAttribute("enviromentSettingForm") EnviromentSettingForm enviromentSettingForm) {
+        Map<String, String> map = enviromentSettingForm.getMap();
+        for (String key : map.keySet()) {
+            System.out.println("hello world: " + key + "@" + map.get(key));
+            enviromentSettingService.set(key, map.get(key));
+        }
+        return "redirect:/enviromentSettings";
     }
 
     @RequestMapping(value = "/receiveSettings", method = RequestMethod.GET)

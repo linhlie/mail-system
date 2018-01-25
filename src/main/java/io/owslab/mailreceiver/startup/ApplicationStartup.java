@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.startup;
 
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class ApplicationStartup {
     @Autowired
     private DeleteOldMailsScheduler deleteOldMailsScheduler;
 
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EventListener
@@ -25,6 +29,7 @@ public class ApplicationStartup {
         //Start fetch mail scheduler
         fetchMailScheduler.startCheckTimeToFetchMailInterval();
         deleteOldMailsScheduler.startDeleteOldMailInterval();
+        enviromentSettingService.init();
         return;
     }
 }
