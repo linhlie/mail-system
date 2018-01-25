@@ -145,7 +145,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">接続の保護</label>
 
                                 <div class="col-xs-4">
-                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                    <select th:field="*{encryptionProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                         <option value="0" selected="selected">なし</option>
                                         <option value="1">SSL/TLS</option>
                                         <option value="2">STARTTLS</option>
@@ -156,7 +156,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">認証方式</label>
 
                                 <div class="col-xs-4">
-                                    <select style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                    <select th:field="*{authenticationProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                         <option value="0" selected="selected">通常のパスワード認証</option>
                                         <option value="1">暗号化されたパスワード認証</option>
                                         <option value="2">Kerberos/GSSAPI</option>
