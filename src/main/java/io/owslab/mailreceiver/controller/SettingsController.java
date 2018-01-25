@@ -32,6 +32,7 @@ public class SettingsController {
     public String getAddReceiveAccount(Model model) {
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
         model.addAttribute("receiveAccountForm", receiveAccountForm);
+        model.addAttribute("api", "/addReceiveAccount");
         return "settings/receive/form";
     }
 
@@ -53,7 +54,20 @@ public class SettingsController {
         ReceiveEmailAccountSetting account = listAccount.get(0);
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm(account);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
+        model.addAttribute("api", "/updateReceiveAccount/" + id);
         return "settings/receive/form";
+    }
+
+    @RequestMapping(value = "/updateReceiveAccount/{id}", method = RequestMethod.POST)
+    public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
+        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        if(listAccount.isEmpty()){
+            //TODO: account not found error
+        }
+        ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, true);
+        newAccount.setId(id);
+        accountsSettingsService.save(newAccount);
+        return "redirect:/receiveSettings";
     }
 
     @RequestMapping("/sendSettings")
