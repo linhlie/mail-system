@@ -6,10 +6,9 @@ import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class SettingsController {
@@ -29,23 +28,32 @@ public class SettingsController {
         model.addAttribute("receiveAccountForm", receiveAccountForm);
         return "settings/receive_mail_accounts_settings";
     }
-
-    @RequestMapping(value = "/receiveSettings/{id}", method = RequestMethod.GET)
-    public String getReceiveAccount(@PathVariable("id") String id, Model model) {
-        model.addAttribute("list", accountsSettingsService.list());
+    @RequestMapping(value = "/receiveSettings/add", method = RequestMethod.GET)
+    public String getAddReceiveAccount(Model model) {
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
-        receiveAccountForm.setAccount("ahaha@gmail.com");
         model.addAttribute("receiveAccountForm", receiveAccountForm);
-        return "settings/receive_mail_accounts_settings";
+        return "settings/receive/form";
     }
 
-    @RequestMapping(value = { "/receiveSettings" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/addReceiveAccount" }, method = RequestMethod.POST)
     public String saveReceiveAccount(
             Model model,
             @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
         ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, false);
         accountsSettingsService.save(newAccount);
         return "redirect:/receiveSettings";
+    }
+
+    @RequestMapping(value = "/receiveSettings/update", method = RequestMethod.GET)
+    public String getReceiveAccount(@RequestParam(value = "id", required = true) long id, Model model) {
+        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        if(listAccount.isEmpty()){
+            //TODO: account not found error
+        }
+        ReceiveEmailAccountSetting account = listAccount.get(0);
+        ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm(account);
+        model.addAttribute("receiveAccountForm", receiveAccountForm);
+        return "settings/receive/form";
     }
 
     @RequestMapping("/sendSettings")

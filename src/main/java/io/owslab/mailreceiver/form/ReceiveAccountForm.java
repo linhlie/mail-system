@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.form;
 
+import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+
 /**
  * Created by khanhlvb on 1/24/18.
  */
@@ -92,5 +94,20 @@ public class ReceiveAccountForm {
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public ReceiveAccountForm() {
+    }
+
+    public ReceiveAccountForm(ReceiveEmailAccountSetting account) {
+        this.account = account.getAccount();
+        this.password = account.getPassword();
+        this.mailServerAddress = account.getMailServerAddress();
+        this.mailServerPort = account.getMailServerPort();
+        this.receiveMailProtocol = account.getReceiveMailProtocol();
+        this.encryptionProtocol = account.getEncryptionProtocol();
+        this.authenticationProtocol = account.getAuthenticationProtocol();
+        this.proxyServer = account.getProxyServer();
+        this.disabled = account.isDisabled();
     }
 }

@@ -21,6 +21,10 @@ public class ReceiveMailAccountsSettingsService {
         return list;
     }
 
+    public List<ReceiveEmailAccountSetting> findById(long id){
+        return accountSettingsDAO.findById(id);
+    }
+
     public void save(ReceiveEmailAccountSetting account){
         accountSettingsDAO.save(account);
     }

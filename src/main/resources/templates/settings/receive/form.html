@@ -1,0 +1,126 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>受信アカウント設定</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>
+            受信アカウント設定
+        </h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-10 col-sm-12 col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <form class="form-horizontal" th:action="@{/addReceiveAccount}"
+                              th:object="${receiveAccountForm}" method="POST">
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">受信メールサーバー</label>
+
+                                <div class="col-md-2 col-xs-3">
+                                    <!--<input type="text" class="form-control"/>-->
+                                    <select th:field="*{receiveMailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">IMAP</option>
+                                        <option value="1" >POP3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-7 col-xs-6">
+                                    <input th:field="*{mailServerAddress}" type="text" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
+
+                                <div class="col-md-2 col-xs-3">
+                                    <input th:field="*{mailServerPort}" type="number" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{account}" type="email" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">パスワード</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input name="password" th:value="*{password}" type="password" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">接続の保護</label>
+
+                                <div class="col-xs-4">
+                                    <select th:field="*{encryptionProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">なし</option>
+                                        <option value="1">SSL/TLS</option>
+                                        <option value="2">STARTTLS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">認証方式</label>
+
+                                <div class="col-xs-4">
+                                    <select th:field="*{authenticationProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">通常のパスワード認証</option>
+                                        <option value="1">暗号化されたパスワード認証</option>
+                                        <option value="2">Kerberos/GSSAPI</option>
+                                        <option value="3">NTLM</option>
+                                        <option value="4">TLS証明書</option>
+                                        <option value="5">OAuth2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">PROXYサーバー</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{proxyServer}" type="text" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 col-xs-5 control-label text-left">このアカウントの受信を休止する</label>
+
+                                <div class="col-xs-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input th:field="*{disabled}" type="checkbox"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-2 col-xs-3">
+                                    <button type="submit" class="btn btn-success">新規登録(F5)</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3">
+                                    <button type="submit" class="btn btn-primary">更新(F6)</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3">
+                                    <button type="submit" class="btn btn-default">項目クリア(F12)</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3">
+                                    <button type="submit" class="btn btn-danger">終了(F3)</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
