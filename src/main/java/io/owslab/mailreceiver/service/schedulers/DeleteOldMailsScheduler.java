@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.schedulers;
 
 import io.owslab.mailreceiver.service.mail.DeleteMailsService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,12 @@ public class DeleteOldMailsScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(DeleteOldMailsScheduler.class);
     private static final int DELETE_OLD_MAIL_INTERVAL_IN_MINUTE = 10;
-    private static final boolean ALLOW_DELETE_OLD_MAIL = true;
-    private static final int DELETE_MAIL_BEFORE_DAY_RANGE = 30;
     private static final int DELETE_OLD_MAIL_START_UP_DELAY_IN_SECOND = 10;
 
     @Autowired
     private DeleteMailsService deleteMailsService;
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
 
     public void startDeleteOldMailInterval(){
         TimerTask repeatedTask = new TimerTask() {
@@ -36,12 +37,13 @@ public class DeleteOldMailsScheduler {
     }
 
     private boolean isAllowDeleteOldMail(){
-        return ALLOW_DELETE_OLD_MAIL;
+        return enviromentSettingService.getDeleteOldMail();
     }
 
     private void startDeleteOldMails(){
         Date now = new Date();
-        Date beforeDate = addDayToDate(now, -DELETE_MAIL_BEFORE_DAY_RANGE);
+        int beforeDayRang = enviromentSettingService.getDeleteAfter();
+        Date beforeDate = addDayToDate(now, -beforeDayRang);
         deleteMailsService.deleteOldMails(beforeDate);
     }
 

@@ -27,7 +27,7 @@ public class DeleteMailsService {
         System.out.println("Start delete Old mails - total: " + emailList.size());
         for(int i = 0, n = emailList.size(); i < n; i++){
             Email email = emailList.get(i);
-            System.out.println("Delete mail " + i  + ": " + email.getSubject());
+            System.out.println("Should elete mail " + i  + ": " + email.getSubject());
             //TODO: delete mail
         }
     }
