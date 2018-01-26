@@ -1,7 +1,6 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
-import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;

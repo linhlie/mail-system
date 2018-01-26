@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +26,16 @@ public class IMAPFetchMailJob implements Runnable {
 
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
+    private final EnviromentSettingService enviromentSettingService;
     private final ReceiveEmailAccountSetting account;
-    public static final String saveDirectory = "./tmp/";
+
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, ReceiveEmailAccountSetting account) {
+    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, ReceiveEmailAccountSetting account) {
         this.emailDAO = emailDAO;
         this.fileDAO = fileDAO;
+        this.enviromentSettingService = enviromentSettingService;
         this.account = account;
     }
 
@@ -247,6 +250,7 @@ public class IMAPFetchMailJob implements Runnable {
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
                     String fileName = part.getFileName();
+                    String saveDirectory = enviromentSettingService.getStoragePath();
                     part.saveFile(saveDirectory + File.separator + fileName);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
