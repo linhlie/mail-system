@@ -86,12 +86,12 @@ public class IMAPFetchMailJob implements Runnable {
 
             //create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");
+            //TODO: check settings and delete mail on server if need
             emailFolder.open(Folder.READ_ONLY);
 
             SearchTerm searchTerm = buildSearchTerm(fromDate);
             Message messages[] = emailFolder.search(searchTerm);
 
-            System.out.println("messages.length---" + messages.length);
             fetchEmail(messages);
             //close the store and folder objects
             emailFolder.close(false);
@@ -111,7 +111,6 @@ public class IMAPFetchMailJob implements Runnable {
             try {
                 MimeMessage message = (MimeMessage) messages[i];
                 if(isEmailExist(message, account)) {
-                    System.out.println("mail exist");
                     continue;
                 }
                 System.out.println(message.getSubject());
