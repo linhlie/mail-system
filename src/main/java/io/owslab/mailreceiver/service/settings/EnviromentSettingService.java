@@ -18,17 +18,31 @@ public class EnviromentSettingService {
     @Autowired
     private EnviromentSettingDAO enviromentSettingDAO;
 
+    public static final String CHECK_MAIL_TIME_INTERVAL_KEY = "check_mail_time_interval";
+    public static final String STORAGE_PATH_KEY = "file_storage_path";
+    public static final String KEEP_MAIL_ON_MAIL_SERVER_KEY = "keep_mail_on_mail_server";
+    public static final String DELETE_OLD_MAIL_KEY = "delete_old_mail";
+    public static final String DELETE_AFTER_KEY = "delete_after";
+    public static final String START_UP_WITH_PC_KEY = "start_up_with_pc";
+
+    private static final String DEFAULT_STORAGE_PATH = "./tmp/";
+    private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
+    private static final String DEFAULT_KEEP_MAIL_ON_SERVER = "1";
+    private static final String DEFAULT_DELETE_OLD_MAIL = "0";
+    private static final String DEFAULT_DELETE_AFTER = "30";
+    private static final String DEFAULT_START_UP_WITH_PC = "0";
+
     public static final HashMap<String, String> defaultKVStore = createMap();
 
     private static HashMap<String, String> createMap()
     {
         HashMap<String,String> map = new HashMap<>();
-        map.put("check_mail_time_interval", "10");
-        map.put("file_storage_path", null);
-        map.put("keep_mail_on_mail_server", "1");
-        map.put("delete_old_mail", "0");
-        map.put("delete_after", "30");
-        map.put("start_up_with_pc", "0");
+        map.put(CHECK_MAIL_TIME_INTERVAL_KEY, DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE);
+        map.put(STORAGE_PATH_KEY, DEFAULT_STORAGE_PATH);
+        map.put(KEEP_MAIL_ON_MAIL_SERVER_KEY, DEFAULT_KEEP_MAIL_ON_SERVER);
+        map.put(DELETE_OLD_MAIL_KEY, DEFAULT_DELETE_OLD_MAIL);
+        map.put(DELETE_AFTER_KEY, DEFAULT_DELETE_AFTER);
+        map.put(START_UP_WITH_PC_KEY, DEFAULT_START_UP_WITH_PC);
         return map;
     }
 
@@ -73,5 +87,39 @@ public class EnviromentSettingService {
 
     public EnviromentSetting set(EnviromentSetting enviromentSetting){
         return enviromentSettingDAO.save(enviromentSetting);
+    }
+
+    private String getSetting(String key, String defaultValue){
+        EnviromentSetting enviromentSetting = this.findByKey(key);
+        return enviromentSetting == null ? defaultValue : enviromentSetting.getValue();
+    }
+
+    public String getStoragePath(){
+        return this.getSetting(STORAGE_PATH_KEY, DEFAULT_STORAGE_PATH);
+    }
+
+    public int getCheckMailTimeInterval(){
+        String timeIntervalStr = this.getSetting(CHECK_MAIL_TIME_INTERVAL_KEY, DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE);
+        return Integer.parseInt(timeIntervalStr);
+    }
+
+    public int getDeleteAfter(){;
+        String deleteAfterStr = this.getSetting(DELETE_AFTER_KEY, DEFAULT_DELETE_AFTER);
+        return Integer.parseInt(deleteAfterStr);
+    }
+
+    public boolean getKeepMailOnMailServer(){
+        String value = this.getSetting(KEEP_MAIL_ON_MAIL_SERVER_KEY, DEFAULT_KEEP_MAIL_ON_SERVER);
+        return value != null && value.equals("1");
+    }
+
+    public boolean getDeleteOldMail(){
+        String value = this.getSetting(DELETE_OLD_MAIL_KEY, DEFAULT_DELETE_OLD_MAIL);
+        return value != null && value.equals("1");
+    }
+
+    public boolean getStartupWithPC(){
+        String value = this.getSetting(START_UP_WITH_PC_KEY, DEFAULT_START_UP_WITH_PC);
+        return value != null && value.equals("1");
     }
 }

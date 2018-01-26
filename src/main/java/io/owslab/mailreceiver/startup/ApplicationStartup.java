@@ -14,22 +14,21 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartup {
 
     @Autowired
+    private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
     private FetchMailScheduler fetchMailScheduler;
 
     @Autowired
     private DeleteOldMailsScheduler deleteOldMailsScheduler;
 
-    @Autowired
-    private EnviromentSettingService enviromentSettingService;
-
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        //Start fetch mail scheduler
+        enviromentSettingService.init();
         fetchMailScheduler.startCheckTimeToFetchMailInterval();
         deleteOldMailsScheduler.startDeleteOldMailInterval();
-        enviromentSettingService.init();
         return;
     }
 }
