@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.schedulers;
 
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class FetchMailScheduler {
 
     @Autowired
     private FetchMailsService fetchMailsService;
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
 
     private Date lastTimeFetchedMail;
 
@@ -37,7 +40,8 @@ public class FetchMailScheduler {
         if(lastTimeFetchMailOpt.isPresent()){
             Date now = new Date();
             Date lastTimeFetchMail = lastTimeFetchMailOpt.get();
-            Date nextTimeToFetchMail = addMinutesToADate(lastTimeFetchMail, FETCH_MAIL_INTERVAL_IN_MINUTE);
+            int checkMailInMinute = enviromentSettingService.getCheckMailTimeInterval();
+            Date nextTimeToFetchMail = addMinutesToADate(lastTimeFetchMail, checkMailInMinute);
             return nextTimeToFetchMail.compareTo(now) <= 0;
         }
         return true;
