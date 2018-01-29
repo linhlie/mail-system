@@ -12,4 +12,5 @@ public interface EmailDAO extends CrudRepository<Email, String> {
     List<Email> findByAccountIdOrderBySentAtDesc(long accountId);
     List<Email> findByMessageId(String messageId);
     List<Email> findByCreatedAtBeforeOrderByCreatedAtAsc(Date createdAt);
+    List<Email> findByOptimizedBodyIgnoreCaseContaining(String content);
 }

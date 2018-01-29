@@ -89,6 +89,16 @@
 			<artifactId>prettytime</artifactId>
 			<version>3.2.7.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mariten</groupId>
+			<artifactId>kanatools</artifactId>
+			<version>1.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

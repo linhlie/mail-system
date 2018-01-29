@@ -1,13 +1,16 @@
 package io.owslab.mailreceiver.job;
 
 import antlr.StringUtils;
+import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
+import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.utils.Html2Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +18,15 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.mail.search.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.swing.text.html.*;
+import javax.swing.text.html.parser.*;
 
 public class IMAPFetchMailJob implements Runnable {
     public static final boolean USING_POP3 = false;
@@ -90,7 +97,8 @@ public class IMAPFetchMailJob implements Runnable {
             emailFolder.open(Folder.READ_ONLY);
 
             SearchTerm searchTerm = buildSearchTerm(fromDate);
-            Message messages[] = emailFolder.search(searchTerm);
+//            Message messages[] = emailFolder.search(searchTerm);
+            Message messages[] = emailFolder.getMessages();
 
             fetchEmail(messages);
             //close the store and folder objects
@@ -149,7 +157,8 @@ public class IMAPFetchMailJob implements Runnable {
             String originalContent = getContentText(message);
             if(originalContent != null){
                 email.setOriginalBody(originalContent);
-                email.setOptimizedBody(originalContent.toLowerCase()); //TODO: optimize japanese characters
+                String optimizedContent = MailBoxService.optimizeText(originalContent);
+                email.setOptimizedBody(optimizedContent);
             }
             return email;
         } catch (Exception e) {
@@ -263,5 +272,35 @@ public class IMAPFetchMailJob implements Runnable {
                 }
             }
         }
+    }
+
+    private String getTextFromMessage(Message message) throws MessagingException, IOException {
+        String result = "";
+        if (message.isMimeType("text/plain")) {
+            result = message.getContent().toString();
+        } else if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            result = getTextFromMimeMultipart(mimeMultipart);
+        }
+        return result;
+    }
+
+    private String getTextFromMimeMultipart(
+            MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+        String result = "";
+        int count = mimeMultipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            if (bodyPart.isMimeType("text/plain")) {
+                result = result + "\n" + bodyPart.getContent();
+                break; // without break same text appears twice in my tests
+            } else if (bodyPart.isMimeType("text/html")) {
+                String html = (String) bodyPart.getContent();
+                result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
+            } else if (bodyPart.getContent() instanceof MimeMultipart){
+                result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+            }
+        }
+        return result;
     }
 }
