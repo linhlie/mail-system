@@ -64,13 +64,13 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private SearchTerm buildSearchTerm(Date fromDate){
-        Flags seen = new Flags(Flags.Flag.SEEN);
-        SearchTerm searchTerm = new FlagTerm(seen, false);
+//        Flags seen = new Flags(Flags.Flag.SEEN);
+//        SearchTerm searchTerm = new FlagTerm(seen, false);
         if(fromDate != null) {
             SentDateTerm minDateTerm = new SentDateTerm(ComparisonTerm.GE, fromDate);
-            searchTerm = new AndTerm(searchTerm, minDateTerm);
+            return minDateTerm;
         }
-        return searchTerm;
+        return null;
     }
 
     private Store createStore(ReceiveEmailAccountSetting account) throws NoSuchProviderException {
@@ -93,16 +93,23 @@ public class IMAPFetchMailJob implements Runnable {
 
             //create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");
-            //TODO: check settings and delete mail on server if need
-            emailFolder.open(Folder.READ_ONLY);
+            boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
+            int openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
+            emailFolder.open(openFolderFlag);
 
             SearchTerm searchTerm = buildSearchTerm(fromDate);
-//            Message messages[] = emailFolder.search(searchTerm);
-            Message messages[] = emailFolder.getMessages();
+            Message messages[] = searchTerm == null ? emailFolder.getMessages() : emailFolder.search(searchTerm);
 
             fetchEmail(messages);
+
+            if(!keepMailOnMailServer){
+                for (int i = 0; i < messages.length; i++) {
+                    Message message = messages[i];
+                    message.setFlag(Flags.Flag.DELETED, true);
+                }
+            }
             //close the store and folder objects
-            emailFolder.close(false);
+            emailFolder.close(true);
             store.close();
 
         } catch (NoSuchProviderException e) {

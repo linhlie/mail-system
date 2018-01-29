@@ -37,7 +37,6 @@ public class SettingsController {
     public String updateEnviromentSettings(Model model, @ModelAttribute("enviromentSettingForm") EnviromentSettingForm enviromentSettingForm) {
         Map<String, String> map = enviromentSettingForm.getMap();
         for (String key : map.keySet()) {
-            System.out.println("hello world: " + key + "@" + map.get(key));
             enviromentSettingService.set(key, map.get(key));
         }
         return "redirect:/enviromentSettings";
