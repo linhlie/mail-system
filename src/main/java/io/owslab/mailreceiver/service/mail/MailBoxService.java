@@ -4,8 +4,11 @@ import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.model.Email;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 /**
@@ -20,17 +23,17 @@ public class MailBoxService {
         return emailDAO.count();
     }
 
-    public List<Email> list() {
-        List<Email> list = (List<Email>) emailDAO.findAll();
+    public Page<Email> list(PageRequest pageRequest) {
+        Page<Email> list = emailDAO.findAll(pageRequest);
         return list;
     }
 
-    public List<Email> searchContent(String search) {
+    public Page<Email> searchContent(String search, PageRequest pageRequest) {
         if(search == null){
-            return list();
+            return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        List<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContaining(optimizeSearchText);
+        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContaining(optimizeSearchText, pageRequest);
         return list;
     }
 
