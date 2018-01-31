@@ -14,6 +14,8 @@ import java.util.List;
 public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findByAccountIdOrderBySentAtDesc(long accountId);
     List<Email> findByMessageId(String messageId);
-    List<Email> findByCreatedAtBeforeOrderByCreatedAtAsc(Date createdAt);
-    Page<Email> findByOptimizedBodyIgnoreCaseContaining(String content, Pageable pageable);
+    List<Email> findBySentAtBeforeAndDeletedOrderBySentAtAsc(Date sentAt, boolean deleted);
+    Page<Email> findByOptimizedBodyAndDeleted(String content, boolean deleted, Pageable pageable);
+    Page<Email> findByDeleted(boolean deleted, Pageable pageable);
+    long countByDeleted(boolean deleted);
 }

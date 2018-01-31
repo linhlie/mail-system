@@ -20,11 +20,11 @@ public class MailBoxService {
     private EmailDAO emailDAO;
 
     public long count(){
-        return emailDAO.count();
+        return emailDAO.countByDeleted(false);
     }
 
     public Page<Email> list(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findAll(pageRequest);
+        Page<Email> list = emailDAO.findByDeleted(false, pageRequest);
         return list;
     }
 
@@ -33,7 +33,7 @@ public class MailBoxService {
             return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContaining(optimizeSearchText, pageRequest);
+        Page<Email> list = emailDAO.findByOptimizedBodyAndDeleted(optimizeSearchText, false, pageRequest);
         return list;
     }
 

@@ -52,6 +52,10 @@ public class Email {
 
     private String metaData;
 
+    private boolean deleted;
+
+    private Date deletedAt;
+
     public Email() {
     }
 
@@ -59,7 +63,10 @@ public class Email {
         this.messageId = messageId;
     }
 
-    public Email(long accountId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment, int contentType, String originalBody, String optimizedBody, String header, Date createdAt, String metaData) {
+    public Email(long accountId, String from, String subject, String to, String cc, String bcc,
+                 String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment,
+                 int contentType, String originalBody, String optimizedBody, String header,
+                 Date createdAt, String metaData) {
         this.accountId = accountId;
         this.from = from;
         this.subject = subject;
@@ -76,6 +83,32 @@ public class Email {
         this.header = header;
         this.createdAt = createdAt;
         this.metaData = metaData;
+    }
+
+    public Email(String messageId, long accountId, String from, String subject, String to,
+                 String cc, String bcc, String replyTo, Date sentAt, Date receivedAt,
+                 boolean hasAttachment, int contentType, String originalBody,
+                 String optimizedBody, String header, Date createdAt, String metaData,
+                 boolean deleted, Date deletedAt) {
+        this.messageId = messageId;
+        this.accountId = accountId;
+        this.from = from;
+        this.subject = subject;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.replyTo = replyTo;
+        this.sentAt = sentAt;
+        this.receivedAt = receivedAt;
+        this.hasAttachment = hasAttachment;
+        this.contentType = contentType;
+        this.originalBody = originalBody;
+        this.optimizedBody = optimizedBody;
+        this.header = header;
+        this.createdAt = createdAt;
+        this.metaData = metaData;
+        this.deleted = deleted;
+        this.deletedAt = deletedAt;
     }
 
     public String getMessageId() {
@@ -212,6 +245,22 @@ public class Email {
 
     public void setMetaData(String metaData) {
         this.metaData = metaData;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     @Override
