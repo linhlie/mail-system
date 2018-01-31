@@ -162,11 +162,10 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
             String originalContent = getContentText(message);
-            if(originalContent != null){
-                email.setOriginalBody(originalContent);
-                String optimizedContent = MailBoxService.optimizeText(originalContent);
-                email.setOptimizedBody(optimizedContent);
-            }
+            email.setOriginalBody(originalContent);
+            String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
+            String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
+            email.setOptimizedBody(optimizedContent);
             return email;
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,7 +30,9 @@
                                         <td class="mailbox-name" th:text="${item.original.from}"></td>
                                         <td class="mailbox-subject"><b th:text="${item.original.subject}"></b>
                                         </td>
-                                        <td class="mailbox-attachment"></td>
+                                        <td class="mailbox-attachment">
+                                            <i th:class="${item.original.hasAttachment} ? 'fa fa-paperclip' : ''"></i>
+                                        </td>
                                         <td class="mailbox-date" th:text="${item.relativeDate}"></td>
                                     </tr>
                                     </tbody>
