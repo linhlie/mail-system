@@ -263,21 +263,34 @@ public class IMAPFetchMailJob implements Runnable {
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
+                    logger.info("Start Save file: " + part.getFileName());
                     String fileName = part.getFileName();
-                    String saveDirectory = enviromentSettingService.getStoragePath();
-                    part.saveFile(saveDirectory + File.separator + fileName);
+                    String saveDirectoryPath = enviromentSettingService.getStoragePath();
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    File saveDirectory = new File(saveDirectoryPath);
+                    if (! saveDirectory.exists()){
+                        saveDirectory.mkdir();
+                    }
+                    part.saveFile(saveDirectoryPath + File.separator + fileName);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
                             fileName,
-                            saveDirectory,
+                            saveDirectoryPath,
                             new Date(),
                             null
                     );
-                    System.out.println("Save file: " + attachmentFile.toString());
+                    logger.info("Save file: " + attachmentFile.toString());
                     fileDAO.save(attachmentFile);
                 }
             }
         }
+    }
+
+    private String normalizeDirectoryPath(String path){
+        if (path != null && path.length() > 0 && path.charAt(path.length() - 1) == '/') {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
     private String getTextFromMessage(Message message) throws MessagingException, IOException {
