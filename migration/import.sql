@@ -71,6 +71,8 @@ CREATE TABLE `Emails` (
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted` BOOLEAN DEFAULT FALSE,
+  `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
   REFERENCES Receive_Email_Account_Settings(id)
     ON UPDATE CASCADE
@@ -89,6 +91,8 @@ CREATE TABLE `Files` (
   `storage_path` VARCHAR(200) NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
+  `deleted` BOOLEAN DEFAULT FALSE,
+  `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email(message_id)
   REFERENCES Emails(message_id)
     ON UPDATE CASCADE
