@@ -3,6 +3,8 @@ package io.owslab.mailreceiver.service.settings;
 import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +18,8 @@ public class ReceiveMailAccountsSettingsService {
     @Autowired
     private ReceiveEmailAccountSettingsDAO accountSettingsDAO;
 
-    public List<ReceiveEmailAccountSetting> list() {
-        List<ReceiveEmailAccountSetting> list = (List<ReceiveEmailAccountSetting>) accountSettingsDAO.findAll();
+    public Page<ReceiveEmailAccountSetting> list(PageRequest pageRequest) {
+        Page<ReceiveEmailAccountSetting> list = accountSettingsDAO.findAll(pageRequest);
         return list;
     }
 

@@ -35,7 +35,7 @@ public class MailBoxController {
         page = page - 1;
         List<RelativeSentAtEmail> relativeSentAtEmailList = new ArrayList<RelativeSentAtEmail>();
         PageRequest pageRequest = new PageRequest(page, PAGE_SIZE, Sort.Direction.DESC, "sentAt");
-        Page<Email> pages = search == null ? mailBoxService.list(pageRequest) : mailBoxService.searchContent(search, pageRequest);
+        Page<Email> pages = search == null || search.length() == 0? mailBoxService.list(pageRequest) : mailBoxService.searchContent(search, pageRequest);
         List<Email> list = pages.getContent();
         int rowsInPage = list.size();
         PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/mailbox");
@@ -43,7 +43,7 @@ public class MailBoxController {
             Email email = list.get(i);
             relativeSentAtEmailList.add(new RelativeSentAtEmail(email));
         }
-        if(search != null){
+        if(search != null && search.length() > 0){
             model.addAttribute("search", search);
         }
         int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;

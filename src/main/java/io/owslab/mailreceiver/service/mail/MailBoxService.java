@@ -29,7 +29,7 @@ public class MailBoxService {
     }
 
     public Page<Email> searchContent(String search, PageRequest pageRequest) {
-        if(search == null){
+        if(search == null || search.length() == 0){
             return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);

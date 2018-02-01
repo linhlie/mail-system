@@ -6,7 +6,11 @@ import io.owslab.mailreceiver.model.EnviromentSetting;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
+import io.owslab.mailreceiver.utils.PageWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,8 @@ import java.util.Map;
 
 @Controller
 public class SettingsController {
+
+    public static final int PAGE_SIZE = 5;
 
     @Autowired
     private ReceiveMailAccountsSettingsService accountsSettingsService;
@@ -43,10 +49,19 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/receiveSettings", method = RequestMethod.GET)
-    public String receiveSettings(Model model) {
-        model.addAttribute("list", accountsSettingsService.list());
-        ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
-        model.addAttribute("receiveAccountForm", receiveAccountForm);
+    public String receiveSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
+        page = page - 1;
+        PageRequest pageRequest = new PageRequest(page, PAGE_SIZE);
+        Page<ReceiveEmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
+        PageWrapper<ReceiveEmailAccountSetting> pageWrapper = new PageWrapper<ReceiveEmailAccountSetting>(pages, "/receiveSettings");
+        List<ReceiveEmailAccountSetting> list = pages.getContent();
+        int rowsInPage = list.size();
+        int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
+        int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
+        model.addAttribute("list", list);
+        model.addAttribute("page", pageWrapper);
+        model.addAttribute("fromEntry", fromEntry);
+        model.addAttribute("toEntry", toEntry);
         return "settings/receive_mail_accounts_settings";
     }
     @RequestMapping(value = "/receiveSettings/add", method = RequestMethod.GET)
