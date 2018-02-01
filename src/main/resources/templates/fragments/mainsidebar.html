@@ -42,6 +42,16 @@
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'ambiguousWord'})?'active':''">
+            <a href="#" th:href="@{/ambiguousWord}">
+                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
+            </a>
+        </li>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'treatmentSettings'})?'active':''">
+            <a href="#" th:href="@{/treatmentSettings}">
+                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
+            </a>
+        </li>
         <li class="header">操作</li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
             <a href="#" th:href="@{/mailbox}">

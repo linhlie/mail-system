@@ -116,4 +116,13 @@ public class SettingsController {
         return "settings/receive_mail_rule_settings";
     }
 
+    @RequestMapping(value = "/treatmentSettings", method = RequestMethod.GET)
+    public String getTreatmentSettings(Model model) {
+        return "settings/treatment_settings";
+    }
+
+    @RequestMapping(value = "/ambiguousWord", method = RequestMethod.GET)
+    public String getAmbiguousWord(Model model) {
+        return "settings/ambiguous_word";
+    }
 }
