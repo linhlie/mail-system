@@ -35,18 +35,45 @@
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr>
-                                                    <th>単語</th>
+                                                    <th class="col-xs-11">単語</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
+                                                    </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr>
-                                                    <td>John</td>
+                                                    <td>
+                                                        <div>
+                                                            John
+                                                            <div class="pull-right">
+                                                                <a th:href="@{/ambiguousWord}"><i class="fa fa-edit"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Mary</td>
+                                                    <td>
+                                                        <div>
+                                                            Mary
+                                                            <div class="pull-right">
+                                                                <a th:href="@{/ambiguousWord}"><i class="fa fa-edit"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>July</td>
+                                                    <td>
+                                                        <div>
+                                                            July
+                                                            <div class="pull-right">
+                                                                <a th:href="@{/ambiguousWord}"><i class="fa fa-edit"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 </tbody>
                                             </table>
@@ -58,7 +85,10 @@
                                                 <thead>
                                                 <tr>
                                                     <th class="col-xs-2">同一/除外</th>
-                                                    <th class="col-xs-10">類似単語</th>
+                                                    <th class="col-xs-9">類似単語</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
+                                                    </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -69,7 +99,15 @@
                                                             <option value="2">除外</option>
                                                         </select>
                                                     </td>
-                                                    <td>Doe</td>
+                                                    <td>
+                                                        <div>
+                                                            Doe
+                                                            <div class="pull-right">
+                                                                <a th:href="@{/ambiguousWord}"><i class="fa fa-edit"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr>
                                                     <td class="combo-box">
@@ -79,6 +117,7 @@
                                                         </select>
                                                     </td>
                                                     <td>Moe</td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr>
                                                     <td class="combo-box">
@@ -88,24 +127,12 @@
                                                         </select>
                                                     </td>
                                                     <td>Dooley</td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="action-container">
-                                <div class="col-md-offset-2 col-xs-offset-2 col-md-4 col-xs-4 text-center">
-                                    <button type="submit" class="btn btn-success">更新</button>
-                                </div>
-                                <div class="col-md-4 col-xs-4 text-center">
-                                    <!--TODO: confirm modal in update case-->
-                                    <a th:href="@{/}">
-                                        <div  type="button" class="btn btn-danger">終了</div>
-                                    </a>
                                 </div>
                             </div>
                         </div>
