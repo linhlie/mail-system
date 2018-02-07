@@ -23,6 +23,19 @@ public class FuzzyWord {
     @NotNull
     private int fuzzyType;
 
+    public FuzzyWord() {
+    }
+
+    public FuzzyWord(long id) {
+        this.id = id;
+    }
+
+    public FuzzyWord(Word originalWord, Word associatedWord, int fuzzyType) {
+        this.originalWord = originalWord;
+        this.associatedWord = associatedWord;
+        this.fuzzyType = fuzzyType;
+    }
+
     public long getId() {
         return id;
     }

@@ -32,51 +32,27 @@
                                 <div class="ambious-form-container">
                                     <div class="col-xs-5 full-height">
                                         <div class="ambious-table-container">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th class="col-xs-11">単語</th>
-                                                    <th class="col-xs-1 text-center">
-                                                        <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div>
-                                                            John
-                                                            <div class="pull-right">
-                                                                <a th:href="@{/fuzzyWord}"><i class="fa fa-edit"></i></a>
+                                            <form action="#" th:action="@{/fuzzyWord}">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="col-xs-11">単語</th>
+                                                        <th class="col-xs-1 text-center">
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div>
+                                                                <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div>
-                                                            Mary
-                                                            <div class="pull-right">
-                                                                <a th:href="@{/fuzzyWord}"><i class="fa fa-edit"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div>
-                                                            July
-                                                            <div class="pull-right">
-                                                                <a th:href="@{/fuzzyWord}"><i class="fa fa-edit"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                                        </td>
+                                                        <td class="text-center"><button type="submit"><i class="fa fa-search"/></button></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </form>
                                         </div>
                                     </div>
                                     <div class="col-xs-7 full-height">
@@ -92,42 +68,30 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
+                                                <tr role="row" class="odd" th:each="item:${originalList}">
                                                     <td class="combo-box">
                                                         <select>
-                                                            <option value="1" selected="selected">同一</option>
-                                                            <option value="2">除外</option>
+                                                            <option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>
+                                                            <option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>
+                                                            <!--TODO: //make a list option automatic-->
                                                         </select>
                                                     </td>
-                                                    <td>
-                                                        <div>
-                                                            Doe
-                                                            <div class="pull-right">
-                                                                <a th:href="@{/fuzzyWord}"><i class="fa fa-edit"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
+                                                    <td th:text="${item.associatedWord.word}"></td>
                                                     <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
-                                                <tr>
+                                                <tr role="row" class="odd" th:each="item:${associatedToList}">
                                                     <td class="combo-box">
                                                         <select>
-                                                            <option value="1" selected="selected">同一</option>
-                                                            <option value="2">除外</option>
+                                                            <option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>
+                                                            <option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>
+                                                            <!--TODO: //make a list option automatic-->
                                                         </select>
                                                     </td>
-                                                    <td>Moe</td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="combo-box">
-                                                        <select>
-                                                            <option value="1" selected="selected">同一</option>
-                                                            <option value="2">除外</option>
-                                                        </select>
+                                                    <td th:text="${item.originalWord.word}"></td>
+                                                    <td class="text-center">
+                                                        <span name="trash" title="删除" th:data="@{/fuzzyWord/{id}/delete(id=${item.id})}"
+                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
                                                     </td>
-                                                    <td>Dooley</td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 </tbody>
                                             </table>

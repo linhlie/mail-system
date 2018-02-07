@@ -8,5 +8,5 @@ import java.util.List;
 
 @Transactional
 public interface WordDAO extends CrudRepository<Word, Long> {
-
+    List<Word> findByWord(String word);
 }

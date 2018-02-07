@@ -3,9 +3,13 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.model.EnviromentSetting;
+import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
+import io.owslab.mailreceiver.service.word.FuzzyWordService;
+import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,9 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class SettingsController {
@@ -29,6 +31,12 @@ public class SettingsController {
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private WordService wordService;
+
+    @Autowired
+    private FuzzyWordService fuzzyWordService;
 
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.GET)
     public String enviromentSettings(Model model) {
@@ -122,7 +130,30 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
-    public String getFuzzyWord(Model model) {
+    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
+        if(search != null && search.length() > 0){
+            model.addAttribute("search", search);
+            Word word = wordService.findOne(search);
+            if(word != null){
+                System.out.println("Found word: " + word.getWord());
+                for(FuzzyWord fuzzyWord : word.getOriginalWords()){
+                    System.out.println(word.getWord() + " " + (fuzzyWord.getAssociatedWord().getWord()) + " " + fuzzyWord.getFuzzyType());
+                }
+
+                for(FuzzyWord fuzzyWord : word.getAssociatedWords()){
+                    System.out.println(word.getWord() + " " + (fuzzyWord.getOriginalWord().getWord()) + " " + fuzzyWord.getFuzzyType());
+                }
+                model.addAttribute("word", word);
+                model.addAttribute("originalList", word.getOriginalWords());
+                model.addAttribute("associatedToList", word.getAssociatedWords());
+            }
+        }
         return "settings/fuzzy_word";
+    }
+
+    @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void delete(@PathVariable("id") long id) {
+        fuzzyWordService.delete(id);
     }
 }
