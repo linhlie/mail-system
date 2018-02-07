@@ -61,7 +61,8 @@
                                                 <thead>
                                                 <tr>
                                                     <th class="col-xs-2">同一/除外</th>
-                                                    <th class="col-xs-9">類似単語</th>
+                                                    <th class="col-xs-8">類似単語</th>
+                                                    <th class="col-xs-1"></th>
                                                     <th class="col-xs-1 text-center">
                                                         <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
                                                     </th>
@@ -77,6 +78,7 @@
                                                         </select>
                                                     </td>
                                                     <td th:text="${item.associatedWord.word}"></td>
+                                                    <td class="text-center"><a><i class="fa fa-edit"/></a></td>
                                                     <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr role="row" class="odd" th:each="item:${associatedToList}">
@@ -87,11 +89,11 @@
                                                             <!--TODO: //make a list option automatic-->
                                                         </select>
                                                     </td>
-                                                    <td th:text="${item.originalWord.word}"></td>
-                                                    <td class="text-center">
-                                                        <span name="trash" title="删除" th:data="@{/fuzzyWord/{id}/delete(id=${item.id})}"
-                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
+                                                    <td>
+                                                        <span th:text="${item.originalWord.word}"></span>
                                                     </td>
+                                                    <td class="text-center"><a><i class="fa fa-edit"/></a></td>
+                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 </tbody>
                                             </table>
