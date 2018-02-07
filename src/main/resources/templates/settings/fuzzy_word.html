@@ -64,36 +64,41 @@
                                                     <th class="col-xs-8">類似単語</th>
                                                     <th class="col-xs-1"></th>
                                                     <th class="col-xs-1 text-center">
-                                                        <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
+                                                        <a title="新規登録" href="#" th:href="@{/fuzzyWord/add}"
+                                                           th:if="(${search} ne null)">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </a>
                                                     </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr role="row" class="odd" th:each="item:${originalList}">
-                                                    <td class="combo-box">
-                                                        <select>
-                                                            <option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>
-                                                            <option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>
-                                                            <!--TODO: //make a list option automatic-->
-                                                        </select>
-                                                    </td>
+                                                    <!--<td class="combo-box">-->
+                                                        <!--<select>-->
+                                                            <!--<option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>-->
+                                                            <!--<option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>-->
+                                                            <!--&lt;!&ndash;TODO: //make a list option automatic&ndash;&gt;-->
+                                                        <!--</select>-->
+                                                    <!--</td>-->
+                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
                                                     <td th:text="${item.associatedWord.word}"></td>
                                                     <td class="text-center"><a><i class="fa fa-edit"/></a></td>
                                                     <td class="text-center"><a><i class="fa fa-remove"/></a></td>
                                                 </tr>
                                                 <tr role="row" class="odd" th:each="item:${associatedToList}">
-                                                    <td class="combo-box">
-                                                        <select>
-                                                            <option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>
-                                                            <option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>
-                                                            <!--TODO: //make a list option automatic-->
-                                                        </select>
-                                                    </td>
+                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
                                                     <td>
                                                         <span th:text="${item.originalWord.word}"></span>
                                                     </td>
                                                     <td class="text-center"><a><i class="fa fa-edit"/></a></td>
                                                     <td class="text-center"><a><i class="fa fa-remove"/></a></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table table-bordered" th:if="(${originalList} eq null) and (${associatedToList} eq null)">
+                                                <tbody>
+                                                <tr>
+                                                    <td>レコードが見つかりません</td>
                                                 </tr>
                                                 </tbody>
                                             </table>

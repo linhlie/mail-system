@@ -35,7 +35,7 @@ select:not([multiple]) {
 
 .ambious .ambious-table-container table {
     background-color: white;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .ambious .full-height {
