@@ -121,8 +121,8 @@ public class SettingsController {
         return "settings/treatment_settings";
     }
 
-    @RequestMapping(value = "/ambiguousWord", method = RequestMethod.GET)
-    public String getAmbiguousWord(Model model) {
-        return "settings/ambiguous_word";
+    @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
+    public String getFuzzyWord(Model model) {
+        return "settings/fuzzy_word";
     }
 }
