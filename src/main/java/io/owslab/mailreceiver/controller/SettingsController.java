@@ -131,23 +131,20 @@ public class SettingsController {
 
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
     public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
+        int totalFuzzyWord = 0;
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
             Word word = wordService.findOne(search);
             if(word != null){
-                System.out.println("Found word: " + word.getWord());
-                for(FuzzyWord fuzzyWord : word.getOriginalWords()){
-                    System.out.println(word.getWord() + " " + (fuzzyWord.getAssociatedWord().getWord()) + " " + fuzzyWord.getFuzzyType());
-                }
-
-                for(FuzzyWord fuzzyWord : word.getAssociatedWords()){
-                    System.out.println(word.getWord() + " " + (fuzzyWord.getOriginalWord().getWord()) + " " + fuzzyWord.getFuzzyType());
-                }
+                Set<FuzzyWord> originalWords = word.getOriginalWords();
+                Set<FuzzyWord> associatedWords = word.getAssociatedWords();
                 model.addAttribute("word", word);
-                model.addAttribute("originalList", word.getOriginalWords());
-                model.addAttribute("associatedToList", word.getAssociatedWords());
+                model.addAttribute("originalList", originalWords);
+                model.addAttribute("associatedToList", associatedWords);
+                totalFuzzyWord = originalWords.size() + associatedWords.size();
             }
         }
+        model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "settings/fuzzy_word";
     }
 

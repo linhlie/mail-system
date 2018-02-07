@@ -95,7 +95,7 @@
                                                 </tr>
                                                 </tbody>
                                             </table>
-                                            <table class="table table-bordered" th:if="(${originalList} eq null) and (${associatedToList} eq null)">
+                                            <table class="table table-bordered" th:if="${totalFuzzyWord} eq 0">
                                                 <tbody>
                                                 <tr>
                                                     <td>レコードが見つかりません</td>
