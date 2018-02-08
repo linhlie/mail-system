@@ -8,8 +8,25 @@
     <section class="content-header">
         <h1>あいまい単語登録</h1>
     </section>
-    <section class="content ambious">
+    <section class="content fuzzy">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="row">
+                            <div th:replace="/fragments/fuzzy-description"></div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/fuzzyWord.js"></script>
+</th:block>
 </body>
 </html>

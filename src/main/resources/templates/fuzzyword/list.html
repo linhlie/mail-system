@@ -8,30 +8,21 @@
     <section class="content-header">
         <h1>あいまい単語登録</h1>
     </section>
-    <section class="content ambious">
+    <section class="content fuzzy">
         <div class="row">
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="ambious-description">
-                                    <p style="word-wrap: break-word">抽出やマッチングでの検索の際、以下の抽出となってしまいます。
-                                    </p>
-                                    <p style="word-wrap: break-word">【例①】「JAVA」で検索すると「JAVA」を含む単語「JAVASCRIPT」も抽出対象となってしまいます。<br/>
-                                        →これを避けるため「JAVA」のあいまい単語「JAVASCRIPT」をここで除外単語として登録します。
-                                    </p>
-                                    <p style="word-wrap: break-word">【例②】「スマホ」で検索すると「スマートフォン」は「スマホ」という文字を含まないので別の単語として認識されます。<br/>
-                                        →「スマホ」と「スマートフォン」が同ー単語とするため、ここで同ー単語として登録します。
-                                    </p>
-                                </div>
+                                <div th:replace="/fragments/fuzzy-description"></div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="ambious-form-container">
+                                <div class="fuzzy-form-container">
                                     <div class="col-xs-5 full-height">
-                                        <div class="ambious-table-container">
+                                        <div class="fuzzy-table-container">
                                             <form action="#" th:action="@{/fuzzyWord}">
                                                 <table class="table table-bordered">
                                                     <thead>
@@ -56,7 +47,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xs-7 full-height">
-                                        <div class="ambious-table-container">
+                                        <div class="fuzzy-table-container">
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr>

@@ -55,28 +55,7 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-
-        <!-- Main content -->
-        <section class="content">
-            <div th:if="${successFlash != null}" class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <p th:text="${successFlash}"></p>
-            </div>
-
-            <div th:if="${errorFlash != null}" class="alert alert-danger alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <p th:text="${errorFlash}"></p>
-            </div>
-
-            <div th:if="${infoFlash != null}" class="alert alert-info alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <p th:text="${infoFlash}"></p>
-            </div>
-
-            <div layout:fragment="content"></div>
-        </section>
-        <!-- /.content -->
+        <div layout:fragment="content"></div>
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer">
