@@ -52,4 +52,11 @@ public class FuzzyWordController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @RequestMapping(value = "/fuzzyWord/add", method = RequestMethod.GET)
+    public String getAddFuzzyWord(@RequestParam(value = "original", required = false) String original, Model model) {
+        model.addAttribute("original", original);
+        model.addAttribute("api", "/addFuzzyWord");
+        return "fuzzyword/form";
+    }
 }

@@ -64,7 +64,7 @@
                                                     <th class="col-xs-8">類似単語</th>
                                                     <th class="col-xs-1"></th>
                                                     <th class="col-xs-1 text-center">
-                                                        <a title="新規登録" href="#" th:href="@{/fuzzyWord/add}"
+                                                        <a title="新規登録" href="#" th:href="@{/fuzzyWord/add(original=${search})}"
                                                            th:if="(${search} ne null)">
                                                             <span class="glyphicon glyphicon-plus"></span>
                                                         </a>
@@ -122,5 +122,8 @@
         </div>
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/fuzzyWord.js"></script>
+</th:block>
 </body>
 </html>

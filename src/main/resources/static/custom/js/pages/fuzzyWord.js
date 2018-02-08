@@ -3,6 +3,8 @@
 
     "use strict";
 
+    console.log("Load fuzzyWord js");
+
     $.ajaxSetup({headers:{'X-CSRF-TOKEN':$("#csrf_token").attr("content")}});
 
     $(function () {
