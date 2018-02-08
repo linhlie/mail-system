@@ -33,12 +33,6 @@ public class SettingsController {
     @Autowired
     private EnviromentSettingService enviromentSettingService;
 
-    @Autowired
-    private WordService wordService;
-
-    @Autowired
-    private FuzzyWordService fuzzyWordService;
-
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.GET)
     public String enviromentSettings(Model model) {
         HashMap<String, String> map = enviromentSettingService.getAll();
@@ -128,35 +122,5 @@ public class SettingsController {
     @RequestMapping(value = "/treatmentSettings", method = RequestMethod.GET)
     public String getTreatmentSettings(Model model) {
         return "settings/treatment_settings";
-    }
-
-    @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
-    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
-        int totalFuzzyWord = 0;
-        if(search != null && search.length() > 0){
-            model.addAttribute("search", search);
-            Word word = wordService.findOne(search);
-            if(word != null){
-                Set<FuzzyWord> originalWords = word.getOriginalWords();
-                Set<FuzzyWord> associatedWords = word.getAssociatedWords();
-                model.addAttribute("word", word);
-                model.addAttribute("originalList", originalWords);
-                model.addAttribute("associatedToList", associatedWords);
-                totalFuzzyWord = originalWords.size() + associatedWords.size();
-            }
-        }
-        model.addAttribute("totalFuzzyWord", totalFuzzyWord);
-        return "settings/fuzzy_word";
-    }
-
-    @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
-    @ResponseBody
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        try {
-            fuzzyWordService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 }
