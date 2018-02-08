@@ -83,7 +83,10 @@
                                                     <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
                                                     <td th:text="${item.associatedWord.word}"></td>
                                                     <td class="text-center"><a><i class="fa fa-edit"/></a></td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
+                                                    <td>
+                                                        <span name="trash" title="删除" th:data="${item.id}"
+                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
+                                                    </td>
                                                 </tr>
                                                 <tr role="row" class="odd" th:each="item:${associatedToList}">
                                                     <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
@@ -91,7 +94,10 @@
                                                         <span th:text="${item.originalWord.word}"></span>
                                                     </td>
                                                     <td class="text-center"><a><i class="fa fa-edit"/></a></td>
-                                                    <td class="text-center"><a><i class="fa fa-remove"/></a></td>
+                                                    <td>
+                                                        <span name="trash" title="删除" th:data="${item.id}"
+                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
+                                                    </td>
                                                 </tr>
                                                 </tbody>
                                             </table>

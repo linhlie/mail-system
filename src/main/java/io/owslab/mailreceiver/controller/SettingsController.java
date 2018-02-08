@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -150,7 +151,12 @@ public class SettingsController {
 
     @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
     @ResponseBody
-    public void delete(@PathVariable("id") long id) {
-        fuzzyWordService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        try {
+            fuzzyWordService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
