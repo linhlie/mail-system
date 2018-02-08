@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.form.FuzzyWordForm;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
@@ -55,6 +56,9 @@ public class FuzzyWordController {
 
     @RequestMapping(value = "/fuzzyWord/add", method = RequestMethod.GET)
     public String getAddFuzzyWord(@RequestParam(value = "original", required = false) String original, Model model) {
+        FuzzyWordForm fuzzyWordForm = new FuzzyWordForm();
+        model.addAttribute("fuzzyWordForm", fuzzyWordForm);
+        fuzzyWordForm.setOriginal(original);
         model.addAttribute("original", original);
         model.addAttribute("api", "/addFuzzyWord");
         return "fuzzyword/form";

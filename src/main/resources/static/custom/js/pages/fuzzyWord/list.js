@@ -11,7 +11,7 @@
         // ajaxClick('lock','PUT');
         fuzzyWordDelete('trash','DELETE');
     });
-    
+
     function fuzzyWordDelete(name, type) {
         $("span[name='"+name+"']").click(function () {
             $.ajax({
