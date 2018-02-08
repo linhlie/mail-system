@@ -48,7 +48,9 @@ public class Word implements Serializable {
     }
 
     public void setWord(String word) {
-        this.word = word;
+        if(word != null){
+            this.word = word.toLowerCase();
+        }
     }
 
     public Set<FuzzyWord> getOriginalWords() {

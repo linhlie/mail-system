@@ -1,15 +1,19 @@
 package io.owslab.mailreceiver.form;
 
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Created by khanhlvb on 1/24/18.
  */
 public class FuzzyWordForm {
+
+    @NotBlank
     private String original;
 
     private int fuzzyType;
 
+    @NotBlank
     private String associatedWord;
 
     public FuzzyWordForm() {

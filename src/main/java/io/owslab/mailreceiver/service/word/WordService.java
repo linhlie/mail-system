@@ -18,10 +18,15 @@ public class WordService {
     private WordDAO wordDAO;
 
     public Word findOne(String word){
-        List<Word> wordList = wordDAO.findByWord(word);
+        String normalizedWord = word == null ? word : word.toLowerCase();
+        List<Word> wordList = wordDAO.findByWord(normalizedWord);
         if (wordList.size() > 0){
             return wordList.get(0);
         }
         return null;
+    }
+
+    public void save(Word word){
+        wordDAO.save(word);
     }
 }

@@ -3,15 +3,21 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.form.FuzzyWordForm;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by khanhlvb on 2/8/18.
@@ -57,10 +63,61 @@ public class FuzzyWordController {
     @RequestMapping(value = "/fuzzyWord/add", method = RequestMethod.GET)
     public String getAddFuzzyWord(@RequestParam(value = "original", required = false) String original, Model model) {
         FuzzyWordForm fuzzyWordForm = new FuzzyWordForm();
-        model.addAttribute("fuzzyWordForm", fuzzyWordForm);
+        original = original == null ? original : original.toLowerCase();
         fuzzyWordForm.setOriginal(original);
+        model.addAttribute("fuzzyWordForm", fuzzyWordForm);
         model.addAttribute("original", original);
         model.addAttribute("api", "/addFuzzyWord");
         return "fuzzyword/form";
+    }
+
+    @PostMapping("/addFuzzyWord")
+    @ResponseBody
+    public ResponseEntity<?> addFuzzyWord(
+            Model model,
+            RedirectAttributes ra,
+            @Valid @RequestBody FuzzyWordForm fuzzyWordForm, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            String originalWordStr = fuzzyWordForm.getOriginal();
+            String associatedWordStr = fuzzyWordForm.getAssociatedWord();
+            int fuzzyType = fuzzyWordForm.getFuzzyType();
+            Word originalWord = wordService.findOne(originalWordStr);
+            Word associatedWord = wordService.findOne(associatedWordStr);
+            if(originalWord != null && associatedWord != null) {
+                FuzzyWord existFuzzyWord = fuzzyWordService.findOne(originalWord, associatedWord);
+                if(existFuzzyWord != null){
+                    //TODO: throw error exist fuzzy word
+                    throw new Exception("Exist data");
+                }
+            } else {
+                if(originalWord == null) {
+                    originalWord = new Word();
+                    originalWord.setWord(originalWordStr);
+                    wordService.save(originalWord);
+                }
+                if(associatedWord == null) {
+                    associatedWord = new Word();
+                    associatedWord.setWord(associatedWordStr);
+                    wordService.save(associatedWord);
+                    //TODO: save failed rollback
+                }
+            }
+            FuzzyWord fuzzyWord = new FuzzyWord(originalWord, associatedWord, fuzzyType);
+            fuzzyWordService.save(fuzzyWord);
+            //TODO: save failed rollback
+            ra.addAttribute("search", originalWordStr);
+            result.setMsg("done");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            return ResponseEntity.ok(result);
+        }
     }
 }
