@@ -47,7 +47,7 @@ INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_addres
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port, disabled)
-    VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993, true);
+    VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993, false);
 
 INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
@@ -102,7 +102,7 @@ CREATE TABLE `Files` (
 DROP TABLE IF EXISTS `Words`;
 CREATE TABLE `Words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `word` VARCHAR(191) NOT NULL
+  `word` VARCHAR(191) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO Words(id, word)
@@ -128,5 +128,21 @@ CREATE TABLE `Fuzzy_Words` (
 
 INSERT INTO Fuzzy_Words(word_id, with_word_id, fuzzy_type)
 VALUES (1, 2, 1);
+
+DROP TABLE IF EXISTS `Emails_Words`;
+CREATE TABLE `Emails_Words` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `message_id` VARCHAR(200) NOT NULL,
+  `word_id` INT NOT NULL,
+  `appear_indexs` TEXT DEFAULT NULL,
+  FOREIGN KEY fk_belong_to_email(word_id)
+  REFERENCES Emails(message_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY fk_belong_to_word(word_id)
+  REFERENCES Words(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 COMMIT;

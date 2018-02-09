@@ -1,6 +1,6 @@
 CREATE TABLE `Words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `word` VARCHAR(191) NOT NULL
+  `word` VARCHAR(191) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `Fuzzy_Words` (

@@ -75,7 +75,6 @@ public class FuzzyWordController {
     @ResponseBody
     public ResponseEntity<?> addFuzzyWord(
             Model model,
-            RedirectAttributes ra,
             @Valid @RequestBody FuzzyWordForm fuzzyWordForm, BindingResult bindingResult) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
@@ -85,12 +84,20 @@ public class FuzzyWordController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            String originalWordStr = fuzzyWordForm.getOriginal();
-            String associatedWordStr = fuzzyWordForm.getAssociatedWord();
+            String originalWordStr = wordService.normalize(fuzzyWordForm.getOriginal());
+            String associatedWordStr = wordService.normalize(fuzzyWordForm.getAssociatedWord());
+            if(originalWordStr.equals(associatedWordStr)){
+                //TODO: throw error if same word
+                throw new Exception("Can't be same word");
+            }
             int fuzzyType = fuzzyWordForm.getFuzzyType();
             Word originalWord = wordService.findOne(originalWordStr);
             Word associatedWord = wordService.findOne(associatedWordStr);
             if(originalWord != null && associatedWord != null) {
+                if(originalWord.getId() == associatedWord.getId()){
+                    //TODO: throw error if same word
+                    throw new Exception("Can't be same word 2: " + originalWord.getId() + " " + associatedWord.getId());
+                }
                 FuzzyWord existFuzzyWord = fuzzyWordService.findOne(originalWord, associatedWord);
                 if(existFuzzyWord != null){
                     //TODO: throw error exist fuzzy word
@@ -112,7 +119,6 @@ public class FuzzyWordController {
             FuzzyWord fuzzyWord = new FuzzyWord(originalWord, associatedWord, fuzzyType);
             fuzzyWordService.save(fuzzyWord);
             //TODO: save failed rollback
-            ra.addAttribute("search", originalWordStr);
             result.setMsg("done");
             return ResponseEntity.ok(result);
         } catch (Exception e) {
