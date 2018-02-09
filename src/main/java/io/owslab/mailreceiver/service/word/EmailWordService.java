@@ -1,8 +1,8 @@
 package io.owslab.mailreceiver.service.word;
 
-import io.owslab.mailreceiver.dao.EmailWordDAO;
+import io.owslab.mailreceiver.dao.EmailWordJobDAO;
 import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.EmailWord;
+import io.owslab.mailreceiver.model.EmailWordJob;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
 import io.owslab.mailreceiver.types.EmailWordState;
@@ -20,7 +20,7 @@ import java.util.List;
 public class EmailWordService {
     private static final Logger logger = LoggerFactory.getLogger(EmailWordService.class);
     @Autowired
-    private EmailWordDAO emailWordDAO;
+    private EmailWordJobDAO emailWordDAO;
 
     @Autowired
     private WordService wordService;
@@ -29,20 +29,21 @@ public class EmailWordService {
     private EmailService emailService;
 
     public void buildMatchData(){
-        List<EmailWord> emailWordList = emailWordDAO.findByState(EmailWordState.NEW);
-        for(EmailWord emailWord : emailWordList){
-            build(emailWord);
+        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordDAO.findAll();
+        for(EmailWordJob emailWordJob : emailWordJobList){
+            build(emailWordJob);
         }
     }
 
-    private void build(EmailWord emailWord){
-        String messageId = emailWord.getMessageId();
-        long wordId = emailWord.getWordId();
+    private void build(EmailWordJob emailWordJob){
+        String messageId = emailWordJob.getMessageId();
+        long wordId = emailWordJob.getWordId();
         Email email = emailService.findOne(messageId, false);
         if(email == null) return;
         Word word = wordService.findById(wordId);
         if(word == null) return;
         logger.info("Start build match data: " + email.getSubject() + "|||" + word.getWord());
-        //TODO: build array match and update state of emailWord to DONE
+        //TODO: build array match if have
+        //TODO: delete emailWordJob
     }
 }

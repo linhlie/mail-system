@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
  * Created by khanhlvb on 2/9/18.
  */
 @Entity
-@Table(name = "Emails_Words")
-public class EmailWord {
+@Table(name = "Email_Word_Jobs")
+public class EmailWordJob {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,22 +20,15 @@ public class EmailWord {
     @NotNull
     private long wordId;
 
-    private String appearIndexs;
-
-    @NotNull
-    private int state;
-
-    public EmailWord(String messageId, long wordId, String appearIndexs, int state) {
+    public EmailWordJob(String messageId, long wordId) {
         this.messageId = messageId;
         this.wordId = wordId;
-        this.appearIndexs = appearIndexs;
-        this.state = state;
     }
 
-    public EmailWord() {
+    public EmailWordJob() {
     }
 
-    public EmailWord(long id) {
+    public EmailWordJob(long id) {
         this.id = id;
     }
 
@@ -61,21 +54,5 @@ public class EmailWord {
 
     public void setWordId(long wordId) {
         this.wordId = wordId;
-    }
-
-    public String getAppearIndexs() {
-        return appearIndexs;
-    }
-
-    public void setAppearIndexs(String appearIndexs) {
-        this.appearIndexs = appearIndexs;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
     }
 }
