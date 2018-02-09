@@ -3,6 +3,7 @@ CREATE TABLE `Emails_Words` (
   `message_id` VARCHAR(200) NOT NULL,
   `word_id` INT NOT NULL,
   `appear_indexs` TEXT DEFAULT NULL,
+  `state` SMALLINT(6) DEFAULT '0' COMMENT '0、NEW 1. DONE',
   FOREIGN KEY fk_belong_to_email(message_id)
   REFERENCES Emails(message_id)
     ON UPDATE CASCADE

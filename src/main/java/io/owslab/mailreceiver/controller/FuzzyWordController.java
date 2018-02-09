@@ -120,9 +120,11 @@ public class FuzzyWordController {
             fuzzyWordService.save(fuzzyWord);
             //TODO: save failed rollback
             result.setMsg("done");
+            result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
+            result.setStatus(false);
             return ResponseEntity.ok(result);
         }
     }

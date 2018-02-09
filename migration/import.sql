@@ -135,7 +135,8 @@ CREATE TABLE `Emails_Words` (
   `message_id` VARCHAR(200) NOT NULL,
   `word_id` INT NOT NULL,
   `appear_indexs` TEXT DEFAULT NULL,
-  FOREIGN KEY fk_belong_to_email(word_id)
+  `state` SMALLINT(6) DEFAULT '0' COMMENT '0、NEW 1. DONE',
+  FOREIGN KEY fk_belong_to_email(message_id)
   REFERENCES Emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
@@ -144,5 +145,7 @@ CREATE TABLE `Emails_Words` (
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 
 COMMIT;
