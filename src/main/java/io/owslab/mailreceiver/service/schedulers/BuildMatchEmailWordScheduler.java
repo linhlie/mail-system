@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.service.schedulers;
 
-import io.owslab.mailreceiver.service.word.EmailWordService;
+import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ public class BuildMatchEmailWordScheduler extends AbstractScheduler {
     private static final int DELAY_IN_SECOND = 5;
 
     @Autowired
-    private EmailWordService emailWordService;
+    private EmailWordJobService emailWordJobService;
 
     public BuildMatchEmailWordScheduler() {
         super(DELAY_IN_SECOND, INTERVAL_IN_SECOND);
@@ -24,6 +24,6 @@ public class BuildMatchEmailWordScheduler extends AbstractScheduler {
 
     @Override
     public void doStuff() {
-        emailWordService.buildMatchData();
+        emailWordJobService.buildMatchData();
     }
 }
