@@ -8,5 +8,5 @@ import java.util.List;
 
 @Transactional
 public interface EmailWordDAO extends CrudRepository<EmailWord, Long> {
-    List<EmailWord> findByStatus(int status);
+    List<EmailWord> findByState(int state);
 }

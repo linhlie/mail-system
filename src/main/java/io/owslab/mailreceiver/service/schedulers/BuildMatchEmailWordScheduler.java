@@ -24,6 +24,6 @@ public class BuildMatchEmailWordScheduler extends AbstractScheduler {
 
     @Override
     public void doStuff() {
-        logger.info("BuildMatchEmailWordScheduler doing stuff");
+        emailWordService.buildMatchData();
     }
 }

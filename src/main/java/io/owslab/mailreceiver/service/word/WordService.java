@@ -28,6 +28,11 @@ public class WordService {
         return null;
     }
 
+    public Word findById(long id){
+        List<Word> wordList = wordDAO.findById(id);
+        return wordList.size() > 0 ? wordList.get(0) : null;
+    }
+
     public void save(Word word){
         wordDAO.save(word);
     }

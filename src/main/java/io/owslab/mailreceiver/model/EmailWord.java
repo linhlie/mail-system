@@ -23,13 +23,13 @@ public class EmailWord {
     private String appearIndexs;
 
     @NotNull
-    private int status;
+    private int state;
 
-    public EmailWord(String messageId, long wordId, String appearIndexs, int status) {
+    public EmailWord(String messageId, long wordId, String appearIndexs, int state) {
         this.messageId = messageId;
         this.wordId = wordId;
         this.appearIndexs = appearIndexs;
-        this.status = status;
+        this.state = state;
     }
 
     public EmailWord() {
@@ -71,11 +71,11 @@ public class EmailWord {
         this.appearIndexs = appearIndexs;
     }
 
-    public int getStatus() {
-        return status;
+    public int getState() {
+        return state;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setState(int state) {
+        this.state = state;
     }
 }
