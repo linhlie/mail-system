@@ -1,5 +1,5 @@
 CREATE TABLE `Key_Values` (
-  `key` VARCHAR(200) PRIMARY KEY,
+  `key` VARCHAR(191) PRIMARY KEY,
   `value` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -20,12 +20,12 @@ CREATE TABLE `Receive_Email_Account_Settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(60) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
-  `mail_server_address` VARCHAR(200) NOT NULL,
+  `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
   `receive_mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3',
   `encryption_protocol`SMALLINT(6) NOT NULL DEFAULT '0'COMMENT '0、なし 1. SSL/TLS, 2. STARTTLS',
   `authentication_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0. 通常のパスワード認証 1. 暗号化されたパスワード認証 2. Kerberos/GSSAPI 3. NTLM 4. TLS証明書 5. OAuth2',
-  `proxy_server` VARCHAR(200) DEFAULT NULL,
+  `proxy_server` VARCHAR(191) DEFAULT NULL,
   `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `Receive_Email_Account_Settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `Emails` (
-  `message_id` VARCHAR(200) PRIMARY KEY,
+  `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
   `from` VARCHAR(60) NOT NULL,
   `subject` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -60,9 +60,9 @@ CREATE TABLE `Emails` (
 
 CREATE TABLE `Files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(200) NOT NULL,
+  `message_id` VARCHAR(191) NOT NULL,
   `file_name` VARCHAR(60) NOT NULL,
-  `storage_path` VARCHAR(200) NOT NULL,
+  `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,

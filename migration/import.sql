@@ -7,7 +7,7 @@ SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `Key_Values`;
 CREATE TABLE `Key_Values` (
-  `key` VARCHAR(200) PRIMARY KEY,
+  `key` VARCHAR(191) PRIMARY KEY,
   `value` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -31,12 +31,12 @@ CREATE TABLE `Receive_Email_Account_Settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(60) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
-  `mail_server_address` VARCHAR(200) NOT NULL,
+  `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
   `receive_mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3',
   `encryption_protocol`SMALLINT(6) NOT NULL DEFAULT '0'COMMENT '0、なし 1. SSL/TLS, 2. STARTTLS',
   `authentication_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0. 通常のパスワード認証 1. 暗号化されたパスワード認証 2. Kerberos/GSSAPI 3. NTLM 4. TLS証明書 5. OAuth2',
-  `proxy_server` VARCHAR(200) DEFAULT NULL,
+  `proxy_server` VARCHAR(191) DEFAULT NULL,
   `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
@@ -54,7 +54,7 @@ INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_addres
 
 DROP TABLE IF EXISTS `Emails`;
 CREATE TABLE `Emails` (
-  `message_id` VARCHAR(200) PRIMARY KEY,
+  `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
   `from` VARCHAR(60) NOT NULL,
   `subject` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -86,9 +86,9 @@ DROP TABLE IF EXISTS `Files`;
 
 CREATE TABLE `Files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(200) NOT NULL,
+  `message_id` VARCHAR(191) NOT NULL,
   `file_name` VARCHAR(60) NOT NULL,
-  `storage_path` VARCHAR(200) NOT NULL,
+  `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
@@ -129,13 +129,11 @@ CREATE TABLE `Fuzzy_Words` (
 INSERT INTO Fuzzy_Words(word_id, with_word_id, fuzzy_type)
 VALUES (1, 2, 1);
 
-DROP TABLE IF EXISTS `Emails_Words`;
-CREATE TABLE `Emails_Words` (
+DROP TABLE IF EXISTS `Email_Word_Jobs`;
+CREATE TABLE `Email_Word_Jobs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(200) NOT NULL,
+  `message_id` VARCHAR(191) NOT NULL,
   `word_id` INT NOT NULL,
-  `appear_indexs` TEXT DEFAULT NULL,
-  `state` SMALLINT(6) DEFAULT '0' COMMENT '0、NEW 1. DONE',
   FOREIGN KEY fk_belong_to_email(message_id)
   REFERENCES Emails(message_id)
     ON UPDATE CASCADE
@@ -146,8 +144,8 @@ CREATE TABLE `Emails_Words` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO Emails_Words(message_id, word_id, appear_indexs)
-VALUES ('khanhlvb@ows.vn+<001a114425824f4509056431a819@google.com>', 2, '');
+INSERT INTO Email_Word_Jobs(message_id, word_id)
+VALUES ('khanhlvb@ows.vn+<001a114425824f4509056431a819@google.com>', 2);
 
 DELIMITER #
 CREATE TRIGGER ins_email AFTER INSERT ON Emails
@@ -163,7 +161,7 @@ BEGIN
       IF done THEN
         LEAVE ins_loop;
       END IF;
-      INSERT INTO Emails_Words (message_id, word_id, appear_indexs) values (new.message_id, c1 , '');
+      INSERT INTO Email_Word_Jobs (message_id, word_id) values (new.message_id, c1);
     END LOOP;
   CLOSE cur;
 END#
@@ -174,7 +172,7 @@ CREATE TRIGGER ins_word AFTER INSERT ON Words
 FOR EACH ROW
 BEGIN
   DECLARE done INT DEFAULT FALSE;
-  DECLARE c1 VARCHAR(200);
+  DECLARE c1 VARCHAR(191);
   DECLARE cur CURSOR FOR SELECT message_id FROM Emails WHERE Emails.deleted = FALSE;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
@@ -183,7 +181,7 @@ BEGIN
       IF done THEN
         LEAVE ins_loop;
       END IF;
-      INSERT INTO Emails_Words (message_id, word_id, appear_indexs) values (c1, new.id , '');
+      INSERT INTO Email_Word_Jobs (message_id, word_id) values (c1, new.id);
     END LOOP;
   CLOSE cur;
 END//
