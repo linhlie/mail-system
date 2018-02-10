@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.EmailWordJobDAO;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailWord;
 import io.owslab.mailreceiver.model.EmailWordJob;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
@@ -10,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by khanhlvb on 2/9/18.
@@ -19,7 +23,7 @@ import java.util.List;
 public class EmailWordJobService {
     private static final Logger logger = LoggerFactory.getLogger(EmailWordJobService.class);
     @Autowired
-    private EmailWordJobDAO emailWordDAO;
+    private EmailWordJobDAO emailWordJobDAO;
 
     @Autowired
     private WordService wordService;
@@ -27,8 +31,11 @@ public class EmailWordJobService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private EmailWordService emailWordService;
+
     public void buildMatchData(){
-        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordDAO.findAll();
+        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
         for(EmailWordJob emailWordJob : emailWordJobList){
             build(emailWordJob);
         }
@@ -41,8 +48,29 @@ public class EmailWordJobService {
         if(email == null) return;
         Word word = wordService.findById(wordId);
         if(word == null) return;
-        logger.info("Start build match data: " + email.getSubject() + "|||" + word.getWord());
-        //TODO: build array match if have
-        //TODO: delete emailWordJob
+        ArrayList<Integer> result = find(email.getOptimizedBody(), word.getWord());
+        if(result.size() > 0){
+            String resultStr = result.toString();
+            resultStr = resultStr.substring(1, resultStr.length()-1);
+            resultStr = resultStr.replaceAll("\\s","");
+            EmailWord emailWord = new EmailWord();
+            emailWord.setMessageId(messageId);
+            emailWord.setWordId(wordId);
+            emailWord.setAppearIndexs(resultStr);
+            emailWordService.save(emailWord);
+        }
+        emailWordJobDAO.delete(emailWordJob.getId());
+        //TODO: unique EmailWord and EmailWordJob
+    }
+
+    private ArrayList<Integer> find(String toSearch, String toFind){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        Matcher matcher = Pattern.compile(toFind, Pattern.LITERAL).matcher(toSearch);
+        boolean bFound = matcher.find();
+        while (bFound) {
+            result.add(matcher.start());
+            bFound = matcher.find(matcher.start() + 1);
+        }
+        return result;
     }
 }

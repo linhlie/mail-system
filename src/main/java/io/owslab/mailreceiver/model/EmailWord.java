@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 
 /**
  * Created by khanhlvb on 2/9/18.
@@ -65,5 +66,17 @@ public class EmailWord {
 
     public void setAppearIndexs(String appearIndexs) {
         this.appearIndexs = appearIndexs;
+    }
+
+    public ArrayList<Integer> getAppearIndexList(){
+        String resultStr = this.getAppearIndexs();
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        if(resultStr != null && !resultStr.isEmpty()){
+            String[] array = resultStr.split(",");
+            for(String item : array){
+                result.add(Integer.parseInt(item));
+            }
+        }
+        return  result;
     }
 }
