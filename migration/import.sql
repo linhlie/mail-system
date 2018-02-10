@@ -126,6 +126,9 @@ CREATE TABLE `Fuzzy_Words` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+ALTER TABLE Fuzzy_Words
+ADD CONSTRAINT uc_fuzzy_word UNIQUE (word_id,with_word_id);
+
 INSERT INTO Fuzzy_Words(word_id, with_word_id, fuzzy_type)
 VALUES (1, 2, 1);
 
@@ -143,6 +146,9 @@ CREATE TABLE `Email_Word_Jobs` (
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE Email_Word_Jobs
+ADD CONSTRAINT uc_email_word_job UNIQUE (message_id,word_id);
 
 INSERT INTO Email_Word_Jobs(message_id, word_id)
 VALUES ('khanhlvb@ows.vn+<001a114425824f4509056431a819@google.com>', 2);
@@ -201,5 +207,8 @@ CREATE TABLE `Emails_Words` (
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE Emails_Words
+ADD CONSTRAINT uc_email_word UNIQUE (message_id,word_id);
 
 COMMIT;

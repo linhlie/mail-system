@@ -60,7 +60,6 @@ public class EmailWordJobService {
             emailWordService.save(emailWord);
         }
         emailWordJobDAO.delete(emailWordJob.getId());
-        //TODO: unique EmailWord and EmailWordJob
     }
 
     private ArrayList<Integer> find(String toSearch, String toFind){
