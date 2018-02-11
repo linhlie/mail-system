@@ -118,9 +118,4 @@ public class SettingsController {
     public String receiveRuleSettings() {
         return "settings/receive_mail_rule_settings";
     }
-
-    @RequestMapping(value = "/treatmentSettings", method = RequestMethod.GET)
-    public String getTreatmentSettings(Model model) {
-        return "settings/treatment_settings";
-    }
 }
