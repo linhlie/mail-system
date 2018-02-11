@@ -2,6 +2,10 @@
     text-align: left;
 }
 
+.form-horizontal .control-label.text-center {
+    text-align: center;
+}
+
 select:not([multiple]) {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -56,4 +60,32 @@ select:not([multiple]) {
     width: 100%;
     border: none;
     background-color: transparent;
+}
+
+.number-treatment .box {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.number-treatment .note {
+    color: lightgrey;
+}
+
+.number-treatment label.control-label {
+    font-weight: normal;
+}
+
+.number-treatment div.treatment-container {
+    border: 1px solid #e6e6e6;
+    padding: 15px 20px;
+}
+
+.number-treatment div.treatment-container label.control-label {
+    font-size: 13px;
+    padding-top: 7px;
+}
+
+.number-treatment div.treatment-container div.row {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
