@@ -68,7 +68,7 @@ select:not([multiple]) {
 }
 
 .number-treatment .note {
-    color: lightgrey;
+    color: darkgray;
 }
 
 .number-treatment label.control-label {
@@ -97,4 +97,52 @@ select:not([multiple]) {
 .number-treatment div.remove-nested-padding {
     padding-left: 0;
     padding-right: 0;
+}
+
+.number-treatment div.treatment-container.treatment-padding div.row {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.number-treatment .form-container {
+    width: 100%;
+    height: 250px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.number-treatment .table-container {
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.number-treatment .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.number-treatment .full-height {
+    height: 100%;
+}
+
+.number-treatment .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: lightgrey;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: lightgrey;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: lightgrey;
 }
