@@ -266,13 +266,103 @@
                             </div>
                             <div class="form-group"></div>
                             <div class="treatment-container">
-                                <div class="form-group">
-                                    <label class="col-md-2 col-xs-4 control-label text-left">数値の項目名</label>
-
-                                    <div class="col-md-3 col-xs-8">
-                                        <input name="original" th:field="*{name}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <input
+                                                type="checkbox"
+                                        />
+                                        <span>検索中，文字例で数字の後の「以上」「以下」「超」「未満」を考慮する『～』や「迄』などをる以上、以下等置き換えて認識する場合にここに登録する。</span>
                                     </div>
-                                    <label class="col-md-offset-0 col-md-7 col-xs-offset-4 col-xs-8 control-label text-left note">※検索時、この項目名で検索できます</label>
+                                </div>
+                                <div class="form-container">
+                                    <div class="col-xs-12 full-height remove-nested-padding">
+                                        <div class="table-container">
+                                            <table id="replaceLetter" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-xs-5">条件</th>
+                                                    <th class="col-xs-1 text-center">文字</th>
+                                                    <th class="col-xs-5">置き換え</th>
+                                                    <th class="col-xs-1 text-center">
+                                                                        <span name="addReplaceLetter" title="add"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="1" selected="selected">数値の前の</option>
+                                                            <option value="0" >数値の後の</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">~</td>
+                                                    <td class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="1" selected="selected">以上として認識する</option>
+                                                            <option value="2" >以下として認識する</option>
+                                                            <option value="3" >未満として認識する</option>
+                                                            <option value="4" >超として認識する</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                                        <span name="removeReplaceLetter" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-trash">
+                                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="1">数値の前の</option>
+                                                            <option value="0" selected="selected">数値の後の</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">~</td>
+                                                    <td class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="1" >以上として認識する</option>
+                                                            <option value="2" selected="selected" >以下として認識する</option>
+                                                            <option value="3" >未満として認識する</option>
+                                                            <option value="4" >超として認識する</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                                        <span name="removeReplaceLetter" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-trash">
+                                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="select-container">
+                                                        <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled">選択してください</option>
+                                                            <option value="1" >数値の前の</option>
+                                                            <option value="0" >数値の後の</option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input class="text-center" type="text" placeholder="文字"/></td>
+                                                    <td class="select-container">
+                                                        <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled">選択してください</option>
+                                                            <option value="1" >以上として認識する</option>
+                                                            <option value="2" >以下として認識する</option>
+                                                            <option value="3" >未満として認識する</option>
+                                                            <option value="4" >超として認識する</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group"></div>

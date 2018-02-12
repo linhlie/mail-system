@@ -146,3 +146,15 @@ select:not([multiple]) {
 ::-ms-input-placeholder { /* Microsoft Edge */
     color: lightgrey;
 }
+
+.number-treatment .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+
+.number-treatment .table-container td select {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}
