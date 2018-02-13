@@ -1,6 +1,9 @@
 package io.owslab.mailreceiver.form;
 
+import io.owslab.mailreceiver.model.ReplaceNumber;
 import org.hibernate.validator.constraints.NotBlank;
+
+import java.util.List;
 
 /**
  * Created by khanhlvb on 2/11/18.
@@ -19,6 +22,8 @@ public class NumberTreatmentForm {
     private String lowerLimitName;
     private String lowerLimitSign;
     private Double lowerLimitRate;
+
+    private List<ReplaceNumber> replaceNumberList;
 
     public NumberTreatmentForm() {
     }
@@ -77,5 +82,13 @@ public class NumberTreatmentForm {
 
     public void setLowerLimitRate(Double lowerLimitRate) {
         this.lowerLimitRate = lowerLimitRate;
+    }
+
+    public List<ReplaceNumber> getReplaceNumberList() {
+        return replaceNumberList;
+    }
+
+    public void setReplaceNumberList(List<ReplaceNumber> replaceNumberList) {
+        this.replaceNumberList = replaceNumberList;
     }
 }

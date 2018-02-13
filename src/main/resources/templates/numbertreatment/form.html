@@ -121,31 +121,11 @@
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                <tr>
-                                                                    <td>K</td>
-                                                                    <td>000</td>
+                                                                <tr th:each="item:*{replaceNumberList}">
+                                                                    <td th:text="${item.character}"></td>
+                                                                    <td th:text="${item.replaceValueStr}"></td>
                                                                     <td class="text-center">
-                                                                        <span name="removeReplaceNumber" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-trash">
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>千</td>
-                                                                    <td>000</td>
-                                                                    <td class="text-center">
-                                                                        <span name="removeReplaceNumber" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-trash">
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>万</td>
-                                                                    <td>0000</td>
-                                                                    <td class="text-center">
-                                                                        <span name="removeReplaceNumber" title="删除"
+                                                                        <span th:data="${item.id}" name="removeReplaceNumber" title="删除"
                                                                               style="cursor: pointer"
                                                                               class="glyphicon glyphicon-trash">
                                                                         </span>
