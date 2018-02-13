@@ -17,12 +17,12 @@
                               th:object="${numberTreatmentForm}" method="POST">
                             <div class="form-group"></div>
                             <div class="form-group">
-                                <label class="col-md-2 col-xs-4 control-label text-left">数値の項目名</label>
+                                <label class="col-md-2 col-xs-3 control-label text-left">数値の項目名</label>
 
                                 <div class="col-md-3 col-xs-8">
                                     <input name="name" th:field="*{name}" type="text" class="form-control" placeholder="入力してください" required="required"/>
                                 </div>
-                                <label class="col-md-offset-0 col-md-7 col-xs-offset-4 col-xs-8 control-label text-left note">※検索時、この項目名で検索できます</label>
+                                <label class="col-md-offset-0 col-md-7 col-xs-offset-3 col-xs-8 control-label text-left note">※検索時、この項目名で検索できます</label>
                             </div>
                             <div class="treatment-container">
                                 <div class="row">
@@ -31,58 +31,34 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label class="col-md-2 col-xs-4 control-label text-left">掛け率を設定した項目名１</label>
-                                    <div class="col-md-3 col-xs-8">
+                                    <label class="col-md-2 col-xs-12 control-label text-left">掛け率を設定した項目名１</label>
+                                    <div class="col-md-3 col-xs-4">
                                         <input name="upperLimitName" th:field="*{upperLimitName}" type="text" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
-                                    <label class="col-md-2 hidden-sm hidden-xs control-label text-center">掛け率</label>
-                                    <div class="col-md-2 hidden-sm hidden-xs">
+                                    <label class="col-xs-2 control-label text-center">掛け率</label>
+                                    <div class="col-xs-2">
                                         <select name="upperLimitSign" th:field="*{upperLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                             <option value="1" selected="selected">X</option>
                                             <option value="0" >*</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2 hidden-sm hidden-xs">
-                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
-                                    </div>
-                                </div>
-                                <div class="row hidden-md hidden-lg">
-                                    <label class="col-xs-offset-4 col-xs-2 control-label text-center">掛け率</label>
-                                    <div class="col-xs-3">
-                                        <select name="upperLimitSign" th:field="*{upperLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="1" selected="selected">X</option>
-                                            <option value="0" >*</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-xs-3">
+                                    <div class="col-md-2 col-xs-4">
                                         <input name="upperLimitRate" th:field="*{upperLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <label class="col-md-2 col-xs-4 control-label text-left">掛け率を設定した項目名２</label>
-                                    <div class="col-md-3 col-xs-8">
+                                    <label class="col-md-2 col-xs-12 control-label text-left">掛け率を設定した項目名２</label>
+                                    <div class="col-md-3 col-xs-4">
                                         <input name="lowerLimitName" th:field="*{lowerLimitName}" type="text" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
-                                    <label class="col-md-2 hidden-sm hidden-xs control-label text-center">掛け率</label>
-                                    <div class="col-md-2 hidden-sm hidden-xs">
+                                    <label class="col-xs-2 control-label text-center">掛け率</label>
+                                    <div class="col-xs-2">
                                         <select name="lowerLimitSign" th:field="*{lowerLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                             <option value="1" selected="selected">X</option>
                                             <option value="0" >*</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2 hidden-sm hidden-xs">
-                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
-                                    </div>
-                                </div>
-                                <div class="row hidden-md hidden-lg">
-                                    <label class="col-xs-offset-4 col-xs-2 control-label text-center">掛け率</label>
-                                    <div class="col-xs-3">
-                                        <select name="lowerLimitSign" th:field="*{lowerLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="1" selected="selected">X</option>
-                                            <option value="0" >*</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-xs-3">
+                                    <div class="col-md-2 col-xs-4">
                                         <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
@@ -348,7 +324,7 @@
                             <div class="form-group"></div>
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-4 text-center">
-                                    <button id="btn-submit-fuzzy-word" type="submit" class="btn btn-success">更新</button>
+                                    <button id="btn-submit-number-treatment" type="submit" class="btn btn-success">更新</button>
                                 </div>
                                 <div class="col-xs-4 text-center">
                                     <button name="backBtn" type="button" class="btn btn-danger">終了</button>

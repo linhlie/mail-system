@@ -1,9 +1,52 @@
 
 (function () {
 
+    var formId = '#numberTreatmentForm';
+    var submitButtonId = '#btn-submit-number-treatment';
+
     "use strict";
 
     console.log("Load numberTreatment form js");
+
+    $(formId).submit(function(e){
+        e.preventDefault();
+
+        var form = {};
+        form["name"] = $("input[name='name']").val();
+        form["upperLimitName"] = $("input[name='upperLimitName']").val();
+        form["upperLimitSign"] = $("select[name='upperLimitSign']").val();
+        form["upperLimitRate"] = $("select[name='upperLimitRate']").val();
+        form["lowerLimitName"] = $("input[name='lowerLimitName']").val();
+        form["lowerLimitSign"] = $("select[name='lowerLimitSign']").val();
+        form["lowerLimitRate"] = $("select[name='lowerLimitRate']").val();
+
+        $(submitButtonId).prop("disabled", true);
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/numberTreatment",
+            data: JSON.stringify(form),
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $(submitButtonId).prop("disabled", false);
+                if(data && data.status){
+                    console.log("SUCCESS : ", data);
+                } else {
+                    console.log("FAILED : ", data);
+                }
+
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $(submitButtonId).prop("disabled", false);
+
+            }
+        });
+    });
+
     $(function () {
         setAddRowListener('addReplaceNumber', 'replaceNumber');
         setAddRowListener('addReplaceUnit', 'replaceUnit');
