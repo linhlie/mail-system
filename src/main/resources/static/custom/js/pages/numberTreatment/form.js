@@ -10,13 +10,20 @@
         e.preventDefault();
 
         var form = {};
-        form["name"] = $("input[name='name']").val();
-        form["upperLimitName"] = $("input[name='upperLimitName']").val();
-        form["upperLimitSign"] = $("select[name='upperLimitSign']").val();
-        form["upperLimitRate"] = $("select[name='upperLimitRate']").val();
-        form["lowerLimitName"] = $("input[name='lowerLimitName']").val();
-        form["lowerLimitSign"] = $("select[name='lowerLimitSign']").val();
-        form["lowerLimitRate"] = $("select[name='lowerLimitRate']").val();
+        var formFields = [
+            {type: "input", name: "name"},
+            {type: "input", name: "upperLimitName"},
+            {type: "select", name: "upperLimitSign"},
+            {type: "input", name: "upperLimitRate"},
+            {type: "input", name: "lowerLimitName"},
+            {type: "select", name: "lowerLimitSign"},
+            {type: "input", name: "lowerLimitRate"},
+        ];
+        for (var i = 0; i < formFields.length; i++) {
+            var field = formFields[i];
+            form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
+        }
+
         form["replaceNumberList"] = [];
         form["replaceUnitList"] = [];
 
@@ -136,7 +143,7 @@
             cell1.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
                 '<option value="" selected="selected" disabled="disabled">選択してください</option>' +
                 '<option value="1" >数値の前の</option>' +
-                '<option value="0" >数値の後の</option>' +
+                '<option value="2" >数値の後の</option>' +
                 '</select>'
             cell2.innerHTML = '<input class="text-center" type="text" placeholder="文字"/>';
             cell3.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
