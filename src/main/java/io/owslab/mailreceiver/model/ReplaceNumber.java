@@ -11,10 +11,17 @@ public class ReplaceNumber {
     private long id;
 
     @NotNull
+    @Column(name="[character]")
     private String character;
 
     @NotNull
     private int replaceValue;
+
+    @Transient // means "not a DB field"
+    private int remove; // boolean flag
+
+    @Transient
+    private String replaceValueStr;
 
     public ReplaceNumber() {
     }
@@ -26,6 +33,12 @@ public class ReplaceNumber {
     public ReplaceNumber(String character, int replaceValue) {
         this.character = character;
         this.replaceValue = replaceValue;
+    }
+
+    public ReplaceNumber(String character, int replaceValue, int remove) {
+        this.character = character;
+        this.replaceValue = replaceValue;
+        this.remove = remove;
     }
 
     public long getId() {
@@ -52,8 +65,30 @@ public class ReplaceNumber {
         this.replaceValue = replaceValue;
     }
 
+    public void setReplaceValue(String replaceValueStr) {
+        replaceValueStr = replaceValueStr.replaceAll("\\s+","");
+        replaceValueStr = "1" + replaceValueStr;
+        this.replaceValue = Integer.parseInt(replaceValueStr);
+    }
+
     public String getReplaceValueStr(){
         String replaceValueStr = Integer.toString(this.getReplaceValue());
         return replaceValueStr.substring(1);
+    }
+
+    public String getReplaceValueStrFromRaw(){
+        return this.replaceValueStr;
+    }
+
+    public void setReplaceValueStr(String replaceValueStr) {
+        this.replaceValueStr = replaceValueStr;
+    }
+
+    public int getRemove() {
+        return remove;
+    }
+
+    public void setRemove(int remove) {
+        this.remove = remove;
     }
 }

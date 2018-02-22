@@ -4,6 +4,8 @@ import io.owslab.mailreceiver.form.NumberTreatmentForm;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.replace.ReplaceNumberService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,9 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class NumberTreatmentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(NumberTreatmentController.class);
+
     @Autowired
     private ReplaceNumberService replaceNumberService;
 
@@ -45,11 +50,13 @@ public class NumberTreatmentController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            //TODO:  do something
+            List<ReplaceNumber> replaceNumbers = numberTreatmentForm.getReplaceNumberList();
+            replaceNumberService.saveList(replaceNumbers);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);

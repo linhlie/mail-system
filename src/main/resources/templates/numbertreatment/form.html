@@ -98,8 +98,8 @@
                                                                 </thead>
                                                                 <tbody>
                                                                 <tr th:each="item:*{replaceNumberList}">
-                                                                    <td th:text="${item.character}"></td>
-                                                                    <td th:text="${item.replaceValueStr}"></td>
+                                                                    <td th:data="character" th:text="${item.character}"></td>
+                                                                    <td th:data="replaceValueStr" th:text="${item.replaceValueStr}"></td>
                                                                     <td class="text-center">
                                                                         <span th:data="${item.id}" name="removeReplaceNumber" title="删除"
                                                                               style="cursor: pointer"
@@ -108,8 +108,8 @@
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td><input type="text" placeholder="文字"/></td>
-                                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                                    <td th:data="character"><input type="text" placeholder="文字"/></td>
+                                                                    <td th:data="replaceValueStr"><input type="text" placeholder="置き換え"/></td>
                                                                     <td class="text-center">
                                                                     </td>
                                                                 </tr>
