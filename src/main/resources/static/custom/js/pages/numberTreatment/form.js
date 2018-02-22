@@ -142,16 +142,16 @@
             cell3.className = 'select-container';
             cell1.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
                 '<option value="" selected="selected" disabled="disabled">選択してください</option>' +
-                '<option value="1" >数値の前の</option>' +
-                '<option value="2" >数値の後の</option>' +
+                '<option value="0" >数値の前の</option>' +
+                '<option value="1" >数値の後の</option>' +
                 '</select>'
             cell2.innerHTML = '<input class="text-center" type="text" placeholder="文字"/>';
             cell3.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
                 '<option value="" selected="selected" disabled="disabled">選択してください</option>'
-                '<option value="1" >以上として認識する</option>' +
-                '<option value="2" >以下として認識する</option>' +
-                '<option value="3" >未満として認識する</option>' +
-                '<option value="4" >超として認識する</option>' +
+                '<option value="0" >以上として認識する</option>' +
+                '<option value="1" >以下として認識する</option>' +
+                '<option value="2" >未満として認識する</option>' +
+                '<option value="3" >超として認識する</option>' +
                 '</select>'
         })
     }

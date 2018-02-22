@@ -38,8 +38,8 @@
                                     <label class="col-xs-2 control-label text-center">掛け率</label>
                                     <div class="col-xs-2">
                                         <select name="upperLimitSign" th:field="*{upperLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="1" selected="selected">X</option>
-                                            <option value="2" >*</option>
+                                            <option value="0" selected="selected">X</option>
+                                            <option value="1" >*</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
@@ -54,8 +54,8 @@
                                     <label class="col-xs-2 control-label text-center">掛け率</label>
                                     <div class="col-xs-2">
                                         <select name="lowerLimitSign" th:field="*{lowerLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="1" selected="selected">X</option>
-                                            <option value="2" >*</option>
+                                            <option value="0" selected="selected">X</option>
+                                            <option value="1" >*</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
@@ -186,15 +186,15 @@
                                         </div>
                                         <div class="col-xs-6">
                                             <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                <option value="1" selected="selected">以上を数字として扱う</option>
-                                                <option value="2" >超を通じとして扱う</option>
+                                                <option value="0" selected="selected">以上を数字として扱う</option>
+                                                <option value="1" >超を通じとして扱う</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-xs-2">
                                         <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="1" selected="selected">AND</option>
-                                            <option value="2" >OR</option>
+                                            <option value="0" selected="selected">AND</option>
+                                            <option value="1" >OR</option>
                                         </select>
                                     </div>
                                     <div class="col-md-5 col-xs-10 remove-nested-padding">
@@ -203,8 +203,8 @@
                                         </div>
                                         <div class="col-xs-6">
                                             <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                <option value="1" selected="selected">以下を数字として扱う</option>
-                                                <option value="2" >未満を通じとして扱う</option>
+                                                <option value="0" selected="selected">以下を数字として扱う</option>
+                                                <option value="1" >未満を通じとして扱う</option>
                                             </select>
                                         </div>
                                     </div>
@@ -241,17 +241,17 @@
                                                 <tr>
                                                     <td class="select-container">
                                                         <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                            <option value="1" selected="selected">数値の前の</option>
-                                                            <option value="2" >数値の後の</option>
+                                                            <option value="0" selected="selected">数値の前の</option>
+                                                            <option value="1" >数値の後の</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">~</td>
                                                     <td class="select-container">
                                                         <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                            <option value="1" selected="selected">以上として認識する</option>
-                                                            <option value="2" >以下として認識する</option>
-                                                            <option value="3" >未満として認識する</option>
-                                                            <option value="4" >超として認識する</option>
+                                                            <option value="0" selected="selected">以上として認識する</option>
+                                                            <option value="1" >以下として認識する</option>
+                                                            <option value="2" >未満として認識する</option>
+                                                            <option value="3" >超として認識する</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">
@@ -264,17 +264,17 @@
                                                 <tr>
                                                     <td class="select-container">
                                                         <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                            <option value="1">数値の前の</option>
-                                                            <option value="2" selected="selected">数値の後の</option>
+                                                            <option value="0">数値の前の</option>
+                                                            <option value="1" selected="selected">数値の後の</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">~</td>
                                                     <td class="select-container">
                                                         <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                            <option value="1" >以上として認識する</option>
-                                                            <option value="2" selected="selected" >以下として認識する</option>
-                                                            <option value="3" >未満として認識する</option>
-                                                            <option value="4" >超として認識する</option>
+                                                            <option value="0" >以上として認識する</option>
+                                                            <option value="1" selected="selected" >以下として認識する</option>
+                                                            <option value="2" >未満として認識する</option>
+                                                            <option value="3" >超として認識する</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">
@@ -288,18 +288,18 @@
                                                     <td class="select-container">
                                                         <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                                             <option value="" selected="selected" disabled="disabled">選択してください</option>
-                                                            <option value="1" >数値の前の</option>
-                                                            <option value="2" >数値の後の</option>
+                                                            <option value="0" >数値の前の</option>
+                                                            <option value="1" >数値の後の</option>
                                                         </select>
                                                     </td>
                                                     <td><input class="text-center" type="text" placeholder="文字"/></td>
                                                     <td class="select-container">
                                                         <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                                             <option value="" selected="selected" disabled="disabled">選択してください</option>
-                                                            <option value="1" >以上として認識する</option>
-                                                            <option value="2" >以下として認識する</option>
-                                                            <option value="3" >未満として認識する</option>
-                                                            <option value="4" >超として認識する</option>
+                                                            <option value="0" >以上として認識する</option>
+                                                            <option value="1" >以下として認識する</option>
+                                                            <option value="2" >未満として認識する</option>
+                                                            <option value="3" >超として認識する</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">
