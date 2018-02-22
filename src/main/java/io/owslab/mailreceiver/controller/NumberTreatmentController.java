@@ -1,9 +1,11 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.form.NumberTreatmentForm;
+import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import io.owslab.mailreceiver.model.ReplaceUnit;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.service.replace.ReplaceLetterService;
 import io.owslab.mailreceiver.service.replace.ReplaceNumberService;
 import io.owslab.mailreceiver.service.replace.ReplaceUnitService;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ public class NumberTreatmentController {
     @Autowired
     private ReplaceUnitService replaceUnitService;
 
+    @Autowired
+    private ReplaceLetterService replaceLetterService;
+
     @RequestMapping(value = "/numberTreatment", method = RequestMethod.GET)
     public String getNumberTreatmentSettings(Model model) {
         NumberTreatmentForm form = new NumberTreatmentForm();
@@ -40,6 +45,8 @@ public class NumberTreatmentController {
         form.setReplaceNumberList(replaceNumbers);
         List<ReplaceUnit> replaceUnits = replaceUnitService.getList();
         form.setReplaceUnitList(replaceUnits);
+        List<ReplaceLetter> replaceLetters = replaceLetterService.getList();
+        form.setReplaceLetterList(replaceLetters);
         model.addAttribute("numberTreatmentForm", form);
         return "numbertreatment/form";
     }
@@ -61,6 +68,8 @@ public class NumberTreatmentController {
             replaceNumberService.saveList(replaceNumbers);
             List<ReplaceUnit> replaceUnits = numberTreatmentForm.getReplaceUnitList();
             replaceUnitService.saveList(replaceUnits);
+            List<ReplaceLetter> replaceLetters = numberTreatmentForm.getReplaceLetterList();
+            replaceLetterService.saveList(replaceLetters);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

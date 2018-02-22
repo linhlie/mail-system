@@ -26,6 +26,7 @@
 
         form["replaceNumberList"] = [];
         form["replaceUnitList"] = [];
+        form["replaceLetterList"] = [];
 
         var rawReplaceNumberData = buildReplaceNumberOrUnitDataTable('replaceNumber');
         for (var i = 0; i < rawReplaceNumberData.length; i++) {
@@ -37,11 +38,21 @@
         }
 
         var rawReplaceUnitData = buildReplaceNumberOrUnitDataTable('replaceUnit');
-        for (var j = 0; j < rawReplaceUnitData.length; j++) {
-            var rowData = rawReplaceUnitData[j];
+        for (var i = 0; i < rawReplaceUnitData.length; i++) {
+            var rowData = rawReplaceUnitData[i];
             if(typeof rowData["unit"] === 'string' && rowData["unit"].length > 0
                 && typeof rowData["replaceUnit"] === 'string' && rowData["replaceUnit"].length > 0) {
                 form["replaceUnitList"].push(rowData);
+            }
+        }
+
+        var rawReplaceLetterData = buildReplaceLetterDataTable('replaceLetter');
+        for (var i = 0; i < rawReplaceLetterData.length; i++) {
+            var rowData = rawReplaceLetterData[i];
+            if(typeof rowData["letter"] === 'string' && rowData["letter"].length > 0
+                && typeof rowData["position"] === 'string' && rowData["position"].length > 0
+                && typeof rowData["replace"] === 'string' && rowData["replace"].length > 0) {
+                form["replaceLetterList"].push(rowData);
             }
         }
 
@@ -100,12 +111,38 @@
         return data;
     }
 
+    function buildReplaceLetterDataTable(tableId) {
+        var data = [];
+        var table = document.getElementById(tableId);
+        for (i = 1; i < table.rows.length; i++) {
+            var objRow = table.rows.item(i);
+            var objCells = objRow.cells;
+            var rowData = {};
+            for (var j = 0; j < objCells.length; j++) {
+                var cellKey = objCells.item(j).getAttribute("data");
+                if(!cellKey) continue;
+                var cellNode = objCells.item(j).childNodes.length >= 2 ?
+                    objCells.item(j).childNodes[1] : objCells.item(j).childNodes[0];
+                if(cellNode.nodeType == Node.TEXT_NODE){
+                    rowData[cellKey] = getNormalizedValue(cellNode.nodeValue);
+                } else if(cellNode.nodeName == "INPUT"){
+                    rowData[cellKey] = getNormalizedValue(cellNode.value);
+                }  else if(cellNode.nodeName == "SELECT"){
+                    rowData[cellKey] = getNormalizedValue(cellNode.value);
+                }
+            }
+            rowData["remove"] = objRow.className.indexOf('hidden') >= 0 ? 1 : 0;
+            data.push(rowData);
+        }
+        return data;
+    }
+
     $(function () {
         setAddRowListener('addReplaceNumber', 'replaceNumber', ["character", "replaceValueStr"]);
         setAddRowListener('addReplaceUnit', 'replaceUnit', ["unit", "replaceUnit"]);
         setRemoveRowListener('removeReplaceNumber');
         setRemoveRowListener('removeReplaceUnit');
-        setAddReplaceLetterRowListener('addReplaceLetter', 'replaceLetter');
+        setAddReplaceLetterRowListener('addReplaceLetter', 'replaceLetter', ["position", "letter", "replace"]);
         setRemoveRowListener('removeReplaceLetter');
         setGoBackListener('backBtn');
     });
@@ -130,7 +167,7 @@
         })
     }
 
-    function setAddReplaceLetterRowListener(name, tableId) {
+    function setAddReplaceLetterRowListener(name, tableId, data) {
         $("span[name='"+name+"']").click(function () {
             var table = document.getElementById(tableId);
             var row = table.insertRow(-1);
@@ -147,12 +184,15 @@
                 '</select>'
             cell2.innerHTML = '<input class="text-center" type="text" placeholder="文字"/>';
             cell3.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
-                '<option value="" selected="selected" disabled="disabled">選択してください</option>'
+                '<option value="" selected="selected" disabled="disabled">選択してください</option>' +
                 '<option value="0" >以上として認識する</option>' +
                 '<option value="1" >以下として認識する</option>' +
                 '<option value="2" >未満として認識する</option>' +
                 '<option value="3" >超として認識する</option>' +
                 '</select>'
+            cell1.setAttribute('data', data[0]);
+            cell2.setAttribute('data', data[1]);
+            cell3.setAttribute('data', data[2]);
         })
     }
 

@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.form;
 
+import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import io.owslab.mailreceiver.model.ReplaceUnit;
 import org.hibernate.validator.constraints.NotBlank;
@@ -26,6 +27,7 @@ public class NumberTreatmentForm {
 
     private List<ReplaceNumber> replaceNumberList;
     private List<ReplaceUnit> replaceUnitList;
+    private List<ReplaceLetter> replaceLetterList;
 
     public NumberTreatmentForm() {
     }
@@ -100,5 +102,13 @@ public class NumberTreatmentForm {
 
     public void setReplaceUnitList(List<ReplaceUnit> replaceUnitList) {
         this.replaceUnitList = replaceUnitList;
+    }
+
+    public List<ReplaceLetter> getReplaceLetterList() {
+        return replaceLetterList;
+    }
+
+    public void setReplaceLetterList(List<ReplaceLetter> replaceLetterList) {
+        this.replaceLetterList = replaceLetterList;
     }
 }

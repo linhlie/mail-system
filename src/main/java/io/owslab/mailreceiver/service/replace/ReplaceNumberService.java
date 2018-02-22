@@ -35,7 +35,7 @@ public class ReplaceNumberService {
         }
     }
 
-    private ReplaceNumber findOne(String character){
+    public ReplaceNumber findOne(String character){
         List<ReplaceNumber> replaceNumbers = replaceNumberDAO.findByCharacter(character);
         return replaceNumbers.size() > 0 ? replaceNumbers.get(0) : null;
     }
