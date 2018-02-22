@@ -138,29 +138,19 @@
                                                                 </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                <tr>
-                                                                    <td>円</td>
-                                                                    <td>円</td>
+                                                                <tr th:each="item:*{replaceUnitList}">
+                                                                    <td th:data="unit" th:text="${item.unit}"></td>
+                                                                    <td th:data="replaceUnit" th:text="${item.replaceUnit}"></td>
                                                                     <td class="text-center">
-                                                                        <span name="removeReplaceUnit" title="删除"
+                                                                        <span th:data="${item.id}" name="removeReplaceUnit" title="删除"
                                                                               style="cursor: pointer"
                                                                               class="glyphicon glyphicon-trash">
                                                                         </span>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>YEN</td>
-                                                                    <td>円</td>
-                                                                    <td class="text-center">
-                                                                        <span name="removeReplaceUnit" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-trash">
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><input type="text" placeholder="文字"/></td>
-                                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                                    <td th:data="unit"><input type="text" placeholder="文字"/></td>
+                                                                    <td th:data="replaceUnit"><input type="text" placeholder="置き換え"/></td>
                                                                     <td class="text-center">
                                                                     </td>
                                                                 </tr>

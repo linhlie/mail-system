@@ -25,7 +25,6 @@ public class ReplaceNumberService {
         for(ReplaceNumber replaceNumber : replaceNumbers){
             ReplaceNumber existReplaceNumber = findOne(replaceNumber.getCharacter());
             if(existReplaceNumber != null){
-                System.out.println("exist: " + replaceNumber.getCharacter());
                 if(replaceNumber.getRemove() == 1){
                     replaceNumberDAO.delete(existReplaceNumber.getId());
                 }

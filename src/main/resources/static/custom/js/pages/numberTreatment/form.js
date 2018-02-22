@@ -6,8 +6,6 @@
 
     "use strict";
 
-    console.log("Load numberTreatment form js");
-
     $(formId).submit(function(e){
         e.preventDefault();
 
@@ -20,13 +18,23 @@
         form["lowerLimitSign"] = $("select[name='lowerLimitSign']").val();
         form["lowerLimitRate"] = $("select[name='lowerLimitRate']").val();
         form["replaceNumberList"] = [];
+        form["replaceUnitList"] = [];
 
         var rawReplaceNumberData = buildReplaceNumberOrUnitDataTable('replaceNumber');
-        for (i = 0; i < rawReplaceNumberData.length; i++) {
+        for (var i = 0; i < rawReplaceNumberData.length; i++) {
             var rowData = rawReplaceNumberData[i];
             if(typeof rowData["character"] === 'string' && rowData["character"].length > 0
                 && typeof rowData["replaceValueStr"] === 'string' && rowData["replaceValueStr"].length > 0) {
                 form["replaceNumberList"].push(rowData);
+            }
+        }
+
+        var rawReplaceUnitData = buildReplaceNumberOrUnitDataTable('replaceUnit');
+        for (var j = 0; j < rawReplaceUnitData.length; j++) {
+            var rowData = rawReplaceUnitData[j];
+            if(typeof rowData["unit"] === 'string' && rowData["unit"].length > 0
+                && typeof rowData["replaceUnit"] === 'string' && rowData["replaceUnit"].length > 0) {
+                form["replaceUnitList"].push(rowData);
             }
         }
 
@@ -86,8 +94,8 @@
     }
 
     $(function () {
-        setAddRowListener('addReplaceNumber', 'replaceNumber');
-        setAddRowListener('addReplaceUnit', 'replaceUnit');
+        setAddRowListener('addReplaceNumber', 'replaceNumber', ["character", "replaceValueStr"]);
+        setAddRowListener('addReplaceUnit', 'replaceUnit', ["unit", "replaceUnit"]);
         setRemoveRowListener('removeReplaceNumber');
         setRemoveRowListener('removeReplaceUnit');
         setAddReplaceLetterRowListener('addReplaceLetter', 'replaceLetter');
@@ -95,7 +103,7 @@
         setGoBackListener('backBtn');
     });
 
-    function setAddRowListener(name, tableId) {
+    function setAddRowListener(name, tableId, data) {
         $("span[name='"+name+"']").click(function () {
             var table = document.getElementById(tableId);
             var row = table.insertRow(-1);
@@ -104,6 +112,8 @@
             var cell3 = row.insertCell(2);
             cell1.innerHTML = '<input type="text" placeholder="文字"/>';
             cell2.innerHTML = '<input type="text" placeholder="置き換え"/>';
+            cell1.setAttribute('data', data[0]);
+            cell2.setAttribute('data', data[1]);
         })
     }
     

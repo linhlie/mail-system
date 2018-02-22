@@ -233,3 +233,8 @@ INSERT INTO Replace_Numbers(`character`, replace_value)
 VALUES ('千', 1000);
 INSERT INTO Replace_Numbers(`character`, replace_value)
 VALUES ('万', 10000);
+
+INSERT INTO Replace_Units(unit, replace_unit)
+VALUES ('円', '円');
+INSERT INTO Replace_Units(unit, replace_unit)
+VALUES ('YEN', '円');
