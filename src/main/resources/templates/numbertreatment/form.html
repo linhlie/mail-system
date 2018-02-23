@@ -38,12 +38,11 @@
                                     <label class="col-xs-2 control-label text-center">掛け率</label>
                                     <div class="col-xs-2">
                                         <select name="upperLimitSign" th:field="*{upperLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="0" selected="selected">X</option>
-                                            <option value="1" >*</option>
+                                            <option value="0" selected="selected">x</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
-                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -54,12 +53,11 @@
                                     <label class="col-xs-2 control-label text-center">掛け率</label>
                                     <div class="col-xs-2">
                                         <select name="lowerLimitSign" th:field="*{lowerLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                            <option value="0" selected="selected">X</option>
-                                            <option value="1" >*</option>
+                                            <option value="0" selected="selected">x</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
-                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
                             </div>

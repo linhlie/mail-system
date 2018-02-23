@@ -1,10 +1,12 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.form.NumberTreatmentForm;
+import io.owslab.mailreceiver.model.NumberTreatment;
 import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import io.owslab.mailreceiver.model.ReplaceUnit;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.replace.ReplaceLetterService;
 import io.owslab.mailreceiver.service.replace.ReplaceNumberService;
 import io.owslab.mailreceiver.service.replace.ReplaceUnitService;
@@ -38,9 +40,14 @@ public class NumberTreatmentController {
     @Autowired
     private ReplaceLetterService replaceLetterService;
 
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
+
     @RequestMapping(value = "/numberTreatment", method = RequestMethod.GET)
     public String getNumberTreatmentSettings(Model model) {
-        NumberTreatmentForm form = new NumberTreatmentForm();
+        NumberTreatment numberTreatment = numberTreatmentService.getFirst();
+        NumberTreatmentForm form = numberTreatment != null ?
+                new NumberTreatmentForm(numberTreatment) : new NumberTreatmentForm();
         List<ReplaceNumber> replaceNumbers = replaceNumberService.getList();
         form.setReplaceNumberList(replaceNumbers);
         List<ReplaceUnit> replaceUnits = replaceUnitService.getList();
@@ -64,6 +71,7 @@ public class NumberTreatmentController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
+            numberTreatmentService.saveForm(numberTreatmentForm);
             List<ReplaceNumber> replaceNumbers = numberTreatmentForm.getReplaceNumberList();
             replaceNumberService.saveList(replaceNumbers);
             List<ReplaceUnit> replaceUnits = numberTreatmentForm.getReplaceUnitList();
