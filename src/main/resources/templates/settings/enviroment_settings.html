@@ -32,7 +32,7 @@
                                 <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔</label>
 
                                 <div class="col-md-2 col-sm-3 col-xs-3">
-                                    <input th:field="*{map['__check_mail_time_interval__']}" type="number" style="text-align:right;" class="form-control" placeholder="Minute"/>
+                                    <input th:field="*{map['__check_mail_time_interval__']}" type="number" min="1" style="text-align:right;" class="form-control" placeholder="Minute"/>
                                 </div>
                                 <label class="col-sm-6 col-xs-5 control-label text-left">分</label>
                             </div>
@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 <div class="col-sm-4 col-xs-5">
                                     <div class="col-md-6 col-sm-8 col-xs-6" style="float: right;">
-                                        <input th:field="*{map['__delete_after__']}" type="number" style="text-align:right;" class="form-control " placeholder="Day"/>
+                                        <input th:field="*{map['__delete_after__']}" type="number" min="1" style="text-align:right;" class="form-control " placeholder="Day"/>
                                     </div>
                                 </div>
                                 <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
