@@ -16,7 +16,7 @@ public class ReplaceLetterService {
     private ReplaceLetterDAO replaceLetterDAO;
 
     public List<ReplaceLetter> getList(){
-        return (List<ReplaceLetter>) replaceLetterDAO.findAll();
+        return replaceLetterDAO.findByHidden(false);
     }
 
     public void saveList(List<ReplaceLetter> replaceLetters){
@@ -24,7 +24,7 @@ public class ReplaceLetterService {
         for(ReplaceLetter replaceLetter : replaceLetters){
             ReplaceLetter existReplaceLetter = findOne(replaceLetter.getLetter(), replaceLetter.getPosition());
             if(existReplaceLetter != null){
-                if(replaceLetter.getRemove() == 1){
+                if(!existReplaceLetter.isHidden() && replaceLetter.getRemove() == 1){
                     replaceLetterDAO.delete(existReplaceLetter.getId());
                 }
             } else {

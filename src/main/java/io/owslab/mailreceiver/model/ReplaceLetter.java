@@ -23,6 +23,8 @@ public class ReplaceLetter {
     @Transient
     private int remove;
 
+    private boolean hidden;
+
     public ReplaceLetter() {}
 
     public ReplaceLetter(long id) {
@@ -40,6 +42,21 @@ public class ReplaceLetter {
         this.position = position;
         this.replace = replace;
         this.remove = remove;
+    }
+
+    public ReplaceLetter(String letter, int position, int replace, boolean hidden) {
+        this.letter = letter;
+        this.position = position;
+        this.replace = replace;
+        this.hidden = hidden;
+    }
+
+    public ReplaceLetter(String letter, int position, int replace, int remove, boolean hidden) {
+        this.letter = letter;
+        this.position = position;
+        this.replace = replace;
+        this.remove = remove;
+        this.hidden = hidden;
     }
 
     public long getId() {
@@ -80,5 +97,13 @@ public class ReplaceLetter {
 
     public void setRemove(int remove) {
         this.remove = remove;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }
