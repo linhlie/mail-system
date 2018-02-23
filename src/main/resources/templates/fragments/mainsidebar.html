@@ -42,13 +42,13 @@
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'ambiguousWord'})?'active':''">
-            <a href="#" th:href="@{/ambiguousWord}">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+            <a href="#" th:href="@{/fuzzyWord}">
                 <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
             </a>
         </li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'treatmentSettings'})?'active':''">
-            <a href="#" th:href="@{/treatmentSettings}">
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+            <a href="#" th:href="@{/numberTreatment}">
                 <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
             </a>
         </li>

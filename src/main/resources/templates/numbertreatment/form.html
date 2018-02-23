@@ -1,0 +1,309 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>数値扱い設定</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>数値扱い設定</h1>
+    </section>
+    <section class="content number-treatment">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <form id="numberTreatmentForm" class="form-horizontal"
+                              th:object="${numberTreatmentForm}" method="POST">
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">数値の項目名</label>
+
+                                <div class="col-md-3 col-xs-8">
+                                    <input name="name" th:field="*{name}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                </div>
+                                <label class="col-md-offset-0 col-md-7 col-xs-offset-3 col-xs-8 control-label text-left note">※検索時、この項目名で検索できます</label>
+                            </div>
+                            <div class="treatment-container">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <span>抽出した数値に任意に掛け率を設定した項目を作成できます。</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="col-md-2 col-xs-12 control-label text-left">掛け率を設定した項目名１</label>
+                                    <div class="col-md-3 col-xs-4">
+                                        <input name="upperLimitName" th:field="*{upperLimitName}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                    </div>
+                                    <label class="col-xs-2 control-label text-center">掛け率</label>
+                                    <div class="col-xs-2">
+                                        <select name="upperLimitSign" th:field="*{upperLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                            <option value="0" selected="selected">x</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-xs-4">
+                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="col-md-2 col-xs-12 control-label text-left">掛け率を設定した項目名２</label>
+                                    <div class="col-md-3 col-xs-4">
+                                        <input name="lowerLimitName" th:field="*{lowerLimitName}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                    </div>
+                                    <label class="col-xs-2 control-label text-center">掛け率</label>
+                                    <div class="col-xs-2">
+                                        <select name="lowerLimitSign" th:field="*{lowerLimitSign}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                            <option value="0" selected="selected">x</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-xs-4">
+                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="treatment-container treatment-padding">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <span>数値を一万や１０Kという記述をする場合があります。</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <span>これを１００００に置き換えて判断することができるように、</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-xs-12">
+                                                <span>ここで登録します（登録は任意）<br/>例：文字「万」置き換え「0000」</span>
+                                                <div class="form-container">
+                                                    <div class="col-xs-10 full-height remove-nested-padding">
+                                                        <div class="table-container">
+                                                            <table id="replaceNumber" class="table table-bordered">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th class="col-xs-5">文字</th>
+                                                                    <th class="col-xs-6">置き換え</th>
+                                                                    <th class="col-xs-1 text-center">
+                                                                        <span name="addReplaceNumber" title="add"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                                    </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr th:each="item:*{replaceNumberList}">
+                                                                    <td th:data="character" th:text="${item.character}"></td>
+                                                                    <td th:data="replaceValueStr" th:text="${item.replaceValueStr}"></td>
+                                                                    <td class="text-center">
+                                                                        <span th:data="${item.id}" name="removeReplaceNumber" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-trash">
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td th:data="character"><input type="text" placeholder="文字"/></td>
+                                                                    <td th:data="replaceValueStr"><input type="text" placeholder="置き換え"/></td>
+                                                                    <td class="text-center">
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span>円やYENなど単位の登録と統一をここで登録します。<br/>（登録は任意）</span>
+                                                <div class="form-container">
+                                                    <div class="col-xs-10 full-height remove-nested-padding">
+                                                        <div class="table-container">
+                                                            <table id="replaceUnit" class="table table-bordered">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th class="col-xs-5">文字</th>
+                                                                    <th class="col-xs-6">置き換え</th>
+                                                                    <th class="col-xs-1 text-center">
+                                                                        <span name="addReplaceUnit" title="add"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                                    </th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr th:each="item:*{replaceUnitList}">
+                                                                    <td th:data="unit" th:text="${item.unit}"></td>
+                                                                    <td th:data="replaceUnit" th:text="${item.replaceUnit}"></td>
+                                                                    <td class="text-center">
+                                                                        <span th:data="${item.id}" name="removeReplaceUnit" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-trash">
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td th:data="unit"><input type="text" placeholder="文字"/></td>
+                                                                    <td th:data="replaceUnit"><input type="text" placeholder="置き換え"/></td>
+                                                                    <td class="text-center">
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="treatment-container">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <span>上記の変換を考慮後に数値として扱う範囲を指定します。桁区切りのカンマは不要</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <span>上限,下限の片方のみの登録も可能。両方未記入の場合は全ての範囲</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 col-xs-10 add-padding-bottom remove-nested-padding">
+                                        <div class="col-xs-6">
+                                            <input name="leftBoundaryValue" th:field="*{leftBoundaryValue}" type="number" step="0.1" class="form-control" placeholder="入力してください"/>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <select name="leftBoundaryOperator" th:field="*{leftBoundaryOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                <option value="0" selected="selected">以上を数字として扱う</option>
+                                                <option value="1" >超を通じとして扱う</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-xs-2">
+                                        <select name="combineOperator" th:field="*{combineOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                            <option value="0" selected="selected">AND</option>
+                                            <option value="1" >OR</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5 col-xs-10 remove-nested-padding">
+                                        <div class="col-xs-6">
+                                            <input name="rightBoundaryValue" th:field="*{rightBoundaryValue}" type="number" step="0.1" class="form-control" placeholder="入力してください"/>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <select name="rightBoundaryOperator" th:field="*{rightBoundaryOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                <option value="0" selected="selected">以下を数字として扱う</option>
+                                                <option value="1" >未満を通じとして扱う</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="treatment-container">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <input name="enableReplaceLetter" th:field="*{enableReplaceLetter}"
+                                                type="checkbox"
+                                        />
+                                        <span>検索中，文字例で数字の後の「以上」「以下」「超」「未満」を考慮する『～』や「迄』などをる以上、以下等置き換えて認識する場合にここに登録する。</span>
+                                    </div>
+                                </div>
+                                <div class="form-container">
+                                    <div class="col-xs-12 full-height remove-nested-padding">
+                                        <div class="table-container">
+                                            <table id="replaceLetter" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-xs-5">条件</th>
+                                                    <th class="col-xs-1 text-center">文字</th>
+                                                    <th class="col-xs-5">置き換え</th>
+                                                    <th class="col-xs-1 text-center">
+                                                                        <span name="addReplaceLetter" title="add"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="item:*{replaceLetterList}">
+                                                    <td th:data="position" class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="0" th:selected="(${item.position} == '0')">数値の前の</option>
+                                                            <option value="1" th:selected="(${item.position} == '1')">数値の後の</option>
+                                                        </select>
+                                                    </td>
+                                                    <td th:data="letter" class="text-center" th:text="${item.letter}"></td>
+                                                    <td th:data="replace" class="select-container">
+                                                        <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="0" th:selected="(${item.replace} == '0')">以上として認識する</option>
+                                                            <option value="1" th:selected="(${item.replace} == '1')">以下として認識する</option>
+                                                            <option value="2" th:selected="(${item.replace} == '2')">未満として認識する</option>
+                                                            <option value="3" th:selected="(${item.replace} == '3')">超として認識する</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                                        <span th:data="${item.id}" name="removeReplaceLetter" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-trash">
+                                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td th:data="position" class="select-container">
+                                                        <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled">選択してください</option>
+                                                            <option value="0" >数値の前の</option>
+                                                            <option value="1" >数値の後の</option>
+                                                        </select>
+                                                    </td>
+                                                    <td th:data="letter"><input class="text-center" type="text" placeholder="文字"/></td>
+                                                    <td th:data="replace" class="select-container">
+                                                        <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled">選択してください</option>
+                                                            <option value="0" >以上として認識する</option>
+                                                            <option value="1" >以下として認識する</option>
+                                                            <option value="2" >未満として認識する</option>
+                                                            <option value="3" >超として認識する</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center">
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <div class="col-xs-offset-2 col-xs-4 text-center">
+                                    <button id="btn-submit-number-treatment" type="submit" class="btn btn-success">更新</button>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/numberTreatment/form.js"></script>
+</th:block>
+</body>
+</html>

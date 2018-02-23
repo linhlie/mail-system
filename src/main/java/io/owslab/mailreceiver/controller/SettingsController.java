@@ -3,21 +3,24 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.model.EnviromentSetting;
+import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
+import io.owslab.mailreceiver.service.word.FuzzyWordService;
+import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class SettingsController {
@@ -114,15 +117,5 @@ public class SettingsController {
     @RequestMapping("/receiveRuleSettings")
     public String receiveRuleSettings() {
         return "settings/receive_mail_rule_settings";
-    }
-
-    @RequestMapping(value = "/treatmentSettings", method = RequestMethod.GET)
-    public String getTreatmentSettings(Model model) {
-        return "settings/treatment_settings";
-    }
-
-    @RequestMapping(value = "/ambiguousWord", method = RequestMethod.GET)
-    public String getAmbiguousWord(Model model) {
-        return "settings/ambiguous_word";
     }
 }

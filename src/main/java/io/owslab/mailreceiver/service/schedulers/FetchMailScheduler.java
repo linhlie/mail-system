@@ -10,10 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class FetchMailScheduler {
-
+public class FetchMailScheduler extends AbstractScheduler {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailScheduler.class);
-    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND = 10000L;
+    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND = 10L;
     private static final int FETCH_MAIL_INTERVAL_IN_MINUTE = 10;
 
     @Autowired
@@ -23,16 +22,15 @@ public class FetchMailScheduler {
 
     private Date lastTimeFetchedMail;
 
-    public void startCheckTimeToFetchMailInterval(){
-        TimerTask repeatedTask = new TimerTask() {
-            public void run() {
-                if(isNeedToFetchNewMail()){
-                    startFetchMail();
-                }
-            }
-        };
-        Timer timer = new Timer("Timer");
-        timer.scheduleAtFixedRate(repeatedTask, 0, CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND);
+    public FetchMailScheduler() {
+        super(0, CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND);
+    }
+
+    @Override
+    public void doStuff() {
+        if(isNeedToFetchNewMail()){
+            startFetchMail();
+        }
     }
 
     private boolean isNeedToFetchNewMail(){

@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.startup;
 
+import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -22,13 +23,17 @@ public class ApplicationStartup {
     @Autowired
     private DeleteOldMailsScheduler deleteOldMailsScheduler;
 
+    @Autowired
+    private BuildMatchEmailWordScheduler buildMatchEmailWordScheduler;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         enviromentSettingService.init();
-        fetchMailScheduler.startCheckTimeToFetchMailInterval();
-        deleteOldMailsScheduler.startDeleteOldMailInterval();
+        fetchMailScheduler.start();
+        deleteOldMailsScheduler.start();
+        buildMatchEmailWordScheduler.start();
         return;
     }
 }

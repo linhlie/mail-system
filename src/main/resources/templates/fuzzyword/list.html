@@ -1,0 +1,117 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>あいまい単語登録</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>あいまい単語登録</h1>
+    </section>
+    <section class="content fuzzy">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div th:replace="/fragments/fuzzy-description"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="fuzzy-form-container">
+                                    <div class="col-xs-5 full-height">
+                                        <div class="fuzzy-table-container">
+                                            <form action="#" th:action="@{/fuzzyWord}">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="col-xs-11">単語</th>
+                                                        <th class="col-xs-1 text-center">
+                                                        </th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div>
+                                                                <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center"><button type="submit"><i class="fa fa-search"/></button></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7 full-height">
+                                        <div class="fuzzy-table-container">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-xs-2">同一/除外</th>
+                                                    <th class="col-xs-9">類似単語</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <a title="新規登録" href="#" th:href="@{/fuzzyWord/add(original=${search})}"
+                                                           th:if="(${search} ne null)">
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </a>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr role="row" class="odd" th:each="item:${originalList}">
+                                                    <!--<td class="combo-box">-->
+                                                        <!--<select>-->
+                                                            <!--<option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>-->
+                                                            <!--<option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>-->
+                                                            <!--&lt;!&ndash;TODO: //make a list option automatic&ndash;&gt;-->
+                                                        <!--</select>-->
+                                                    <!--</td>-->
+                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
+                                                    <td th:text="${item.associatedWord.word}"></td>
+                                                    <td class="text-center">
+                                                        <span name="trash" title="删除" th:data="${item.id}"
+                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
+                                                    </td>
+                                                </tr>
+                                                <tr role="row" class="odd" th:each="item:${associatedToList}">
+                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
+                                                    <td>
+                                                        <span th:text="${item.originalWord.word}"></span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span name="trash" title="删除" th:data="${item.id}"
+                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            <table class="table table-bordered" th:if="${totalFuzzyWord} eq 0">
+                                                <tbody>
+                                                <tr>
+                                                    <td>レコードが見つかりません</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/fuzzyWord/list.js"></script>
+</th:block>
+</body>
+</html>

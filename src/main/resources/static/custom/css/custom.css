@@ -2,6 +2,10 @@
     text-align: left;
 }
 
+.form-horizontal .control-label.text-center {
+    text-align: center;
+}
+
 select:not([multiple]) {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -12,12 +16,12 @@ select:not([multiple]) {
     padding-right: 1.5em
 }
 
-.ambious .ambious-description {
+.fuzzy .fuzzy-description {
     padding: 20px;
     width: 100%;
 }
 
-.ambious .ambious-form-container {
+.fuzzy .fuzzy-form-container {
     width: 100%;
     border: 1px solid #e6e6e6;
     height: 300px;
@@ -25,7 +29,7 @@ select:not([multiple]) {
     padding-bottom: 10px;
 }
 
-.ambious .ambious-table-container {
+.fuzzy .fuzzy-table-container {
     width: 100%;
     height: 100%;
     background-color: darkgray;
@@ -33,12 +37,12 @@ select:not([multiple]) {
     overflow-y: scroll;
 }
 
-.ambious .ambious-table-container table {
+.fuzzy .fuzzy-table-container table {
     background-color: white;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
-.ambious .full-height {
+.fuzzy .full-height {
     height: 100%;
 }
 
@@ -47,12 +51,109 @@ select:not([multiple]) {
     padding-top: 20px;
 }
 
-.ambious td.combo-box {
+.fuzzy td.combo-box {
     padding: 0;
     background-color: #f8f8f8;
 }
 
-.ambious td.combo-box select{
+.fuzzy td.combo-box select{
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+.number-treatment .box {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.number-treatment .note {
+    color: darkgray;
+}
+
+.number-treatment label.control-label {
+    font-weight: normal;
+}
+
+.number-treatment div.treatment-container {
+    border: 1px solid #e6e6e6;
+    padding: 15px 20px;
+}
+
+.number-treatment div.treatment-container label.control-label {
+    font-size: 13px;
+    padding-top: 7px;
+}
+
+.number-treatment div.treatment-container div.row {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.number-treatment div.add-padding-bottom {
+    padding-bottom: 10px;
+}
+
+.number-treatment div.remove-nested-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.number-treatment div.treatment-container.treatment-padding div.row {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.number-treatment .form-container {
+    width: 100%;
+    height: 250px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.number-treatment .table-container {
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.number-treatment .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.number-treatment .full-height {
+    height: 100%;
+}
+
+.number-treatment .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: lightgrey;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: lightgrey;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: lightgrey;
+}
+
+.number-treatment .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+
+.number-treatment .table-container td select {
     width: 100%;
     border: none;
     background-color: transparent;
