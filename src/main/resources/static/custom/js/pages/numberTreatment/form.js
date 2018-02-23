@@ -18,6 +18,12 @@
             {type: "input", name: "lowerLimitName"},
             {type: "select", name: "lowerLimitSign"},
             {type: "input", name: "lowerLimitRate"},
+            {type: "input", name: "leftBoundaryValue"},
+            {type: "select", name: "leftBoundaryOperator"},
+            {type: "select", name: "combineOperator"},
+            {type: "input", name: "rightBoundaryValue"},
+            {type: "select", name: "rightBoundaryOperator"},
+            {type: "input", name: "enableReplaceLetter"},
         ];
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
@@ -69,13 +75,15 @@
             success: function (data) {
                 $(submitButtonId).prop("disabled", false);
                 if(data && data.status){
-                    console.log("SUCCESS : ", data);
+                    window.location.reload();
                 } else {
+                    //TODO: show error
                     console.log("FAILED : ", data);
                 }
 
             },
             error: function (e) {
+                //TODO: show error
                 console.log("ERROR : ", e);
                 $(submitButtonId).prop("disabled", false);
 

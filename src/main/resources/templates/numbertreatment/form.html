@@ -180,27 +180,27 @@
                                 <div class="row">
                                     <div class="col-md-5 col-xs-10 add-padding-bottom remove-nested-padding">
                                         <div class="col-xs-6">
-                                            <input type="number" step="0.1" class="form-control" placeholder="入力してください"/>
+                                            <input name="leftBoundaryValue" th:field="*{leftBoundaryValue}" type="number" step="0.1" class="form-control" placeholder="入力してください"/>
                                         </div>
                                         <div class="col-xs-6">
-                                            <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                            <select name="leftBoundaryOperator" th:field="*{leftBoundaryOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                                 <option value="0" selected="selected">以上を数字として扱う</option>
                                                 <option value="1" >超を通じとして扱う</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-xs-2">
-                                        <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <select name="combineOperator" th:field="*{combineOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                             <option value="0" selected="selected">AND</option>
                                             <option value="1" >OR</option>
                                         </select>
                                     </div>
                                     <div class="col-md-5 col-xs-10 remove-nested-padding">
                                         <div class="col-xs-6">
-                                            <input type="number" step="0.1" class="form-control" placeholder="入力してください"/>
+                                            <input name="rightBoundaryValue" th:field="*{rightBoundaryValue}" type="number" step="0.1" class="form-control" placeholder="入力してください"/>
                                         </div>
                                         <div class="col-xs-6">
-                                            <select style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                            <select name="rightBoundaryOperator" th:field="*{rightBoundaryOperator}" style="width: 100%;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                                 <option value="0" selected="selected">以下を数字として扱う</option>
                                                 <option value="1" >未満を通じとして扱う</option>
                                             </select>
@@ -212,7 +212,7 @@
                             <div class="treatment-container">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <input
+                                        <input name="enableReplaceLetter" th:field="*{enableReplaceLetter}"
                                                 type="checkbox"
                                         />
                                         <span>検索中，文字例で数字の後の「以上」「以下」「超」「未満」を考慮する『～』や「迄』などをる以上、以下等置き換えて認識する場合にここに登録する。</span>
