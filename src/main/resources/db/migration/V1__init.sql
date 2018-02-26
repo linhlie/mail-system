@@ -45,7 +45,7 @@ CREATE TABLE `Emails` (
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
   `content_type` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、TEXT 1. HTML',
-  `original_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `original_body`MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `optimized_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `Emails` (
 CREATE TABLE `Files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
-  `file_name` VARCHAR(60) NOT NULL,
+  `file_name` VARCHAR(191) NOT NULL,
   `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,

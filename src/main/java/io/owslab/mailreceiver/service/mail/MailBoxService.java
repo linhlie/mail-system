@@ -34,17 +34,17 @@ public class MailBoxService {
             return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByOptimizedBodyAndDeleted(optimizeSearchText, false, pageRequest);
+        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndDeleted(optimizeSearchText, false, pageRequest);
         return list;
     }
 
     public static String optimizeText(String original){
+        String optimizedText = Jsoup.parse(original).text();
 //        int conv_op_flags = 0;
 //        conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
 //        conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
-//        String optimizedText = KanaConverter.convertKana(original, conv_op_flags);
-//        return  optimizedText.toLowerCase();
-        String optimizedText = Jsoup.parse(original).text();
+//        String japaneseOptimizedText = KanaConverter.convertKana(optimizedText, conv_op_flags);
+//        return japaneseOptimizedText.toLowerCase();
         return optimizedText.toLowerCase();
     }
 }

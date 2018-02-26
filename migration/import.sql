@@ -66,7 +66,7 @@ CREATE TABLE `Emails` (
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
   `content_type` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、TEXT 1. HTML',
-  `original_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `original_body`MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `optimized_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
@@ -87,7 +87,7 @@ DROP TABLE IF EXISTS `Files`;
 CREATE TABLE `Files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
-  `file_name` VARCHAR(60) NOT NULL,
+  `file_name` VARCHAR(191) NOT NULL,
   `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
@@ -288,3 +288,19 @@ CREATE TABLE `Number_Treatments` (
 
 INSERT INTO Number_Treatments(name, upper_limit_name, upper_limit_rate, lower_limit_name, lower_limit_rate)
 VALUES ('name', 'upper_limit_name', 1.2, 'lower_limit_name', 0.8);
+
+CREATE TABLE `Number_Ranges` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `message_id` VARCHAR(191) NOT NULL,
+  `number` DOUBLE DEFAULT NULL,
+  `letter_id` INT DEFAULT NULL,
+  `appear_order` INT NOT NULL DEFAULT '0',
+  FOREIGN KEY fk_belong_to_email(message_id)
+  REFERENCES Emails(message_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY fk_with_letter_id(letter_id)
+  REFERENCES Replace_Letters(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

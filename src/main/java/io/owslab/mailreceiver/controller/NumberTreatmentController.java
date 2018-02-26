@@ -1,15 +1,10 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.form.NumberTreatmentForm;
-import io.owslab.mailreceiver.model.NumberTreatment;
-import io.owslab.mailreceiver.model.ReplaceLetter;
-import io.owslab.mailreceiver.model.ReplaceNumber;
-import io.owslab.mailreceiver.model.ReplaceUnit;
+import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.model.NumberRange;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
-import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
-import io.owslab.mailreceiver.service.replace.ReplaceLetterService;
-import io.owslab.mailreceiver.service.replace.ReplaceNumberService;
-import io.owslab.mailreceiver.service.replace.ReplaceUnitService;
+import io.owslab.mailreceiver.service.replace.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +38,17 @@ public class NumberTreatmentController {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
+    @Autowired
+    private NumberRangeService numberRangeService;
+
     @RequestMapping(value = "/numberTreatment", method = RequestMethod.GET)
     public String getNumberTreatmentSettings(Model model) {
+        List<NumberRange> numberRanges = numberRangeService.getList();
+        System.out.println("Number list size: " + numberRanges.size());
+        for(NumberRange numberRange : numberRanges){
+            System.out.println("Number: " + numberRange.getMessageId() + " " + numberRange.getNumber() + " " + numberRange.getLetter().getReplace());
+        }
+
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         NumberTreatmentForm form = numberTreatment != null ?
                 new NumberTreatmentForm(numberTreatment) : new NumberTreatmentForm();
