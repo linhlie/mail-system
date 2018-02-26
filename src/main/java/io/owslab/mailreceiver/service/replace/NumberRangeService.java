@@ -98,8 +98,43 @@ public class NumberRangeService {
     }
 
     private boolean isValidNumber(NumberTreatment numberTreatment, Double number){
-        //TODO: treat as number or not
+        if(numberTreatment == null) return true;
+        Double leftBoundaryValue = numberTreatment.getLeftBoundaryValue();
+        int leftBoundaryOperator = numberTreatment.getLeftBoundaryOperator();
+        int combineOperator = numberTreatment.getCombineOperator();
+        Double rightBoundaryValue = numberTreatment.getRightBoundaryValue();
+        int rightBoundaryOperator = numberTreatment.getRightBoundaryOperator();
+
+        boolean leftCheck = compare(leftBoundaryValue, number, leftBoundaryOperator);
+        boolean rightCheck = compare(rightBoundaryValue, number, rightBoundaryOperator);
+        if(combineOperator == NumberTreatment.CombineOperators.AND) {
+            return leftCheck && rightCheck;
+        } else if (combineOperator == NumberTreatment.CombineOperators.OR){
+            return leftCheck || rightCheck;
+        }
         return true;
+    }
+
+    private boolean compare(Double boundary, Double number, int operator){
+        if(boundary == null) return true;
+        boolean result;
+        switch (operator){
+            case NumberTreatment.BoundaryOperators.GE:
+                result = number >= boundary;
+                break;
+            case NumberTreatment.BoundaryOperators.LE:
+                result = number <= boundary;
+                break;
+            case NumberTreatment.BoundaryOperators.LT:
+                result = number < boundary;
+                break;
+            case NumberTreatment.BoundaryOperators.GT:
+                result = number > boundary;
+                break;
+            default:
+                result = true;
+        }
+        return result;
     }
 
     private NumberResult findRealNumber(List<ReplaceNumber> replaceNumbers, String content, NumberElement numberElement){
