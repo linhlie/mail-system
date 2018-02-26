@@ -13,4 +13,5 @@ import java.util.List;
 public interface ReplaceLetterDAO extends CrudRepository<ReplaceLetter, Long> {
     List<ReplaceLetter> findByLetterAndPosition(String letter, int position);
     List<ReplaceLetter> findByHidden(boolean hidden);
+    List<ReplaceLetter> findByReplaceNotAndPosition(int replace, int position);
 }

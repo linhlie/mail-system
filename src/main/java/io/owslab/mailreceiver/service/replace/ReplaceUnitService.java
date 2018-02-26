@@ -20,6 +20,7 @@ public class ReplaceUnitService {
     public void saveList(List<ReplaceUnit> replaceUnits){
         //TODO: Must be transaction
         for(ReplaceUnit replaceUnit : replaceUnits){
+            //TODO: character can not be '.' ...
             ReplaceUnit existReplaceUnit = findOne(replaceUnit.getUnit());
             if(existReplaceUnit != null){
                 if(replaceUnit.getRemove() == 1){

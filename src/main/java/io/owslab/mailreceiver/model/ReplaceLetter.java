@@ -106,4 +106,17 @@ public class ReplaceLetter {
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
+
+    public class Replace {
+        public static final int NONE = 4;
+        public static final int GE = 0;
+        public static final int LE = 1;
+        public static final int LT = 2;
+        public static final int GT = 3;
+    }
+
+    public class Position {
+        public static final int BF = 0;
+        public static final int AF = 1;
+    }
 }

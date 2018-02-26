@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.replace;
 
 import io.owslab.mailreceiver.dao.ReplaceLetterDAO;
 import io.owslab.mailreceiver.model.ReplaceLetter;
+import io.owslab.mailreceiver.types.ReplaceLetterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,15 @@ public class ReplaceLetterService {
         return replaceLetterDAO.findByHidden(false);
     }
 
+    public List<ReplaceLetter> getSignificantList(Boolean beforeNumber){
+        int position = beforeNumber ? ReplaceLetter.Position.BF : ReplaceLetter.Position.AF;
+        return replaceLetterDAO.findByReplaceNotAndPosition(ReplaceLetter.Replace.NONE, position);
+    }
+
     public void saveList(List<ReplaceLetter> replaceLetters){
         //TODO: Must be transaction
         for(ReplaceLetter replaceLetter : replaceLetters){
+            //TODO: character can not be '.' ...
             ReplaceLetter existReplaceLetter = findOne(replaceLetter.getLetter(), replaceLetter.getPosition());
             if(existReplaceLetter != null){
                 if(!existReplaceLetter.isHidden() && replaceLetter.getRemove() == 1){
