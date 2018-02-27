@@ -43,12 +43,6 @@ public class NumberTreatmentController {
 
     @RequestMapping(value = "/numberTreatment", method = RequestMethod.GET)
     public String getNumberTreatmentSettings(Model model) {
-        List<NumberRange> numberRanges = numberRangeService.getList();
-        System.out.println("Number list size: " + numberRanges.size());
-        for(NumberRange numberRange : numberRanges){
-            System.out.println("Number: " + numberRange.getMessageId() + " " + numberRange.getNumber() + " " + numberRange.getLetter().getReplace());
-        }
-
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         NumberTreatmentForm form = numberTreatment != null ?
                 new NumberTreatmentForm(numberTreatment) : new NumberTreatmentForm();
