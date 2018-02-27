@@ -28,28 +28,28 @@
                                     </select>
                                 </div>
                                 <div class="col-md-7 col-xs-6">
-                                    <input th:field="*{mailServerAddress}" type="text" class="form-control"/>
+                                    <input th:field="*{mailServerAddress}" type="text" class="form-control" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input id="mailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control"/>
+                                    <input id="mailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input th:field="*{account}" type="email" class="form-control"/>
+                                    <input th:field="*{account}" type="email" class="form-control" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">パスワード</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input name="password" th:value="*{password}" type="password" class="form-control"/>
+                                    <input name="password" th:value="*{password}" type="password" class="form-control" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -102,8 +102,7 @@
                                     <button th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
-                                    <!--TODO: confirm modal in add new case-->
-                                    <button type="reset" class="btn btn-default">項目クリア</button>
+                                    <button th:data="${isUpdate}" name="resetBtn" type="button" class="btn btn-default">項目クリア</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
                                     <button th:data="${isUpdate}" name="backBtn" type="button" class="btn btn-danger">終了</button>
