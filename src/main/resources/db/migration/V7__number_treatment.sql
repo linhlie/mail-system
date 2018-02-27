@@ -1,4 +1,4 @@
-CREATE TABLE `Number_Treatments` (
+CREATE TABLE `number_treatments` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(191) NOT NULL,
   `upper_limit_name` VARCHAR(191) NOT NULL,

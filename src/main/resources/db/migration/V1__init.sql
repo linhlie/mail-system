@@ -1,22 +1,22 @@
-CREATE TABLE `Key_Values` (
+CREATE TABLE `key_values` (
   `key` VARCHAR(191) PRIMARY KEY,
   `value` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `Users` (
+CREATE TABLE `users` (
   username VARCHAR(50)  NOT NULL PRIMARY KEY,
   password VARCHAR(255) NOT NULL,
   enabled  BOOLEAN      NOT NULL
 ) ENGINE = InnoDB;
 
-CREATE TABLE `Authorities` (
+CREATE TABLE `authorities` (
   username  VARCHAR(50) NOT NULL,
   authority VARCHAR(50) NOT NULL,
   FOREIGN KEY (username) REFERENCES users (username),
   UNIQUE INDEX authorities_idx_1 (username, authority)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `Receive_Email_Account_Settings` (
+CREATE TABLE `receive_email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(60) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE `Receive_Email_Account_Settings` (
   UNIQUE KEY unique_account (account)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `Emails` (
+CREATE TABLE `emails` (
   `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
   `from` VARCHAR(60) NOT NULL,
@@ -53,12 +53,12 @@ CREATE TABLE `Emails` (
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES Receive_Email_Account_Settings(id)
+  REFERENCES receive_email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `Files` (
+CREATE TABLE `files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
   `file_name` VARCHAR(191) NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE `Files` (
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email(message_id)
-  REFERENCES Emails(message_id)
+  REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

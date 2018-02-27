@@ -1,14 +1,14 @@
-CREATE TABLE `Emails_Words` (
+CREATE TABLE `emails_words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
   `word_id` INT NOT NULL,
   `appear_indexs` TEXT DEFAULT NULL,
   FOREIGN KEY fk_belong_to_email(message_id)
-  REFERENCES Emails(message_id)
+  REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY fk_belong_to_word(word_id)
-  REFERENCES Words(id)
+  REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
