@@ -13,7 +13,7 @@
                         <h3 class="box-title">環境設定</h3>
                     </div>
                     <div class="box-body">
-                        <form class="form-horizontal" th:action="@{/enviromentSettings}"
+                        <form id="enviromentSettingsForm" class="form-horizontal" th:action="@{/enviromentSettings}"
                               th:object="${enviromentSettingForm}" method="POST" >
                             <div class="form-group">
                                 <label for="inputName" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
@@ -32,7 +32,7 @@
                                 <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔</label>
 
                                 <div class="col-md-2 col-sm-3 col-xs-3">
-                                    <input th:field="*{map['__check_mail_time_interval__']}" type="number" min="1" style="text-align:right;" class="form-control" placeholder="Minute"/>
+                                    <input th:field="*{map['__check_mail_time_interval__']}" type="number" min="1" style="text-align:right;" class="form-control" placeholder="Minute" required="required"/>
                                 </div>
                                 <label class="col-sm-6 col-xs-5 control-label text-left">分</label>
                             </div>
@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 <div class="col-sm-4 col-xs-5">
                                     <div class="col-md-6 col-sm-8 col-xs-6" style="float: right;">
-                                        <input th:field="*{map['__delete_after__']}" type="number" min="1" style="text-align:right;" class="form-control " placeholder="Day"/>
+                                        <input th:field="*{map['__delete_after__']}" type="number" min="1" style="text-align:right;" class="form-control " placeholder="Day" required="required"/>
                                     </div>
                                 </div>
                                 <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
@@ -102,10 +102,7 @@
                                         <button type="submit" class="btn btn-primary">更新</button>
                                     </div>
                                     <div class="col-xs-5">
-                                        <!--TODO: confirm modal in update case-->
-                                        <a th:href="@{/}">
-                                            <div type="button" class="btn btn-danger">終了</div>
-                                        </a>
+                                        <button name="backBtn" type="button" class="btn btn-danger">終了</button>
                                     </div>
                                 </div>
                             </div>
@@ -119,14 +116,8 @@
         </div>
     </section>
 </div>
-<script type="text/javascript" th:inline="javascript">
-    function getfolder(e) {
-        console.log("ahaha");
-        var files = e.target.files;
-        var path = files[0].webkitRelativePath;
-        var Folder = path.split("/");
-        alert(Folder[0]);
-    }
-</script>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/enviromentSettings/form.js"></script>
+</th:block>
 </body>
 </html>
