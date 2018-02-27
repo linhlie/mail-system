@@ -70,6 +70,7 @@ public class SettingsController {
     @RequestMapping(value = "/receiveSettings/add", method = RequestMethod.GET)
     public String getAddReceiveAccount(Model model) {
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
+        receiveAccountForm.setMailServerPort(993);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
         model.addAttribute("api", "/addReceiveAccount");
         return "settings/receive/form";

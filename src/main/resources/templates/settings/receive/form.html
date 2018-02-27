@@ -14,7 +14,7 @@
             <div class="col-md-10 col-sm-12 col-xs-12">
                 <div class="box box-default">
                     <div class="box-body">
-                        <form class="form-horizontal" th:action="@{${api}}"
+                        <form id="receiveMailForm" class="form-horizontal" th:action="@{${api}}"
                               th:object="${receiveAccountForm}" method="POST">
                             <div class="form-group"></div>
                             <div class="form-group">
@@ -22,7 +22,7 @@
 
                                 <div class="col-md-2 col-xs-3">
                                     <!--<input type="text" class="form-control"/>-->
-                                    <select th:field="*{receiveMailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                    <select id="mailProtocol" th:field="*{receiveMailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                         <option value="0" selected="selected">IMAP</option>
                                         <option value="1" >POP3</option>
                                     </select>
@@ -35,7 +35,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input th:field="*{mailServerPort}" type="number" min="0" class="form-control"/>
+                                    <input id="mailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -98,18 +98,15 @@
                             <div class="form-group">
                             </div>
                             <div class="form-group">
-                                <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3">
+                                <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
                                     <button th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
                                 </div>
-                                <div class="col-md-2 col-xs-3">
+                                <div class="col-md-2 col-xs-3 text-center">
                                     <!--TODO: confirm modal in add new case-->
                                     <button type="reset" class="btn btn-default">項目クリア</button>
                                 </div>
-                                <div class="col-md-2 col-xs-3">
-                                    <!--TODO: confirm modal in update case-->
-                                    <a th:href="@{/receiveSettings}">
-                                        <div  type="button" class="btn btn-danger">終了</div>
-                                    </a>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button th:data="${isUpdate}" name="backBtn" type="button" class="btn btn-danger">終了</button>
                                 </div>
                             </div>
                         </form>
@@ -122,5 +119,8 @@
         </div>
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/receiveAccount/form.js"></script>
+</th:block>
 </body>
 </html>
