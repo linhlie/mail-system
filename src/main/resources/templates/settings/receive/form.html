@@ -1,12 +1,12 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
 <head>
-    <title>受信アカウント設定</title>
+    <title>メール アカウント設定</title>
 </head>
 <body>
 <div layout:fragment="content" th:with="isUpdate=${param.id != null}">
     <section class="content-header">
-        <h1 th:text="${isUpdate} ? '受信アカウント編集': '受信アカウント新規登録'">
+        <h1 th:text="${isUpdate} ? 'メール アカウント編集': 'メール アカウント新規登録'">
         </h1>
     </section>
     <section class="content">

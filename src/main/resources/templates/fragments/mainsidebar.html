@@ -29,12 +29,7 @@
         </li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveSettings'})?'active':''">
             <a href="#" th:href="@{/receiveSettings}">
-                <i class="fa fa-envelope"></i> <span>受信アカウント設定</span>
-            </a>
-        </li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendSettings'})?'active':''">
-            <a href="#" th:href="@{/sendSettings}">
-                <i class="fa fa-envelope-o"></i> <span>送信アカウント設定</span>
+                <i class="fa fa-envelope"></i> <span>メール アカウント設定</span>
             </a>
         </li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveRuleSettings'})?'active':''">
@@ -52,15 +47,15 @@
                 <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
             </a>
         </li>
-        <li class="header">操作</li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
-            <a href="#" th:href="@{/mailAnalysis}">
-                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
-            </a>
-        </li>
+        <li class="header">管理者設定</li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
             <a href="#" th:href="@{/mailbox}">
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>
+            </a>
+        </li>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
+            <a href="#" th:href="@{/mailAnalysis}">
+                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
             </a>
         </li>
         <li class="header">ヘルプ</li>

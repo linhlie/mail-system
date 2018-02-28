@@ -110,10 +110,10 @@ public class SettingsController {
         return "redirect:/receiveSettings";
     }
 
-    @RequestMapping("/sendSettings")
-    public String sendSettings() {
-        return "settings/send_mail_accounts_settings";
-    }
+//    @RequestMapping("/sendSettings")
+//    public String sendSettings() {
+//        return "settings/send_mail_accounts_settings";
+//    }
 
     @RequestMapping("/receiveRuleSettings")
     public String receiveRuleSettings() {
