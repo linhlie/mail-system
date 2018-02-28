@@ -201,4 +201,9 @@ public class EmailAccountSetting {
         public static final int POP3 = 1;
         public static final int SMTP = 2;
     }
+
+    public class Type {
+        public static final int RECEIVE = 0;
+        public static final int SEND = 1;
+    }
 }

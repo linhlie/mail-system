@@ -35,7 +35,7 @@ public class FetchMailsService {
     private EnviromentSettingService enviromentSettingService;
 
     public void start(){
-        List<EmailAccountSetting> list = emailAccountSettingsDAO.findByDisabled(false);
+        List<EmailAccountSetting> list = emailAccountSettingsDAO.findByTypeAndDisabled(EmailAccountSetting.Type.RECEIVE, false);
         if(list.size() > 0) {
             for(int i = 0, n = list.size(); i < n; i++){
                 EmailAccountSetting account = list.get(i);

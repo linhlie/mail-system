@@ -12,6 +12,7 @@ import java.util.List;
 public interface EmailAccountSettingsDAO extends PagingAndSortingRepository<EmailAccountSetting, Long> {
 
     List<EmailAccountSetting> findByDisabled(boolean disabled);
+    List<EmailAccountSetting> findByTypeAndDisabled(int type, boolean disabled);
     List<EmailAccountSetting> findById(long id);
 
 }
