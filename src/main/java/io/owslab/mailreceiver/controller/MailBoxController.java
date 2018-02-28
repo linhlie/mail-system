@@ -28,7 +28,7 @@ public class MailBoxController {
     private MailBoxService mailBoxService;
 
     @RequestMapping(value = "/mailbox", method = RequestMethod.GET)
-    public String receiveSettings(
+    public String getMailBox(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             Model model) {
