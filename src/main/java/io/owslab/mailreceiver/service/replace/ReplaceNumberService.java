@@ -23,6 +23,7 @@ public class ReplaceNumberService {
     public void saveList(List<ReplaceNumber> replaceNumbers){
         //TODO: Must be transaction
         for(ReplaceNumber replaceNumber : replaceNumbers){
+            //TODO: character can not be '.' ...
             ReplaceNumber existReplaceNumber = findOne(replaceNumber.getCharacter());
             if(existReplaceNumber != null){
                 if(replaceNumber.getRemove() == 1){

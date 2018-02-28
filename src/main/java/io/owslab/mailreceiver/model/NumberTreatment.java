@@ -199,4 +199,16 @@ public class NumberTreatment {
     public void setEnableReplaceLetter(boolean enableReplaceLetter) {
         this.enableReplaceLetter = enableReplaceLetter;
     }
+
+    public class CombineOperators {
+        public static final int AND = 0;
+        public static final int OR = 1;
+    }
+
+    public class BoundaryOperators {
+        public static final int GE = 0;
+        public static final int LE = 1;
+        public static final int LT = 2;
+        public static final int GT = 3;
+    }
 }

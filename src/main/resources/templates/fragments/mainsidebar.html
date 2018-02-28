@@ -53,6 +53,11 @@
             </a>
         </li>
         <li class="header">操作</li>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
+            <a href="#" th:href="@{/mailAnalysis}">
+                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+            </a>
+        </li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
             <a href="#" th:href="@{/mailbox}">
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>

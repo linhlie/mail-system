@@ -162,10 +162,10 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
             String originalContent = getContentText(message);
-            email.setOriginalBody(originalContent); //TODO mail too long
+            email.setOriginalBody(originalContent);
             String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
             String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
-            email.setOptimizedBody(optimizedContent); //TODO mail too long
+            email.setOptimizedBody(optimizedContent);
             return email;
         } catch (Exception e) {
             e.printStackTrace();

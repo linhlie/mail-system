@@ -23,7 +23,7 @@ import java.util.List;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String LOGIN_USER_NAME = "admin";
-    private static final String LOGIN_PASSWORD = "admin";
+    private static final String LOGIN_PASSWORD = "Ows@2018";
 
     @Autowired
     private DataSource datasource;

@@ -12,4 +12,7 @@ import java.util.List;
 @Transactional
 public interface ReplaceLetterDAO extends CrudRepository<ReplaceLetter, Long> {
     List<ReplaceLetter> findByLetterAndPosition(String letter, int position);
+    List<ReplaceLetter> findByHidden(boolean hidden);
+    List<ReplaceLetter> findByReplaceNotAndPosition(int replace, int position);
+    List<ReplaceLetter> findByReplaceNotAndPositionAndHidden(int replace, int position, boolean hidden);
 }

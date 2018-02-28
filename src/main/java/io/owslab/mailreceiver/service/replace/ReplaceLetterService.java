@@ -1,7 +1,9 @@
 package io.owslab.mailreceiver.service.replace;
 
 import io.owslab.mailreceiver.dao.ReplaceLetterDAO;
+import io.owslab.mailreceiver.model.NumberTreatment;
 import io.owslab.mailreceiver.model.ReplaceLetter;
+import io.owslab.mailreceiver.types.ReplaceLetterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +14,32 @@ import java.util.List;
  */
 @Service
 public class ReplaceLetterService {
+
     @Autowired
     private ReplaceLetterDAO replaceLetterDAO;
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
 
     public List<ReplaceLetter> getList(){
-        return (List<ReplaceLetter>) replaceLetterDAO.findAll();
+        return replaceLetterDAO.findByHidden(false);
+    }
+
+    public List<ReplaceLetter> getSignificantList(Boolean beforeNumber){
+        int position = beforeNumber ? ReplaceLetter.Position.BF : ReplaceLetter.Position.AF;
+        NumberTreatment numberTreatment = numberTreatmentService.getFirst();
+        if(numberTreatment != null && numberTreatment.isEnableReplaceLetter()){
+            return replaceLetterDAO.findByReplaceNotAndPosition(ReplaceLetter.Replace.NONE, position);
+        }
+        return replaceLetterDAO.findByReplaceNotAndPositionAndHidden(ReplaceLetter.Replace.NONE, position, ReplaceLetter.Hidden.TRUE);
     }
 
     public void saveList(List<ReplaceLetter> replaceLetters){
         //TODO: Must be transaction
         for(ReplaceLetter replaceLetter : replaceLetters){
+            //TODO: character can not be '.' ...
             ReplaceLetter existReplaceLetter = findOne(replaceLetter.getLetter(), replaceLetter.getPosition());
             if(existReplaceLetter != null){
-                if(replaceLetter.getRemove() == 1){
+                if(!existReplaceLetter.isHidden() && replaceLetter.getRemove() == 1){
                     replaceLetterDAO.delete(existReplaceLetter.getId());
                 }
             } else {

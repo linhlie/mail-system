@@ -5,31 +5,31 @@ USE `mailsys`;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS `Key_Values`;
-CREATE TABLE `Key_Values` (
+DROP TABLE IF EXISTS `key_values`;
+CREATE TABLE `key_values` (
   `key` VARCHAR(191) PRIMARY KEY,
   `value` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `Users`;
-CREATE TABLE `Users` (
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
   username VARCHAR(50)  NOT NULL PRIMARY KEY,
   password VARCHAR(255) NOT NULL,
   enabled  BOOLEAN      NOT NULL
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `Authorities`;
-CREATE TABLE `Authorities` (
+DROP TABLE IF EXISTS `authorities`;
+CREATE TABLE `authorities` (
   username  VARCHAR(50) NOT NULL,
   authority VARCHAR(50) NOT NULL,
   FOREIGN KEY (username) REFERENCES users (username),
   UNIQUE INDEX authorities_idx_1 (username, authority)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `Receive_Email_Account_Settings`;
-CREATE TABLE `Receive_Email_Account_Settings` (
+DROP TABLE IF EXISTS `receive_email_account_settings`;
+CREATE TABLE `receive_email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `account` VARCHAR(60) NOT NULL,
+  `account` VARCHAR(120) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
   `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
@@ -43,30 +43,30 @@ CREATE TABLE `Receive_Email_Account_Settings` (
   UNIQUE KEY unique_account (account)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
-INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port, disabled)
+INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port, disabled)
     VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993, false);
 
-INSERT INTO Receive_Email_Account_Settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
 
-DROP TABLE IF EXISTS `Emails`;
-CREATE TABLE `Emails` (
+DROP TABLE IF EXISTS `emails`;
+CREATE TABLE `emails` (
   `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
-  `from` VARCHAR(60) NOT NULL,
+  `from` VARCHAR(120) NOT NULL,
   `subject` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
   `to` TEXT NOT NULL,
   `cc` TEXT DEFAULT NULL,
   `bcc` TEXT DEFAULT NULL,
-  `reply_to` VARCHAR(60) DEFAULT NULL,
+  `reply_to` VARCHAR(120) DEFAULT NULL,
   `sent_at` DATETIME NOT NULL,
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
   `content_type` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、TEXT 1. HTML',
-  `original_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `original_body`MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `optimized_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
@@ -74,92 +74,92 @@ CREATE TABLE `Emails` (
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES Receive_Email_Account_Settings(id)
+  REFERENCES receive_email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-# INSERT INTO Emails(message_id, account_id, `from`, subject, `to`, sent_at)
+# INSERT INTO emails(message_id, account_id, `from`, subject, `to`, sent_at)
 # VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
 
-DROP TABLE IF EXISTS `Files`;
+DROP TABLE IF EXISTS `files`;
 
-CREATE TABLE `Files` (
+CREATE TABLE `files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
-  `file_name` VARCHAR(60) NOT NULL,
+  `file_name` VARCHAR(191) NOT NULL,
   `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email(message_id)
-  REFERENCES Emails(message_id)
+  REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `Words`;
-CREATE TABLE `Words` (
+DROP TABLE IF EXISTS `words`;
+CREATE TABLE `words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `word` VARCHAR(191) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO Words(id, word)
+INSERT INTO words(id, word)
 VALUES (1, 'java');
-INSERT INTO Words(id, word)
+INSERT INTO words(id, word)
 VALUES (2, 'JAVA');
 
-DROP TABLE IF EXISTS `Fuzzy_Words`;
-CREATE TABLE `Fuzzy_Words` (
+DROP TABLE IF EXISTS `fuzzy_words`;
+CREATE TABLE `fuzzy_words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `word_id` INT NOT NULL,
   `with_word_id` INT NOT NULL,
   `fuzzy_type` SMALLINT(6) NOT NULL DEFAULT '1' COMMENT '0、除外 1. 同一',
   FOREIGN KEY fk_word(word_id)
-  REFERENCES Words(id)
+  REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY fk_with_word(with_word_id)
-  REFERENCES Words(id)
+  REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE Fuzzy_Words
+ALTER TABLE fuzzy_words
 ADD CONSTRAINT uc_fuzzy_word UNIQUE (word_id,with_word_id);
 
-INSERT INTO Fuzzy_Words(word_id, with_word_id, fuzzy_type)
+INSERT INTO fuzzy_words(word_id, with_word_id, fuzzy_type)
 VALUES (1, 2, 1);
 
-DROP TABLE IF EXISTS `Email_Word_Jobs`;
-CREATE TABLE `Email_Word_Jobs` (
+DROP TABLE IF EXISTS `email_word_jobs`;
+CREATE TABLE `email_word_jobs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
   `word_id` INT NOT NULL,
   FOREIGN KEY fk_belong_to_email(message_id)
-  REFERENCES Emails(message_id)
+  REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY fk_belong_to_word(word_id)
-  REFERENCES Words(id)
+  REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE Email_Word_Jobs
+ALTER TABLE email_word_jobs
 ADD CONSTRAINT uc_email_word_job UNIQUE (message_id,word_id);
 
-INSERT INTO Email_Word_Jobs(message_id, word_id)
+INSERT INTO email_word_jobs(message_id, word_id)
 VALUES ('khanhlvb@ows.vn+<001a114425824f4509056431a819@google.com>', 2);
 
 DELIMITER #
-CREATE TRIGGER ins_email AFTER INSERT ON Emails
+CREATE TRIGGER ins_email AFTER INSERT ON emails
 FOR EACH ROW
 BEGIN
   DECLARE done INT DEFAULT FALSE;
   DECLARE c1 INT;
-  DECLARE cur CURSOR FOR SELECT id FROM Words;
+  DECLARE cur CURSOR FOR SELECT id FROM words;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
     ins_loop: LOOP
@@ -167,19 +167,19 @@ BEGIN
       IF done THEN
         LEAVE ins_loop;
       END IF;
-      INSERT INTO Email_Word_Jobs (message_id, word_id) values (new.message_id, c1);
+      INSERT INTO email_word_jobs (message_id, word_id) values (new.message_id, c1);
     END LOOP;
   CLOSE cur;
 END#
 DELIMITER ;
 
 DELIMITER //
-CREATE TRIGGER ins_word AFTER INSERT ON Words
+CREATE TRIGGER ins_word AFTER INSERT ON words
 FOR EACH ROW
 BEGIN
   DECLARE done INT DEFAULT FALSE;
   DECLARE c1 VARCHAR(191);
-  DECLARE cur CURSOR FOR SELECT message_id FROM Emails WHERE Emails.deleted = FALSE;
+  DECLARE cur CURSOR FOR SELECT message_id FROM emails WHERE emails.deleted = FALSE;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
     ins_loop: LOOP
@@ -187,74 +187,88 @@ BEGIN
       IF done THEN
         LEAVE ins_loop;
       END IF;
-      INSERT INTO Email_Word_Jobs (message_id, word_id) values (c1, new.id);
+      INSERT INTO email_word_jobs (message_id, word_id) values (c1, new.id);
     END LOOP;
   CLOSE cur;
 END//
 DELIMITER ;
 
-CREATE TABLE `Emails_Words` (
+CREATE TABLE `emails_words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
   `word_id` INT NOT NULL,
   `appear_indexs` TEXT DEFAULT NULL,
   FOREIGN KEY fk_belong_to_email(message_id)
-  REFERENCES Emails(message_id)
+  REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY fk_belong_to_word(word_id)
-  REFERENCES Words(id)
+  REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE Emails_Words
+ALTER TABLE emails_words
 ADD CONSTRAINT uc_email_word UNIQUE (message_id,word_id);
 
 COMMIT;
 
-CREATE TABLE `Replace_Numbers` (
+CREATE TABLE `replace_numbers` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `character` VARCHAR(191) NOT NULL,
   `replace_value` INT NOT NULL,
   UNIQUE KEY unique_character (`character`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `Replace_Units` (
+CREATE TABLE `replace_units` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `unit` VARCHAR(191) NOT NULL,
   `replace_unit` VARCHAR(191) NOT NULL,
   UNIQUE KEY unique_unit (unit)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO Replace_Numbers(`character`, replace_value)
+INSERT INTO replace_numbers(`character`, replace_value)
 VALUES ('K', 1000);
-INSERT INTO Replace_Numbers(`character`, replace_value)
+INSERT INTO replace_numbers(`character`, replace_value)
 VALUES ('千', 1000);
-INSERT INTO Replace_Numbers(`character`, replace_value)
+INSERT INTO replace_numbers(`character`, replace_value)
 VALUES ('万', 10000);
 
-INSERT INTO Replace_Units(unit, replace_unit)
+INSERT INTO replace_units(unit, replace_unit)
 VALUES ('円', '円');
-INSERT INTO Replace_Units(unit, replace_unit)
+INSERT INTO replace_units(unit, replace_unit)
 VALUES ('YEN', '円');
 
-CREATE TABLE `Replace_Letters` (
+CREATE TABLE `replace_letters` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `letter` VARCHAR(191) NOT NULL,
   `position` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、数値の前の 1. 数値の後の',
-  `replace` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上として認識する 1. 以下として認識する 2. 未満として認識する 3. 超として認識する'
+  `replace` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上として認識する 1. 以下として認識する 2. 未満として認識する 3. 超として認識する 4. None',
+  `hidden` BOOLEAN DEFAULT FALSE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE Replace_Letters
+ALTER TABLE replace_letters
 ADD CONSTRAINT uc_replace_letter UNIQUE (letter, position);
 
-INSERT INTO Replace_Letters(letter, position, `replace`)
-VALUES ('~', 0, 0);
-INSERT INTO Replace_Letters(letter, position, `replace`)
-VALUES ('~', 1, 1);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('以上', 0, 4, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('以上', 1, 0, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('以下', 0, 4, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('以下', 1, 1, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('超', 0, 4, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('超', 1, 3, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('未満', 0, 4, TRUE);
+INSERT INTO replace_letters(letter, position, `replace`, hidden)
+VALUES ('未満', 1, 2, TRUE);
 
-CREATE TABLE `Number_Treatments` (
+
+CREATE TABLE `number_treatments` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(191) NOT NULL,
   `upper_limit_name` VARCHAR(191) NOT NULL,
@@ -264,13 +278,29 @@ CREATE TABLE `Number_Treatments` (
   `lower_limit_sign` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、x',
   `lower_limit_rate` DOUBLE NOT NULL,
   `left_boundary_value` DOUBLE DEFAULT NULL,
-  `left_boundary_operator` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上を数字として扱う 1. 超を通じとして扱う',
+  `left_boundary_operator` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上を数字として扱う 3. 超を通じとして扱う',
   `combine_operator` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、AND 1. OR',
   `right_boundary_value` DOUBLE DEFAULT NULL,
-  `right_boundary_operator` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以下を数字として扱う 1. 未満を通じとして扱う',
+  `right_boundary_operator` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1、以下を数字として扱う 2. 未満を通じとして扱う',
   `enable_replace_letter` BOOLEAN DEFAULT FALSE,
   UNIQUE KEY unique_mumber_treatment_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO Number_Treatments(name, upper_limit_name, upper_limit_rate, lower_limit_name, lower_limit_rate)
+INSERT INTO number_treatments(name, upper_limit_name, upper_limit_rate, lower_limit_name, lower_limit_rate)
 VALUES ('name', 'upper_limit_name', 1.2, 'lower_limit_name', 0.8);
+
+CREATE TABLE `number_ranges` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `message_id` VARCHAR(191) NOT NULL,
+  `number` DOUBLE DEFAULT NULL,
+  `letter_id` INT DEFAULT NULL,
+  `appear_order` INT NOT NULL DEFAULT '0',
+  FOREIGN KEY fk_belong_to_email(message_id)
+  REFERENCES emails(message_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY fk_with_letter_id(letter_id)
+  REFERENCES replace_letters(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
