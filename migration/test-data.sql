@@ -1,10 +1,10 @@
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
-INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
-INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
 
 INSERT INTO replace_numbers(`character`, replace_value)

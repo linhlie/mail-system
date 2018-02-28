@@ -16,20 +16,21 @@ CREATE TABLE `authorities` (
   UNIQUE INDEX authorities_idx_1 (username, authority)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `receive_email_account_settings` (
+CREATE TABLE `email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(120) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
   `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
-  `receive_mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3',
+  `mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3 2.SMTP',
   `encryption_protocol`SMALLINT(6) NOT NULL DEFAULT '0'COMMENT '0、なし 1. SSL/TLS, 2. STARTTLS',
   `authentication_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0. 通常のパスワード認証 1. 暗号化されたパスワード認証 2. Kerberos/GSSAPI 3. NTLM 4. TLS証明書 5. OAuth2',
   `proxy_server` VARCHAR(191) DEFAULT NULL,
   `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
-  UNIQUE KEY unique_account (account)
+  `type` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、受信 1. 送信',
+  UNIQUE KEY unique_account (account, type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `emails` (
@@ -53,7 +54,7 @@ CREATE TABLE `emails` (
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES receive_email_account_settings(id)
+  REFERENCES email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

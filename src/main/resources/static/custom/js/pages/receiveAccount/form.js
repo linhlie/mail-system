@@ -8,7 +8,7 @@
 
     $(function () {
         setFormChangeListener();
-        setReceiveMailProtocolChangeListener();
+        setMailProtocolChangeListener();
         setGoBackListener('backBtn');
         setResetListener('resetBtn');
     });
@@ -19,7 +19,7 @@
         });
     }
 
-    function setReceiveMailProtocolChangeListener() {
+    function setMailProtocolChangeListener() {
         $('#mailProtocol').change(function(){
             var protocol = $(this).find("option:selected").attr('value');
             var port = 993;

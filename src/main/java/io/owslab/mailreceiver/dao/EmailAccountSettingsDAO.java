@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 @Transactional
-public interface ReceiveEmailAccountSettingsDAO extends PagingAndSortingRepository<EmailAccountSetting, Long> {
+public interface EmailAccountSettingsDAO extends PagingAndSortingRepository<EmailAccountSetting, Long> {
 
     List<EmailAccountSetting> findByDisabled(boolean disabled);
     List<EmailAccountSetting> findById(long id);

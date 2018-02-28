@@ -26,30 +26,31 @@ CREATE TABLE `authorities` (
   UNIQUE INDEX authorities_idx_1 (username, authority)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `receive_email_account_settings`;
-CREATE TABLE `receive_email_account_settings` (
+DROP TABLE IF EXISTS `email_account_settings`;
+CREATE TABLE `email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `account` VARCHAR(120) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
   `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
-  `receive_mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3',
+  `mail_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、IMAP 1. POP3 2.SMTP',
   `encryption_protocol`SMALLINT(6) NOT NULL DEFAULT '0'COMMENT '0、なし 1. SSL/TLS, 2. STARTTLS',
   `authentication_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0. 通常のパスワード認証 1. 暗号化されたパスワード認証 2. Kerberos/GSSAPI 3. NTLM 4. TLS証明書 5. OAuth2',
   `proxy_server` VARCHAR(191) DEFAULT NULL,
   `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
-  UNIQUE KEY unique_account (account)
+  `type` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、受信 1. 送信',
+  UNIQUE KEY unique_account (account, type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
 
-INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port, disabled)
+INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port, disabled)
     VALUES ('baokhanhlv@gmail.com', 'Lekhanh28011993', 'imap.gmail.com', 993, false);
 
-INSERT INTO receive_email_account_settings(account, password, mail_server_address, mail_server_port)
+INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
 
 DROP TABLE IF EXISTS `emails`;
@@ -74,7 +75,7 @@ CREATE TABLE `emails` (
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES receive_email_account_settings(id)
+  REFERENCES email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

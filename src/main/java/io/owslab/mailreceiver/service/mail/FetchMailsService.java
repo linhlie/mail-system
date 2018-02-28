@@ -2,10 +2,9 @@ package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
-import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
+import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
 import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
-import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class FetchMailsService {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailsService.class);
     private final ExecutorService executorService = Executors.newFixedThreadPool(3);
     @Autowired
-    private ReceiveEmailAccountSettingsDAO receiveEmailAccountSettingsDAO;
+    private EmailAccountSettingsDAO emailAccountSettingsDAO;
 
     @Autowired
     private EmailDAO emailDAO;
@@ -36,11 +35,11 @@ public class FetchMailsService {
     private EnviromentSettingService enviromentSettingService;
 
     public void start(){
-        List<EmailAccountSetting> list = receiveEmailAccountSettingsDAO.findByDisabled(false);
+        List<EmailAccountSetting> list = emailAccountSettingsDAO.findByDisabled(false);
         if(list.size() > 0) {
             for(int i = 0, n = list.size(); i < n; i++){
                 EmailAccountSetting account = list.get(i);
-                if(account.getReceiveMailProtocol() == ReceiveMailProtocol.IMAP){
+                if(account.getMailProtocol() == EmailAccountSetting.Protocol.IMAP){
                     executorService.execute(new IMAPFetchMailJob(emailDAO, fileDAO, enviromentSettingService, account));
                 }
             }

@@ -14,7 +14,7 @@ public class ReceiveAccountForm {
 
     private int mailServerPort;
 
-    private int receiveMailProtocol;
+    private int mailProtocol;
 
     private int encryptionProtocol;
 
@@ -23,6 +23,8 @@ public class ReceiveAccountForm {
     private String proxyServer;
 
     private boolean disabled;
+
+    private int type;
 
     public String getAccount() {
         return account;
@@ -56,12 +58,12 @@ public class ReceiveAccountForm {
         this.mailServerPort = mailServerPort;
     }
 
-    public int getReceiveMailProtocol() {
-        return receiveMailProtocol;
+    public int getMailProtocol() {
+        return mailProtocol;
     }
 
-    public void setReceiveMailProtocol(int receiveMailProtocol) {
-        this.receiveMailProtocol = receiveMailProtocol;
+    public void setMailProtocol(int mailProtocol) {
+        this.mailProtocol = mailProtocol;
     }
 
     public int getEncryptionProtocol() {
@@ -96,6 +98,14 @@ public class ReceiveAccountForm {
         this.disabled = disabled;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     public ReceiveAccountForm() {
     }
 
@@ -104,10 +114,11 @@ public class ReceiveAccountForm {
         this.password = account.getPassword();
         this.mailServerAddress = account.getMailServerAddress();
         this.mailServerPort = account.getMailServerPort();
-        this.receiveMailProtocol = account.getReceiveMailProtocol();
+        this.mailProtocol = account.getMailProtocol();
         this.encryptionProtocol = account.getEncryptionProtocol();
         this.authenticationProtocol = account.getAuthenticationProtocol();
         this.proxyServer = account.getProxyServer();
         this.disabled = account.isDisabled();
+        this.type = account.getType();
     }
 }

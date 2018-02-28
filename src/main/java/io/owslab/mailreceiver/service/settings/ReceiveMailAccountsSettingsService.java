@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.service.settings;
 
-import io.owslab.mailreceiver.dao.ReceiveEmailAccountSettingsDAO;
+import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ReceiveMailAccountsSettingsService {
 
     @Autowired
-    private ReceiveEmailAccountSettingsDAO accountSettingsDAO;
+    private EmailAccountSettingsDAO accountSettingsDAO;
 
     public Page<EmailAccountSetting> list(PageRequest pageRequest) {
         Page<EmailAccountSetting> list = accountSettingsDAO.findAll(pageRequest);
