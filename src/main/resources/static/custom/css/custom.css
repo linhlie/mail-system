@@ -158,3 +158,96 @@ select:not([multiple]) {
     border: none;
     background-color: transparent;
 }
+
+.mail-analysis .box {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mail-analysis .note {
+    color: darkgray;
+}
+
+.mail-analysis label.control-label {
+    font-weight: normal;
+}
+
+.mail-analysis div.treatment-container {
+    border: 1px solid #e6e6e6;
+    padding: 15px 20px;
+}
+
+.mail-analysis div.treatment-container label.control-label {
+    font-size: 13px;
+    padding-top: 7px;
+}
+
+.mail-analysis div.treatment-container div.row {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.mail-analysis div.add-padding-bottom {
+    padding-bottom: 10px;
+}
+
+.mail-analysis div.remove-nested-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.mail-analysis div.treatment-container.treatment-padding div.row {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.mail-analysis .form-container {
+    width: 100%;
+    height: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.mail-analysis .table-container {
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.mail-analysis .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.mail-analysis .full-height {
+    height: 100%;
+}
+
+.mail-analysis .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+.mail-analysis .table-container td, .mail-analysis .table-container th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.mail-analysis .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+.mail-analysis .table-container td.select-container select {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.mail-analysis .table-container td select {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}

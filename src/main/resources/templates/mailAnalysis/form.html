@@ -10,10 +10,84 @@
     </section>
     <section class="content mail-analysis">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-10 col-xs-12">
                 <div class="box box-default">
                     <div class="box-body">
-
+                        <form id="mailAnalysisForm" class="form-horizontal" method="POST">
+                            <div class="form-group"></div>
+                            <div class="col-xs-12">
+                                <span>比較メール元抽出条件</span>
+                                <div class="form-container">
+                                    <div class="col-xs-12 full-height remove-nested-padding">
+                                        <div class="table-container">
+                                            <table id="replaceUnit" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-xs-2">グループ</th>
+                                                    <th class="col-xs-2">AND/OR</th>
+                                                    <th class="col-xs-2">項目</th>
+                                                    <th class="col-xs-2">条件</th>
+                                                    <th class="col-xs-2">値</th>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="text" placeholder="文字"/></td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="0" selected="selected">AND</option>
+                                                            <option value="1" >OR</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="0" selected="selected">AND</option>
+                                                            <option value="1" >OR</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="0" selected="selected">AND</option>
+                                                            <option value="1" >OR</option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="text" placeholder="文字"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="text" placeholder="文字"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="text" placeholder="文字"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="text" placeholder="文字"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                    <td><input type="text" placeholder="置き換え"/></td>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
