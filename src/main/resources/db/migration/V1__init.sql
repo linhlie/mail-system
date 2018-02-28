@@ -18,7 +18,7 @@ CREATE TABLE `authorities` (
 
 CREATE TABLE `receive_email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `account` VARCHAR(60) NOT NULL,
+  `account` VARCHAR(120) NOT NULL,
   `password` VARCHAR(32) NOT NULL,
   `mail_server_address` VARCHAR(191) NOT NULL,
   `mail_server_port` INT NOT NULL,
@@ -35,12 +35,12 @@ CREATE TABLE `receive_email_account_settings` (
 CREATE TABLE `emails` (
   `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
-  `from` VARCHAR(60) NOT NULL,
+  `from` VARCHAR(120) NOT NULL,
   `subject` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
   `to` TEXT NOT NULL,
   `cc` TEXT DEFAULT NULL,
   `bcc` TEXT DEFAULT NULL,
-  `reply_to` VARCHAR(60) DEFAULT NULL,
+  `reply_to` VARCHAR(120) DEFAULT NULL,
   `sent_at` DATETIME NOT NULL,
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
