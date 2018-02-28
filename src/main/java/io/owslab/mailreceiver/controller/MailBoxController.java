@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
 import io.owslab.mailreceiver.service.mail.MailBoxService;

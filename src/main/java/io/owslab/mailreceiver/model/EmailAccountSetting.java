@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.model;
 
-import io.owslab.mailreceiver.form.ReceiveAccountForm;
+import io.owslab.mailreceiver.form.AccountForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -54,7 +54,7 @@ public class EmailAccountSetting {
         this.id = id;
     }
 
-    public EmailAccountSetting(ReceiveAccountForm form, boolean isUpdate){
+    public EmailAccountSetting(AccountForm form, boolean isUpdate){
         this.account = form.getAccount();
         this.password = form.getPassword();
         this.mailServerAddress = form.getMailServerAddress();
