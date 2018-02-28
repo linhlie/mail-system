@@ -119,4 +119,9 @@ public class ReplaceLetter {
         public static final int BF = 0;
         public static final int AF = 1;
     }
+
+    public class Hidden {
+        public static final boolean TRUE = true;
+        public static final boolean FALSE = false;
+    }
 }

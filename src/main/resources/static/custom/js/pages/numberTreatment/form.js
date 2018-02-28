@@ -23,11 +23,15 @@
             {type: "select", name: "combineOperator"},
             {type: "input", name: "rightBoundaryValue"},
             {type: "select", name: "rightBoundaryOperator"},
-            {type: "input", name: "enableReplaceLetter"},
+            {type: "checkbox", name: "enableReplaceLetter"},
         ];
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
-            form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
+            if(field.type == "checkbox"){
+                form[field.name] = $("input" + "[name='" + field.name + "']").is(':checked');
+            } else {
+                form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
+            }
         }
 
         form["replaceNumberList"] = [];
