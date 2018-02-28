@@ -9,8 +9,8 @@ import javax.validation.constraints.Null;
 import java.util.Date;
 
 @Entity
-@Table(name = "Receive_Email_Account_Settings")
-public class ReceiveEmailAccountSetting {
+@Table(name = "Email_Account_Settings")
+public class EmailAccountSetting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,14 +45,14 @@ public class ReceiveEmailAccountSetting {
 
     private Date updatedAt;
 
-    public ReceiveEmailAccountSetting() {
+    public EmailAccountSetting() {
     }
 
-    public ReceiveEmailAccountSetting(long id) {
+    public EmailAccountSetting(long id) {
         this.id = id;
     }
 
-    public ReceiveEmailAccountSetting(ReceiveAccountForm form, boolean isUpdate){
+    public EmailAccountSetting(ReceiveAccountForm form, boolean isUpdate){
         this.account = form.getAccount();
         this.password = form.getPassword();
         this.mailServerAddress = form.getMailServerAddress();
@@ -69,7 +69,7 @@ public class ReceiveEmailAccountSetting {
         }
     }
 
-    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
+    public EmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
         this.account = account;
         this.password = password;
         this.mailServerAddress = mailServerAddress;

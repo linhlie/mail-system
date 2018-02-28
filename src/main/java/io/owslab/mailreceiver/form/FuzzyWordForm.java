@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.form;
 
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**

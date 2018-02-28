@@ -4,7 +4,7 @@ import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.model.EnviromentSetting;
 import io.owslab.mailreceiver.model.FuzzyWord;
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
@@ -55,9 +55,9 @@ public class SettingsController {
     public String receiveSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
         page = page - 1;
         PageRequest pageRequest = new PageRequest(page, PAGE_SIZE);
-        Page<ReceiveEmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
-        PageWrapper<ReceiveEmailAccountSetting> pageWrapper = new PageWrapper<ReceiveEmailAccountSetting>(pages, "/receiveSettings");
-        List<ReceiveEmailAccountSetting> list = pages.getContent();
+        Page<EmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
+        PageWrapper<EmailAccountSetting> pageWrapper = new PageWrapper<EmailAccountSetting>(pages, "/receiveSettings");
+        List<EmailAccountSetting> list = pages.getContent();
         int rowsInPage = list.size();
         int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
         int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
@@ -80,18 +80,18 @@ public class SettingsController {
     public String saveReceiveAccount(
             Model model,
             @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
-        ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, false);
+        EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, false);
         accountsSettingsService.save(newAccount);
         return "redirect:/receiveSettings";
     }
 
     @RequestMapping(value = "/receiveSettings/update", method = RequestMethod.GET)
     public String getReceiveAccount(@RequestParam(value = "id", required = true) long id, Model model) {
-        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
-        ReceiveEmailAccountSetting account = listAccount.get(0);
+        EmailAccountSetting account = listAccount.get(0);
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm(account);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
         model.addAttribute("api", "/updateReceiveAccount/" + id);
@@ -100,11 +100,11 @@ public class SettingsController {
 
     @RequestMapping(value = "/updateReceiveAccount/{id}", method = RequestMethod.POST)
     public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
-        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
-        ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, true);
+        EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, true);
         newAccount.setId(id);
         accountsSettingsService.save(newAccount);
         return "redirect:/receiveSettings";

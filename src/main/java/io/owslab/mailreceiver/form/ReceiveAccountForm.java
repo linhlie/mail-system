@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.form;
 
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.model.EmailAccountSetting;
 
 /**
  * Created by khanhlvb on 1/24/18.
@@ -99,7 +99,7 @@ public class ReceiveAccountForm {
     public ReceiveAccountForm() {
     }
 
-    public ReceiveAccountForm(ReceiveEmailAccountSetting account) {
+    public ReceiveAccountForm(EmailAccountSetting account) {
         this.account = account.getAccount();
         this.password = account.getPassword();
         this.mailServerAddress = account.getMailServerAddress();
