@@ -4,8 +4,6 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
-import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,33 +2,17 @@
 (function () {
 
     "use strict";
-    var IMAP = 0;
-    var POP3 = 1;
     var formChange = false;
 
     $(function () {
         setFormChangeListener();
-        setReceiveMailProtocolChangeListener();
         setGoBackListener('backBtn');
         setResetListener('resetBtn');
     });
 
     function setFormChangeListener() {
-        $('#receiveMailForm').change(function() {
+        $('#sendAccountMailForm').change(function() {
             formChange = true;
-        });
-    }
-
-    function setReceiveMailProtocolChangeListener() {
-        $('#mailProtocol').change(function(){
-            var protocol = $(this).find("option:selected").attr('value');
-            var port = 993;
-            if(protocol == IMAP) {
-                port = 993;
-            } else if ( protocol == POP3) {
-                port = 995;
-            }
-            $('#mailPort').val(port);
         });
     }
     
@@ -39,12 +23,12 @@
                 if(formChange){
                     var isClear = confirm("本当にリセットフォームが必要ですか。");
                     if(isClear){
-                        $('#receiveMailForm').trigger("reset");
+                        $('#sendAccountMailForm').trigger("reset");
                         formChange = false;
                     }
                 }
             } else {
-                $('#receiveMailForm').trigger("reset");
+                $('#sendAccountMailForm').trigger("reset");
                 formChange = false;
             }
         })

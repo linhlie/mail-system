@@ -6,8 +6,7 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
-import io.owslab.mailreceiver.protocols.ReceiveMailProtocol;
+import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
@@ -34,12 +33,12 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
     private final EnviromentSettingService enviromentSettingService;
-    private final ReceiveEmailAccountSetting account;
+    private final EmailAccountSetting account;
 
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, ReceiveEmailAccountSetting account) {
+    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, EmailAccountSetting account) {
         this.emailDAO = emailDAO;
         this.fileDAO = fileDAO;
         this.enviromentSettingService = enviromentSettingService;
@@ -73,7 +72,7 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private Store createStore(ReceiveEmailAccountSetting account) throws NoSuchProviderException {
+    private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
         Properties properties = new Properties();
         properties.put("mail.imap.host", account.getMailServerAddress());
         properties.put("mail.imap.port", account.getMailServerPort());
@@ -83,7 +82,7 @@ public class IMAPFetchMailJob implements Runnable {
         return store;
     }
 
-    public void check(ReceiveEmailAccountSetting account, Date fromDate)
+    public void check(EmailAccountSetting account, Date fromDate)
     {
         try {
 
@@ -138,13 +137,13 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private boolean isEmailExist(MimeMessage message, ReceiveEmailAccountSetting account) throws MessagingException {
+    private boolean isEmailExist(MimeMessage message, EmailAccountSetting account) throws MessagingException {
         String messageId = buildMessageId(message, account);
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0;
     }
 
-    private Email buildReceivedMail(MimeMessage message, ReceiveEmailAccountSetting account) {
+    private Email buildReceivedMail(MimeMessage message, EmailAccountSetting account) {
         try {
             Email email =  new Email();
             String messageId = buildMessageId(message, account);
@@ -211,7 +210,7 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private String buildMessageId(MimeMessage message, ReceiveEmailAccountSetting account) throws MessagingException {
+    private String buildMessageId(MimeMessage message, EmailAccountSetting account) throws MessagingException {
         return account.getAccount() + "+" + message.getMessageID();
     }
 

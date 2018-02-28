@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.model;
 
-import io.owslab.mailreceiver.form.ReceiveAccountForm;
+import io.owslab.mailreceiver.form.AccountForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,8 +9,8 @@ import javax.validation.constraints.Null;
 import java.util.Date;
 
 @Entity
-@Table(name = "Receive_Email_Account_Settings")
-public class ReceiveEmailAccountSetting {
+@Table(name = "Email_Account_Settings")
+public class EmailAccountSetting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +29,7 @@ public class ReceiveEmailAccountSetting {
     private int mailServerPort;
 
     @NotNull
-    private int receiveMailProtocol;
+    private int mailProtocol;
 
     @NotNull
     private int encryptionProtocol;
@@ -45,23 +45,26 @@ public class ReceiveEmailAccountSetting {
 
     private Date updatedAt;
 
-    public ReceiveEmailAccountSetting() {
+    private int type;
+
+    public EmailAccountSetting() {
     }
 
-    public ReceiveEmailAccountSetting(long id) {
+    public EmailAccountSetting(long id) {
         this.id = id;
     }
 
-    public ReceiveEmailAccountSetting(ReceiveAccountForm form, boolean isUpdate){
+    public EmailAccountSetting(AccountForm form, boolean isUpdate){
         this.account = form.getAccount();
         this.password = form.getPassword();
         this.mailServerAddress = form.getMailServerAddress();
         this.mailServerPort = form.getMailServerPort();
-        this.receiveMailProtocol = form.getReceiveMailProtocol();
+        this.mailProtocol = form.getMailProtocol();
         this.encryptionProtocol = form.getEncryptionProtocol();
         this.authenticationProtocol = form.getAuthenticationProtocol();
         this.proxyServer = form.getProxyServer();
         this.disabled = form.isDisabled();
+        this.type = form.getType();
         if(isUpdate){
             this.updatedAt = new Date();
         } else {
@@ -69,18 +72,19 @@ public class ReceiveEmailAccountSetting {
         }
     }
 
-    public ReceiveEmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int receiveMailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt) {
+    public EmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
         this.account = account;
         this.password = password;
         this.mailServerAddress = mailServerAddress;
         this.mailServerPort = mailServerPort;
-        this.receiveMailProtocol = receiveMailProtocol;
+        this.mailProtocol = mailProtocol;
         this.encryptionProtocol = encryptionProtocol;
         this.authenticationProtocol = authenticationProtocol;
         this.proxyServer = proxyServer;
         this.disabled = disabled;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.type = type;
     }
 
     public long getId() {
@@ -123,12 +127,12 @@ public class ReceiveEmailAccountSetting {
         this.mailServerPort = mailServerPort;
     }
 
-    public int getReceiveMailProtocol() {
-        return receiveMailProtocol;
+    public int getMailProtocol() {
+        return mailProtocol;
     }
 
-    public void setReceiveMailProtocol(int receiveMailProtocol) {
-        this.receiveMailProtocol = receiveMailProtocol;
+    public void setMailProtocol(int mailProtocol) {
+        this.mailProtocol = mailProtocol;
     }
 
     public int getEncryptionProtocol() {
@@ -179,8 +183,27 @@ public class ReceiveEmailAccountSetting {
         this.updatedAt = updatedAt;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public String toString(){
         return this.getAccount() + " " + this.getPassword();
+    }
+
+    public class Protocol {
+        public static final int IMAP = 0;
+        public static final int POP3 = 1;
+        public static final int SMTP = 2;
+    }
+
+    public class Type {
+        public static final int RECEIVE = 0;
+        public static final int SEND = 1;
     }
 }

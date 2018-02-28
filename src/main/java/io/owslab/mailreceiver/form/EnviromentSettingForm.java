@@ -1,7 +1,5 @@
 package io.owslab.mailreceiver.form;
 
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
-
 import java.util.HashMap;
 import java.util.Map;
 

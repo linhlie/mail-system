@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -28,7 +27,7 @@ public class MailBoxController {
     private MailBoxService mailBoxService;
 
     @RequestMapping(value = "/mailbox", method = RequestMethod.GET)
-    public String receiveSettings(
+    public String getMailBox(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             Model model) {

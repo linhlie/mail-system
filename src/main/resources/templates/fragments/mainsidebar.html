@@ -27,14 +27,9 @@
                 <i class="fa fa-cog"></i> <span>環境設定</span>
             </a>
         </li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveSettings'})?'active':''">
-            <a href="#" th:href="@{/receiveSettings}">
-                <i class="fa fa-envelope"></i> <span>受信アカウント設定</span>
-            </a>
-        </li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendSettings'})?'active':''">
-            <a href="#" th:href="@{/sendSettings}">
-                <i class="fa fa-envelope-o"></i> <span>送信アカウント設定</span>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAccountSettings'})?'active':''">
+            <a href="#" th:href="@{/mailAccountSettings}">
+                <i class="fa fa-envelope"></i> <span>メール アカウント設定</span>
             </a>
         </li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveRuleSettings'})?'active':''">
@@ -53,9 +48,9 @@
             </a>
         </li>
         <li class="header">操作</li>
-        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
-            <a href="#" th:href="@{/mailAnalysis}">
-                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
+            <a href="#" th:href="@{/administratorSetting}">
+                <i class="fa fa-envelope"></i> <span>管理者設定</span>
             </a>
         </li>
         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
@@ -63,10 +58,21 @@
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>
             </a>
         </li>
+        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
+            <a href="#" th:href="@{/mailAnalysis}">
+                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+            </a>
+        </li>
         <li class="header">ヘルプ</li>
         <li>
             <a href="#">
                 <i class="fa fa-info-circle"></i> <span>ヘルプ</span>
+                <!--TODO: help page content is -->
+                <!--TODO: · Server application version information-->
+                <!--TODO: · Full path of server application-->
+                <!--TODO: · OS and version of use-->
+                <!--TODO: · Mysql version and full path-->
+                <!--TODO: · World Link copyright notice-->
             </a>
         </li>
     </ul>

@@ -2,9 +2,10 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
+import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.model.EnviromentSetting;
 import io.owslab.mailreceiver.model.FuzzyWord;
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
+import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
@@ -51,13 +52,13 @@ public class SettingsController {
         return "redirect:/enviromentSettings";
     }
 
-    @RequestMapping(value = "/receiveSettings", method = RequestMethod.GET)
-    public String receiveSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
+    @RequestMapping(value = "/mailAccountSettings", method = RequestMethod.GET)
+    public String getMailAccountSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
         page = page - 1;
         PageRequest pageRequest = new PageRequest(page, PAGE_SIZE);
-        Page<ReceiveEmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
-        PageWrapper<ReceiveEmailAccountSetting> pageWrapper = new PageWrapper<ReceiveEmailAccountSetting>(pages, "/receiveSettings");
-        List<ReceiveEmailAccountSetting> list = pages.getContent();
+        Page<EmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
+        PageWrapper<EmailAccountSetting> pageWrapper = new PageWrapper<EmailAccountSetting>(pages, "/mailAccountSettings");
+        List<EmailAccountSetting> list = pages.getContent();
         int rowsInPage = list.size();
         int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
         int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
@@ -65,54 +66,92 @@ public class SettingsController {
         model.addAttribute("page", pageWrapper);
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
-        return "settings/receive_mail_accounts_settings";
+        return "settings/mail_accounts_settings";
     }
-    @RequestMapping(value = "/receiveSettings/add", method = RequestMethod.GET)
+    @RequestMapping(value = "/mailAccountSettings/add", method = RequestMethod.GET)
     public String getAddReceiveAccount(Model model) {
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
         receiveAccountForm.setMailServerPort(993);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
         model.addAttribute("api", "/addReceiveAccount");
-        return "settings/receive/form";
+        return "settings/account/form";
     }
 
     @RequestMapping(value = { "/addReceiveAccount" }, method = RequestMethod.POST)
     public String saveReceiveAccount(
             Model model,
             @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
-        ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, false);
+        EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, false);
         accountsSettingsService.save(newAccount);
-        return "redirect:/receiveSettings";
+        return "redirect:/mailAccountSettings";
     }
 
-    @RequestMapping(value = "/receiveSettings/update", method = RequestMethod.GET)
+    @RequestMapping(value = "/mailAccountSettings/update", method = RequestMethod.GET)
     public String getReceiveAccount(@RequestParam(value = "id", required = true) long id, Model model) {
-        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
-        ReceiveEmailAccountSetting account = listAccount.get(0);
+        EmailAccountSetting account = listAccount.get(0);
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm(account);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
         model.addAttribute("api", "/updateReceiveAccount/" + id);
-        return "settings/receive/form";
+        return "settings/account/form";
     }
 
     @RequestMapping(value = "/updateReceiveAccount/{id}", method = RequestMethod.POST)
     public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
-        List<ReceiveEmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
-        ReceiveEmailAccountSetting newAccount = new ReceiveEmailAccountSetting(receiveAccountForm, true);
+        EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, true);
         newAccount.setId(id);
         accountsSettingsService.save(newAccount);
-        return "redirect:/receiveSettings";
+        return "redirect:/mailAccountSettings";
     }
 
-    @RequestMapping("/sendSettings")
-    public String sendSettings() {
-        return "settings/send_mail_accounts_settings";
+    @RequestMapping(value = "/mailAccountSettings/addSend", method = RequestMethod.GET)
+    public String getAddSendAccount(Model model) {
+        SendAccountForm sendAccountForm = new SendAccountForm();
+        sendAccountForm.setMailServerPort(25);
+        model.addAttribute("sendAccountForm", sendAccountForm);
+        model.addAttribute("api", "/addSendAccount");
+        return "settings/account/sendForm";
+    }
+
+    @RequestMapping(value = { "/addSendAccount" }, method = RequestMethod.POST)
+    public String saveSendAccount(
+            Model model,
+            @ModelAttribute("sendAccountForm") SendAccountForm sendAccountForm) {
+        EmailAccountSetting newAccount = new EmailAccountSetting(sendAccountForm, false);
+        accountsSettingsService.save(newAccount);
+        return "redirect:/mailAccountSettings";
+    }
+
+    @RequestMapping(value = "/mailAccountSettings/updateSend", method = RequestMethod.GET)
+    public String getSendAccount(@RequestParam(value = "id", required = true) long id, Model model) {
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        if(listAccount.isEmpty()){
+            //TODO: account not found error
+        }
+        EmailAccountSetting account = listAccount.get(0);
+        SendAccountForm sendAccountForm = new SendAccountForm(account);
+        model.addAttribute("sendAccountForm", sendAccountForm);
+        model.addAttribute("api", "/updateSendAccount/" + id);
+        return "settings/account/sendForm";
+    }
+
+    @RequestMapping(value = "/updateSendAccount/{id}", method = RequestMethod.POST)
+    public String updateSendAccount(@PathVariable("id") long id, Model model, @ModelAttribute("sendAccountForm") SendAccountForm sendAccountForm) {
+        List<EmailAccountSetting> listAccount = accountsSettingsService.findById(id);
+        if(listAccount.isEmpty()){
+            //TODO: account not found error
+        }
+        EmailAccountSetting newAccount = new EmailAccountSetting(sendAccountForm, true);
+        newAccount.setId(id);
+        accountsSettingsService.save(newAccount);
+        return "redirect:/mailAccountSettings";
     }
 
     @RequestMapping("/receiveRuleSettings")

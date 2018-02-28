@@ -1,25 +1,35 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
 <head>
-    <title>受信アカウント設定</title>
+    <title>メール アカウント設定</title>
 </head>
 <body>
 <div layout:fragment="content">
     <section class="content-header">
         <h1>
-            受信アカウント設定
+            メール アカウント設定
         </h1>
     </section>
     <section class="content">
         <div class="row">
             <div class="col-md-10 col-sm-12 col-xs-12">
                 <div class="box">
-                    <div class="box-header">
-                        <a title="新規登録" href="#" th:href="@{/receiveSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>
-                    </div>
+                    <!--<div class="box-header">-->
+                        <!--<a title="新規登録" href="#" th:href="@{/mailAccountSettings/add}"><span class="glyphicon glyphicon-plus"></span></a>-->
+                    <!--</div>-->
                     <!-- /.box-header -->
                     <div class="box-body">
                         <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+                            <div class="row">
+                                <div class="col-xs-12" style="padding-bottom: 10px">
+                                    <a href="#" th:href="@{/mailAccountSettings/add}"><div type="button" class="btn btn-default btn-xs">受信メールアカウント追加</div></a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12" style="padding-bottom: 10px">
+                                    <a href="#" th:href="@{/mailAccountSettings/addSend}"><div type="button" class="btn btn-default btn-xs">送信メールアカウント追加</div></a>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <table id="example2" class="table table-bordered table-hover dataTable" role="grid"
@@ -29,6 +39,9 @@
                                             <th tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
                                                 aria-label="Mail address:">
                                                 メールアドレス
+                                            </th>
+                                            <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
+                                                aria-label="Type: ">種類
                                             </th>
                                             <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
                                                 aria-label="Disabled: ">休止
@@ -42,6 +55,9 @@
                                         <tr role="row" class="odd" th:each="item:${list}">
                                             <td th:text="${item.account}"></td>
                                             <td style="text-align: center">
+                                                <span th:text="${item.type eq 1 ? '送信' : '受信'}"></span>
+                                            </td>
+                                            <td style="text-align: center">
                                                 <div class="checkbox">
                                                     <label>
                                                         <input type="checkbox" disabled="true" th:checked="${item.disabled}"/>
@@ -49,7 +65,8 @@
                                                 </div>
                                             </td>
                                             <td style="text-align: center">
-                                                <a th:href="@{/receiveSettings/update(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
+                                                <a th:if="${item.type eq 0}" th:href="@{/mailAccountSettings/update(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
+                                                <a th:if="${item.type eq 1}" th:href="@{/mailAccountSettings/updateSend(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
                                             </td>
                                         </tr>
                                         </tbody>

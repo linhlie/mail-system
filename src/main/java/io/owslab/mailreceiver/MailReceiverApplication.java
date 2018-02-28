@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver;
 
-import io.owslab.mailreceiver.model.ReceiveEmailAccountSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,6 @@ public class MailReceiverApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MailReceiverApplication.class, args);
-		logger.info("--Application Started--" + ReceiveEmailAccountSetting.class.getName());
+		logger.info("--Application Started--");
 	}
 }
