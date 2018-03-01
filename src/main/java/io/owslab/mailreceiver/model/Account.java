@@ -29,6 +29,13 @@ public class Account {
 
     }
 
+    public Account(String userName, String encryptedPassword) {
+        this.userName = userName;
+        this.encryptedPassword = encryptedPassword;
+        this.active = true;
+        this.userRole = Role.MEMBER;
+    }
+
     public Account(String userName, String encryptedPassword, boolean active, String userRole) {
         this.userName = userName;
         this.encryptedPassword = encryptedPassword;
