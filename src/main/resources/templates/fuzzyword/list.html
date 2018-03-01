@@ -41,6 +41,24 @@
                                                         </td>
                                                         <td class="text-center"><button type="submit"><i class="fa fa-search"/></button></td>
                                                     </tr>
+                                                    <tr th:each="item:${wordList}">
+                                                        <td th:text="${item.word}"></td>
+                                                        <td class="text-center">
+                                                            <a href="#" th:href="@{/fuzzyWord(search=${item.word})}">
+                                                                    <span title="删除" th:data="${item.id}"
+                                                                          style="cursor: pointer"
+                                                                          class="glyphicon glyphicon-play">
+                                                                    </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table table-bordered" th:if="${wordListSize} eq 0">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>レコードが見つかりません</td>
+                                                    </tr>
                                                     </tbody>
                                                 </table>
                                             </form>

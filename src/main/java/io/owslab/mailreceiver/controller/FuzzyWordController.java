@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class FuzzyWordController {
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
     public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
         int totalFuzzyWord = 0;
+        List<Word> wordList = wordService.findAll();
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
             Word word = wordService.findOne(search);
@@ -45,6 +47,8 @@ public class FuzzyWordController {
                 totalFuzzyWord = originalWords.size() + associatedWords.size();
             }
         }
+        model.addAttribute("wordList", wordList);
+        model.addAttribute("wordListSize", wordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "fuzzyword/list";
     }

@@ -17,6 +17,10 @@ public class WordService {
     @Autowired
     private WordDAO wordDAO;
 
+    public List<Word> findAll(){
+        return (List<Word>) wordDAO.findAll();
+    }
+
     public Word findOne(String word){
         String normalizedWord = this.normalize(word);
         if(!normalizedWord.isEmpty()){
