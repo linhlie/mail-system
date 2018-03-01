@@ -3,17 +3,11 @@ CREATE TABLE `key_values` (
   `value` TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `users` (
-  username VARCHAR(50)  NOT NULL PRIMARY KEY,
-  password VARCHAR(255) NOT NULL,
-  enabled  BOOLEAN      NOT NULL
-) ENGINE = InnoDB;
-
-CREATE TABLE `authorities` (
-  username  VARCHAR(50) NOT NULL,
-  authority VARCHAR(50) NOT NULL,
-  FOREIGN KEY (username) REFERENCES users (username),
-  UNIQUE INDEX authorities_idx_1 (username, authority)
+CREATE TABLE `accounts` (
+  user_name VARCHAR(50) NOT NULL PRIMARY KEY,
+  active BIT NOT NULL,
+  encrypted_password VARCHAR(255) NOT NULL,
+  user_role VARCHAR(20) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `email_account_settings` (

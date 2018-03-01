@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @Controller
+@RequestMapping("/admin/")
 public class SettingsController {
 
     public static final int PAGE_SIZE = 5;
@@ -40,7 +41,7 @@ public class SettingsController {
         EnviromentSettingForm enviromentSettingForm = new EnviromentSettingForm();
         enviromentSettingForm.setMap(map);
         model.addAttribute("enviromentSettingForm", enviromentSettingForm);
-        return "settings/enviroment_settings";
+        return "admin/settings/enviroment_settings";
     }
 
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.POST)
@@ -49,7 +50,7 @@ public class SettingsController {
         for (String key : map.keySet()) {
             enviromentSettingService.set(key, map.get(key));
         }
-        return "redirect:/enviromentSettings";
+        return "redirect:/admin/enviromentSettings";
     }
 
     @RequestMapping(value = "/mailAccountSettings", method = RequestMethod.GET)
@@ -66,15 +67,15 @@ public class SettingsController {
         model.addAttribute("page", pageWrapper);
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
-        return "settings/mail_accounts_settings";
+        return "admin/settings/mail_accounts_settings";
     }
     @RequestMapping(value = "/mailAccountSettings/add", method = RequestMethod.GET)
     public String getAddReceiveAccount(Model model) {
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm();
         receiveAccountForm.setMailServerPort(993);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
-        model.addAttribute("api", "/addReceiveAccount");
-        return "settings/account/form";
+        model.addAttribute("api", "/admin/addReceiveAccount");
+        return "admin/settings/account/form";
     }
 
     @RequestMapping(value = { "/addReceiveAccount" }, method = RequestMethod.POST)
@@ -83,7 +84,7 @@ public class SettingsController {
             @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
         EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, false);
         accountsSettingsService.save(newAccount);
-        return "redirect:/mailAccountSettings";
+        return "redirect:/admin/mailAccountSettings";
     }
 
     @RequestMapping(value = "/mailAccountSettings/update", method = RequestMethod.GET)
@@ -95,8 +96,8 @@ public class SettingsController {
         EmailAccountSetting account = listAccount.get(0);
         ReceiveAccountForm receiveAccountForm = new ReceiveAccountForm(account);
         model.addAttribute("receiveAccountForm", receiveAccountForm);
-        model.addAttribute("api", "/updateReceiveAccount/" + id);
-        return "settings/account/form";
+        model.addAttribute("api", "/admin/updateReceiveAccount/" + id);
+        return "admin/settings/account/form";
     }
 
     @RequestMapping(value = "/updateReceiveAccount/{id}", method = RequestMethod.POST)
@@ -108,7 +109,7 @@ public class SettingsController {
         EmailAccountSetting newAccount = new EmailAccountSetting(receiveAccountForm, true);
         newAccount.setId(id);
         accountsSettingsService.save(newAccount);
-        return "redirect:/mailAccountSettings";
+        return "redirect:/admin/mailAccountSettings";
     }
 
     @RequestMapping(value = "/mailAccountSettings/addSend", method = RequestMethod.GET)
@@ -116,8 +117,8 @@ public class SettingsController {
         SendAccountForm sendAccountForm = new SendAccountForm();
         sendAccountForm.setMailServerPort(25);
         model.addAttribute("sendAccountForm", sendAccountForm);
-        model.addAttribute("api", "/addSendAccount");
-        return "settings/account/sendForm";
+        model.addAttribute("api", "/admin/addSendAccount");
+        return "admin/settings/account/sendForm";
     }
 
     @RequestMapping(value = { "/addSendAccount" }, method = RequestMethod.POST)
@@ -126,7 +127,7 @@ public class SettingsController {
             @ModelAttribute("sendAccountForm") SendAccountForm sendAccountForm) {
         EmailAccountSetting newAccount = new EmailAccountSetting(sendAccountForm, false);
         accountsSettingsService.save(newAccount);
-        return "redirect:/mailAccountSettings";
+        return "redirect:/admin/mailAccountSettings";
     }
 
     @RequestMapping(value = "/mailAccountSettings/updateSend", method = RequestMethod.GET)
@@ -138,8 +139,8 @@ public class SettingsController {
         EmailAccountSetting account = listAccount.get(0);
         SendAccountForm sendAccountForm = new SendAccountForm(account);
         model.addAttribute("sendAccountForm", sendAccountForm);
-        model.addAttribute("api", "/updateSendAccount/" + id);
-        return "settings/account/sendForm";
+        model.addAttribute("api", "/admin/updateSendAccount/" + id);
+        return "admin/settings/account/sendForm";
     }
 
     @RequestMapping(value = "/updateSendAccount/{id}", method = RequestMethod.POST)
@@ -151,11 +152,11 @@ public class SettingsController {
         EmailAccountSetting newAccount = new EmailAccountSetting(sendAccountForm, true);
         newAccount.setId(id);
         accountsSettingsService.save(newAccount);
-        return "redirect:/mailAccountSettings";
+        return "redirect:/admin/mailAccountSettings";
     }
 
     @RequestMapping("/receiveRuleSettings")
     public String receiveRuleSettings() {
-        return "settings/receive_mail_rule_settings";
+        return "admin/settings/receive_mail_rule_settings";
     }
 }
