@@ -1,3 +1,8 @@
+.content-wrapper {
+    max-height: calc(100vh - 100px);
+    overflow-y: scroll;
+}
+
 .form-horizontal .control-label.text-left {
     text-align: left;
 }
@@ -231,6 +236,10 @@ select:not([multiple]) {
     width: 100%;
 }
 
+.mail-analysis .table-container td input[type="checkbox"] {
+    width: auto;
+}
+
 .mail-analysis .table-container td, .mail-analysis .table-container th {
     padding-top: 4px;
     padding-bottom: 4px;
@@ -250,6 +259,12 @@ select:not([multiple]) {
     width: 100%;
     border: none;
     background-color: transparent;
+}
+
+.mail-analysis div.matching-container {
+    border: 1px solid #e6e6e6;
+    padding: 5px 30px;
+    margin: 0 15px;
 }
 
 span.form-error {
