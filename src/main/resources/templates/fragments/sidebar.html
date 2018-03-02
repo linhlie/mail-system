@@ -52,9 +52,9 @@
                 <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
             </a>
         </li>
-        <li class="header">ヘルプ</li>
-        <li>
-            <a href="#">
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">ヘルプ</li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a href="#" th:href="@{/admin/help}">
                 <i class="fa fa-info-circle"></i> <span>ヘルプ</span>
                 <!--TODO: help page content is -->
                 <!--TODO: · Server application version information-->
