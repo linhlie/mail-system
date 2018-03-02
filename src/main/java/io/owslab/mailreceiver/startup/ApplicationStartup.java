@@ -1,21 +1,27 @@
 package io.owslab.mailreceiver.startup;
 
 import io.owslab.mailreceiver.dao.AccountDAO;
+import io.owslab.mailreceiver.enums.CombineOption;
+import io.owslab.mailreceiver.enums.ConditionOption;
+import io.owslab.mailreceiver.enums.MailItemOption;
+import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
-import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.utils.SelectOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -48,6 +54,42 @@ public class ApplicationStartup {
     private NumberRangeService numberRangeService;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
+
+    @Bean
+    public List<SelectOption> combineOptions() {
+        List<SelectOption> list = new ArrayList<SelectOption>();
+        for (CombineOption option : CombineOption.values()) {
+            list.add(new SelectOption(option.getValue(), option.getText()));
+        }
+        return list;
+    }
+
+    @Bean
+    public List<SelectOption> conditionOptions() {
+        List<SelectOption> list = new ArrayList<SelectOption>();
+        for (ConditionOption option : ConditionOption.values()) {
+            list.add(new SelectOption(option.getValue(), option.getText()));
+        }
+        return list;
+    }
+
+    @Bean
+    public List<SelectOption> mailItemOptions() {
+        List<SelectOption> list = new ArrayList<SelectOption>();
+        for (MailItemOption option : MailItemOption.values()) {
+            list.add(new SelectOption(option.getValue(), option.getText()));
+        }
+        return list;
+    }
+
+    @Bean
+    public List<SelectOption> matchingItemOptions() {
+        List<SelectOption> list = new ArrayList<SelectOption>();
+        for (MatchingItemOption option : MatchingItemOption.values()) {
+            list.add(new SelectOption(option.getValue(), option.getText()));
+        }
+        return list;
+    }
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
