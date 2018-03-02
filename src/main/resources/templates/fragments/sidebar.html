@@ -38,7 +38,7 @@
         </li>
         <li class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
-            <a href="#">
+            <a href="#" th:href="@{/admin/administratorSetting}">
                 <i class="fa fa-envelope"></i> <span>管理者設定</span>
             </a>
         </li>
