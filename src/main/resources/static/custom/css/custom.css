@@ -267,6 +267,10 @@ select:not([multiple]) {
     margin: 0 15px;
 }
 
+.mail-analysis a.remove {
+    color: #333;
+}
+
 span.form-error {
     color: red !important;
 }

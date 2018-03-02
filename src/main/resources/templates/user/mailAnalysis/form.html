@@ -26,8 +26,54 @@
                                                     <th class="col-xs-2">グループ</th>
                                                     <th class="col-xs-2">AND/OR</th>
                                                     <th class="col-xs-2">項目</th>
-                                                    <th class="col-xs-2">条件</th>
-                                                    <th class="col-xs-2">値</th>
+                                                    <th class="col-xs-3">条件</th>
+                                                    <th class="col-xs-3">値</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <span name="addMotoRow" title="add"
+                                                              style="cursor: pointer"
+                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr class="hidden">
+                                                    <td class="text-center">
+                                                        <input name="group"
+                                                               type="checkbox"
+                                                        />
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${combineOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${mailItemOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${conditionOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center">
@@ -60,9 +106,13 @@
                                                         </select>
                                                     </td>
                                                     <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
-                                                </thead>
-                                                <tbody>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -87,8 +137,54 @@
                                                     <th class="col-xs-2">グループ</th>
                                                     <th class="col-xs-2">AND/OR</th>
                                                     <th class="col-xs-2">項目</th>
-                                                    <th class="col-xs-2">条件</th>
-                                                    <th class="col-xs-2">値</th>
+                                                    <th class="col-xs-3">条件</th>
+                                                    <th class="col-xs-3">値</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <span name="addSakiRow" title="add"
+                                                              style="cursor: pointer"
+                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr class="hidden">
+                                                    <td class="text-center">
+                                                        <input name="group"
+                                                               type="checkbox"
+                                                        />
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${combineOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${mailItemOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${conditionOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center">
@@ -121,9 +217,13 @@
                                                         </select>
                                                     </td>
                                                     <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
-                                                </thead>
-                                                <tbody>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -159,8 +259,54 @@
                                                     <th class="col-xs-2">グループ</th>
                                                     <th class="col-xs-2">AND/OR</th>
                                                     <th class="col-xs-2">項目</th>
-                                                    <th class="col-xs-2">条件</th>
-                                                    <th class="col-xs-2">値</th>
+                                                    <th class="col-xs-3">条件</th>
+                                                    <th class="col-xs-3">値</th>
+                                                    <th class="col-xs-1 text-center">
+                                                        <span name="addMatchRow" title="add"
+                                                              style="cursor: pointer"
+                                                              class="glyphicon glyphicon-plus">
+                                                                        </span>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr class="hidden">
+                                                    <td class="text-center">
+                                                        <input name="group"
+                                                               type="checkbox"
+                                                        />
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${combineOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${matchingItemOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td class="select-container">
+                                                        <select style="width: 100%;" aria-hidden="true">
+                                                            <option value="" selected="selected" disabled="disabled"></option>
+                                                            <option th:each="option : ${conditionOptions}"
+                                                                    th:value="${option.value}"
+                                                                    th:utext="${option.text}"/>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center">
@@ -193,9 +339,13 @@
                                                         </select>
                                                     </td>
                                                     <td><input type="text" placeholder=""/></td>
+                                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer"
+                                                                              class="glyphicon glyphicon-remove">
+                                                                        </span>
+                                                    </td>
                                                 </tr>
-                                                </thead>
-                                                <tbody>
                                                 </tbody>
                                             </table>
                                         </div>
