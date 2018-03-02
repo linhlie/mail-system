@@ -1,0 +1,35 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>
+            ダッシュボード
+        </h1>
+    </section>
+    <section class="content">
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <a th:href="@{/admin/mailbox}">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-envelope-o"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Messages</span>
+                            <span class="info-box-number" th:text="${numberOfMessage}"></span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                </a>
+                <!-- /.info-box -->
+            </div>
+        </div>
+        <!-- /.row -->
+    </section>
+</div>
+</body>
+</html>

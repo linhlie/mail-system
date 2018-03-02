@@ -18,6 +18,8 @@
     <!-- iCheck -->
     <link rel="stylesheet" href="plugins/iCheck/square/blue.css"/>
 
+    <link rel="stylesheet" href="/custom/css/custom.css"/>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -32,30 +34,31 @@
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
-        <p class="login-box-msg">Login system</p>
+        <p class="login-box-msg">Register account</p>
 
-        <div th:if="${param.error}">
-            <div class="callout callout-danger">
-                <p>Username or password is incorrect.</p>
-            </div>
-        </div>
-
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/register}" th:object="${registerAccountForm}" method="post">
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" name="username" placeholder="username"/>
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                <input th:class="${#fields.hasErrors('userName')} ? 'form-error form-control' : 'form-control'" type="text" th:field="*{userName}" name="username" placeholder="Username"/>
+                <span th:class="${#fields.hasErrors('userName')} ? 'form-error glyphicon glyphicon-user form-control-feedback' : 'glyphicon glyphicon-user form-control-feedback'"></span>
+                <span class="form-error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">..</span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" name="password" placeholder="password"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                <input th:class="${#fields.hasErrors('password')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{password}" name="password" placeholder="Password"/>
+                <span th:class="${#fields.hasErrors('password')} ? 'form-error glyphicon glyphicon-lock form-control-feedback' : 'glyphicon glyphicon-lock form-control-feedback'"></span>
+                <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">..</span>
+            </div>
+            <div class="form-group has-feedback">
+                <input th:class="${#fields.hasErrors('confirmPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{confirmPassword}" name="comfirmPassword" placeholder="Confirm password"/>
+                <span th:class="${#fields.hasErrors('confirmPassword')} ? 'form-error glyphicon glyphicon-lock form-control-feedback' : 'glyphicon glyphicon-lock form-control-feedback'"></span>
+                <span class="form-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">..</span>
             </div>
             <div class="row">
                 <div class="col-xs-4 col-xs-offset-1">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">Submit</button>
                 </div>
                 <div class="col-xs-6">
-                    <a th:href="@{/register}">
-                        <div type="button" class="btn btn-default btn-block btn-flat">Register an account</div>
+                    <a th:href="@{/login}">
+                        <div type="button" class="btn btn-default btn-block btn-flat">Back to login</div>
                     </a>
                 </div>
             </div>
@@ -70,13 +73,13 @@
 <!-- iCheck -->
 <script src="plugins/iCheck/icheck.min.js"></script>
 <script>
-  $(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' // optional
+    $(function () {
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' // optional
+        });
     });
-  });
 </script>
 </body>
 </html>

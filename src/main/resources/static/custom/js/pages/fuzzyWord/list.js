@@ -16,7 +16,7 @@
         $("span[name='"+name+"']").click(function () {
             $.ajax({
                 type:type,
-                url : "/fuzzyWord/" + $(this).attr("data") + "/delete",
+                url : "/user/fuzzyWord/" + $(this).attr("data") + "/delete",
                 contentType: "application/json",
                 dataType : 'json',
                 success: function (result) {

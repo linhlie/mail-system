@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -22,11 +24,16 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_USER_NAME = "admin";
-    private static final String LOGIN_PASSWORD = "Ows@2018";
-
     @Autowired
     private DataSource datasource;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,24 +41,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/bootstrap/**", "/dist/**", "/plugins/**", "/custom/**").permitAll()
+                .antMatchers("/register").permitAll()
+                .antMatchers("/user", "/user/**").hasRole("MEMBER")
+                .antMatchers("/admin", "/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
+
                 .and()
                 .formLogin()
                 .failureUrl("/login?error")
                 .loginPage("/login")
-                .defaultSuccessUrl("/")
-
+                .defaultSuccessUrl("/default")
                 .permitAll()
+
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login")
-                .permitAll();
+                .permitAll()
+
+                .and()
+                .exceptionHandling()
+                .accessDeniedPage("/403");
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        //Use Spring Boots User detailsMAnager
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        /*//Use Spring Boots User detailsMAnager
         JdbcUserDetailsManager userDetailsService = new JdbcUserDetailsManager();
 
         //Set our Datasource to use the one defined in application.properties
@@ -71,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             authorities.add(new SimpleGrantedAuthority("USER"));
             User userDetails = new User(LOGIN_USER_NAME, encoder.encode(LOGIN_PASSWORD), authorities);
             userDetailsService.createUser(userDetails);
-        }
+        }*/
     }
 
 }

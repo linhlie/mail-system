@@ -251,3 +251,11 @@ select:not([multiple]) {
     border: none;
     background-color: transparent;
 }
+
+span.form-error {
+    color: red !important;
+}
+
+input.form-error {
+    border-color: red !important;
+}

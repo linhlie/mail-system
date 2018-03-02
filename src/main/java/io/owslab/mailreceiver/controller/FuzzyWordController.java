@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * Created by khanhlvb on 2/8/18.
  */
 @Controller
+@RequestMapping("/user/")
 public class FuzzyWordController {
     @Autowired
     private WordService wordService;
@@ -33,6 +35,7 @@ public class FuzzyWordController {
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
     public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
         int totalFuzzyWord = 0;
+        List<Word> wordList = wordService.findAll();
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
             Word word = wordService.findOne(search);
@@ -45,8 +48,10 @@ public class FuzzyWordController {
                 totalFuzzyWord = originalWords.size() + associatedWords.size();
             }
         }
+        model.addAttribute("wordList", wordList);
+        model.addAttribute("wordListSize", wordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
-        return "fuzzyword/list";
+        return "user/fuzzyword/list";
     }
 
     @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
@@ -67,8 +72,8 @@ public class FuzzyWordController {
         fuzzyWordForm.setOriginal(original);
         model.addAttribute("fuzzyWordForm", fuzzyWordForm);
         model.addAttribute("original", original);
-        model.addAttribute("api", "/addFuzzyWord");
-        return "fuzzyword/form";
+        model.addAttribute("api", "/user/addFuzzyWord");
+        return "user/fuzzyword/form";
     }
 
     @PostMapping("/addFuzzyWord")

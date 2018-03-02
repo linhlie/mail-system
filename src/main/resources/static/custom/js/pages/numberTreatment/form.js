@@ -71,7 +71,7 @@
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: "/numberTreatment",
+            url: "/user/numberTreatment",
             data: JSON.stringify(form),
             dataType: 'json',
             cache: false,

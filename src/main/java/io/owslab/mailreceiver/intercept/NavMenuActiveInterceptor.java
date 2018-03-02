@@ -20,6 +20,13 @@ public class NavMenuActiveInterceptor extends HandlerInterceptorAdapter {
             int index=url.indexOf("/");
             if(index>0) {
                 currentMenu = url.substring(0, index);
+                if(currentMenu.equals("admin") || currentMenu.equals("user")){
+                    currentMenu = url.substring(index+1);
+                    int index2=currentMenu.indexOf("/");
+                    if(index2>0){
+                        currentMenu = currentMenu.substring(0, index2);
+                    }
+                }
             }
             request.setAttribute("currentMenu",currentMenu);
         }
