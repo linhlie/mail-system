@@ -26,7 +26,7 @@ public class MailBoxController {
     @Autowired
     private MailBoxService mailBoxService;
 
-    @RequestMapping(value = "/mailbox", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -37,7 +37,7 @@ public class MailBoxController {
         Page<Email> pages = search == null || search.length() == 0? mailBoxService.list(pageRequest) : mailBoxService.searchContent(search, pageRequest);
         List<Email> list = pages.getContent();
         int rowsInPage = list.size();
-        PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/mailbox");
+        PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/admin/mailbox");
         for(int i = 0; i < rowsInPage; i++){
             Email email = list.get(i);
             relativeSentAtEmailList.add(new RelativeSentAtEmail(email));
@@ -51,6 +51,6 @@ public class MailBoxController {
         model.addAttribute("page", pageWrapper);
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
-        return "mailbox/list";
+        return "admin/mailbox/list";
     }
 }

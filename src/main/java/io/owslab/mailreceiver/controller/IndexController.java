@@ -20,7 +20,6 @@ public class IndexController {
 
     public String defaultAfterLogin(HttpServletRequest request) {
         if (request.isUserInRole("ROLE_ADMIN")) {
-            System.out.println("defaultAfterLogin: admin");
             return "redirect:/admin/";
         }
         System.out.println("defaultAfterLogin: user");
@@ -28,7 +27,10 @@ public class IndexController {
     }
 
     @RequestMapping(value = { "/", "/index" }, method = RequestMethod.GET)
-    public String index(Model model) {
+    public String index(Model model, HttpServletRequest request) {
+        if (request.isUserInRole("ROLE_ADMIN")) {
+            return "redirect:/admin/";
+        }
         return "index";
     }
 
