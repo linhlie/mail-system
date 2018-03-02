@@ -22,7 +22,6 @@ public class IndexController {
         if (request.isUserInRole("ROLE_ADMIN")) {
             return "redirect:/admin/";
         }
-        System.out.println("defaultAfterLogin: user");
         return "redirect:/";
     }
 

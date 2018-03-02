@@ -28,8 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountDAO.findOne(username);
 
-        System.out.println("Account= " + account);
-
         if (account == null) {
             throw new UsernameNotFoundException("User " //
                     + username + " was not found in the database");
