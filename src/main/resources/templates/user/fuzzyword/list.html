@@ -23,7 +23,7 @@
                                 <div class="fuzzy-form-container">
                                     <div class="col-xs-5 full-height">
                                         <div class="fuzzy-table-container">
-                                            <form action="#" th:action="@{/fuzzyWord}">
+                                            <form action="#" th:action="@{/user/fuzzyWord}">
                                                 <table class="table table-bordered">
                                                     <thead>
                                                     <tr>
@@ -44,7 +44,7 @@
                                                     <tr th:each="item:${wordList}">
                                                         <td th:text="${item.word}"></td>
                                                         <td class="text-center">
-                                                            <a href="#" th:href="@{/fuzzyWord(search=${item.word})}">
+                                                            <a href="#" th:href="@{/user/fuzzyWord(search=${item.word})}">
                                                                     <span title="删除" th:data="${item.id}"
                                                                           style="cursor: pointer"
                                                                           class="glyphicon glyphicon-play">
@@ -72,7 +72,7 @@
                                                     <th class="col-xs-2">同一/除外</th>
                                                     <th class="col-xs-9">類似単語</th>
                                                     <th class="col-xs-1 text-center">
-                                                        <a title="新規登録" href="#" th:href="@{/fuzzyWord/add(original=${search})}"
+                                                        <a title="新規登録" href="#" th:href="@{/user/fuzzyWord/add(original=${search})}"
                                                            th:if="(${search} ne null)">
                                                             <span class="glyphicon glyphicon-plus"></span>
                                                         </a>

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * Created by khanhlvb on 2/8/18.
  */
 @Controller
+@RequestMapping("/user/")
 public class FuzzyWordController {
     @Autowired
     private WordService wordService;
@@ -50,7 +51,7 @@ public class FuzzyWordController {
         model.addAttribute("wordList", wordList);
         model.addAttribute("wordListSize", wordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
-        return "fuzzyword/list";
+        return "user/fuzzyword/list";
     }
 
     @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
@@ -71,8 +72,8 @@ public class FuzzyWordController {
         fuzzyWordForm.setOriginal(original);
         model.addAttribute("fuzzyWordForm", fuzzyWordForm);
         model.addAttribute("original", original);
-        model.addAttribute("api", "/addFuzzyWord");
-        return "fuzzyword/form";
+        model.addAttribute("api", "/user/addFuzzyWord");
+        return "user/fuzzyword/form";
     }
 
     @PostMapping("/addFuzzyWord")

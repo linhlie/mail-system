@@ -27,12 +27,12 @@
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
-            <a href="#" th:href="@{/fuzzyWord}">
+            <a href="#" th:href="@{/user/fuzzyWord}">
                 <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
-            <a href="#" th:href="@{/numberTreatment}">
+            <a href="#" th:href="@{/user/numberTreatment}">
                 <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
             </a>
         </li>
@@ -48,7 +48,7 @@
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
-            <a href="#" th:href="@{/mailAnalysis}">
+            <a href="#" th:href="@{/user/mailAnalysis}">
                 <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
             </a>
         </li>

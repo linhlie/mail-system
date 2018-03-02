@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * Created by khanhlvb on 2/11/18.
  */
 @Controller
+@RequestMapping("/user/")
 public class NumberTreatmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(NumberTreatmentController.class);
@@ -53,7 +54,7 @@ public class NumberTreatmentController {
         List<ReplaceLetter> replaceLetters = replaceLetterService.getList();
         form.setReplaceLetterList(replaceLetters);
         model.addAttribute("numberTreatmentForm", form);
-        return "numbertreatment/form";
+        return "user/numbertreatment/form";
     }
 
     @PostMapping("/numberTreatment")

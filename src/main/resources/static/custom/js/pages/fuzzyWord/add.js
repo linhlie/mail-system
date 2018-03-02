@@ -27,9 +27,9 @@
                     console.log("SUCCESS : ", data);
                     var original = fuzzyWordForm["original"];
                     if(typeof original === "string" && original.length > 0) {
-                        window.location = '/fuzzyWord?search=' + original;
+                        window.location = '/user/fuzzyWord?search=' + original;
                     } else {
-                        window.location = '/fuzzyWord';
+                        window.location = '/user/fuzzyWord';
                     }
                 } else {
                     console.log("FAILED : ", data);

@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by khanhlvb on 2/28/18.
  */
 @Controller
+@RequestMapping("/user/")
 public class MailAnalysisController {
     @RequestMapping(value = "/mailAnalysis", method = RequestMethod.GET)
     public String getMailAnalysisPage(Model model) {
-        return "mailAnalysis/form";
+        return "user/mailAnalysis/form";
     }
 }

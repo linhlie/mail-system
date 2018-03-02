@@ -20,7 +20,7 @@ public class NavMenuActiveInterceptor extends HandlerInterceptorAdapter {
             int index=url.indexOf("/");
             if(index>0) {
                 currentMenu = url.substring(0, index);
-                if(currentMenu.equals("admin")){
+                if(currentMenu.equals("admin") || currentMenu.equals("user")){
                     currentMenu = url.substring(index+1);
                     int index2=currentMenu.indexOf("/");
                     if(index2>0){
