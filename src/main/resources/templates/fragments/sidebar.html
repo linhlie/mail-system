@@ -10,7 +10,7 @@
         </div>
     </div>
     <ul class="sidebar-menu">
-        <li class="header">コントロールパネル</li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">コントロールパネル</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'enviromentSettings'})?'active':''">
             <a href="#" th:href="@{/admin/enviromentSettings}">
                 <i class="fa fa-cog"></i> <span>環境設定</span>
@@ -26,16 +26,6 @@
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
-            <a href="#" th:href="@{/user/fuzzyWord}">
-                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
-            <a href="#" th:href="@{/user/numberTreatment}">
-                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
-            </a>
-        </li>
         <li class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
             <a href="#" th:href="@{/admin/administratorSetting}">
@@ -47,10 +37,36 @@
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>
             </a>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAnalysis'})?'active':''">
-            <a href="#" th:href="@{/user/mailAnalysis}">
-                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+            <a href="#" th:href="@{/user/fuzzyWord}">
+                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
             </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+            <a href="#" th:href="@{/user/numberTreatment}">
+                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview">
+            <a href="#">
+                <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+                <span class="pull-right-container">
+          <i class="fa fa-angle-left pull-right"></i>
+        </span>
+            </a>
+            <ul class="treeview-menu">
+                <li>
+                    <a href="#"><i class="fa fa-circle-o"></i>メールマッチング
+                        <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li th:class="(${currentMenu == 'matchingSettings'})?'active':''"><a href="#" th:href="@{/user/matchingSettings}"><i class="fa fa-circle-o"></i>条件設定</a></li>
+                        <li th:class="(${currentMenu == 'matchingResult'})?'active':''"><a href="#" th:href="@{/user/matchingResult}"><i class="fa fa-circle-o"></i>結果表示</a></li>
+                    </ul>
+                </li>
+            </ul>
         </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">ヘルプ</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')">
