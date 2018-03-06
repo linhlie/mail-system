@@ -1,4 +1,4 @@
-SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+SET NAMES utf8 COLLATE utf8_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
 INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)

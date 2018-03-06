@@ -11,4 +11,4 @@ CREATE TABLE `emails_words` (
   REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -1,15 +1,15 @@
 DROP DATABASE IF EXISTS `mailsys`;
-CREATE DATABASE `mailsys` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `mailsys` CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `mailsys`;
 
-SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+SET NAMES utf8 COLLATE utf8_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `key_values`;
 CREATE TABLE `key_values` (
   `key` VARCHAR(191) PRIMARY KEY,
   `value` TEXT DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE `accounts` (
@@ -35,7 +35,7 @@ CREATE TABLE `email_account_settings` (
   `updated_at` DATETIME DEFAULT NULL,
   `type` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、受信 1. 送信',
   UNIQUE KEY unique_account (account, type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
@@ -48,10 +48,10 @@ INSERT INTO email_account_settings(account, password, mail_server_address, mail_
 
 DROP TABLE IF EXISTS `emails`;
 CREATE TABLE `emails` (
-  `message_id` VARCHAR(191) PRIMARY KEY,
+  `message_id` VARCHAR(191) PRIMARY KEY COLLATE utf8_unicode_ci,
   `account_id` INT NOT NULL,
   `from` VARCHAR(120) NOT NULL,
-  `subject` TEXT COLLATE utf8_unicode_ci NOT NULL,
+  `subject` TEXT NOT NULL,
   `to` TEXT NOT NULL,
   `cc` TEXT DEFAULT NULL,
   `bcc` TEXT DEFAULT NULL,
@@ -60,18 +60,18 @@ CREATE TABLE `emails` (
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
   `content_type` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、TEXT 1. HTML',
-  `original_body`MEDIUMTEXT COLLATE utf8_unicode_ci DEFAULT NULL,
-  `optimized_body`TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
+  `original_body`MEDIUMTEXT DEFAULT NULL,
+  `optimized_body`TEXT DEFAULT NULL,
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
-  `meta_data` TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
+  `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
   REFERENCES email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 # INSERT INTO emails(message_id, account_id, `from`, subject, `to`, sent_at)
 # VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
@@ -91,13 +91,13 @@ CREATE TABLE `files` (
   REFERENCES emails(message_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `words`;
 CREATE TABLE `words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `word` VARCHAR(191) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `word` VARCHAR(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO words(id, word)
 VALUES (1, 'java');
@@ -118,7 +118,7 @@ CREATE TABLE `fuzzy_words` (
   REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE fuzzy_words
 ADD CONSTRAINT uc_fuzzy_word UNIQUE (word_id,with_word_id);
@@ -139,7 +139,7 @@ CREATE TABLE `email_word_jobs` (
   REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE email_word_jobs
 ADD CONSTRAINT uc_email_word_job UNIQUE (message_id,word_id);
@@ -200,7 +200,7 @@ CREATE TABLE `emails_words` (
   REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE emails_words
 ADD CONSTRAINT uc_email_word UNIQUE (message_id,word_id);
@@ -212,14 +212,14 @@ CREATE TABLE `replace_numbers` (
   `character` VARCHAR(191) NOT NULL,
   `replace_value` INT NOT NULL,
   UNIQUE KEY unique_character (`character`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `replace_units` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `unit` VARCHAR(191) NOT NULL,
   `replace_unit` VARCHAR(191) NOT NULL,
   UNIQUE KEY unique_unit (unit)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO replace_numbers(`character`, replace_value)
 VALUES ('K', 1000);
@@ -239,7 +239,7 @@ CREATE TABLE `replace_letters` (
   `position` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、数値の前の 1. 数値の後の',
   `replace` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上として認識する 1. 以下として認識する 2. 未満として認識する 3. 超として認識する 4. None',
   `hidden` BOOLEAN DEFAULT FALSE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE replace_letters
 ADD CONSTRAINT uc_replace_letter UNIQUE (letter, position);
@@ -278,7 +278,7 @@ CREATE TABLE `number_treatments` (
   `right_boundary_operator` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1、以下を数字として扱う 2. 未満を通じとして扱う',
   `enable_replace_letter` BOOLEAN DEFAULT FALSE,
   UNIQUE KEY unique_mumber_treatment_name (name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO number_treatments(name, upper_limit_name, upper_limit_rate, lower_limit_name, lower_limit_rate)
 VALUES ('name', 'upper_limit_name', 1.2, 'lower_limit_name', 0.8);
@@ -297,7 +297,7 @@ CREATE TABLE `number_ranges` (
   REFERENCES replace_letters(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `matching_conditions` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -307,4 +307,4 @@ CREATE TABLE `matching_conditions` (
   `condition`SMALLINT(6) NOT NULL DEFAULT '-1',
   `value` VARCHAR(191) DEFAULT NULL,
   `type` TINYINT(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

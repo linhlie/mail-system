@@ -1,7 +1,7 @@
 CREATE TABLE `words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `word` VARCHAR(191) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `word` VARCHAR(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 CREATE TABLE `fuzzy_words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,4 +16,4 @@ CREATE TABLE `fuzzy_words` (
   REFERENCES words(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

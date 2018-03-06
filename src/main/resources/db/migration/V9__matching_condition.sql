@@ -6,4 +6,4 @@ CREATE TABLE `matching_conditions` (
   `condition`SMALLINT(6) NOT NULL DEFAULT '-1',
   `value` VARCHAR(191) DEFAULT NULL,
   `type` TINYINT(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

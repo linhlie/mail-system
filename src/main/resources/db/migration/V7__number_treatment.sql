@@ -14,4 +14,4 @@ CREATE TABLE `number_treatments` (
   `right_boundary_operator` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1、以下を数字として扱う 2. 未満を通じとして扱う',
   `enable_replace_letter` BOOLEAN DEFAULT FALSE,
   UNIQUE KEY unique_mumber_treatment_name (name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
