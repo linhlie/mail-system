@@ -148,11 +148,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
-            List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
-            List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
-//            System.out.println("List: " + sourceConditionList.size() + " " + destinationConditionList.size() + " " + matchingConditionList.size());
-//            System.out.println("Form: " + matchingConditionForm.getMatchingWords() + " " + matchingConditionForm.isDistinguish());
+            matchingConditionService.matching(matchingConditionForm);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

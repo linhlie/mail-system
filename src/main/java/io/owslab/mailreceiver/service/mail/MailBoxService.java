@@ -38,6 +38,10 @@ public class MailBoxService {
         return list;
     }
 
+    public List<Email> getAll(){
+        return emailDAO.findByDeleted(false);
+    }
+
     public static String optimizeText(String original){
         String optimizedText = Jsoup.parse(original).text();
 //        int conv_op_flags = 0;
