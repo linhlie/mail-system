@@ -54,4 +54,26 @@ public class MatchingSettingsController {
         result.setList(matchingConditionService.getSourceConditionList());
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value="/matchingSettings/destination", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getDestinationInJSON (){
+        AjaxResponseBody result = new AjaxResponseBody();
+
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(matchingConditionService.getDestinationConditionList());
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value="/matchingSettings/matching", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getMatchingInJSON (){
+        AjaxResponseBody result = new AjaxResponseBody();
+
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(matchingConditionService.getMatchingConditionList());
+        return ResponseEntity.ok(result);
+    }
 }

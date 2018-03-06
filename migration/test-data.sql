@@ -37,3 +37,19 @@ VALUES
 INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
 VALUES
 	(TRUE , 1, 2, 2, '234', 0);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(FALSE , 0, 0, 0, '345', 1);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(TRUE , 0, 2, 2, '456', 1);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(FALSE , 0, 0, 0, '567', 2);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(TRUE , 0, 2, 2, '678', 2);

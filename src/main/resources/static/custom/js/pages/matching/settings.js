@@ -2,33 +2,17 @@
 (function () {
     "use strict";
     var sourceTableId = 'motoMail';
+    var destinationTableId = 'sakiMail';
+    var matchingTableId = 'matching';
 
     $(function () {
-        setAddReplaceLetterRowListener('addMotoRow', 'motoMail', ["group", "combine", "item", "condition", "value"]);
-        setAddReplaceLetterRowListener('addSakiRow', 'sakiMail', ["group", "combine", "item", "condition", "value"]);
-        setAddReplaceLetterRowListener('addMatchRow', 'matching', ["group", "combine", "item", "condition", "value"]);
+        setAddReplaceLetterRowListener('addMotoRow', sourceTableId, ["group", "combine", "item", "condition", "value"]);
+        setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
+        setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
         setRemoveRowListener("removeConditionRow");
-    });
-
-    $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: "/user/matchingSettings/source",
-        cache: false,
-        timeout: 600000,
-        success: function (data) {
-            if(data.status){
-                if(data.list){
-                    removeAllRow(sourceTableId);
-                    for(var i = 0; i < data.list.length; i ++){
-                        addRowWithData(sourceTableId, data.list[i]);
-                    }
-                }
-            }
-        },
-        error: function (e) {
-            console.log("matchingSettings ERROR : ", e);
-        }
+        getSourceListData();
+        getDestinationListData();
+        getMatchingListData();
     });
 
     function setRemoveRowListener(name) {
@@ -42,6 +26,43 @@
         $("span[name='"+name+"']").click(function () {
             addRow(tableId);
         })
+    }
+    
+    function getSourceListData() {
+        getListData("/user/matchingSettings/source", sourceTableId);
+    }
+
+    function getDestinationListData() {
+        getListData("/user/matchingSettings/destination", destinationTableId);
+    }
+
+    function getMatchingListData() {
+        getListData("/user/matchingSettings/matching", matchingTableId);
+    }
+
+    function getListData(url, tableId) {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                console.log("getListData: ", data);
+                if(data.status){
+                    if(data.list){
+                        removeAllRow(tableId);
+                        for(var i = 0; i < data.list.length; i ++){
+                            addRowWithData(tableId, data.list[i]);
+                        }
+                        addRow(tableId);
+                    }
+                }
+            },
+            error: function (e) {
+                console.error("getListData ERROR : ", e);
+            }
+        });
     }
 
     function addRow(tableId) {
@@ -66,16 +87,18 @@
             var cellKey = cell.getAttribute("data");
             if(!cellKey) continue;
             var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-            if(cellNode.nodeName == "INPUT") {
-                if(cellNode.type == "checkbox"){
-                    cellNode.checked = data[cellKey];
-                } else if(cellNode.type == "text"){
+            if(cellNode){
+                if(cellNode.nodeName == "INPUT") {
+                    if(cellNode.type == "checkbox"){
+                        cellNode.checked = data[cellKey];
+                    } else if(cellNode.type == "text"){
+                        cellNode.value = data[cellKey];
+                    }
+                } else if(cellNode.nodeName == "SELECT") {
                     cellNode.value = data[cellKey];
+                } else if(cellNode.nodeName == "SPAN") {
+                    cellNode.textContent = data[cellKey];
                 }
-            } else if(cellNode.nodeName == "SELECT") {
-                cellNode.value = data[cellKey];
-            } else if(cellNode.nodeName == "SPAN") {
-                cellNode.textContent = data[cellKey];
             }
         }
         body.appendChild(row);
