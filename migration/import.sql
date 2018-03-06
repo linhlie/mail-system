@@ -51,7 +51,7 @@ CREATE TABLE `emails` (
   `message_id` VARCHAR(191) PRIMARY KEY,
   `account_id` INT NOT NULL,
   `from` VARCHAR(120) NOT NULL,
-  `subject` TEXT COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` TEXT COLLATE utf8_unicode_ci NOT NULL,
   `to` TEXT NOT NULL,
   `cc` TEXT DEFAULT NULL,
   `bcc` TEXT DEFAULT NULL,
@@ -60,18 +60,18 @@ CREATE TABLE `emails` (
   `received_at` DATETIME DEFAULT NULL,
   `has_attachment` BOOLEAN DEFAULT FALSE,
   `content_type` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0、TEXT 1. HTML',
-  `original_body`MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `optimized_body`TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `original_body`MEDIUMTEXT COLLATE utf8_unicode_ci DEFAULT NULL,
+  `optimized_body`TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
   `header` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT NULL,
-  `meta_data` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_data` TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
   FOREIGN KEY fk_receive_email_account(account_id)
   REFERENCES email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 # INSERT INTO emails(message_id, account_id, `from`, subject, `to`, sent_at)
 # VALUES ('abcd+khanhlvb@ows.vn', 1, 'abc', 'hello', 'khanhlvb@ows.vn', NOW());
