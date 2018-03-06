@@ -13,7 +13,7 @@
             <div class="col-md-10 col-xs-12">
                 <div class="box box-default">
                     <div class="box-body">
-                        <form id="mailAnalysisForm" class="form-horizontal" method="POST">
+                        <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>比較メール元抽出条件</span>
@@ -242,10 +242,10 @@
                             <div class="matching-container">
                                 <div class="row">
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio" checked="checked"/>全角/半角を区別しない</label>
+                                        <label><input type="radio" name="distinguish" value="false" checked="checked"/>全角/半角を区別しない</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio"/>全角/半角を区別する</label>
+                                        <label><input type="radio" name="distinguish" value="true"/>全角/半角を区別する</label>
                                     </div>
                                 </div>
                             </div>
@@ -358,7 +358,10 @@
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>マッチングワード</span>
-                                <textarea style="width: 100%" rows="4"></textarea>
+                                <textarea id="matchingWordsArea" style="width: 100%" rows="4"></textarea>
+                            </div>
+                            <div class="col-md-offset-8 col-sm-offset-7 col-xs-offset-6 col-md-4 col-sm-5 col-xs-6">
+                                <button id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block">マッチング</button>
                             </div>
                         </form>
                     </div>

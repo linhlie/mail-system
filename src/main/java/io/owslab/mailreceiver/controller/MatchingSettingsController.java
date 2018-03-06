@@ -134,4 +134,33 @@ public class MatchingSettingsController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @PostMapping("/matchingSettings/submitForm")
+    @ResponseBody
+    public ResponseEntity<?> submitForm(
+            Model model,
+            @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
+            List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
+            List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
+//            System.out.println("List: " + sourceConditionList.size() + " " + destinationConditionList.size() + " " + matchingConditionList.size());
+//            System.out.println("Form: " + matchingConditionForm.getMatchingWords() + " " + matchingConditionForm.isDistinguish());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }

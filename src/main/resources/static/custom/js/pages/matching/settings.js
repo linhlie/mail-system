@@ -1,6 +1,7 @@
 
 (function () {
     "use strict";
+    var formId = '#matchingConditionSettingsForm';
     var sourceTableId = 'motoMail';
     var destinationTableId = 'sakiMail';
     var matchingTableId = 'matching';
@@ -8,6 +9,8 @@
     var getSourceBtnId = '#getSourceBtn';
     var saveDestinationBtnId = '#saveDestinationBtn';
     var getDestinationBtnId = '#getDestinationBtn';
+    var submitFormBtnId = '#submitFormBtn';
+    var matchingWordsAreaId = '#matchingWordsArea';
 
 
     $(function () {
@@ -22,6 +25,7 @@
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
         setButtonClickListenter(getDestinationBtnId, getDestinationListData);
+        setButtonClickListenter(submitFormBtnId, submit);
     });
     
     function setButtonClickListenter(id, callback) {
@@ -35,9 +39,8 @@
 
     function saveSourceListData(){
         var data = buildDataFromTable(sourceTableId);
-        var normalizedData = removeEmptyRowData(data);
         var form = {
-            "sourceConditionList": normalizedData
+            "sourceConditionList": data
         };
         saveListData(
             "/user/matchingSettings/saveSource",
@@ -53,9 +56,8 @@
 
     function saveDestinationListData(){
         var data = buildDataFromTable(destinationTableId);
-        var normalizedData = removeEmptyRowData(data);
         var form = {
-            "destinationConditionList": normalizedData
+            "destinationConditionList": data
         };
         saveListData(
             "/user/matchingSettings/saveDestination",
@@ -234,7 +236,7 @@
             rowData["remove"] = row.className.indexOf('hidden') >= 0 ? 1 : 0;
             data.push(rowData);
         }
-        return data;
+        return removeEmptyRowData(data);
     }
     
     function removeEmptyRowData(data) {
@@ -254,6 +256,38 @@
 
     function isSkipRow(row) {
         return row && row.className && row.className.indexOf("skip") >= 0;
+    }
+    
+    function submit() {
+        var form = {
+            "sourceConditionList" : buildDataFromTable(sourceTableId),
+            "destinationConditionList" : buildDataFromTable(destinationTableId),
+            "matchingConditionList" : buildDataFromTable(matchingTableId),
+            "matchingWords": $(matchingWordsAreaId).val(),
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true"
+        };
+        disableButton(submitFormBtnId, true);
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/user/matchingSettings/submitForm",
+            data: JSON.stringify(form),
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                disableButton(submitFormBtnId, false);
+                if(data && data.status){
+                    console.log("Submit success");
+                } else {
+                    console.error("[ERROR] submit failed: ", e);
+                }
+            },
+            error: function (e) {
+                console.error("[ERROR] submit error: ", e);
+                disableButton(submitFormBtnId, false);
+            }
+        });
     }
 
 })(jQuery);

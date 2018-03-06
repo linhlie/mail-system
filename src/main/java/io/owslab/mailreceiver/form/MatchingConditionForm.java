@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class MatchingConditionForm {
 
+    private boolean distinguish;
+    private String matchingWords;
     private List<MatchingCondition> sourceConditionList;
     private List<MatchingCondition> destinationConditionList;
     private List<MatchingCondition> matchingConditionList;
@@ -41,5 +43,21 @@ public class MatchingConditionForm {
 
     public void setMatchingConditionList(List<MatchingCondition> matchingConditionList) {
         this.matchingConditionList = matchingConditionList;
+    }
+
+    public boolean isDistinguish() {
+        return distinguish;
+    }
+
+    public void setDistinguish(boolean distinguish) {
+        this.distinguish = distinguish;
+    }
+
+    public String getMatchingWords() {
+        return matchingWords;
+    }
+
+    public void setMatchingWords(String matchingWords) {
+        this.matchingWords = matchingWords;
     }
 }
