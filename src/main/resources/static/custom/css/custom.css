@@ -278,3 +278,7 @@ span.form-error {
 input.form-error {
     border-color: red !important;
 }
+
+.sidebar-menu .treeview-menu.visible {
+    display: block;
+}

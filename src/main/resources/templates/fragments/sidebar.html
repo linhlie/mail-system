@@ -54,14 +54,14 @@
           <i class="fa fa-angle-left pull-right"></i>
         </span>
             </a>
-            <ul class="treeview-menu">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview-menu visible':'treeview-menu'">
                 <li>
                     <a href="#"><i class="fa fa-circle-o"></i>メールマッチング
                         <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
                     </a>
-                    <ul class="treeview-menu">
+                    <ul class="treeview-menu" th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview-menu visible':'treeview-menu'">
                         <li th:class="(${currentMenu == 'matchingSettings'})?'active':''"><a href="#" th:href="@{/user/matchingSettings}"><i class="fa fa-circle-o"></i>条件設定</a></li>
                         <li th:class="(${currentMenu == 'matchingResult'})?'active':''"><a href="#" th:href="@{/user/matchingResult}"><i class="fa fa-circle-o"></i>結果表示</a></li>
                     </ul>
