@@ -29,3 +29,11 @@ VALUES
 INSERT INTO `replace_letters` (`letter`, `position`, `replace`, `hidden`)
 VALUES
 	('~', 1, 0, 0);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(FALSE , 1, 0, 0, '123', 0);
+
+INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
+VALUES
+	(TRUE , 1, 2, 2, '234', 0);

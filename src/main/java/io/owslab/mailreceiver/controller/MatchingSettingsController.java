@@ -1,11 +1,16 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.model.MatchingCondition;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -27,6 +32,9 @@ public class MatchingSettingsController {
     @Autowired
     private List<SelectOption> matchingItemOptions;
 
+    @Autowired
+    private MatchingConditionService matchingConditionService;
+
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
@@ -34,5 +42,16 @@ public class MatchingSettingsController {
         model.addAttribute("mailItemOptions", mailItemOptions);
         model.addAttribute("matchingItemOptions", matchingItemOptions);
         return "user/matching/settings";
+    }
+
+    @RequestMapping(value="/matchingSettings/source", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getSourceInJSON (){
+        AjaxResponseBody result = new AjaxResponseBody();
+
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(matchingConditionService.getSourceConditionList());
+        return ResponseEntity.ok(result);
     }
 }
