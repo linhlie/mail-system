@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.job;
 
 import antlr.StringUtils;
 import com.mariten.kanatools.KanaConverter;
+import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
@@ -150,7 +151,9 @@ public class IMAPFetchMailJob implements Runnable {
             email.setMessageId(messageId);
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));
-            email.setSubject(message.getSubject());
+            String subject = message.getSubject();
+            subject = EmojiParser.removeAllEmojis(subject);
+            email.setSubject(subject);
             email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
             email.setSentAt(message.getSentDate());
 
@@ -161,6 +164,7 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
             String originalContent = getContentText(message);
+            originalContent = EmojiParser.removeAllEmojis(originalContent);
             email.setOriginalBody(originalContent);
 //            String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
             String beforeOptimizeContent = originalContent;
