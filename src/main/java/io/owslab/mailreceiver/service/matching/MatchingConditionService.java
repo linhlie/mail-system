@@ -16,6 +16,25 @@ public class MatchingConditionService {
     @Autowired
     private MatchingConditionDAO matchingConditionDAO;
 
+    public void saveList(List<MatchingCondition> matchingConditions, int type){
+        //TODO: Must be transaction
+        for(MatchingCondition matchingCondition : matchingConditions){
+            matchingCondition.setType(type);
+            MatchingCondition existCondition = matchingConditionDAO.findOne(matchingCondition.getId());
+            if(existCondition != null){
+                if(matchingCondition.getRemove() == 1){
+                    matchingConditionDAO.delete(existCondition.getId());
+                } else {
+                    matchingConditionDAO.save(matchingCondition);
+                }
+            } else {
+                if(matchingCondition.getRemove() == 0){
+                    matchingConditionDAO.save(matchingCondition);
+                }
+            }
+        }
+    }
+
     public List<MatchingCondition> getSourceConditionList(){
         return getListByType(MatchingCondition.Type.SOURCE);
     }

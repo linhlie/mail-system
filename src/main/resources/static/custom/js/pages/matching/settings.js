@@ -4,6 +4,11 @@
     var sourceTableId = 'motoMail';
     var destinationTableId = 'sakiMail';
     var matchingTableId = 'matching';
+    var saveSourceBtnId = '#saveSourceBtn';
+    var getSourceBtnId = '#getSourceBtn';
+    var saveDestinationBtnId = '#saveDestinationBtn';
+    var getDestinationBtnId = '#getDestinationBtn';
+
 
     $(function () {
         setAddReplaceLetterRowListener('addMotoRow', sourceTableId, ["group", "combine", "item", "condition", "value"]);
@@ -13,7 +18,84 @@
         getSourceListData();
         getDestinationListData();
         getMatchingListData();
+        setButtonClickListenter(saveSourceBtnId, saveSourceListData);
+        setButtonClickListenter(getSourceBtnId, getSourceListData);
+        setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
+        setButtonClickListenter(getDestinationBtnId, getDestinationListData);
     });
+    
+    function setButtonClickListenter(id, callback) {
+        $(id).off('click');
+        $(id).click(function () {
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
+
+    function saveSourceListData(){
+        var data = buildDataFromTable(sourceTableId);
+        var normalizedData = removeEmptyRowData(data);
+        var form = {
+            "sourceConditionList": normalizedData
+        };
+        saveListData(
+            "/user/matchingSettings/saveSource",
+            form,
+            function onSuccess() {
+                getSourceListData();
+            },
+            function onError(e) {
+                console.error("[ERR] saveSourceListData: ", e);
+            }
+        )
+    }
+
+    function saveDestinationListData(){
+        var data = buildDataFromTable(destinationTableId);
+        var normalizedData = removeEmptyRowData(data);
+        var form = {
+            "destinationConditionList": normalizedData
+        };
+        saveListData(
+            "/user/matchingSettings/saveDestination",
+            form,
+            function onSuccess() {
+                getDestinationListData();
+            },
+            function onError(e) {
+                console.error("[ERR] saveDestinationListData: ", e);
+            }
+        )
+    }
+
+    function saveListData(url, data, success, error) {
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: url,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                if(data && data.status){
+                    if(typeof success === "function"){
+                        success();
+                    }
+                } else {
+                    if(typeof error === "function"){
+                        error();
+                    }
+                }
+            },
+            error: function (e) {
+                if(typeof error === "function"){
+                    error(e);
+                }
+            }
+        });
+    }
 
     function setRemoveRowListener(name) {
         $("span[name='"+name+"']").off('click');
@@ -29,18 +111,19 @@
     }
     
     function getSourceListData() {
-        getListData("/user/matchingSettings/source", sourceTableId);
+        getListData("/user/matchingSettings/source", sourceTableId, getSourceBtnId);
     }
 
     function getDestinationListData() {
-        getListData("/user/matchingSettings/destination", destinationTableId);
+        getListData("/user/matchingSettings/destination", destinationTableId, getDestinationBtnId);
     }
 
     function getMatchingListData() {
         getListData("/user/matchingSettings/matching", matchingTableId);
     }
 
-    function getListData(url, tableId) {
+    function getListData(url, tableId, buttonId) {
+        disableButton(buttonId, true);
         $.ajax({
             type: "GET",
             contentType: "application/json",
@@ -48,7 +131,7 @@
             cache: false,
             timeout: 600000,
             success: function (data) {
-                console.log("getListData: ", data);
+                disableButton(buttonId, false);
                 if(data.status){
                     if(data.list){
                         removeAllRow(tableId);
@@ -61,8 +144,15 @@
             },
             error: function (e) {
                 console.error("getListData ERROR : ", e);
+                disableButton(buttonId, false);
             }
         });
+    }
+
+    function disableButton(buttonId, disabled) {
+        if(buttonId && buttonId.length > 0){
+            $(buttonId).prop("disabled", disabled);
+        }
     }
 
     function addRow(tableId) {
@@ -111,6 +201,59 @@
             var row = table.rows[2];
             row.parentNode.removeChild(row);
         }
+    }
+    
+    function buildDataFromTable(tableId) {
+        var data = [];
+        var table = document.getElementById(tableId);
+        for (var i = 1; i < table.rows.length; i++) {
+            var row = table.rows.item(i);
+            if(isSkipRow(row)) continue;
+            var cells = row.cells;
+            var rowData = {};
+            for (var j = 0; j < cells.length; j++) {
+                var cell = cells.item(j);
+                var cellKey = cell.getAttribute("data");
+                if(!cellKey) continue;
+
+                var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
+                if(cellNode){
+                    if(cellNode.nodeName == "INPUT") {
+                        if(cellNode.type == "checkbox"){
+                            rowData[cellKey] = cellNode.checked;
+                        } else if(cellNode.type == "text"){
+                            rowData[cellKey] = cellNode.value;
+                        }
+                    } else if(cellNode.nodeName == "SELECT") {
+                        rowData[cellKey] = cellNode.value;
+                    } else if(cellNode.nodeName == "SPAN") {
+                        rowData[cellKey] = cellNode.textContent;
+                    }
+                }
+            }
+            rowData["remove"] = row.className.indexOf('hidden') >= 0 ? 1 : 0;
+            data.push(rowData);
+        }
+        return data;
+    }
+    
+    function removeEmptyRowData(data) {
+        var result = [];
+        for (var i = 0; i < data.length; i++) {
+            var rowData = data[i];
+            if(!isEmptyRowData(rowData)) {
+                result.push(rowData);
+            }
+        }
+        return result;
+    }
+    
+    function isEmptyRowData(rowData) {
+        return (rowData["item"] === '-1' || rowData["item"] === -1);
+    }
+
+    function isSkipRow(row) {
+        return row && row.className && row.className.indexOf("skip") >= 0;
     }
 
 })(jQuery);

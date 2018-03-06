@@ -126,7 +126,7 @@
     function buildReplaceLetterDataTable(tableId) {
         var data = [];
         var table = document.getElementById(tableId);
-        for (i = 1; i < table.rows.length; i++) {
+        for (var i = 1; i < table.rows.length; i++) {
             var objRow = table.rows.item(i);
             var objCells = objRow.cells;
             var rowData = {};

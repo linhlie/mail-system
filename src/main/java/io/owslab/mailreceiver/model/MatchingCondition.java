@@ -15,6 +15,7 @@ public class MatchingCondition {
     private long id;
 
     @NotNull
+    @Column(name="[group]")
     private boolean group;
 
     @NotNull
@@ -24,12 +25,16 @@ public class MatchingCondition {
     private int item;
 
     @NotNull
+    @Column(name="[condition]")
     private int condition;
 
     private String value;
 
     @NotNull
     private int type;
+
+    @Transient // means "not a DB field"
+    private int remove; // boolean flag
 
     public MatchingCondition() {
     }
@@ -45,6 +50,16 @@ public class MatchingCondition {
         this.condition = condition;
         this.value = value;
         this.type = type;
+    }
+
+    public MatchingCondition(boolean group, int combine, int item, int condition, String value, int type, int remove) {
+        this.group = group;
+        this.combine = combine;
+        this.item = item;
+        this.condition = condition;
+        this.value = value;
+        this.type = type;
+        this.remove = remove;
     }
 
     public long getId() {
@@ -101,6 +116,14 @@ public class MatchingCondition {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getRemove() {
+        return remove;
+    }
+
+    public void setRemove(int remove) {
+        this.remove = remove;
     }
 
     public class Type {
