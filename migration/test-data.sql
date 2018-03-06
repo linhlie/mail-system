@@ -32,24 +32,10 @@ VALUES
 
 INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
 VALUES
-	(FALSE , 1, 0, 0, '123', 0);
+	(0, -1, 2, 1, '', 0),
+	(0, 0, 7, -1, '', 0),
+	(0, -1, 2, 1, '', 1),
+	(1, 0, 3, 1, 'Microsoft', 1),
+	(0, -1, 2, 0, 'world-link-system', 1),
+	(1, 0, 0, 0, '', 1);
 
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(TRUE , 1, 2, 2, '234', 0);
-
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(FALSE , 0, 0, 0, '345', 1);
-
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(TRUE , 0, 2, 2, '456', 1);
-
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(FALSE , 0, 0, 0, '567', 2);
-
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(TRUE , 0, 2, 2, '678', 2);

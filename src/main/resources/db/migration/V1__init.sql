@@ -51,7 +51,7 @@ CREATE TABLE `emails` (
   REFERENCES email_account_settings(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
