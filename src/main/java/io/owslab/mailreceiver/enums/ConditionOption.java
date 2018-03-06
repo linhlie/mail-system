@@ -5,6 +5,7 @@ package io.owslab.mailreceiver.enums;
  */
 
 public enum ConditionOption {
+    NONE(-1, ""),
     INC(0, "含む"),
     NINC(1, "含まない"),
     EQ(2, "等しい"),

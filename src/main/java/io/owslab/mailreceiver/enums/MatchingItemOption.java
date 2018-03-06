@@ -5,6 +5,7 @@ package io.owslab.mailreceiver.enums;
  */
 
 public enum MatchingItemOption {
+    NONE(-1, ""),
     SENDER(0, "送信者"),
     RECEIVER(1, "受信者"),
     SUBJECT(2, "件名"),

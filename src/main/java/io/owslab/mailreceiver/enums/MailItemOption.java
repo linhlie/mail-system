@@ -4,6 +4,7 @@ package io.owslab.mailreceiver.enums;
  * Created by khanhlvb on 3/2/18.
  */
 public enum MailItemOption {
+    NONE(-1, ""),
     SENDER(0, "送信者"),
     RECEIVER(1, "受信者"),
     SUBJECT(2, "件名"),
