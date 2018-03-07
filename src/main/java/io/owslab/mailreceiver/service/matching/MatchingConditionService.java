@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
@@ -253,7 +254,55 @@ public class MatchingConditionService {
         }
     }
 
-    private static List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
+    private List<Email> mergeResultGroups(List<MatchingConditionGroup> groups){
+        List<Email> result = new ArrayList<>();
+        for(MatchingConditionGroup group : groups){
+            CombineOption option = group.getCombineOption();
+            List<Email> emailList;
+            switch (option){
+                case NONE:
+                    if(groups.indexOf(group) == 0){
+                        emailList = mergeResultWithAGroup(group);
+                        result = mergeWithoutDuplicate(result, emailList);
+                    }
+                    break;
+                case AND:
+                    emailList = mergeResultWithAGroup(group);
+                    result = findDuplicateList(result, emailList);
+                    break;
+                case OR:
+                    emailList = mergeResultWithAGroup(group);
+                    result = mergeWithoutDuplicate(result, emailList);
+                    break;
+            }
+        }
+        return result;
+    }
+
+    private List<Email> mergeResultWithAGroup(MatchingConditionGroup group){
+        List<Email> result = new ArrayList<>();
+        List<MatchingConditionResult> conditionResults = group.getConditionResults();
+        for(MatchingConditionResult conditionResult : conditionResults){
+            CombineOption option = conditionResult.getCombineOption();
+            List<Email> emailList = conditionResult.getEmailList();
+            switch (option){
+                case NONE:
+                    if(conditionResults.indexOf(conditionResult) == 0){
+                        result = mergeWithoutDuplicate(result, emailList);
+                    }
+                    break;
+                case AND:
+                    result = findDuplicateList(result, emailList);
+                    break;
+                case OR:
+                    result = mergeWithoutDuplicate(result, emailList);
+                    break;
+            }
+        }
+        return result;
+    }
+
+    private List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
         List<Email> list1Copy = new ArrayList<>(list1);
         List<Email> list2Copy = new ArrayList<>(list2);
         list2Copy.removeAll(list1Copy);
@@ -261,7 +310,7 @@ public class MatchingConditionService {
         return list1Copy;
     }
 
-    private static List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
+    private List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
         List<Email> list = list1.size() >= list2.size() ? list2 : list1;
         List<Email> remainList = list1.size() >= list2.size() ? list1 : list2;
         List<Email> result = new ArrayList<>();
