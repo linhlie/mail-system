@@ -76,18 +76,37 @@ public class EmailWordJobService {
         return result;
     }
 
+    //TODO: need test
+    //TODO: process key fullwidth / halfwidth or not
+
     private boolean matchWord(String toSearch, String wordStr){
         Word word = wordService.findOne(wordStr);
-        ArrayList<Integer> result =  new ArrayList<Integer>();
+        List<Integer> result;
         if(word == null){
             result = find(toSearch, wordStr);
         } else {
             result = find(toSearch, wordStr);
             List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
             List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
-            //TODO: find ngoai tru
-            //TODO: find dong nghia
+            List<Integer> exclusionResult = findWithWordList(toSearch, exclusionWords);
+            List<Integer> sameResult = findWithWordList(toSearch, sameWords);
+            for(Integer num : exclusionResult){
+                int index = result.indexOf(num);
+                if(index >= 0){
+                    result.remove(index);
+                }
+            }
+            result.addAll(sameResult);
         }
         return !result.isEmpty();
+    }
+
+    private ArrayList<Integer> findWithWordList(String toSearch, List<Word> wordList){
+        ArrayList<Integer> result =  new ArrayList<Integer>();
+        for(Word word : wordList){
+            ArrayList<Integer> findResult = find(toSearch, word.getWord());
+            result.addAll(findResult);
+        }
+        return result;
     }
 }

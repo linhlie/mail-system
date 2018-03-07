@@ -16,6 +16,15 @@ public interface FuzzyWordDAO extends CrudRepository<FuzzyWord, Long> {
     )
     List<FuzzyWord> findByWordIdAndWithWordId(@Param("wordId") long wordId, @Param("withWordId") long withWordId);
 
-    List<FuzzyWord> findByWordIdAndFuzzyType(long wordId, int fuzzyType);
-    List<FuzzyWord> findByWithWordIdAndFuzzyType(long wordId, int fuzzyType);
+    @Query(
+            value = "select * from Fuzzy_Words fw where fw.word_id=:wordId and fw.fuzzy_type=:fuzzyType",
+            nativeQuery = true
+    )
+    List<FuzzyWord> findByWordIdAndFuzzyType(@Param("wordId") long wordId, @Param("fuzzyType") int fuzzyType);
+
+    @Query(
+            value = "select * from Fuzzy_Words fw where fw.with_word_id=:withWordId and fw.fuzzy_type=:fuzzyType",
+            nativeQuery = true
+    )
+    List<FuzzyWord> findByWithWordIdAndFuzzyType(@Param("withWordId") long withWordId, @Param("fuzzyType") int fuzzyType);
 }
