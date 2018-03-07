@@ -131,4 +131,8 @@ public class MatchingCondition {
         public static final int DESTINATION = 1;
         public static final int MATCHING = 2;
     }
+
+    public class Remove {
+        public static final int REMOVED = 1;
+    }
 }

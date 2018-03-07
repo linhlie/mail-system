@@ -70,34 +70,29 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
         List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-        logger.info("start find mail");
-        List<Email> emailList = mailBoxService.getAll();
-        logger.info("find mail done: " + emailList.size());
-        logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
+//        logger.info("start find mail");
+//        List<Email> emailList = mailBoxService.getAll();
+//        logger.info("find mail done: " + emailList.size());
+//        logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
+//        for(MatchingConditionGroup group : groupedSourceConditions){
+//            System.out.println("Group " + groupedSourceConditions.indexOf(group) + ":" + group.toString());
+//        }
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
         MatchingConditionGroup group = new MatchingConditionGroup();
-        boolean lastConditionIsGroup = false;
         for(MatchingCondition condition : conditions){
+            if(condition.getRemove() == MatchingCondition.Remove.REMOVED) continue;
             if(!condition.isGroup()){
-                if(lastConditionIsGroup && !group.isEmpty()){
+                if(!group.isEmpty()){
                     result.add(group);
                 }
                 group = new MatchingConditionGroup();
-                lastConditionIsGroup = false;
-                group.add(condition);
+            }
+            group.add(condition);
+            if(conditions.indexOf(condition) == (conditions.size() - 1)) {
                 result.add(group);
-            } else {
-                if(!lastConditionIsGroup && !group.isEmpty()){
-                    group = new MatchingConditionGroup();
-                }
-                lastConditionIsGroup = true;
-                group.add(condition);
-                if(conditions.indexOf(condition) == (conditions.size() - 1)) {
-                    result.add(group);
-                }
             }
         }
         return result;
