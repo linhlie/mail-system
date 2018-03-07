@@ -79,13 +79,13 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
         List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-        List<MatchingConditionGroup> groupedList = new ArrayList<MatchingConditionGroup>();
-        groupedList.addAll(groupedSourceConditions);
-        groupedList.addAll(groupedDestinationConditions);
-        groupedList.addAll(groupedMatchingConditions);
         List<Email> emailList = mailBoxService.getAll();
         boolean distinguish = matchingConditionForm.isDistinguish();
-        findMailMatching(emailList, groupedList, distinguish);
+        findMailMatching(emailList, groupedSourceConditions, distinguish);
+        List<Email> matchEmailList = mergeResultGroups(groupedSourceConditions);
+        for(Email email : matchEmailList){
+            System.out.println("Mail " + matchEmailList.indexOf(email) + ": " + email.getSubject());
+        }
 //        logger.info("find mail done: " + emailList.size());
 //        logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
 //        logger.info("groupedList size: " + groupedList.size());
@@ -114,15 +114,12 @@ public class MatchingConditionService {
     }
 
     private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish){
-        int countMatch = 0;
         for(Email email : emailList){
             for(MatchingConditionGroup group : groupList){
                 for(MatchingConditionResult result : group.getConditionResults()){
                     MatchingCondition condition = result.getMatchingCondition();
                     if(isMatch(email, condition, distinguish)){
                         result.add(email);
-                        countMatch ++;
-                        System.out.println("Matching: " + countMatch + " " + condition.toString() + " | " + email.getSubject());
                     }
                 }
             }
@@ -259,21 +256,22 @@ public class MatchingConditionService {
         for(MatchingConditionGroup group : groups){
             CombineOption option = group.getCombineOption();
             List<Email> emailList;
-            switch (option){
-                case NONE:
-                    if(groups.indexOf(group) == 0){
+            if(groups.indexOf(group) == 0){
+                emailList = mergeResultWithAGroup(group);
+                result = mergeWithoutDuplicate(result, emailList);
+            } else {
+                switch (option){
+                    case NONE:
+                        break;
+                    case AND:
+                        emailList = mergeResultWithAGroup(group);
+                        result = findDuplicateList(result, emailList);
+                        break;
+                    case OR:
                         emailList = mergeResultWithAGroup(group);
                         result = mergeWithoutDuplicate(result, emailList);
-                    }
-                    break;
-                case AND:
-                    emailList = mergeResultWithAGroup(group);
-                    result = findDuplicateList(result, emailList);
-                    break;
-                case OR:
-                    emailList = mergeResultWithAGroup(group);
-                    result = mergeWithoutDuplicate(result, emailList);
-                    break;
+                        break;
+                }
             }
         }
         return result;
@@ -285,18 +283,19 @@ public class MatchingConditionService {
         for(MatchingConditionResult conditionResult : conditionResults){
             CombineOption option = conditionResult.getCombineOption();
             List<Email> emailList = conditionResult.getEmailList();
-            switch (option){
-                case NONE:
-                    if(conditionResults.indexOf(conditionResult) == 0){
+            if(conditionResults.indexOf(conditionResult) == 0){
+                result = mergeWithoutDuplicate(result, emailList);
+            } else {
+                switch (option){
+                    case NONE:
+                        break;
+                    case AND:
+                        result = findDuplicateList(result, emailList);
+                        break;
+                    case OR:
                         result = mergeWithoutDuplicate(result, emailList);
-                    }
-                    break;
-                case AND:
-                    result = findDuplicateList(result, emailList);
-                    break;
-                case OR:
-                    result = mergeWithoutDuplicate(result, emailList);
-                    break;
+                        break;
+                }
             }
         }
         return result;
