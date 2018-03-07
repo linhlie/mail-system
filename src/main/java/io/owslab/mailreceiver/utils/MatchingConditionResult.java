@@ -1,7 +1,9 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,10 @@ public class MatchingConditionResult {
 
     public boolean add(Email email){
         return this.emailList.add(email);
+    }
+
+    public CombineOption getCombineOption(){
+        return matchingCondition.getCombineOption();
     }
 
 }

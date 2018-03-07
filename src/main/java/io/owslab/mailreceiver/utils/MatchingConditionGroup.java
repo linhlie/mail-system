@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.model.MatchingCondition;
 
 import java.util.ArrayList;
@@ -42,6 +43,15 @@ public class MatchingConditionGroup {
         }
         result = result + "\n";
         return result;
+    }
+
+    public CombineOption getCombineOption(){
+        if(conditionResults.size() > 0){
+            return (conditionResults.get(0)).getCombineOption();
+        } else {
+            //TODO: what should default option
+            return CombineOption.NONE;
+        }
     }
 
 }

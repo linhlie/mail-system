@@ -252,4 +252,24 @@ public class MatchingConditionService {
             return japaneseOptimizedText.toLowerCase();
         }
     }
+
+    private static List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
+        List<Email> list1Copy = new ArrayList<>(list1);
+        List<Email> list2Copy = new ArrayList<>(list2);
+        list2Copy.removeAll(list1Copy);
+        list1Copy.addAll(list2Copy);
+        return list1Copy;
+    }
+
+    private static List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
+        List<Email> list = list1.size() >= list2.size() ? list2 : list1;
+        List<Email> remainList = list1.size() >= list2.size() ? list1 : list2;
+        List<Email> result = new ArrayList<>();
+        for(Email email: list){
+            if(remainList.contains(email)){
+                result.add(email);
+            }
+        }
+        return result;
+    }
 }

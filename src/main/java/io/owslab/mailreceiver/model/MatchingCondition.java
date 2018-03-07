@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
 
 import javax.persistence.*;
@@ -140,5 +141,9 @@ public class MatchingCondition {
 
     public String toString(){
         return (MailItemOption.fromValue(this.getItem())).toString() + " " + this.getValue();
+    }
+
+    public CombineOption getCombineOption(){
+        return CombineOption.fromValue(getCombine());
     }
 }
