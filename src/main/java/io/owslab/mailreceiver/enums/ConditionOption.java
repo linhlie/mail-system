@@ -31,4 +31,30 @@ public enum ConditionOption {
     public String getText() {
         return text;
     }
+
+    public static ConditionOption fromValue(int value) {
+        switch(value) {
+            case -1:
+                return NONE;
+            case 0:
+                return INC;
+            case 1:
+                return NINC;
+            case 2:
+                return EQ;
+            case 3:
+                return NE;
+            case 4:
+                return GE;
+            case 5:
+                return GT;
+            case 6:
+                return LE;
+            case 7:
+                return LT;
+            case 8:
+                return WITHIN;
+        }
+        return null;
+    }
 }

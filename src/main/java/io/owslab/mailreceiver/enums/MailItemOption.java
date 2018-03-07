@@ -31,4 +31,32 @@ public enum MailItemOption {
     public String getText() {
         return text;
     }
+
+    public static MailItemOption fromValue(int value) {
+        switch(value) {
+            case -1:
+                return NONE;
+            case 0:
+                return SENDER;
+            case 1:
+                return RECEIVER;
+            case 2:
+                return SUBJECT;
+            case 3:
+                return BODY;
+            case 4:
+                return NUMBER;
+            case 5:
+                return NUMBER_UPPER;
+            case 6:
+                return NUMBER_LOWER;
+            case 7:
+                return HAS_ATTACHMENT;
+            case 8:
+                return NO_ATTACHMENT;
+            case 9:
+                return RECEIVED_DATE;
+        }
+        return null;
+    }
 }

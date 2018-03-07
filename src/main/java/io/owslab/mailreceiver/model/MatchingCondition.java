@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.enums.MailItemOption;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -134,5 +136,9 @@ public class MatchingCondition {
 
     public class Remove {
         public static final int REMOVED = 1;
+    }
+
+    public String toString(){
+        return (MailItemOption.fromValue(this.getItem())).toString() + " " + this.getValue();
     }
 }

@@ -29,4 +29,26 @@ public enum MatchingItemOption {
     public String getText() {
         return text;
     }
+
+    public static MatchingItemOption fromValue(int value) {
+        switch(value) {
+            case -1:
+                return NONE;
+            case 0:
+                return SENDER;
+            case 1:
+                return RECEIVER;
+            case 2:
+                return SUBJECT;
+            case 3:
+                return BODY;
+            case 4:
+                return NUMBER;
+            case 5:
+                return NUMBER_UPPER;
+            case 6:
+                return NUMBER_LOWER;
+        }
+        return null;
+    }
 }

@@ -23,4 +23,16 @@ public enum CombineOption {
     public String getText() {
         return text;
     }
+
+    public static CombineOption fromValue(int value) {
+        switch(value) {
+            case -1:
+                return NONE;
+            case 0:
+                return AND;
+            case 1:
+                return OR;
+        }
+        return null;
+    }
 }

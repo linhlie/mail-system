@@ -9,36 +9,36 @@ import java.util.List;
  * Created by khanhlvb on 3/7/18.
  */
 public class MatchingConditionGroup {
-    private List<MatchingCondition> matchingConditionList;
+    private List<MatchingConditionResult> conditionResults;
 
-    public MatchingConditionGroup(List<MatchingCondition> matchingConditionList) {
-        this.matchingConditionList = matchingConditionList;
+    public MatchingConditionGroup(List<MatchingConditionResult> conditionResults) {
+        this.conditionResults = conditionResults;
     }
 
     public MatchingConditionGroup() {
-        this.matchingConditionList = new ArrayList<MatchingCondition>();
+        this.conditionResults = new ArrayList<MatchingConditionResult>();
     }
 
-    public List<MatchingCondition> getMatchingConditionList() {
-        return matchingConditionList;
+    public List<MatchingConditionResult> getConditionResults() {
+        return conditionResults;
     }
 
-    public void setMatchingConditionList(List<MatchingCondition> matchingConditionList) {
-        this.matchingConditionList = matchingConditionList;
+    public void setConditionResults(List<MatchingConditionResult> conditionResults) {
+        this.conditionResults = conditionResults;
     }
 
     public boolean isEmpty(){
-        return this.matchingConditionList.isEmpty();
+        return this.conditionResults.isEmpty();
     }
 
-    public boolean add(MatchingCondition condition){
-        return this.matchingConditionList.add(condition);
+    public boolean add(MatchingConditionResult result){
+        return this.conditionResults.add(result);
     }
 
     public String toString(){
         String result = "";
-        for(MatchingCondition matchingCondition : matchingConditionList){
-            result = result + "\n"  + matchingCondition.getItem() + " " + matchingCondition.getValue();
+        for(MatchingConditionResult conditionResult : conditionResults){
+            result = result + "\n"  + conditionResult.getMatchingCondition().toString();
         }
         result = result + "\n";
         return result;
