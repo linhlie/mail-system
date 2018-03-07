@@ -199,7 +199,7 @@ public class MatchingConditionService {
     }
 
     private boolean isMatchPart (Date part, MatchingCondition condition, boolean distinguish) {
-        //TODO: condition value date string many format;
+        //TODO: condition value date string may have many format???;
         if(part == null) return false;
         boolean match = false;
         try {

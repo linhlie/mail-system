@@ -67,4 +67,9 @@ public class FuzzyWord {
     public void setFuzzyType(int fuzzyType) {
         this.fuzzyType = fuzzyType;
     }
+
+    public class Type {
+        public static final int SAME = 1;
+        public static final int EXCLUSION = 0;
+    }
 }

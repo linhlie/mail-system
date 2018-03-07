@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,5 +32,27 @@ public class FuzzyWordService {
         List<FuzzyWord> fuzzyWordList1 = fuzzyWordDAO.findByWordIdAndWithWordId(wordId, withWordId);
         List<FuzzyWord> fuzzyWordList2 = fuzzyWordDAO.findByWordIdAndWithWordId(withWordId, wordId);
         return fuzzyWordList1.size() > 0 ? fuzzyWordList1.get(0) : (fuzzyWordList2.size() > 0 ? fuzzyWordList2.get(0) : null);
+    }
+
+    public List<Word> findAllExclusionWord(Word word){
+        return findAllFuzzyWord(word, FuzzyWord.Type.EXCLUSION);
+    }
+
+    public List<Word> findAllSameWord(Word word){
+        return findAllFuzzyWord(word, FuzzyWord.Type.SAME);
+    }
+
+    private List<Word> findAllFuzzyWord(Word word, int fuzzyType){
+        List<Word> result = new ArrayList<Word>();
+        long wordId = word.getId();
+        List<FuzzyWord> fuzzyWordList1 = fuzzyWordDAO.findByWordIdAndFuzzyType(wordId, fuzzyType);
+        List<FuzzyWord> fuzzyWordList2 = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, fuzzyType);
+        for(FuzzyWord fuzzyWord : fuzzyWordList1){
+            result.add(fuzzyWord.getAssociatedWord());
+        }
+        for(FuzzyWord fuzzyWord : fuzzyWordList2){
+            result.add(fuzzyWord.getOriginalWord());
+        }
+        return result;
     }
 }

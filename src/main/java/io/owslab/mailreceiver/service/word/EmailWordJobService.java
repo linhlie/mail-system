@@ -34,6 +34,9 @@ public class EmailWordJobService {
     @Autowired
     private EmailWordService emailWordService;
 
+    @Autowired
+    private FuzzyWordService fuzzyWordService;
+
     public void buildMatchData(){
         List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
         for(EmailWordJob emailWordJob : emailWordJobList){
@@ -71,5 +74,20 @@ public class EmailWordJobService {
             bFound = matcher.find(matcher.start() + 1);
         }
         return result;
+    }
+
+    private boolean matchWord(String toSearch, String wordStr){
+        Word word = wordService.findOne(wordStr);
+        ArrayList<Integer> result =  new ArrayList<Integer>();
+        if(word == null){
+            result = find(toSearch, wordStr);
+        } else {
+            result = find(toSearch, wordStr);
+            List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
+            List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
+            //TODO: find ngoai tru
+            //TODO: find dong nghia
+        }
+        return !result.isEmpty();
     }
 }
