@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.utils.MatchingConditionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,20 +67,37 @@ public class MatchingConditionService {
         List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
         List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
-        List<MatchingCondition> groupedSourceConditions = filterGroupCondition(sourceConditionList);
-        List<MatchingCondition> groupedDestinationConditions = filterGroupCondition(destinationConditionList);
-        List<MatchingCondition> groupedMatchingConditions = filterGroupCondition(matchingConditionList);
+        List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
+        List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
+        List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
         logger.info("start find mail");
         List<Email> emailList = mailBoxService.getAll();
         logger.info("find mail done: " + emailList.size());
         logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
     }
 
-    private List<MatchingCondition> filterGroupCondition(List<MatchingCondition> conditions){
-        List<MatchingCondition> result = new ArrayList<MatchingCondition>();
+    private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
+        List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
+        MatchingConditionGroup group = new MatchingConditionGroup();
+        boolean lastConditionIsGroup = false;
         for(MatchingCondition condition : conditions){
-            if(condition.isGroup()){
-                result.add(condition);
+            if(!condition.isGroup()){
+                if(lastConditionIsGroup && !group.isEmpty()){
+                    result.add(group);
+                }
+                group = new MatchingConditionGroup();
+                lastConditionIsGroup = false;
+                group.add(condition);
+                result.add(group);
+            } else {
+                if(!lastConditionIsGroup && !group.isEmpty()){
+                    group = new MatchingConditionGroup();
+                }
+                lastConditionIsGroup = true;
+                group.add(condition);
+                if(conditions.indexOf(condition) == (conditions.size() - 1)) {
+                    result.add(group);
+                }
             }
         }
         return result;

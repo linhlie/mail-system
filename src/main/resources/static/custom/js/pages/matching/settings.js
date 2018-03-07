@@ -137,10 +137,13 @@
                 if(data.status){
                     if(data.list){
                         removeAllRow(tableId);
-                        for(var i = 0; i < data.list.length; i ++){
-                            addRowWithData(tableId, data.list[i]);
+                        if(data.list.length > 0){
+                            for(var i = 0; i < data.list.length; i ++){
+                                addRowWithData(tableId, data.list[i]);
+                            }
+                        } else {
+                            addRow(tableId);
                         }
-                        addRow(tableId);
                     }
                 }
             },
@@ -236,7 +239,7 @@
             rowData["remove"] = row.className.indexOf('hidden') >= 0 ? 1 : 0;
             data.push(rowData);
         }
-        return removeEmptyRowData(data);
+        return data;
     }
     
     function removeEmptyRowData(data) {
