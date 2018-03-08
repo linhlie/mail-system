@@ -5,13 +5,16 @@ import io.owslab.mailreceiver.dao.MatchingConditionDAO;
 import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
+import io.owslab.mailreceiver.enums.NumberCompare;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.MatchingConditionGroup;
 import io.owslab.mailreceiver.utils.MatchingConditionResult;
+import io.owslab.mailreceiver.utils.SimpleNumberRange;
 import io.owslab.mailreceiver.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,9 @@ public class MatchingConditionService {
 
     @Autowired
     private EmailWordJobService emailWordJobService;
+
+    @Autowired
+    private NumberRangeService numberRangeService;
 
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
@@ -349,6 +355,15 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
+                    NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
+                    SimpleNumberRange findRange = new SimpleNumberRange(compare, numberCondition);
+                    List<SimpleNumberRange> toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    for(SimpleNumberRange range : toFindListRange){
+                        if(findRange.match(range)){
+                            match = true;
+                            break;
+                        }
+                    }
                     break;
                 case INC:
                 case NINC:

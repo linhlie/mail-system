@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.replace;
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.NumberRangeDAO;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.utils.SimpleNumberRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +38,13 @@ public class NumberRangeService {
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
 
-    public void buildNumberRangeForInput(String input){
-        if(input == null || input.length() == 0) return;
+    public List<SimpleNumberRange> buildNumberRangeForInput(String input){
+        List<SimpleNumberRange> result = new ArrayList<>();
+        if(input == null || input.length() == 0) return result;
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);
         List<ReplaceLetter> afReplaceLetters = replaceLetterService.getSignificantList(false);
-        if(bfReplaceLetters.size() == 0 && afReplaceLetters.size() == 0) return;
+        if(bfReplaceLetters.size() == 0 && afReplaceLetters.size() == 0) return result;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         List<ReplaceNumber> replaceNumbers = replaceNumberService.getList();
         List<ReplaceUnit> replaceUnits = replaceUnitService.getList();
@@ -63,16 +65,18 @@ public class NumberRangeService {
                     afEndAt, false);
             if(bfNumberLetterResult != null){
                 ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
-                System.out.println(bfNumberLetter.getLetter() + " " + realNumberResult.getValue() + " " + (bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length()));
+                result.add(new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace()));
             }
             if(afNumberLetterResult != null){
                 ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
-                System.out.println(afNumberLetter.getLetter() + " " + realNumberResult.getValue() + " " + afNumberLetterResult.getStartAt());
+                result.add(new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace()));
             }
             if(bfNumberLetterResult == null && afNumberLetterResult == null){
-                System.out.println(realNumberResult.getValue() + " " + realNumberResult.getStartAt());
+                result.add(new SimpleNumberRange(realNumberResult.getValue()));
             }
         }
+
+        return result;
     }
 
     private String optimizeText(String raw){

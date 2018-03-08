@@ -49,6 +49,7 @@ public class MailBoxService {
 //        conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
 //        String japaneseOptimizedText = KanaConverter.convertKana(optimizedText, conv_op_flags);
 //        return japaneseOptimizedText.toLowerCase();
+        //TODO: maybe need remove url and change optimizeText usages
         return optimizedText.toLowerCase();
     }
 }

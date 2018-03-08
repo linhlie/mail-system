@@ -5,18 +5,23 @@ import io.owslab.mailreceiver.enums.NumberCompare;
 /**
  * Created by khanhlvb on 3/8/18.
  */
-public class NumberRange {
+public class SimpleNumberRange {
     private NumberCompare numberCompare;
     private double value;
 
-    public NumberRange(NumberCompare numberCompare, double value) {
+    public SimpleNumberRange(NumberCompare numberCompare, double value) {
         this.numberCompare = numberCompare;
         this.value = value;
     }
 
-    public NumberRange(double value) {
+    public SimpleNumberRange(double value) {
         this.value = value;
         this.numberCompare = NumberCompare.EQ;
+    }
+
+    public SimpleNumberRange(double value, int replace) {
+        this.value = value;
+        this.numberCompare = NumberCompare.fromReplace(replace);
     }
 
     public NumberCompare getNumberCompare() {
@@ -35,7 +40,7 @@ public class NumberRange {
         this.value = value;
     }
 
-    public boolean match(NumberRange other){
+    public boolean match(SimpleNumberRange other){
         boolean match = false;
         switch (this.getNumberCompare()){
             case EQ:
