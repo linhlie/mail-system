@@ -9,8 +9,10 @@ import io.owslab.mailreceiver.enums.NumberCompare;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
+import io.owslab.mailreceiver.model.NumberTreatment;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.MatchingConditionGroup;
 import io.owslab.mailreceiver.utils.MatchingConditionResult;
@@ -46,6 +48,9 @@ public class MatchingConditionService {
 
     @Autowired
     private NumberRangeService numberRangeService;
+
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
 
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
@@ -348,6 +353,17 @@ public class MatchingConditionService {
             String optimizedPart = getOptimizedText(part, false);
             String optimizedValue = getOptimizedText(conditionValue, false);
             Double numberCondition = Double.parseDouble(optimizedValue);
+            NumberTreatment numberTreatment = numberTreatmentService.getFirst();
+            if(numberTreatment != null){
+                switch (mailItemOption){
+                    case NUMBER_UPPER:
+                        numberCondition = numberCondition * numberTreatment.getUpperLimitRate();
+                        break;
+                    case NUMBER_LOWER:
+                        numberCondition = numberCondition * numberTreatment.getLowerLimitRate();
+                        break;
+                }
+            }
             switch (conditionOption){
                 case EQ:
                 case NE:
