@@ -37,9 +37,7 @@ public class NumberRangeService {
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
 
-    public void buildNumberRangeForEmail(Email email){
-        if(email == null) return;
-        String input = email.getOptimizedBody();
+    public void buildNumberRangeForInput(String input){
         if(input == null || input.length() == 0) return;
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);

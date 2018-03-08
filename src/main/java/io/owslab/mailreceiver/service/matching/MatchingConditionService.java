@@ -148,10 +148,9 @@ public class MatchingConditionService {
                 match = isMatchPart(email.getOptimizedBody(), condition, distinguish);
                 break;
             case NUMBER:
-                break;
             case NUMBER_UPPER:
-                break;
             case NUMBER_LOWER:
+                match = isMatchNumber(email.getOptimizedBody(), condition, distinguish);
                 break;
             case HAS_ATTACHMENT:
                 match = email.isHasAttachment();
@@ -332,5 +331,35 @@ public class MatchingConditionService {
                 System.out.println("Word: " + word + ": Email: " + email.getSubject());
             }
         }
+    }
+
+    private boolean isMatchNumber(String part, MatchingCondition condition, boolean distinguish){
+        boolean match = false;
+        try {
+            MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
+            ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
+            String conditionValue = condition.getValue();
+            String optimizedPart = getOptimizedText(part, false);
+            String optimizedValue = getOptimizedText(conditionValue, false);
+            Double numberCondition = Double.parseDouble(optimizedValue);
+            switch (conditionOption){
+                case EQ:
+                case NE:
+                case GE:
+                case GT:
+                case LE:
+                case LT:
+                    break;
+                case INC:
+                case NINC:
+                case WITHIN:
+                case NONE:
+                default:
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
+        }
+        return match;
     }
 }
