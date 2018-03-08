@@ -14,10 +14,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
-import io.owslab.mailreceiver.utils.MatchingConditionGroup;
-import io.owslab.mailreceiver.utils.MatchingConditionResult;
-import io.owslab.mailreceiver.utils.SimpleNumberRange;
-import io.owslab.mailreceiver.utils.Utils;
+import io.owslab.mailreceiver.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -93,14 +91,25 @@ public class MatchingConditionService {
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
-        List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
+        List<MatchingConditionGroup> groupedSourceMatchingConditions = divideIntoGroups(matchingConditionList);
+        List<MatchingConditionGroup> groupedDestinationMatchingConditions = divideIntoGroups(matchingConditionList);
         List<Email> emailList = mailBoxService.getAll();
         boolean distinguish = matchingConditionForm.isDistinguish();
         findMailMatching(emailList, groupedSourceConditions, distinguish);
-        List<Email> matchEmailList = mergeResultGroups(groupedSourceConditions);
-        for(Email email : matchEmailList){
-            System.out.println("Mail " + matchEmailList.indexOf(email) + ": " + email.getSubject());
+        List<Email> matchSourceList = mergeResultGroups(groupedSourceConditions);
+        findMailMatching(emailList, groupedDestinationConditions, distinguish);
+        List<Email> matchDestinationList = mergeResultGroups(groupedSourceConditions);
+        findMailMatching(matchSourceList, groupedSourceMatchingConditions, distinguish);
+        List<Email> matchSourceMatchingList = mergeResultGroups(groupedSourceMatchingConditions);
+        findMailMatching(matchDestinationList, groupedDestinationMatchingConditions, distinguish);
+        List<Email> matchDestinationMatchingList = mergeResultGroups(groupedDestinationMatchingConditions);
+        List<String> matchingWords = Arrays.asList(matchingConditionForm.getMatchingWords().split(","));
+        for(String word : matchingWords){
+            System.out.println("Word: " + word);
         }
+        //TODO: find source and matching match (1)
+        //TODO: find destination and matching match (2)
+        //TODO: find List MatchingWordResult from listWord (form) and (1) (2) list email
 //        logger.info("find mail done: " + emailList.size());
 //        logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
 //        logger.info("groupedList size: " + groupedList.size());
@@ -335,13 +344,22 @@ public class MatchingConditionService {
         return result;
     }
 
-    private void findMatchWithWord(String word, List<Email> emailList){
+    private MatchingWordResult findMatchWordList(String word, List<Email> source, List<Email> destination){
+        List<Email> sourceMatch = findMatchWithWord(word, source);
+        List<Email> destinationMatch = findMatchWithWord(word, destination);
+        return new MatchingWordResult(word, sourceMatch, destinationMatch);
+    }
+
+    private List<Email> findMatchWithWord(String word, List<Email> emailList){
+        List<Email> result = new ArrayList<>();
         for(Email email : emailList){
             String contentToSearch = MailBoxService.optimizeText(email.getSubject()) + "\n" + email.getOptimizedBody() ;
             if(emailWordJobService.matchWord(contentToSearch, word)){
                 System.out.println("Word: " + word + ": Email: " + email.getSubject());
+                result.add(email);
             }
         }
+        return result;
     }
 
     private boolean isMatchNumber(String part, MatchingCondition condition, boolean distinguish){
