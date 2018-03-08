@@ -9,6 +9,7 @@ import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.MatchingConditionGroup;
 import io.owslab.mailreceiver.utils.MatchingConditionResult;
 import io.owslab.mailreceiver.utils.Utils;
@@ -36,6 +37,9 @@ public class MatchingConditionService {
 
     @Autowired
     private MailBoxService mailBoxService;
+
+    @Autowired
+    private EmailWordJobService emailWordJobService;
 
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
@@ -319,5 +323,14 @@ public class MatchingConditionService {
             }
         }
         return result;
+    }
+
+    private void findMatchWithWord(String word, List<Email> emailList){
+        for(Email email : emailList){
+            String contentToSearch = MailBoxService.optimizeText(email.getSubject()) + "\n" + email.getOptimizedBody() ;
+            if(emailWordJobService.matchWord(contentToSearch, word)){
+                System.out.println("Word: " + word + ": Email: " + email.getSubject());
+            }
+        }
     }
 }

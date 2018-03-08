@@ -79,7 +79,7 @@ public class EmailWordJobService {
     //TODO: need test
     //TODO: process key fullwidth / halfwidth or not
 
-    private boolean matchWord(String toSearch, String wordStr){
+    public boolean matchWord(String toSearch, String wordStr){
         Word word = wordService.findOne(wordStr);
         List<Integer> result;
         if(word == null){

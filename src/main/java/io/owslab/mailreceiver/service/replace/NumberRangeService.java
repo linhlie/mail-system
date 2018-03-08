@@ -71,6 +71,9 @@ public class NumberRangeService {
                 ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
                 System.out.println(afNumberLetter.getLetter() + " " + realNumberResult.getValue() + " " + afNumberLetterResult.getStartAt());
             }
+            if(bfNumberLetterResult == null && afNumberLetterResult == null){
+                System.out.println(realNumberResult.getValue() + " " + realNumberResult.getStartAt());
+            }
         }
     }
 

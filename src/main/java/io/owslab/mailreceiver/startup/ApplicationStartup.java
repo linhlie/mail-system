@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
