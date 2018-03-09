@@ -5,7 +5,102 @@
 </head>
 <body>
 <div layout:fragment="content">
-    メールマッチング結果
+    <section class="content-header">
+        <h1>メールマッチング結果</h1>
+    </section>
+    <section class="content matching-result">
+        <div class="row matching-result-container">
+            <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+                <div class="col-sm-12">
+                    <h4>絞り込み元</h4>
+                </div>
+                <div class="col-sm-6">
+                    <input name="group"
+                           type="checkbox"
+                    /><span> 絞り込みと先マッチしたのみ表示する</span>
+                    <div class="main-left">
+                        <div class="table-container">
+                            <table id="sourceMatch" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="col-xs-2">ワード</th>
+                                    <th class="col-xs-2">マッチ件数</th>
+                                    <th class="col-xs-2">受信日時</th>
+                                    <th class="col-xs-2">送信者</th>
+                                    <th class="col-xs-2">受信者</th>
+                                    <th class="col-xs-2">件名</th>
+                                    <th>添付</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer">OPEN
+                                                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-name-container">
+                            <h4>絞り込み元</h4>
+                        </div>
+                        <div class="table-container">
+                            <table id="destinationMatch" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="col-xs-2">ワード</th>
+                                    <th class="col-xs-2">マッチ件数</th>
+                                    <th class="col-xs-2">受信日時</th>
+                                    <th class="col-xs-2">送信者</th>
+                                    <th class="col-xs-2">受信者</th>
+                                    <th class="col-xs-2">件名</th>
+                                    <th>添付</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td th:data="value"><span></span></td>
+                                    <td class="text-center">
+                                                                        <span name="removeConditionRow" title="删除"
+                                                                              style="cursor: pointer">OPEN
+                                                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <span>プレビュー</span>
+                    <div class="main-right">
+                        <div class="mail-part mail-subject"></div>
+                        <div class="mail-part mail-body"></div>
+                        <div class="mail-part mail-attachment"></div>
+                    </div>
+                </div>
+                <div class="col-sm-12 open-folder-btn">
+                    <button class="btn btn-default btn-sm">フォルダオープン</button>
+                </div>
+            </form>
+        </div>
+    </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/matching/result.js"></script>
+</th:block>
 </body>
 </html>

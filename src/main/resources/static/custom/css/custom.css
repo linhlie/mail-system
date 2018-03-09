@@ -282,3 +282,113 @@ input.form-error {
 .sidebar-menu .treeview-menu.visible {
     display: block;
 }
+
+.matching-result .matching-result-container {
+    background: white;
+    padding: 10px;
+}
+
+.matching-result .matching-result-container.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.matching-result-container .main-left, .matching-result-container .main-right {
+    width: 100%;
+    height: 590px;
+    margin-top: 20px;
+}
+
+.matching-result .table-container {
+    width: 100%;
+    height: 250px;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.matching-result .table-container table tr th, .matching-result .table-container table tr td {
+    padding: 4px;
+}
+
+.matching-result .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.matching-result .full-height {
+    height: 100%;
+}
+
+.matching-result .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+.matching-result .table-container td input[type="checkbox"] {
+    width: auto;
+}
+
+.matching-result .table-container td, .matching-result .table-container th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.matching-result .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+.matching-result .table-container td.select-container select {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.matching-result .table-container td select {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+.matching-result .table-name-container {
+    margin-top: 10px;
+    width: 100%; height: 40px; background-color: transparent;
+    display:table;
+}
+
+.matching-result .table-name-container h4 {
+    display:table-cell; vertical-align:middle;
+}
+
+.matching-result .mail-part {
+    width: 100%;
+    border: #a5a5a5 solid 1px;
+    overflow-y: scroll;
+}
+
+.matching-result .mail-part.mail-subject {
+    height: 40px;
+}
+
+.matching-result .mail-part.mail-body {
+    margin-top: 20px;
+    height: 490px;
+}
+
+.matching-result .mail-part.mail-attachment {
+    margin-top: 10px;
+    height: 30px;
+}
+
+.matching-result .open-folder-btn {
+    padding-top: 10px;
+}
+
+.matching-result .open-folder-btn button {
+    float: right;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+
