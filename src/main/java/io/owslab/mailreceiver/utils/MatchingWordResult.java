@@ -58,4 +58,8 @@ public class MatchingWordResult {
         }
         return result;
     }
+
+    public boolean contain(String word){
+        return this.getWords().contains(word);
+    }
 }

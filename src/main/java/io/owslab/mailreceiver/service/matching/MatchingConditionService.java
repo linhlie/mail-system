@@ -102,12 +102,22 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
         System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
-        for(MatchingWordResult sourceResult : matchWordSource) {
-            List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
-            findMailMatching(sourceResult, matchWordDestination, groupedMatchingConditionsCopy, matchingWords, distinguish);
-            List<Email> matching = mergeResultGroups(groupedMatchingConditionsCopy);
-            Email sourceEmail = sourceResult.getEmail();
-            System.out.println(sourceEmail.getSubject() + " has " + matching.size() + " match");
+        for(String word : matchingWords) {
+            for(MatchingWordResult sourceResult : matchWordSource) {
+                if(!sourceResult.contain(word)) continue;
+                MatchingResult matchingResult = new MatchingResult(word, sourceResult.getEmail());
+                for(MatchingWordResult destinationResult : matchWordDestination) {
+                    if(!sourceResult.contain(word)) continue;
+                    List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
+                    List<String> intersect = sourceResult.intersect(destinationResult);
+                    boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditionsCopy, distinguish);
+                    if(matching){
+                        matchingResult.addDestination(destinationResult.getEmail());
+                    }
+                }
+                Email sourceEmail = sourceResult.getEmail();
+                System.out.println(sourceEmail.getSubject() + " has " + matchingResult.getDestinationList().size() + " match");
+            }
         }
     }
 
@@ -144,26 +154,23 @@ public class MatchingConditionService {
         return groupList;
     }
 
-    private List<MatchingConditionGroup> findMailMatching(MatchingWordResult sourceResult,
-                                                          List<MatchingWordResult> matchingWordResults,
+    private boolean isMailMatching(MatchingWordResult sourceResult,
+                                                          MatchingWordResult destinationResult,
                                                           List<MatchingConditionGroup> groupList,
-                                                          List<String> matchingWords,
                                                           boolean distinguish){
-        for(MatchingWordResult destinationResult : matchingWordResults) {
-            List<String> intersect = sourceResult.intersect(destinationResult);
-            if(matchingWords.size() == 0 || intersect.size() > 0){
-                for(MatchingConditionGroup group : groupList){
-                    for(MatchingConditionResult result : group.getConditionResults()){
-                        MatchingCondition condition = result.getMatchingCondition();
-                        Email targetEmail = destinationResult.getEmail();
-                        if(isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish)){
-                            result.add(targetEmail);
-                        }
-                    }
+        for(MatchingConditionGroup group : groupList){
+            for(MatchingConditionResult result : group.getConditionResults()){
+                MatchingCondition condition = result.getMatchingCondition();
+                Email targetEmail = destinationResult.getEmail();
+                if(isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish)){
+                    result.add(targetEmail);
                 }
             }
         }
-        return groupList;
+
+        List<Email> matching = mergeResultGroups(groupList);
+
+        return matching.size() > 0;
     }
 
     private boolean isMatch(Email source, Email target, MatchingCondition condition, boolean distinguish){
