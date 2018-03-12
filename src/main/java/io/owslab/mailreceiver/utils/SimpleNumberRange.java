@@ -207,4 +207,8 @@ public class SimpleNumberRange {
     public String toString(){
         return this.getNumberCompare().toString() + " " + this.getValue();
     }
+
+    public void multiple(Double multipleWidth){
+        this.setValue(this.getValue() * multipleWidth);
+    }
 }

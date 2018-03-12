@@ -58,4 +58,9 @@ public class FullNumberRange {
     public String toString(){
         return this.getLeft().toString() + " ~ " + this.getRight().toString();
     }
+
+    public void multiple(Double multipleWidth){
+        this.left.multiple(multipleWidth);
+        this.right.multiple(multipleWidth);
+    }
 }

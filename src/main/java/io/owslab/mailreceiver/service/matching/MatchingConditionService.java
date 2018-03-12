@@ -162,7 +162,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchNumber(source.getOptimizedBody(), target.getOptimizedBody(), condition, distinguish);
+                match = isMatchRange(source.getOptimizedBody(), target.getOptimizedBody(), condition, distinguish);
                 break;
             case NONE:
             default:
@@ -190,7 +190,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchNumber(email.getOptimizedBody(), condition, distinguish);
+                match = isMatchRange(email.getOptimizedBody(), condition, distinguish);
                 break;
             case HAS_ATTACHMENT:
                 match = email.isHasAttachment();
@@ -379,17 +379,17 @@ public class MatchingConditionService {
         return matchingWordResults;
     }
 
-    private boolean isMatchNumber(String sourcePart, String targetPart, MatchingCondition condition, boolean distinguish){
+    private boolean isMatchRange(String sourcePart, String targetPart, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         String conditionValue = condition.getValue();
         if(conditionValue.indexOf('#') != 0){
-            return isMatchNumber(targetPart, condition, distinguish);
+            return isMatchRange(targetPart, condition, distinguish);
         }
-        //TODO:
+        //TODO: case #
         return match;
     }
 
-    private boolean isMatchNumber(String part, MatchingCondition condition, boolean distinguish){
+    private boolean isMatchRange(String part, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         try {
             MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
@@ -397,29 +397,62 @@ public class MatchingConditionService {
             String conditionValue = condition.getValue();
             String optimizedPart = getOptimizedText(part, false);
             String optimizedValue = getOptimizedText(conditionValue, false);
-            Double numberCondition = Double.parseDouble(optimizedValue);
             NumberTreatment numberTreatment = numberTreatmentService.getFirst();
-            if(numberTreatment != null){
-                switch (mailItemOption){
-                    case NUMBER_UPPER:
-                        numberCondition = numberCondition * numberTreatment.getUpperLimitRate();
-                        break;
-                    case NUMBER_LOWER:
-                        numberCondition = numberCondition * numberTreatment.getLowerLimitRate();
-                        break;
-                }
-            }
+
+            FullNumberRange findRange;
+            List<FullNumberRange> toFindListRange;
+
             switch (conditionOption){
+                case WITHIN:
+                    List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(optimizedValue);
+                    if(forFindListRange.size() == 0){
+                        match = false;
+                        return match;
+                    }
+                    findRange = forFindListRange.get(0);
+                    if(numberTreatment != null){
+                        switch (mailItemOption){
+                            case NUMBER_UPPER:
+                                findRange.multiple(numberTreatment.getUpperLimitRate());
+                                break;
+                            case NUMBER_LOWER:
+                                findRange.multiple(numberTreatment.getLowerLimitRate());
+                                break;
+                        }
+                    }
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(findRange.match(range)){
+                                match = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        match = true;
+                    }
+                    break;
                 case EQ:
                 case NE:
                 case GE:
                 case GT:
                 case LE:
                 case LT:
+                    Double numberCondition = Double.parseDouble(optimizedValue);
+                    if(numberTreatment != null){
+                        switch (mailItemOption){
+                            case NUMBER_UPPER:
+                                numberCondition = numberCondition * numberTreatment.getUpperLimitRate();
+                                break;
+                            case NUMBER_LOWER:
+                                numberCondition = numberCondition * numberTreatment.getLowerLimitRate();
+                                break;
+                        }
+                    }
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
-                    FullNumberRange findRange = new FullNumberRange(simpleRange);
-                    List<FullNumberRange> toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    findRange = new FullNumberRange(simpleRange);
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(findRange.match(range)){
@@ -430,12 +463,7 @@ public class MatchingConditionService {
                     } else { //Not found a range => auto natch
                         match = true;
                     }
-
                     break;
-                case INC:
-                case NINC:
-                case WITHIN:
-                case NONE:
                 default:
                     break;
             }
@@ -444,6 +472,8 @@ public class MatchingConditionService {
         }
         return match;
     }
+
+
 
     private List<String> getWordList(MatchingConditionForm matchingConditionForm){
         List<String> matchingWords = Arrays.asList(matchingConditionForm.getMatchingWords().split(","));
