@@ -99,15 +99,15 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
         System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
-        for(MatchingWordResult sourceResult : matchWordSource) {
-            for(MatchingWordResult destinationResult : matchWordDestination) {
-                List<String> intersect = sourceResult.intersect(destinationResult);
-                if(matchingWords.size() == 0 || intersect.size() > 0){
-                    //TODO: find match with matching table conditions
-                    System.out.println("Matching : " + sourceResult.getEmail().getSubject() + "/" + destinationResult.getEmail().getSubject());
-                }
-            }
-        }
+//        for(MatchingWordResult sourceResult : matchWordSource) {
+//            for(MatchingWordResult destinationResult : matchWordDestination) {
+//                List<String> intersect = sourceResult.intersect(destinationResult);
+//                if(matchingWords.size() == 0 || intersect.size() > 0){
+//                    //TODO: find match with matching table conditions
+//                    System.out.println("Matching : " + sourceResult.getEmail().getSubject() + "/" + destinationResult.getEmail().getSubject());
+//                }
+//            }
+//        }
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
@@ -141,6 +141,34 @@ public class MatchingConditionService {
             }
         }
         return groupList;
+    }
+
+    private boolean isMatch(Email source, Email target, MatchingCondition condition, boolean distinguish){
+        boolean match = false;
+        MailItemOption option = MailItemOption.fromValue(condition.getItem());
+        switch (option){
+            case SENDER:
+                match = isMatchPart(target.getTo(), condition, distinguish);
+                break;
+            case RECEIVER:
+                match = isMatchPart(target.getFrom(), condition, distinguish);
+                break;
+            case SUBJECT:
+                match = isMatchPart(target.getSubject(), condition, distinguish);
+                break;
+            case BODY:
+                match = isMatchPart(target.getOptimizedBody(), condition, distinguish);
+                break;
+            case NUMBER:
+            case NUMBER_UPPER:
+            case NUMBER_LOWER:
+                match = isMatchNumber(source.getOptimizedBody(), target.getOptimizedBody(), condition, distinguish);
+                break;
+            case NONE:
+            default:
+                break;
+        }
+        return match;
     }
 
     private boolean isMatch(Email email, MatchingCondition condition, boolean distinguish){
@@ -351,6 +379,16 @@ public class MatchingConditionService {
         return matchingWordResults;
     }
 
+    private boolean isMatchNumber(String sourcePart, String targetPart, MatchingCondition condition, boolean distinguish){
+        boolean match = false;
+        String conditionValue = condition.getValue();
+        if(conditionValue.indexOf('#') != 0){
+            return isMatchNumber(targetPart, condition, distinguish);
+        }
+        //TODO:
+        return match;
+    }
+
     private boolean isMatchNumber(String part, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         try {
@@ -379,14 +417,20 @@ public class MatchingConditionService {
                 case LE:
                 case LT:
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
-                    SimpleNumberRange findRange = new SimpleNumberRange(compare, numberCondition);
-                    List<SimpleNumberRange> toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
-                    for(SimpleNumberRange range : toFindListRange){
-                        if(findRange.match(range)){
-                            match = true;
-                            break;
+                    SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
+                    FullNumberRange findRange = new FullNumberRange(simpleRange);
+                    List<FullNumberRange> toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(findRange.match(range)){
+                                match = true;
+                                break;
+                            }
                         }
+                    } else { //Not found a range => auto natch
+                        match = true;
                     }
+
                     break;
                 case INC:
                 case NINC:

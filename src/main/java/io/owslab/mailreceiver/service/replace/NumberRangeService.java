@@ -3,12 +3,16 @@ package io.owslab.mailreceiver.service.replace;
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.NumberRangeDAO;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SimpleNumberRange;
+import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.DoubleBinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,19 +42,18 @@ public class NumberRangeService {
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
 
-    public List<SimpleNumberRange> buildNumberRangeForInput(String input){
-        List<SimpleNumberRange> result = new ArrayList<>();
+    public List<FullNumberRange> buildNumberRangeForInput(String input){
+        List<FullNumberRange> result = new ArrayList<>();
         if(input == null || input.length() == 0) return result;
+        HashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new HashMap<String, ArrayList<SimpleNumberRange>>();
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);
         List<ReplaceLetter> afReplaceLetters = replaceLetterService.getSignificantList(false);
-        if(bfReplaceLetters.size() == 0 && afReplaceLetters.size() == 0) return result;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         List<ReplaceNumber> replaceNumbers = replaceNumberService.getList();
         List<ReplaceUnit> replaceUnits = replaceUnitService.getList();
 
         String optimizedInput = optimizeText(input);
-
         List<NumberElement> numberElements = buildListNumber(optimizedInput);
         for(NumberElement numberElement : numberElements){
             Double number = numberElement.getValue();
@@ -65,14 +68,25 @@ public class NumberRangeService {
                     afEndAt, false);
             if(bfNumberLetterResult != null){
                 ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
-                result.add(new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace()));
+                addToList(rangeMap, Integer.toString((bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length())), new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace()));
             }
             if(afNumberLetterResult != null){
                 ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
-                result.add(new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace()));
+                addToList(rangeMap, Integer.toString(afNumberLetterResult.getStartAt()), new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace()));
             }
             if(bfNumberLetterResult == null && afNumberLetterResult == null){
-                result.add(new SimpleNumberRange(realNumberResult.getValue()));
+                addToList(rangeMap, Integer.toString(realNumberResult.getStartAt()), new SimpleNumberRange(realNumberResult.getValue()));
+            }
+        }
+
+        for(Map.Entry<String, ArrayList<SimpleNumberRange>> entry : rangeMap.entrySet()) {
+            List<SimpleNumberRange> rangeList = entry.getValue();
+            if(rangeList != null) {
+                if(rangeList.size() == 2){
+                    result.add(new FullNumberRange(rangeList.get(0), rangeList.get(1)));
+                } else if(rangeList.size() == 1) {
+                    result.add(new FullNumberRange(rangeList.get(0)));
+                }
             }
         }
 
@@ -297,6 +311,20 @@ public class NumberRangeService {
 
         public int getStartAt() {
             return startAt;
+        }
+    }
+
+    private synchronized void addToList(HashMap<String, ArrayList<SimpleNumberRange>> map, String mapKey, SimpleNumberRange range) {
+        ArrayList<SimpleNumberRange> rangesList = map.get(mapKey);
+
+        // if list does not exist create it
+        if(rangesList == null) {
+            rangesList = new ArrayList<SimpleNumberRange>();
+            rangesList.add(range);
+            map.put(mapKey, rangesList);
+        } else {
+            // add if item is not already in list
+            if(!rangesList.contains(range)) rangesList.add(range);
         }
     }
 }

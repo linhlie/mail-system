@@ -102,7 +102,7 @@ public class ApplicationStartup {
         buildMatchEmailWordScheduler.start();
 //        Email testEmail = new Email();
 //        testEmail.setOptimizedBody("              There         +. -. are more than 以上-2K and less than +12万YEN　    ~　   15円 numbers here +13.2千~.2千 2 ~ 000,000 ３４千");
-//        numberRangeService.buildNumberRangeForEmail(testEmail);
+//        numberRangeService.buildNumberRangeForInput(testEmail.getOptimizedBody());
         return;
     }
 

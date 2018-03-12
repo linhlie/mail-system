@@ -24,6 +24,11 @@ public class SimpleNumberRange {
         this.numberCompare = NumberCompare.fromReplace(replace);
     }
 
+    public SimpleNumberRange(){
+        this.value = 0;
+        this.numberCompare = NumberCompare.AUTOMATCH;
+    }
+
     public NumberCompare getNumberCompare() {
         return numberCompare;
     }
@@ -41,6 +46,12 @@ public class SimpleNumberRange {
     }
 
     public boolean match(SimpleNumberRange other){
+        if(this.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
+            return true;
+        }
+        if(other.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
+            return true;
+        }
         boolean match = false;
         switch (this.getNumberCompare()){
             case EQ:
@@ -191,5 +202,9 @@ public class SimpleNumberRange {
                 match = false;
         }
         return match;
+    }
+
+    public String toString(){
+        return this.getNumberCompare().toString() + " " + this.getValue();
     }
 }

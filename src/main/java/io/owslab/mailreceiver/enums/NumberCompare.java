@@ -4,6 +4,7 @@ package io.owslab.mailreceiver.enums;
  * Created by khanhlvb on 3/8/18.
  */
 public enum NumberCompare {
+    AUTOMATCH(1),
     EQ(2),
     NE(3),
     GE(4),
