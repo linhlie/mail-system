@@ -2,43 +2,60 @@ package io.owslab.mailreceiver.utils;
 
 import io.owslab.mailreceiver.model.Email;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by khanhlvb on 3/8/18.
  */
 public class MatchingWordResult {
-    private String word;
-    private List<Email> source;
-    private List<Email> destination;
+    private Email email;
+    private List<String> words;
 
-    public MatchingWordResult(String word, List<Email> source, List<Email> destination) {
-        this.word = word;
-        this.source = source;
-        this.destination = destination;
+    public MatchingWordResult(Email email, List<String> words) {
+        this.email = email;
+        this.words = words;
     }
 
-    public String getWord() {
-        return word;
+    public MatchingWordResult(Email email) {
+        this.email = email;
+        this.words = new ArrayList<>();
     }
 
-    public void setWord(String word) {
-        this.word = word;
+    public Email getEmail() {
+        return email;
     }
 
-    public List<Email> getSource() {
-        return source;
+    public void setEmail(Email email) {
+        this.email = email;
     }
 
-    public void setSource(List<Email> source) {
-        this.source = source;
+    public List<String> getWords() {
+        return words;
     }
 
-    public List<Email> getDestination() {
-        return destination;
+    public void setWords(List<String> words) {
+        this.words = words;
     }
 
-    public void setDestination(List<Email> destination) {
-        this.destination = destination;
+    public boolean addMatchWord(String word){
+        if(!this.words.contains(word)){
+            return this.words.add(word);
+        }
+        return false;
+    }
+
+    public List<String> intersect (MatchingWordResult other){
+        List<String> list1 = this.getWords();
+        List<String> list2 = other.getWords();
+        List<String> list = list1.size() >= list2.size() ? list2 : list1;
+        List<String> remainList = list1.size() >= list2.size() ? list1 : list2;
+        List<String> result = new ArrayList<>();
+        for(String word: list){
+            if(remainList.contains(word)){
+                result.add(word);
+            }
+        }
+        return result;
     }
 }

@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 3/6/18.
@@ -91,31 +88,26 @@ public class MatchingConditionService {
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
-        List<MatchingConditionGroup> groupedSourceMatchingConditions = divideIntoGroups(matchingConditionList);
-        List<MatchingConditionGroup> groupedDestinationMatchingConditions = divideIntoGroups(matchingConditionList);
+        List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
         List<Email> emailList = mailBoxService.getAll();
         boolean distinguish = matchingConditionForm.isDistinguish();
         findMailMatching(emailList, groupedSourceConditions, distinguish);
         List<Email> matchSourceList = mergeResultGroups(groupedSourceConditions);
         findMailMatching(emailList, groupedDestinationConditions, distinguish);
-        List<Email> matchDestinationList = mergeResultGroups(groupedSourceConditions);
-        findMailMatching(matchSourceList, groupedSourceMatchingConditions, distinguish);
-        List<Email> matchSourceMatchingList = mergeResultGroups(groupedSourceMatchingConditions);
-        findMailMatching(matchDestinationList, groupedDestinationMatchingConditions, distinguish);
-        List<Email> matchDestinationMatchingList = mergeResultGroups(groupedDestinationMatchingConditions);
-        List<String> matchingWords = Arrays.asList(matchingConditionForm.getMatchingWords().split(","));
-        for(String word : matchingWords){
-            System.out.println("Word: " + word);
+        List<Email> matchDestinationList = mergeResultGroups(groupedDestinationConditions);
+        List<String> matchingWords = getWordList(matchingConditionForm);
+        List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
+        List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
+        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
+        for(MatchingWordResult sourceResult : matchWordSource) {
+            for(MatchingWordResult destinationResult : matchWordDestination) {
+                List<String> intersect = sourceResult.intersect(destinationResult);
+                if(matchingWords.size() == 0 || intersect.size() > 0){
+                    //TODO: find match with matching table conditions
+                    System.out.println("Matching : " + sourceResult.getEmail().getSubject() + "/" + destinationResult.getEmail().getSubject());
+                }
+            }
         }
-        //TODO: find source and matching match (1)
-        //TODO: find destination and matching match (2)
-        //TODO: find List MatchingWordResult from listWord (form) and (1) (2) list email
-//        logger.info("find mail done: " + emailList.size());
-//        logger.info("condition size: " + groupedSourceConditions.size() + " " + groupedDestinationConditions.size() + " " + groupedMatchingConditions.size());
-//        logger.info("groupedList size: " + groupedList.size());
-//        for(MatchingConditionGroup group : groupedSourceConditions){
-//            System.out.println("Group " + groupedSourceConditions.indexOf(group) + ":" + group.toString());
-//        }
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
@@ -344,22 +336,19 @@ public class MatchingConditionService {
         return result;
     }
 
-    private MatchingWordResult findMatchWordList(String word, List<Email> source, List<Email> destination){
-        List<Email> sourceMatch = findMatchWithWord(word, source);
-        List<Email> destinationMatch = findMatchWithWord(word, destination);
-        return new MatchingWordResult(word, sourceMatch, destinationMatch);
-    }
-
-    private List<Email> findMatchWithWord(String word, List<Email> emailList){
-        List<Email> result = new ArrayList<>();
+    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
+        List<MatchingWordResult> matchingWordResults = new ArrayList<>();
         for(Email email : emailList){
             String contentToSearch = MailBoxService.optimizeText(email.getSubject()) + "\n" + email.getOptimizedBody() ;
-            if(emailWordJobService.matchWord(contentToSearch, word)){
-                System.out.println("Word: " + word + ": Email: " + email.getSubject());
-                result.add(email);
+            MatchingWordResult result = new MatchingWordResult(email);
+            for(String word : words){
+                if(emailWordJobService.matchWord(contentToSearch, word)){
+                    result.addMatchWord(word);
+                }
             }
+            matchingWordResults.add(result);
         }
-        return result;
+        return matchingWordResults;
     }
 
     private boolean isMatchNumber(String part, MatchingCondition condition, boolean distinguish){
@@ -410,5 +399,18 @@ public class MatchingConditionService {
             logger.error(e.getMessage());
         }
         return match;
+    }
+
+    private List<String> getWordList(MatchingConditionForm matchingConditionForm){
+        List<String> matchingWords = Arrays.asList(matchingConditionForm.getMatchingWords().split(","));
+        List<String> normalizedMatchingWords = new ArrayList<>();
+        for(String word : matchingWords) {
+            word = word.toLowerCase();
+            if(word.isEmpty()) continue;
+            if(!normalizedMatchingWords.contains(word)){
+                normalizedMatchingWords.add(word);
+            }
+        }
+        return normalizedMatchingWords;
     }
 }
