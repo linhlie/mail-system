@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.enums.NumberCompare;
+
 /**
  * Created by khanhlvb on 3/12/18.
  */
@@ -62,5 +64,10 @@ public class FullNumberRange {
     public void multiple(Double multipleWidth){
         this.left.multiple(multipleWidth);
         this.right.multiple(multipleWidth);
+    }
+
+    public void replace(NumberCompare numberCompare){
+        this.left.replace(numberCompare);
+        this.right.replace(numberCompare);
     }
 }

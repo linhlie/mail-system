@@ -43,6 +43,10 @@ public class NumberRangeService {
     }
 
     public List<FullNumberRange> buildNumberRangeForInput(String input){
+        return buildNumberRangeForInput(input, false);
+    }
+
+    public List<FullNumberRange> buildNumberRangeForInput(String input, boolean individual){
         List<FullNumberRange> result = new ArrayList<>();
         if(input == null || input.length() == 0) return result;
         HashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new HashMap<String, ArrayList<SimpleNumberRange>>();
@@ -82,10 +86,16 @@ public class NumberRangeService {
         for(Map.Entry<String, ArrayList<SimpleNumberRange>> entry : rangeMap.entrySet()) {
             List<SimpleNumberRange> rangeList = entry.getValue();
             if(rangeList != null) {
-                if(rangeList.size() == 2){
-                    result.add(new FullNumberRange(rangeList.get(0), rangeList.get(1)));
-                } else if(rangeList.size() == 1) {
-                    result.add(new FullNumberRange(rangeList.get(0)));
+                if(individual){
+                    for(SimpleNumberRange range : rangeList){
+                        result.add(new FullNumberRange(range));
+                    }
+                } else {
+                    if(rangeList.size() == 2){
+                        result.add(new FullNumberRange(rangeList.get(0), rangeList.get(1)));
+                    } else if(rangeList.size() == 1) {
+                        result.add(new FullNumberRange(rangeList.get(0)));
+                    }
                 }
             }
         }

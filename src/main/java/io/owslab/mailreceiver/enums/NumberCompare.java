@@ -21,6 +21,7 @@ public enum NumberCompare {
     public static NumberCompare fromConditionOption(ConditionOption condition) {
         switch(condition) {
             case EQ:
+            case WITHIN:
                 return EQ;
             case NE:
                 return NE;

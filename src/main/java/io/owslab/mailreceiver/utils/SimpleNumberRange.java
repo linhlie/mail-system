@@ -211,4 +211,8 @@ public class SimpleNumberRange {
     public void multiple(Double multipleWidth){
         this.setValue(this.getValue() * multipleWidth);
     }
+
+    public void replace(NumberCompare numberCompare){
+        this.numberCompare = numberCompare;
+    }
 }

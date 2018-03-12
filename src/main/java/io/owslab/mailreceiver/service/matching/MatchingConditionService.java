@@ -47,6 +47,8 @@ public class MatchingConditionService {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
+    private NumberTreatment numberTreatment;
+
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
         for(MatchingCondition matchingCondition : matchingConditions){
@@ -83,6 +85,7 @@ public class MatchingConditionService {
     }
 
     public void matching(MatchingConditionForm matchingConditionForm){
+        numberTreatment = numberTreatmentService.getFirst();
         List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
         List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
@@ -99,15 +102,13 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
         System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
-//        for(MatchingWordResult sourceResult : matchWordSource) {
-//            for(MatchingWordResult destinationResult : matchWordDestination) {
-//                List<String> intersect = sourceResult.intersect(destinationResult);
-//                if(matchingWords.size() == 0 || intersect.size() > 0){
-//                    //TODO: find match with matching table conditions
-//                    System.out.println("Matching : " + sourceResult.getEmail().getSubject() + "/" + destinationResult.getEmail().getSubject());
-//                }
-//            }
-//        }
+        for(MatchingWordResult sourceResult : matchWordSource) {
+            List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
+            findMailMatching(sourceResult, matchWordDestination, groupedMatchingConditionsCopy, matchingWords, distinguish);
+            List<Email> matching = mergeResultGroups(groupedMatchingConditionsCopy);
+            Email sourceEmail = sourceResult.getEmail();
+            System.out.println(sourceEmail.getSubject() + " has " + matching.size() + " match");
+        }
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
@@ -136,6 +137,28 @@ public class MatchingConditionService {
                     MatchingCondition condition = result.getMatchingCondition();
                     if(isMatch(email, condition, distinguish)){
                         result.add(email);
+                    }
+                }
+            }
+        }
+        return groupList;
+    }
+
+    private List<MatchingConditionGroup> findMailMatching(MatchingWordResult sourceResult,
+                                                          List<MatchingWordResult> matchingWordResults,
+                                                          List<MatchingConditionGroup> groupList,
+                                                          List<String> matchingWords,
+                                                          boolean distinguish){
+        for(MatchingWordResult destinationResult : matchingWordResults) {
+            List<String> intersect = sourceResult.intersect(destinationResult);
+            if(matchingWords.size() == 0 || intersect.size() > 0){
+                for(MatchingConditionGroup group : groupList){
+                    for(MatchingConditionResult result : group.getConditionResults()){
+                        MatchingCondition condition = result.getMatchingCondition();
+                        Email targetEmail = destinationResult.getEmail();
+                        if(isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish)){
+                            result.add(targetEmail);
+                        }
                     }
                 }
             }
@@ -384,8 +407,29 @@ public class MatchingConditionService {
         String conditionValue = condition.getValue();
         if(conditionValue.indexOf('#') != 0){
             return isMatchRange(targetPart, condition, distinguish);
+        } else {
+            ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
+            String optimizedSourcePart = getOptimizedText(sourcePart, false);
+            String optimizedTargetPart = getOptimizedText(targetPart, false);
+            String optimizedValue = getOptimizedText(conditionValue, false);
+            //TODO handle name after #
+
+            switch (conditionOption){
+                case WITHIN:
+                case EQ:
+                case NE:
+                case GE:
+                case GT:
+                case LE:
+                case LT:
+                    List<FullNumberRange> sourceRanges = numberRangeService.buildNumberRangeForInput(optimizedSourcePart, true);
+                    List<FullNumberRange> targetRanges = numberRangeService.buildNumberRangeForInput(optimizedTargetPart);
+                    match = hasMatchRange(sourceRanges, targetRanges, condition);
+                    break;
+                default:
+                    break;
+            }
         }
-        //TODO: case #
         return match;
     }
 
@@ -397,7 +441,6 @@ public class MatchingConditionService {
             String conditionValue = condition.getValue();
             String optimizedPart = getOptimizedText(part, false);
             String optimizedValue = getOptimizedText(conditionValue, false);
-            NumberTreatment numberTreatment = numberTreatmentService.getFirst();
 
             FullNumberRange findRange;
             List<FullNumberRange> toFindListRange;
@@ -406,7 +449,7 @@ public class MatchingConditionService {
                 case WITHIN:
                     List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(optimizedValue);
                     if(forFindListRange.size() == 0){
-                        match = false;
+                        match = true;
                         return match;
                     }
                     findRange = forFindListRange.get(0);
@@ -486,5 +529,28 @@ public class MatchingConditionService {
             }
         }
         return normalizedMatchingWords;
+    }
+
+    private boolean hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, MatchingCondition condition) {
+        if(targetRanges.size() == 0) return true;
+        boolean match = false;
+        MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
+        ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
+        for(FullNumberRange findRange : sourceRanges){
+            if(mailItemOption.equals(MailItemOption.NUMBER_UPPER)){
+                findRange.multiple(numberTreatment.getUpperLimitRate());
+            } else if (mailItemOption.equals(MailItemOption.NUMBER_LOWER)){
+                findRange.multiple(numberTreatment.getLowerLimitRate());
+            }
+            findRange.replace(NumberCompare.fromConditionOption(conditionOption));
+            for(FullNumberRange range : targetRanges){
+                if(findRange.match(range)){
+                    match = true;
+                    break;
+                }
+            }
+            if(match) break;
+        }
+        return match;
     }
 }
