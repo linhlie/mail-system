@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.replace;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.NumberRangeDAO;
+import io.owslab.mailreceiver.enums.NumberCompare;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SimpleNumberRange;
@@ -63,7 +64,6 @@ public class NumberRangeService {
             Double number = numberElement.getValue();
             if(number == null) continue;
             NumberResult realNumberResult = findRealNumber(replaceNumbers, optimizedInput, numberElement);
-            if(!isValidNumber(numberTreatment, realNumberResult.getValue())) continue;
             ReplaceLetterResult bfNumberLetterResult = findMatchReplaceLetter(bfReplaceLetters, optimizedInput,
                     numberElement.getStartAt(), true);
             ReplaceUnit afNumberUnit = findMatchReplaceUnit(replaceUnits, optimizedInput, realNumberResult.getEndAt());
@@ -108,7 +108,9 @@ public class NumberRangeService {
             if(rangeList != null) {
                 if(individual){
                     for(SimpleNumberRange range : rangeList){
-                        result.add(new FullNumberRange(range));
+                        if(isValidRange(numberTreatment, range)){
+                            result.add(new FullNumberRange(range));
+                        }
                     }
                 } else {
                     if(rangeList.size() == 2){
@@ -119,13 +121,27 @@ public class NumberRangeService {
                         } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
                             secondRange.multiple((double) firstRange.getReplaceValue());
                         }
-                        result.add(new FullNumberRange(rangeList.get(0), rangeList.get(1)));
+                        boolean isFirstRangeValid = isValidRange(numberTreatment, firstRange);
+                        boolean isSecondRangeValid = isValidRange(numberTreatment, secondRange);
+                        if(isFirstRangeValid && isSecondRangeValid){
+                            result.add(new FullNumberRange(firstRange, secondRange));
+                        } else if (isFirstRangeValid) {
+                            result.add(new FullNumberRange(firstRange));
+                        } else if (isSecondRangeValid) {
+                            result.add(new FullNumberRange(secondRange));
+                        }
                     } else if(rangeList.size() == 1) {
-                        result.add(new FullNumberRange(rangeList.get(0)));
+                        if(isValidRange(numberTreatment, rangeList.get(0))){
+                            result.add(new FullNumberRange(rangeList.get(0)));
+                        }
                     }
                 }
             }
         }
+
+//        for(FullNumberRange fullNumberRange : result) {
+//            System.out.println("fullNumberRange: " + fullNumberRange.toString());
+//        }
 
         return result;
     }
@@ -151,6 +167,15 @@ public class NumberRangeService {
             result.add(numberElement);
         }
         return result;
+    }
+
+    private boolean isValidRange(NumberTreatment numberTreatment, SimpleNumberRange range){
+        if(numberTreatment == null) return true;
+        if(range.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
+            return true;
+        } else {
+            return isValidNumber(numberTreatment, range.getValue());
+        }
     }
 
     private boolean isValidNumber(NumberTreatment numberTreatment, Double number){
