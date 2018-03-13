@@ -8,29 +8,42 @@ import io.owslab.mailreceiver.enums.NumberCompare;
 public class SimpleNumberRange {
     private NumberCompare numberCompare;
     private double value;
+    private int replaceValue;
 
     public SimpleNumberRange(NumberCompare numberCompare, double value) {
         this.numberCompare = numberCompare;
         this.value = value;
+        this.replaceValue = 1;
     }
 
     public SimpleNumberRange(double value) {
         this.value = value;
         this.numberCompare = NumberCompare.EQ;
+        this.replaceValue = 1;
     }
 
     public SimpleNumberRange(double value, int replace) {
         this.value = value;
         this.numberCompare = NumberCompare.fromReplace(replace);
+        this.replaceValue = 1;
     }
 
     public SimpleNumberRange(){
         this.value = 0;
         this.numberCompare = NumberCompare.AUTOMATCH;
+        this.replaceValue = 1;
     }
 
     public NumberCompare getNumberCompare() {
         return numberCompare;
+    }
+
+    public int getReplaceValue() {
+        return replaceValue;
+    }
+
+    public void setReplaceValue(int replaceValue) {
+        this.replaceValue = replaceValue;
     }
 
     public void setNumberCompare(NumberCompare numberCompare) {

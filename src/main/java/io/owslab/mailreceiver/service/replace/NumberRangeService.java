@@ -70,16 +70,36 @@ public class NumberRangeService {
             int afEndAt = afNumberUnit != null ? realNumberResult.getEndAt() + afNumberUnit.getUnit().length() : realNumberResult.getEndAt();
             ReplaceLetterResult afNumberLetterResult = findMatchReplaceLetter(afReplaceLetters, optimizedInput,
                     afEndAt, false);
-            if(bfNumberLetterResult != null){
-                ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
-                addToList(rangeMap, Integer.toString((bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length())), new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace()));
-            }
-            if(afNumberLetterResult != null){
-                ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
-                addToList(rangeMap, Integer.toString(afNumberLetterResult.getStartAt()), new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace()));
-            }
-            if(bfNumberLetterResult == null && afNumberLetterResult == null){
-                addToList(rangeMap, Integer.toString(realNumberResult.getStartAt()), new SimpleNumberRange(realNumberResult.getValue()));
+
+            SimpleNumberRange simpleNumberRange;
+            String position;
+            String letter;
+            if(bfNumberLetterResult != null || afNumberLetterResult != null){
+                if(bfNumberLetterResult != null){
+                    ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
+                    position = Integer.toString((bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length()));
+                    simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace());
+                    simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                    letter = bfNumberLetter.getLetter();
+                    addToList(rangeMap, position, simpleNumberRange);
+//                    System.out.println(position + " " + letter + " " + realNumberResult.getValue());
+                }
+                if(afNumberLetterResult != null){
+                    ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
+                    position = Integer.toString(afNumberLetterResult.getStartAt());
+                    simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace());
+                    simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                    letter = afNumberLetter.getLetter();
+                    addToList(rangeMap, position, simpleNumberRange);
+//                    System.out.println(position + " " + letter + " " + realNumberResult.getValue());
+                }
+            } else {
+                position = Integer.toString(realNumberResult.getStartAt());
+                simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue());
+                simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                letter = "=";
+                addToList(rangeMap, position, simpleNumberRange);
+//                System.out.println(position + " " + letter + " " + realNumberResult.getValue());
             }
         }
 
@@ -92,6 +112,13 @@ public class NumberRangeService {
                     }
                 } else {
                     if(rangeList.size() == 2){
+                        SimpleNumberRange firstRange = rangeList.get(0);
+                        SimpleNumberRange secondRange = rangeList.get(1);
+                        if(secondRange.getReplaceValue() != 1 && firstRange.getReplaceValue() == 1){
+                            firstRange.multiple((double) secondRange.getReplaceValue());
+                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
+                            secondRange.multiple((double) firstRange.getReplaceValue());
+                        }
                         result.add(new FullNumberRange(rangeList.get(0), rangeList.get(1)));
                     } else if(rangeList.size() == 1) {
                         result.add(new FullNumberRange(rangeList.get(0)));
@@ -175,7 +202,7 @@ public class NumberRangeService {
             double realNumber = numberElement.getValue() * replaceNumber.getReplaceValue();
             int realEndAt = numberElement.getEndAt() + replaceNumber.getCharacter().length();
             int realStartAt = numberElement.getStartAt();
-            result = new NumberResult(realNumber, realStartAt, realEndAt);
+            result = new NumberResult(realNumber, realStartAt, realEndAt, replaceNumber.getReplaceValue());
         }
         return result;
     }
@@ -280,17 +307,20 @@ public class NumberRangeService {
         private final Double value;
         private final int startAt;
         private final int endAt;
+        private final int replaceValue;
 
-        public NumberResult(Double value, int startAt, int endAt) {
+        public NumberResult(Double value, int startAt, int endAt, int replaceValue) {
             this.value = value;
             this.startAt = startAt;
             this.endAt = endAt;
+            this.replaceValue = replaceValue;
         }
 
         public NumberResult(NumberElement numberElement) {
             this.value = numberElement.getValue();
             this.startAt = numberElement.getStartAt();
             this.endAt = numberElement.getEndAt();
+            this.replaceValue = 1;
         }
 
         public Double getValue() {
@@ -303,6 +333,10 @@ public class NumberRangeService {
 
         public int getStartAt() {
             return startAt;
+        }
+
+        public int getReplaceValue() {
+            return replaceValue;
         }
     }
 
