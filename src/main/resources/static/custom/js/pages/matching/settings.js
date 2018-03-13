@@ -281,7 +281,10 @@
             success: function (data) {
                 disableButton(submitFormBtnId, false);
                 if(data && data.status){
-                    console.log("Submit success: ", data);
+                    var matchingResult = JSON.stringify(data.list);
+                    matchingResult = matchingResult || null;
+                    sessionStorage.setItem("matchingResultData", matchingResult);
+                    window.location = '/user/matchingResult';
                 } else {
                     console.error("[ERROR] submit failed: ", e);
                 }
