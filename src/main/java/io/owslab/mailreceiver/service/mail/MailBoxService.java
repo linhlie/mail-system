@@ -1,7 +1,5 @@
 package io.owslab.mailreceiver.service.mail;
 
-import com.mariten.kanatools.KanaConverter;
-import com.sun.xml.internal.ws.api.message.Attachment;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
