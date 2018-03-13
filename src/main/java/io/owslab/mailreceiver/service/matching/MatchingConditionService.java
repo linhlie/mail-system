@@ -108,7 +108,7 @@ public class MatchingConditionService {
                 if(!sourceResult.contain(word)) continue;
                 MatchingResult matchingResult = new MatchingResult(word, sourceResult.getEmail());
                 for(MatchingWordResult destinationResult : matchWordDestination) {
-                    if(!sourceResult.contain(word)) continue;
+                    if(!destinationResult.contain(word)) continue;
                     List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
                     boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditionsCopy, distinguish);
                     if(matching){
@@ -164,6 +164,7 @@ public class MatchingConditionService {
             for(MatchingConditionResult result : group.getConditionResults()){
                 MatchingCondition condition = result.getMatchingCondition();
                 Email targetEmail = destinationResult.getEmail();
+//                System.out.println("isMailMatching: " + sourceResult.getEmail().getSubject() + "/"+ targetEmail.getSubject());
                 if(isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish)){
                     result.add(targetEmail);
                 }
@@ -194,7 +195,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(source.getOptimizedBody(), target.getOptimizedBody(), condition, distinguish);
+                match = isMatchRange(source.getSubjectAndOptimizedBody(), target.getSubjectAndOptimizedBody(), condition, distinguish);
                 break;
             case NONE:
             default:
@@ -222,7 +223,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(email.getOptimizedBody(), condition, distinguish);
+                match = isMatchRange(email.getSubjectAndOptimizedBody(), condition, distinguish);
                 break;
             case HAS_ATTACHMENT:
                 match = email.isHasAttachment();
@@ -399,7 +400,7 @@ public class MatchingConditionService {
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
         for(Email email : emailList){
-            String contentToSearch = MailBoxService.optimizeText(email.getSubject()) + "\n" + email.getOptimizedBody() ;
+            String contentToSearch = email.getSubjectAndOptimizedBody();
             MatchingWordResult result = new MatchingWordResult(email);
             for(String word : words){
                 if(emailWordJobService.matchWord(contentToSearch, word)){
@@ -417,6 +418,7 @@ public class MatchingConditionService {
         if(conditionValue.indexOf('#') != 0){
             return isMatchRange(targetPart, condition, distinguish);
         } else {
+//            System.out.println("isMatchRange start: " + targetPart);
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
             String optimizedSourcePart = getOptimizedText(sourcePart, false);
             String optimizedTargetPart = getOptimizedText(targetPart, false);
@@ -552,7 +554,9 @@ public class MatchingConditionService {
                 findRange.multiple(numberTreatment.getLowerLimitRate());
             }
             findRange.replace(NumberCompare.fromConditionOption(conditionOption));
+//            System.out.println("hasMatchRange " + findRange.toString());
             for(FullNumberRange range : targetRanges){
+//                System.out.println("with " + range.toString());
                 if(findRange.match(range)){
                     match = true;
                     break;

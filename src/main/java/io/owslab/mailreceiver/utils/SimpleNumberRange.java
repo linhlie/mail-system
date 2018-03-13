@@ -213,6 +213,8 @@ public class SimpleNumberRange {
     }
 
     public void replace(NumberCompare numberCompare){
-        this.numberCompare = numberCompare;
+        if(!this.numberCompare.equals(NumberCompare.AUTOMATCH)){
+            this.numberCompare = numberCompare;
+        }
     }
 }

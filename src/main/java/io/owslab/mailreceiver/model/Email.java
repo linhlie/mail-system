@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.service.mail.MailBoxService;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -217,6 +219,10 @@ public class Email {
 
     public String getOptimizedBody() {
         return optimizedBody;
+    }
+
+    public String getSubjectAndOptimizedBody(){
+        return MailBoxService.optimizeText(this.getSubject()) + "\n" + this.getOptimizedBody();
     }
 
     public void setOptimizedBody(String optimizedBody) {
