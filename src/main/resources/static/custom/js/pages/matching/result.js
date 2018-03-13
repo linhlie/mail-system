@@ -122,8 +122,28 @@
     }
     
     function showMail(messageId) {
-        console.log("showMail: ", messageId);
-        //TODO: show mail with message id
+        messageId = messageId.replace(/\+/g, '%2B');
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/matchingResult/email?messageId=" + messageId,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                if(data.status){
+                    if(data.list && data.list.length > 0){
+                        showMailContent(data.list[0])
+                    }
+                }
+            },
+            error: function (e) {
+                console.error("getMail ERROR : ", e);
+            }
+        });
+    }
+
+    function showMailContent(data) {
+        console.log("showMailContent: ", data);
     }
 
 })(jQuery);

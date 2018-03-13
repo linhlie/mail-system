@@ -1,8 +1,10 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +46,9 @@ public class MatchingSettingsController {
 
     @Autowired
     private MatchingConditionService matchingConditionService;
+
+    @Autowired
+    private MailBoxService mailBoxService;
 
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -167,5 +174,16 @@ public class MatchingSettingsController {
     @RequestMapping(value = "/matchingResult", method = RequestMethod.GET)
     public String getMatchingResult(Model model) {
         return "user/matching/result";
+    }
+
+    @RequestMapping(value="/matchingResult/email", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEmailInJSON (@RequestParam(value = "messageId", required = true) String messageId){
+        AjaxResponseBody result = new AjaxResponseBody();
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId);
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(mailDetail);
+        return ResponseEntity.ok(result);
     }
 }

@@ -1,7 +1,11 @@
 package io.owslab.mailreceiver.service.mail;
 
 import com.mariten.kanatools.KanaConverter;
+import com.sun.xml.internal.ws.api.message.Attachment;
 import io.owslab.mailreceiver.dao.EmailDAO;
+import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +26,9 @@ import java.util.regex.Pattern;
 public class MailBoxService {
     @Autowired
     private EmailDAO emailDAO;
+
+    @Autowired
+    private FileDAO fileDAO;
 
     public long count(){
         return emailDAO.countByDeleted(false);
@@ -66,5 +74,19 @@ public class MailBoxService {
             i++;
         }
         return commentstr;
+    }
+
+    public List<DetailMailDTO> getMailDetail(String messageId){
+        List<DetailMailDTO> results = new ArrayList<>();
+        List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
+        for(Email email : emailList) {
+            DetailMailDTO result = new DetailMailDTO(email);
+            List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+            for(AttachmentFile file : files){
+                result.addFile(file);
+            }
+            results.add(result);
+        }
+        return results;
     }
 }
