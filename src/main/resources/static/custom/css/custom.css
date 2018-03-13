@@ -364,7 +364,7 @@ input.form-error {
 .matching-result .mail-part {
     width: 100%;
     border: #a5a5a5 solid 1px;
-    overflow-y: scroll;
+    overflow: scroll;
 }
 
 .matching-result .mail-part.mail-subject {
@@ -409,6 +409,21 @@ input.form-error {
 
 .matching-result .table-container tr td.clickable {
     cursor: pointer;
+}
+
+.matching-result .mailbox-read-info {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.matching-result .mailbox-read-info h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.matching-result .mail-part.mail-body, .matching-result .mail-part.mail-attachment {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 

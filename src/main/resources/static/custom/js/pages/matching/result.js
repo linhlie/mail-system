@@ -1,9 +1,12 @@
 
 (function () {
     "use strict";
-    var formId = '#matchingResultForm';
     var sourceTableId = 'sourceMatch';
     var destinationTableId = 'destinationMatch';
+    var mailSubjectDivId = 'mailSubject';
+    var mailBodyDivId = 'mailBody';
+    var mailAttachmentDivId = 'mailAttachment';
+    var openFileFolderButtonId = '#openFileFolderBtn';
     var matchingResultStr;
     matchingResultStr = sessionStorage.getItem("matchingResultData");
     matchingResultStr = matchingResultStr || "null";
@@ -18,6 +21,7 @@
 
     $(function () {
         showSourceData(sourceTableId, matchingResult);
+        disableButton(openFileFolderButtonId, true);
     });
 
     function showSourceData(tableId, data) {
@@ -143,7 +147,43 @@
     }
 
     function showMailContent(data) {
-        console.log("showMailContent: ", data);
+        // console.log("showMailContent: ", data);
+        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
+        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
+        mailSubjectDiv.innerHTML = "";
+        mailBodyDiv.innerHTML = "";
+        mailAttachmentDiv.innerHTML = "";
+        if(data){
+            mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
+                '<h5><b>' + data.subject + '</b></h5>' +
+            '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
+            '</div>';
+            mailBodyDiv.innerHTML = data.originalBody;
+            var files = data.files ? data.files : [];
+            if(files.length > 0){
+                var filesInnerHTML = "";
+                for(var i = 0; i < files.length; i++ ){
+                    var file = files[i];
+                    if(i > 0){
+                        filesInnerHTML += "<br/>";
+                    }
+                    filesInnerHTML += ("<span><b>" + file.fileName + ": </b>" + file.storagePath + "</span>")
+                }
+                mailAttachmentDiv.innerHTML = filesInnerHTML;
+                disableButton(openFileFolderButtonId, false);
+            } else {
+                disableButton(openFileFolderButtonId, true);
+            }
+        } else {
+            disableButton(openFileFolderButtonId, true);
+        }
+    }
+
+    function disableButton(buttonId, disabled) {
+        if(buttonId && buttonId.length > 0){
+            $(buttonId).prop("disabled", disabled);
+        }
     }
 
 })(jQuery);

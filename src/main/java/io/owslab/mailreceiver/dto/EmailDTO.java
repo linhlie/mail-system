@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.Email;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.threeten.bp.DateTimeUtils;
 
 import java.util.Date;
 
@@ -41,8 +43,8 @@ public class EmailDTO {
         this.setCc(email.getCc());
         this.setBcc(email.getBcc());
         this.setReplyTo(email.getReplyTo());
-        this.setSentAt(email.getSentAt().toString());
-        this.setReceivedAt(email.getReceivedAt().toString());
+        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd"));
+        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd"));
         this.setHasAttachment(email.isHasAttachment());
         this.setContentType(email.getContentType());
     }
