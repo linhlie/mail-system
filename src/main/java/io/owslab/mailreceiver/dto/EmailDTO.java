@@ -24,9 +24,9 @@ public class EmailDTO {
 
     private String replyTo;
 
-    private Date sentAt;
+    private String sentAt;
 
-    private Date receivedAt;
+    private String receivedAt;
 
     private boolean hasAttachment;
 
@@ -41,8 +41,8 @@ public class EmailDTO {
         this.setCc(email.getCc());
         this.setBcc(email.getBcc());
         this.setReplyTo(email.getReplyTo());
-        this.setSentAt(email.getSentAt());
-        this.setReceivedAt(email.getReceivedAt());
+        this.setSentAt(email.getSentAt().toString());
+        this.setReceivedAt(email.getReceivedAt().toString());
         this.setHasAttachment(email.isHasAttachment());
         this.setContentType(email.getContentType());
     }
@@ -111,19 +111,19 @@ public class EmailDTO {
         this.replyTo = replyTo;
     }
 
-    public Date getSentAt() {
+    public String getSentAt() {
         return sentAt;
     }
 
-    public void setSentAt(Date sentAt) {
+    public void setSentAt(String sentAt) {
         this.sentAt = sentAt;
     }
 
-    public Date getReceivedAt() {
+    public String getReceivedAt() {
         return receivedAt;
     }
 
-    public void setReceivedAt(Date receivedAt) {
+    public void setReceivedAt(String receivedAt) {
         this.receivedAt = receivedAt;
     }
 

@@ -395,4 +395,20 @@ input.form-error {
     font-size: 18px;
 }
 
+.matching-result .table-container th {
+    white-space: nowrap;
+}
+
+.matching-result .table-container td span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: table-cell;
+    max-width: 80px;
+}
+
+.matching-result .table-container tr td {
+    cursor: pointer;
+}
+
 

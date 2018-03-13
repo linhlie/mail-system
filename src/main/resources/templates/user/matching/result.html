@@ -33,17 +33,15 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td th:data="value"><span></span></td>
-                                    <td th:data="value"><span></span></td>
-                                    <td th:data="value"><span></span></td>
-                                    <td th:data="value"><span></span></td>
-                                    <td th:data="value"><span></span></td>
-                                    <td th:data="value"><span></span></td>
-                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer">OPEN
-                                                                        </span>
+                                <tr class="hidden">
+                                    <td name="sourceRow" th:data="word"><span></span></td>
+                                    <td name="sourceRow" th:data="destinationList"><span></span></td>
+                                    <td name="sourceRow" th:data="source.receivedAt"><span></span></td>
+                                    <td name="sourceRow" th:data="source.from"><span></span></td>
+                                    <td name="sourceRow" th:data="source.to"><span></span></td>
+                                    <td name="sourceRow" th:data="source.subject"><span></span></td>
+                                    <td name="showMail" class="text-center">
+                                        <span>OPEN</span>
                                     </td>
                                 </tr>
                                 </tbody>
