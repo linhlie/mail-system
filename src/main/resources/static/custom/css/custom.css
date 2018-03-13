@@ -407,7 +407,7 @@ input.form-error {
     max-width: 80px;
 }
 
-.matching-result .table-container tr td {
+.matching-result .table-container tr td.clickable {
     cursor: pointer;
 }
 
