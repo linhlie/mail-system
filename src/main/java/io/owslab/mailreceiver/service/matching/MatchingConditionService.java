@@ -84,7 +84,8 @@ public class MatchingConditionService {
         return matchingConditionDAO.findByType(type);
     }
 
-    public void matching(MatchingConditionForm matchingConditionForm){
+    public List<MatchingResult> matching(MatchingConditionForm matchingConditionForm){
+        List<MatchingResult> results = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();
         List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
         List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
@@ -109,16 +110,17 @@ public class MatchingConditionService {
                 for(MatchingWordResult destinationResult : matchWordDestination) {
                     if(!sourceResult.contain(word)) continue;
                     List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
-                    List<String> intersect = sourceResult.intersect(destinationResult);
                     boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditionsCopy, distinguish);
                     if(matching){
                         matchingResult.addDestination(destinationResult.getEmail());
                     }
                 }
+                results.add(matchingResult);
                 Email sourceEmail = sourceResult.getEmail();
                 System.out.println(sourceEmail.getSubject() + " has " + matchingResult.getDestinationList().size() + " match");
             }
         }
+        return results;
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){

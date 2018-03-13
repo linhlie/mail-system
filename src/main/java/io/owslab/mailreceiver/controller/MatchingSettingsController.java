@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -139,7 +141,7 @@ public class MatchingSettingsController {
     @ResponseBody
     public ResponseEntity<?> submitForm(
             Model model,
-            @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult) {
+            @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -148,9 +150,11 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            matchingConditionService.matching(matchingConditionForm);
+            List<MatchingResult> matchingResults = matchingConditionService.matching(matchingConditionForm);
+
             result.setMsg("done");
             result.setStatus(true);
+            result.setList(matchingResults);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -158,5 +162,10 @@ public class MatchingSettingsController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value = "/matchingResult", method = RequestMethod.GET)
+    public String getMatchingResult(Model model) {
+        return "user/matching/result";
     }
 }

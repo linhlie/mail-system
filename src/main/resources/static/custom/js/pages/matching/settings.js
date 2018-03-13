@@ -281,7 +281,7 @@
             success: function (data) {
                 disableButton(submitFormBtnId, false);
                 if(data && data.status){
-                    console.log("Submit success");
+                    console.log("Submit success: ", data);
                 } else {
                     console.error("[ERROR] submit failed: ", e);
                 }

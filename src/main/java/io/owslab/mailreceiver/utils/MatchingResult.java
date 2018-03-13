@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.dto.EmailDTO;
 import io.owslab.mailreceiver.model.Email;
 
 import java.util.ArrayList;
@@ -10,12 +11,12 @@ import java.util.List;
  */
 public class MatchingResult {
     private String word;
-    private Email source;
-    private List<Email> destinationList;
+    private EmailDTO source;
+    private List<EmailDTO> destinationList;
 
     public MatchingResult(String word, Email source) {
         this.word = word;
-        this.source = source;
+        this.source = new EmailDTO(source);
         this.destinationList = new ArrayList<>();
     }
 
@@ -27,23 +28,23 @@ public class MatchingResult {
         this.word = word;
     }
 
-    public Email getSource() {
+    public EmailDTO getSource() {
         return source;
     }
 
-    public void setSource(Email source) {
+    public void setSource(EmailDTO source) {
         this.source = source;
     }
 
-    public List<Email> getDestinationList() {
+    public List<EmailDTO> getDestinationList() {
         return destinationList;
     }
 
-    public void setDestinationList(List<Email> destinationList) {
+    public void setDestinationList(List<EmailDTO> destinationList) {
         this.destinationList = destinationList;
     }
 
     public boolean addDestination(Email destination){
-        return this.destinationList.add(destination);
+        return this.destinationList.add(new EmailDTO(destination));
     }
 }
