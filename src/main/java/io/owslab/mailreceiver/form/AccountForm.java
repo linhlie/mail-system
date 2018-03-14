@@ -8,6 +8,8 @@ import io.owslab.mailreceiver.model.EmailAccountSetting;
 public class AccountForm {
     private String account;
 
+    private String userName;
+
     private String password;
 
     private String mailServerAddress;
@@ -106,11 +108,20 @@ public class AccountForm {
         this.type = type;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public AccountForm() {
     }
 
     public AccountForm(EmailAccountSetting account) {
         this.account = account.getAccount();
+        this.userName = account.getUserName();
         this.password = account.getPassword();
         this.mailServerAddress = account.getMailServerAddress();
         this.mailServerPort = account.getMailServerPort();

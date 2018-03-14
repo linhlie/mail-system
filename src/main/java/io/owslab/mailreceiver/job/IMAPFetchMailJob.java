@@ -88,8 +88,11 @@ public class IMAPFetchMailJob implements Runnable {
         try {
 
             Store store = createStore(account);
-
-            store.connect(account.getMailServerAddress(), account.getAccount(), account.getPassword());
+            if(account.getUserName() != null){
+                store.connect(account.getMailServerAddress(), account.getUserName(), account.getPassword());
+            } else {
+                store.connect(account.getMailServerAddress(), account.getAccount(), account.getPassword());
+            }
 
             //create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");

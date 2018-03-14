@@ -19,6 +19,8 @@ public class EmailAccountSetting {
     @NotNull
     private String account;
 
+    private String userName;
+
     @NotNull
     private String password;
 
@@ -56,6 +58,7 @@ public class EmailAccountSetting {
 
     public EmailAccountSetting(AccountForm form, boolean isUpdate){
         this.account = form.getAccount();
+        this.userName = form.getUserName();
         this.password = form.getPassword();
         this.mailServerAddress = form.getMailServerAddress();
         this.mailServerPort = form.getMailServerPort();
@@ -72,8 +75,9 @@ public class EmailAccountSetting {
         }
     }
 
-    public EmailAccountSetting(String account, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
+    public EmailAccountSetting(String account, String userName, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
         this.account = account;
+        this.userName = userName;
         this.password = password;
         this.mailServerAddress = mailServerAddress;
         this.mailServerPort = mailServerPort;
@@ -189,6 +193,14 @@ public class EmailAccountSetting {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Override
