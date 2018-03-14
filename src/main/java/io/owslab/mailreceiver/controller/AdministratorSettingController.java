@@ -66,7 +66,6 @@ public class AdministratorSettingController {
         }
         try {
             accountService.updateAdmin(administratorSettingForm);
-            System.out.println("Update admin");
             model.addAttribute("saved", true);
         }
         // Other error!!
