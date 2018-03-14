@@ -13,10 +13,12 @@ CREATE TABLE `key_values` (
 
 DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE `accounts` (
-  user_name VARCHAR(50) NOT NULL PRIMARY KEY,
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  user_name VARCHAR(50) NOT NULL,
   active BIT NOT NULL,
   encrypted_password VARCHAR(255) NOT NULL,
-  user_role VARCHAR(20) NOT NULL
+  user_role VARCHAR(20) NOT NULL,
+  UNIQUE KEY unique_user_name (user_name)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `email_account_settings`;

@@ -42,4 +42,9 @@ public class AccountService {
         List<Account> adminList = accountDAO.findByUserRole(Account.Role.ADMIN);
         return adminList.size() > 0 ? adminList.get(0) : null;
     }
+
+    public Account findOne(String userName){
+        List<Account> accounts = accountDAO.findByUserName(userName);
+        return accounts.size() > 0 ? accounts.get(0) : null;
+    }
 }

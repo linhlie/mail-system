@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.AccountDAO;
 import io.owslab.mailreceiver.form.AdministratorSettingForm;
 import io.owslab.mailreceiver.form.RegisterAccountForm;
 import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ import java.util.List;
 public class AdministratorSettingValidator implements Validator {
     @Autowired
     private AccountDAO accountDAO;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -50,7 +54,7 @@ public class AdministratorSettingValidator implements Validator {
             } else {
                 Account admin = adminList.get(0);
                 if(!admin.getUserName().equals(administratorSettingForm.getUserName())){
-                    Account dbAccount = accountDAO.findOne(administratorSettingForm.getUserName());
+                    Account dbAccount = accountService.findOne(administratorSettingForm.getUserName());
                     if (dbAccount != null) {
                         errors.rejectValue("userName", "Duplicate.administratorSettingForm.userName");
                     }

@@ -1,13 +1,11 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.form.AdministratorSettingForm;
-import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.validator.AdministratorSettingValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +26,7 @@ import java.util.List;
 @RequestMapping("/admin/")
 public class AdministratorSettingController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdministratorSettingController.class);
     @Autowired
     private AdministratorSettingValidator administratorSettingValidator;
 
@@ -62,14 +61,17 @@ public class AdministratorSettingController {
 
         // Validate result
         if (result.hasErrors()) {
+            System.out.println("has Error");
             return "admin/setting";
         }
         try {
             accountService.updateAdmin(administratorSettingForm);
+            System.out.println("Update admin");
             model.addAttribute("saved", true);
         }
         // Other error!!
         catch (Exception e) {
+            logger.error(e.getMessage());
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
             return "admin/setting";
         }

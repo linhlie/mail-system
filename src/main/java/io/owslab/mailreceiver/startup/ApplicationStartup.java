@@ -11,6 +11,7 @@ import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.slf4j.Logger;
@@ -47,6 +48,9 @@ public class ApplicationStartup {
 
     @Autowired
     private AccountDAO accountDAO;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -108,7 +112,7 @@ public class ApplicationStartup {
 
     private void addAdminAccount(){
         List<Account> adminList = accountDAO.findByUserRole(Account.Role.ADMIN);
-        Account admin = accountDAO.findOne(ADMIN_USER_NAME);
+        Account admin = accountService.findOne(ADMIN_USER_NAME);
         if(admin == null && adminList.size() == 0){
             admin = new Account();
             admin.setUserName(ADMIN_USER_NAME);
@@ -121,7 +125,7 @@ public class ApplicationStartup {
     }
 
     private void addMemberAccount(){
-        Account user = accountDAO.findOne(MEMBER_USER_NAME);
+        Account user = accountService.findOne(MEMBER_USER_NAME);
         if(user == null){
             user = new Account();
             user.setUserName(MEMBER_USER_NAME);
