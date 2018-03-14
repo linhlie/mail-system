@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.EmailAccountSettingDTO;
 import io.owslab.mailreceiver.form.EnviromentSettingForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.form.SendAccountForm;
@@ -60,10 +61,14 @@ public class SettingsController {
         Page<EmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
         PageWrapper<EmailAccountSetting> pageWrapper = new PageWrapper<EmailAccountSetting>(pages, "/mailAccountSettings");
         List<EmailAccountSetting> list = pages.getContent();
+        List<EmailAccountSettingDTO> dtoList = new ArrayList<>();
+        for(EmailAccountSetting emailAccountSetting : list){
+            dtoList.add(new EmailAccountSettingDTO(emailAccountSetting));
+        }
         int rowsInPage = list.size();
         int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
         int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
-        model.addAttribute("list", list);
+        model.addAttribute("list", dtoList);
         model.addAttribute("page", pageWrapper);
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
