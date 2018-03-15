@@ -92,7 +92,6 @@ public class MatchingConditionService {
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
-        List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
         List<Email> emailList = mailBoxService.getAll();
         boolean distinguish = matchingConditionForm.isDistinguish();
         findMailMatching(emailList, groupedSourceConditions, distinguish);
@@ -109,8 +108,8 @@ public class MatchingConditionService {
                 MatchingResult matchingResult = new MatchingResult(word, sourceResult.getEmail());
                 for(MatchingWordResult destinationResult : matchWordDestination) {
                     if(!destinationResult.contain(word)) continue;
-                    List<MatchingConditionGroup> groupedMatchingConditionsCopy = new ArrayList<>(groupedMatchingConditions);
-                    boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditionsCopy, distinguish);
+                    List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
+                    boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
                     if(matching){
                         matchingResult.addDestination(destinationResult.getEmail());
                     }
@@ -172,7 +171,6 @@ public class MatchingConditionService {
         }
 
         List<Email> matching = mergeResultGroups(groupList);
-
         return matching.size() > 0;
     }
 
