@@ -403,7 +403,7 @@ public class MatchingConditionService {
             String contentToSearch = email.getSubjectAndOptimizedBody();
             MatchingWordResult result = new MatchingWordResult(email);
             for(String word : words){
-                if(emailWordJobService.matchWord(contentToSearch, word)){
+                if(emailWordJobService.matchWord(email.getMessageId(), contentToSearch, word)){
                     result.addMatchWord(word);
                 }
             }

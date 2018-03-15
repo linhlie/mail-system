@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +38,8 @@ public class EmailWordJobService {
     @Autowired
     private FuzzyWordService fuzzyWordService;
 
+    private HashMap<String, ArrayList<Integer>> wordFoundMap = new HashMap<String, ArrayList<Integer>>();
+
     public void buildMatchData(){
         List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
         for(EmailWordJob emailWordJob : emailWordJobList){
@@ -51,21 +54,26 @@ public class EmailWordJobService {
         if(email == null) return;
         Word word = wordService.findById(wordId);
         if(word == null) return;
-        ArrayList<Integer> result = find(email.getOptimizedBody(), word.getWord());
-        if(result.size() > 0){
-            String resultStr = result.toString();
-            resultStr = resultStr.substring(1, resultStr.length()-1);
-            resultStr = resultStr.replaceAll("\\s","");
-            EmailWord emailWord = new EmailWord();
-            emailWord.setMessageId(messageId);
-            emailWord.setWordId(wordId);
-            emailWord.setAppearIndexs(resultStr);
-            emailWordService.save(emailWord);
-        }
+        ArrayList<Integer> result = find(email.getMessageId(), email.getOptimizedBody(), word.getWord());
+//        if(result.size() > 0){
+//            String resultStr = result.toString();
+//            resultStr = resultStr.substring(1, resultStr.length()-1);
+//            resultStr = resultStr.replaceAll("\\s","");
+//            EmailWord emailWord = new EmailWord();
+//            emailWord.setMessageId(messageId);
+//            emailWord.setWordId(wordId);
+//            emailWord.setAppearIndexs(resultStr);
+//            emailWordService.save(emailWord);
+//        }
         emailWordJobDAO.delete(emailWordJob.getId());
     }
 
-    private ArrayList<Integer> find(String toSearch, String toFind){
+    private ArrayList<Integer> find(String cacheId, String toSearch, String toFind){
+        String cacheKey = cacheId + "-" + toFind;
+        if(wordFoundMap.get(cacheKey) != null){
+//            System.out.println("reuse word: " + cacheKey);
+            return wordFoundMap.get(cacheKey);
+        }
         ArrayList<Integer> result = new ArrayList<Integer>();
         Matcher matcher = Pattern.compile(toFind, Pattern.LITERAL).matcher(toSearch);
         boolean bFound = matcher.find();
@@ -73,23 +81,24 @@ public class EmailWordJobService {
             result.add(matcher.start());
             bFound = matcher.find(matcher.start() + 1);
         }
+        wordFoundMap.put(cacheKey, result);
         return result;
     }
 
     //TODO: need test
     //TODO: process key fullwidth / halfwidth or not
 
-    public boolean matchWord(String toSearch, String wordStr){
+    public boolean matchWord(String cacheId, String toSearch, String wordStr){
         Word word = wordService.findOne(wordStr);
         List<Integer> result;
         if(word == null){
-            result = find(toSearch, wordStr);
+            result = find(cacheId, toSearch, wordStr);
         } else {
-            result = find(toSearch, wordStr);
+            result = find(cacheId, toSearch, wordStr);
             List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
             List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
-            List<Integer> exclusionResult = findWithWordList(toSearch, exclusionWords);
-            List<Integer> sameResult = findWithWordList(toSearch, sameWords);
+            List<Integer> exclusionResult = findWithWordList(cacheId, toSearch, exclusionWords);
+            List<Integer> sameResult = findWithWordList(cacheId, toSearch, sameWords);
             for(Integer num : exclusionResult){
                 int index = result.indexOf(num);
                 if(index >= 0){
@@ -101,10 +110,10 @@ public class EmailWordJobService {
         return !result.isEmpty();
     }
 
-    private ArrayList<Integer> findWithWordList(String toSearch, List<Word> wordList){
+    private ArrayList<Integer> findWithWordList(String cacheId, String toSearch, List<Word> wordList){
         ArrayList<Integer> result =  new ArrayList<Integer>();
         for(Word word : wordList){
-            ArrayList<Integer> findResult = find(toSearch, word.getWord());
+            ArrayList<Integer> findResult = find(cacheId, toSearch, word.getWord());
             result.addAll(findResult);
         }
         return result;
