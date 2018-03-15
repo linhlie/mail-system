@@ -402,4 +402,8 @@ public class NumberRangeService {
             if(!rangesList.contains(range)) rangesList.add(range);
         }
     }
+
+    public void clearFullRangeCache(){
+        fullRangeMap.clear();
+    }
 }
