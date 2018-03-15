@@ -39,6 +39,8 @@ public class NumberRangeService {
     @Autowired
     private ReplaceLetterService replaceLetterService;
 
+    private HashMap<String, List<FullNumberRange>> fullRangeMap = new HashMap<String, List<FullNumberRange>>();
+
     public List<NumberRange> getList(){
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
@@ -50,6 +52,10 @@ public class NumberRangeService {
     public List<FullNumberRange> buildNumberRangeForInput(String input, boolean individual){
         List<FullNumberRange> result = new ArrayList<>();
         if(input == null || input.length() == 0) return result;
+        String keyMap = input + Boolean.toString(individual);
+        if(fullRangeMap.get(keyMap) != null){
+            return fullRangeMap.get(keyMap);
+        }
         HashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new HashMap<String, ArrayList<SimpleNumberRange>>();
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);
@@ -142,7 +148,7 @@ public class NumberRangeService {
 //        for(FullNumberRange fullNumberRange : result) {
 //            System.out.println("fullNumberRange: " + fullNumberRange.toString());
 //        }
-
+        fullRangeMap.put(keyMap, result);
         return result;
     }
 
