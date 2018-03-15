@@ -45,15 +45,16 @@ public class NumberRangeService {
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
 
-    public List<FullNumberRange> buildNumberRangeForInput(String input){
-        return buildNumberRangeForInput(input, false);
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input){
+        return buildNumberRangeForInput(cacheId, input, false);
     }
 
-    public List<FullNumberRange> buildNumberRangeForInput(String input, boolean individual){
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input, boolean individual){
         List<FullNumberRange> result = new ArrayList<>();
         if(input == null || input.length() == 0) return result;
-        String keyMap = input + Boolean.toString(individual);
+        String keyMap = cacheId + Boolean.toString(individual);
         if(fullRangeMap.get(keyMap) != null){
+//            System.out.println("Reuse range: " + keyMap);
             return fullRangeMap.get(keyMap);
         }
         HashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new HashMap<String, ArrayList<SimpleNumberRange>>();

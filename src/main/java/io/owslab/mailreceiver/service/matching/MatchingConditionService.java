@@ -195,7 +195,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(source.getSubjectAndOptimizedBody(), target.getSubjectAndOptimizedBody(), condition, distinguish);
+                match = isMatchRange(source, target, condition, distinguish);
                 break;
             case NONE:
             default:
@@ -223,7 +223,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(email.getSubjectAndOptimizedBody(), condition, distinguish);
+                match = isMatchRange(email, condition, distinguish);
                 break;
             case HAS_ATTACHMENT:
                 match = email.isHasAttachment();
@@ -412,16 +412,15 @@ public class MatchingConditionService {
         return matchingWordResults;
     }
 
-    private boolean isMatchRange(String sourcePart, String targetPart, MatchingCondition condition, boolean distinguish){
+    private boolean isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         String conditionValue = condition.getValue();
         if(conditionValue.indexOf('#') != 0){
-            return isMatchRange(targetPart, condition, distinguish);
+            return isMatchRange(target, condition, distinguish);
         } else {
-//            System.out.println("isMatchRange start: " + targetPart);
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
-            String optimizedSourcePart = getOptimizedText(sourcePart, false);
-            String optimizedTargetPart = getOptimizedText(targetPart, false);
+            String optimizedSourcePart = getOptimizedText(source.getSubjectAndOptimizedBody(), false);
+            String optimizedTargetPart = getOptimizedText(target.getSubjectAndOptimizedBody(), false);
             String optimizedValue = getOptimizedText(conditionValue, false);
             //TODO handle name after #
 
@@ -433,8 +432,8 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
-                    List<FullNumberRange> sourceRanges = numberRangeService.buildNumberRangeForInput(optimizedSourcePart, true);
-                    List<FullNumberRange> targetRanges = numberRangeService.buildNumberRangeForInput(optimizedTargetPart);
+                    List<FullNumberRange> sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart, true);
+                    List<FullNumberRange> targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedTargetPart);
                     match = hasMatchRange(sourceRanges, targetRanges, condition);
                     break;
                 default:
@@ -444,13 +443,13 @@ public class MatchingConditionService {
         return match;
     }
 
-    private boolean isMatchRange(String part, MatchingCondition condition, boolean distinguish){
+    private boolean isMatchRange(Email target, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         try {
             MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
             String conditionValue = condition.getValue();
-            String optimizedPart = getOptimizedText(part, false);
+            String optimizedPart = getOptimizedText(target.getSubjectAndOptimizedBody(), false);
             String optimizedValue = getOptimizedText(conditionValue, false);
 
             FullNumberRange findRange;
@@ -458,7 +457,8 @@ public class MatchingConditionService {
 
             switch (conditionOption){
                 case WITHIN:
-                    List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(optimizedValue);
+                    String cacheId = optimizedValue + "OwsCacheIdRandom89172398";
+                    List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(cacheId, optimizedValue);
                     if(forFindListRange.size() == 0){
                         match = true;
                         return match;
@@ -474,7 +474,7 @@ public class MatchingConditionService {
                                 break;
                         }
                     }
-                    toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(findRange.match(range)){
@@ -506,7 +506,7 @@ public class MatchingConditionService {
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
                     findRange = new FullNumberRange(simpleRange);
-                    toFindListRange = numberRangeService.buildNumberRangeForInput(optimizedPart);
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(findRange.match(range)){
@@ -522,7 +522,7 @@ public class MatchingConditionService {
                     break;
             }
         } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
+            logger.error("NumberFormatException: " + e.getMessage());
         }
         return match;
     }
