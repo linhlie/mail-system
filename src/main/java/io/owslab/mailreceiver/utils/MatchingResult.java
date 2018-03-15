@@ -20,6 +20,12 @@ public class MatchingResult {
         this.destinationList = new ArrayList<>();
     }
 
+    public MatchingResult(String word, EmailDTO source) {
+        this.word = word;
+        this.source = source;
+        this.destinationList = new ArrayList<>();
+    }
+
     public String getWord() {
         return word;
     }
@@ -46,5 +52,9 @@ public class MatchingResult {
 
     public boolean addDestination(Email destination){
         return this.destinationList.add(new EmailDTO(destination));
+    }
+
+    public void addDestinations(List<EmailDTO> destinationList){
+        this.destinationList.addAll(destinationList);
     }
 }

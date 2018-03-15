@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.dto.EmailDTO;
 import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
@@ -101,24 +102,22 @@ public class MatchingConditionService {
         List<String> matchingWords = getWordList(matchingConditionForm);
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
-        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
-        for(String word : matchingWords) {
-            for(MatchingWordResult sourceResult : matchWordSource) {
-                if(!sourceResult.contain(word)) continue;
-                MatchingResult matchingResult = new MatchingResult(word, sourceResult.getEmail());
-                for(MatchingWordResult destinationResult : matchWordDestination) {
-                    if(!destinationResult.contain(word)) continue;
-                    List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-                    boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
-                    if(matching){
-                        matchingResult.addDestination(destinationResult.getEmail());
+//        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
+        HashMap<String, MatchingResult> matchingResultMap = new HashMap<String, MatchingResult>();
+        for(MatchingWordResult sourceResult : matchWordSource) {
+            for(MatchingWordResult destinationResult : matchWordDestination) {
+                List<String> intersectWords = sourceResult.intersect(destinationResult);
+                if(intersectWords.size() == 0) continue;;
+                List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
+                boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
+                if(matching){
+                    for(String word : intersectWords) {
+                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail());
                     }
                 }
-                results.add(matchingResult);
-                Email sourceEmail = sourceResult.getEmail();
-                System.out.println(sourceEmail.getSubject() + " has " + matchingResult.getDestinationList().size() + " match");
             }
         }
+        results = new ArrayList<MatchingResult>(matchingResultMap.values());
         return results;
     }
 
@@ -563,5 +562,17 @@ public class MatchingConditionService {
             if(match) break;
         }
         return match;
+    }
+
+    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination) {
+        String mapKey = word + "+" + source.getMessageId();
+        MatchingResult matchingResult = map.get(mapKey);
+        if(matchingResult == null) {
+            matchingResult = new MatchingResult(word, source);
+            matchingResult.addDestination(destination);
+            map.put(mapKey, matchingResult);
+        } else {
+            matchingResult.addDestination(destination);
+        }
     }
 }
