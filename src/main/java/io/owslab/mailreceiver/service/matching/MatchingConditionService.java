@@ -105,6 +105,9 @@ public class MatchingConditionService {
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         HashMap<String, MatchingResult> matchingResultMap = new HashMap<String, MatchingResult>();
         for(MatchingWordResult sourceResult : matchWordSource) {
+            for(String word : sourceResult.getWords()){
+                addToList(matchingResultMap, word, sourceResult.getEmail(), null);
+            }
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
                 if(intersectWords.size() == 0) continue;;
@@ -569,10 +572,14 @@ public class MatchingConditionService {
         MatchingResult matchingResult = map.get(mapKey);
         if(matchingResult == null) {
             matchingResult = new MatchingResult(word, source);
-            matchingResult.addDestination(destination);
+            if(destination != null) {
+                matchingResult.addDestination(destination);
+            }
             map.put(mapKey, matchingResult);
         } else {
-            matchingResult.addDestination(destination);
+            if(destination != null) {
+                matchingResult.addDestination(destination);
+            }
         }
     }
 }
