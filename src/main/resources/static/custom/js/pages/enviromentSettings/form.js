@@ -28,15 +28,15 @@
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
-            loadDirectoryTree("/", showDirectoryTree, function (e) {
+            loadDirectoryTree("/", false, showDirectoryTree, function (e) {
                 console.log("loadDirectoryTree: error: ", e);
             });
         })
     }
     
-    function loadDirectoryTree(path, success, error) {
+    function loadDirectoryTree(path, subFolders, success, error) {
         var url = "/admin/enviromentSettings/storagePath";
-        url = !path ? url : url+ "?path=" + encodeURIComponent(path);
+        url = !path ? url : url+ "?path=" + encodeURIComponent(path) + "&subFolders=" + subFolders;
         $.ajax({
             type: "GET",
             contentType: "application/json",
@@ -74,7 +74,7 @@
         $('#tree').on('nodeExpanded', function(event, data) {
             var node = $('#tree').treeview('getNode', data.nodeId);
             if(node.nodes.length == 0){
-                loadDirectoryTree.call(this, node.path, function (data) {
+                loadDirectoryTree.call(this, node.path, true, function (data) {
                     node.nodes = data[0].nodes;
                     $('#tree').treeview('setInitialStates', node, 0);
                     $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);

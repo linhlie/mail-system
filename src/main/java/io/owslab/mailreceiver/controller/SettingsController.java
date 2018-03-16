@@ -64,11 +64,11 @@ public class SettingsController {
 
     @RequestMapping(value="/enviromentSettings/storagePath", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getDirectoryTree (@RequestParam(value = "path", required = false) String path){
+    ResponseEntity<?> getDirectoryTree (@RequestParam(value = "path", required = false) String path, @RequestParam(value = "subFolders", required = false) boolean subFolders){
         AjaxResponseBody result = new AjaxResponseBody();
         try {
             path = path == null ? "/" : path;
-            FileAssertResult assertResult = FileAssert.getDirectoryTree(new File(path));
+            FileAssertResult assertResult = FileAssert.getDirectoryTree(new File(path), subFolders);
             List<FileAssertResult> assertResults = new ArrayList<>();
             assertResults.add(assertResult);
             result.setMsg("done");

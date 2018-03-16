@@ -4,15 +4,17 @@ import java.io.File;
 
 public class FileAssert {
 
-    public static FileAssertResult getDirectoryTree(File folder) {
+    public static FileAssertResult getDirectoryTree(File folder, boolean subFolders) {
         if (!folder.isDirectory()) {
             throw new IllegalArgumentException("folder is not a Directory");
         }
         FileAssertResult result = new FileAssertResult(folder);
-        for (File file : folder.listFiles()) {
-            if (file.isDirectory()) {
-                if (file.getName().indexOf("-") != 0) {
-                    result.addNode(file);
+        if(subFolders){
+            for (File file : folder.listFiles()) {
+                if (file.isDirectory()) {
+                    if (file.getName().indexOf("-") != 0) {
+                        result.addNode(file);
+                    }
                 }
             }
         }
