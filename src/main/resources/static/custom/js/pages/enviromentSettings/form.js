@@ -7,7 +7,7 @@
     $(function () {
         setFormChangeListener();
         setGoBackListener('backBtn');
-        setOpenModalListener('openDirectoriesModal')
+        setOpenModalListener('openDirectoriesModal');
     });
 
     function setFormChangeListener() {
@@ -75,13 +75,13 @@
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
+            levels: 1
         };
     }
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
             $('#tree').treeview(getTreeOptions());
-            $('#tree').treeview('revealNode', [ "test", { silent: true } ])
             $('#tree').on('nodeExpanded', function(event, data) {
                 console.log("nodeExpanded: data: ", $('#tree').treeview('getNode', data.nodeId));
                 var node = $('#tree').treeview('getNode', data.nodeId);
