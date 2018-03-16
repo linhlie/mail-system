@@ -8,11 +8,16 @@ import io.owslab.mailreceiver.model.EnviromentSetting;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.model.Word;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.ReceiveMailAccountsSettingsService;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
+import io.owslab.mailreceiver.utils.FileAssert;
+import io.owslab.mailreceiver.utils.FileAssertResult;
 import io.owslab.mailreceiver.utils.PageWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,11 +27,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.*;
 
 @Controller
 @RequestMapping("/admin/")
 public class SettingsController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SettingsController.class);
 
     public static final int PAGE_SIZE = 5;
 
@@ -52,6 +60,27 @@ public class SettingsController {
             enviromentSettingService.set(key, map.get(key));
         }
         return "redirect:/admin/enviromentSettings";
+    }
+
+    @RequestMapping(value="/enviromentSettings/storagePath", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getDirectoryTree (@RequestParam(value = "path", required = false) String path){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            path = path == null ? "/" : path;
+            FileAssertResult assertResult = FileAssert.getDirectoryTree(new File(path));
+            List<FileAssertResult> assertResults = new ArrayList<>();
+            assertResults.add(assertResult);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(assertResults);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 
     @RequestMapping(value = "/mailAccountSettings", method = RequestMethod.GET)

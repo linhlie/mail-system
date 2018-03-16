@@ -16,62 +16,9 @@
         });
     }
 
-    function getTreeOptions() {
-        // Some logic to retrieve, or generate tree structure
-        var tree = [
-            {
-                text: "Node 1",
-                nodes: [
-                    {
-                        text: "Child 1",
-                        nodes: [
-                            {
-                                text: "Grandchild 1",
-                                nodes: []
-                            },
-                            {
-                                text: "Grandchild 2",
-                                state: {
-                                    selected: true,
-                                },
-                                nodes: []
-                            }
-                        ]
-                    },
-                    {
-                        text: "Child 2",
-                        nodes: []
-                    }
-                ]
-            },
-            {
-                text: "Parent 2",
-                nodes: [
-                    {
-                        text: "Grandchild 2.1",
-                        nodes: []
-                    },
-                    {
-                        text: "Grandchild 2.2",
-                        nodes: []
-                    }
-                ]
-            },
-            {
-                text: "Parent 3",
-                nodes: []
-            },
-            {
-                text: "Parent 4",
-                nodes: []
-            },
-            {
-                text: "Parent 5",
-                nodes: []
-            }
-        ];
+    function getTreeOptions(data) {
         return {
-            data: tree,
+            data: data,
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
@@ -81,25 +28,63 @@
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
-            $('#tree').treeview(getTreeOptions());
-            $('#tree').on('nodeExpanded', function(event, data) {
-                console.log("nodeExpanded: data: ", $('#tree').treeview('getNode', data.nodeId));
-                var node = $('#tree').treeview('getNode', data.nodeId);
-                if(node.nodes.length == 0){
-                    node.nodes = [{
-                        text: "Parent 4",
-                        nodes: []
-                    }]
-                    $('#tree').treeview('setInitialStates', node, 0);
-                }
+            loadDirectoryTree("/", showDirectoryTree, function (e) {
+                console.log("loadDirectoryTree: error: ", e);
             });
-            $('#tree').on('nodeSelected', function(event, data) {
-                // Your logic goes here
-                console.log("nodeSelected: event: ", event);
-                console.log("nodeSelected: data: ", data);
-            });
-            $('#directoriesModal').modal();
         })
+    }
+    
+    function loadDirectoryTree(path, success, error) {
+        var url = "/admin/enviromentSettings/storagePath";
+        url = !path ? url : url+ "?path=" + encodeURIComponent(path);
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                if(data.status){
+                    if(data.list && data.list.length > 0){
+                        if(typeof success === "function"){
+                            success(data.list);
+                        }
+                    } else {
+                        if(typeof error === "function"){
+                            error("data not found");
+                        }
+                    }
+                } else {
+                    if(typeof error === "function"){
+                        error("failed");
+                    }
+                }
+            },
+            error: function (e) {
+                console.error("loadDirectoryTree ERROR : ", e);
+                if(typeof error === "function"){
+                    error(e);
+                }
+            }
+        });
+    }
+
+    function showDirectoryTree(data){
+        $('#tree').treeview(getTreeOptions(data));
+        $('#tree').on('nodeExpanded', function(event, data) {
+            var node = $('#tree').treeview('getNode', data.nodeId);
+            if(node.nodes.length == 0){
+                loadDirectoryTree.call(this, node.path, function (data) {
+                    node.nodes = data[0].nodes;
+                    $('#tree').treeview('setInitialStates', node, 0);
+                    $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);
+                })
+            }
+        });
+        $('#tree').on('nodeSelected', function(event, data) {
+            console.log("nodeSelected: data: ", data);
+        });
+        $('#directoriesModal').modal();
     }
 
     function setGoBackListener(name){

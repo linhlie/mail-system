@@ -109,7 +109,6 @@ public class ApplicationStartup {
         fetchMailScheduler.start();
         deleteOldMailsScheduler.start();
         buildMatchEmailWordScheduler.start();
-        System.out.println(FileAssert.printDirectoryTree(new File(DEFAULT_STORAGE_PATH)));
 //        Email testEmail = new Email();
 //        testEmail.setOptimizedBody("              There         +. -. are more than 以上-2K and less than +12万YEN　    ~　   15円 numbers here +13.2千~.2千 2 ~ 000,000 ３４千");
 //        numberRangeService.buildNumberRangeForInput(testEmail.getOptimizedBody());

@@ -4,6 +4,20 @@ import java.io.File;
 
 public class FileAssert {
 
+    public static FileAssertResult getDirectoryTree(File folder) {
+        if (!folder.isDirectory()) {
+            throw new IllegalArgumentException("folder is not a Directory");
+        }
+        FileAssertResult result = new FileAssertResult(folder);
+        for (File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                if (file.getName().indexOf("-") != 0) {
+                    result.addNode(file);
+                }
+            }
+        }
+        return result;
+    }
     /**
      * Pretty print the directory tree and its file names.
      *
@@ -31,17 +45,18 @@ public class FileAssert {
         sb.append(folder.getName());
         sb.append("/");
         sb.append("\n");
-        for (File file : folder.listFiles()) {
-            if (file.isDirectory()) {
-                if(file.getName().indexOf("-") != 0){
-                    printDirectoryTree(file, indent + 1, sb);
+        if(indent == 0){
+            for (File file : folder.listFiles()) {
+                if (file.isDirectory()) {
+                    if(file.getName().indexOf("-") != 0){
+                        printDirectoryTree(file, indent + 1, sb);
+                    }
                 }
-            }
 //            else {
 //                printFile(file, indent + 1, sb);
 //            }
+            }
         }
-
     }
 
     private static void printFile(File file, int indent, StringBuilder sb) {
