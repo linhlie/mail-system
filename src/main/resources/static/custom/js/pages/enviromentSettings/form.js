@@ -90,7 +90,7 @@
             if(selectedPath){
                 $("#storagePath").val(selectedPath);
             }
-            $('#directoriesModal').modal('toggle');
+            $('#directoriesModal').modal('hide');
         })
     }
 
