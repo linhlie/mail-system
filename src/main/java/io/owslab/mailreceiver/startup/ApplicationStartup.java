@@ -13,6 +13,7 @@ import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class ApplicationStartup {
     private static final String ADMIN_PASSWORD = "Ows@2018";
     private static final String MEMBER_USER_NAME = "user001";
     private static final String MEMBER_PASSWORD = "OwsUser@2018";
+
+    public static final String DEFAULT_STORAGE_PATH = "./storages/";
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
@@ -98,12 +102,14 @@ public class ApplicationStartup {
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
+        initStorageDirectory();
         enviromentSettingService.init();
         addAdminAccount();
         addMemberAccount();
         fetchMailScheduler.start();
         deleteOldMailsScheduler.start();
         buildMatchEmailWordScheduler.start();
+        System.out.println(FileAssert.printDirectoryTree(new File(DEFAULT_STORAGE_PATH)));
 //        Email testEmail = new Email();
 //        testEmail.setOptimizedBody("              There         +. -. are more than 以上-2K and less than +12万YEN　    ~　   15円 numbers here +13.2千~.2千 2 ~ 000,000 ３４千");
 //        numberRangeService.buildNumberRangeForInput(testEmail.getOptimizedBody());
@@ -133,6 +139,13 @@ public class ApplicationStartup {
             user.setActive(true);
             user.setUserRole(Account.Role.MEMBER);
             accountDAO.save(user);
+        }
+    }
+
+    private void initStorageDirectory(){
+        File directory = new File(DEFAULT_STORAGE_PATH);
+        if (! directory.exists()){
+            directory.mkdirs();
         }
     }
 }

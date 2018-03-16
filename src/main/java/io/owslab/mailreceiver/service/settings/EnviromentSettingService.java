@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.settings;
 
 import io.owslab.mailreceiver.dao.EnviromentSettingDAO;
 import io.owslab.mailreceiver.model.EnviromentSetting;
+import io.owslab.mailreceiver.startup.ApplicationStartup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class EnviromentSettingService {
     public static final String DELETE_AFTER_KEY = "delete_after";
     public static final String START_UP_WITH_PC_KEY = "start_up_with_pc";
 
-    private static final String DEFAULT_STORAGE_PATH = "./tmp/";
+    private static final String DEFAULT_STORAGE_PATH = ApplicationStartup.DEFAULT_STORAGE_PATH;
     private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
     private static final String DEFAULT_KEEP_MAIL_ON_SERVER = "1";
     private static final String DEFAULT_DELETE_OLD_MAIL = "0";
