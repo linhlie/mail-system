@@ -16,10 +16,10 @@
                         <form id="enviromentSettingsForm" class="form-horizontal" th:action="@{/admin/enviromentSettings}"
                               th:object="${enviromentSettingForm}" method="POST" >
                             <div class="form-group">
-                                <label for="inputName" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
+                                <label for="storagePath" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
 
                                 <div class="col-sm-7 col-xs-6">
-                                    <input th:field="*{map['__file_storage_path__']}" type="text" class="form-control" id="inputName" placeholder="File storage path"/>
+                                    <input th:readonly="true" id="storagePath" th:field="*{map['__file_storage_path__']}" type="text" class="form-control" placeholder="File storage path"/>
                                 </div>
                                 <!--TODO: a button for click to open File Explorer so that you can select the folder-->
                                 <div class="col-sm-2 col-xs-2">
@@ -127,7 +127,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">終了</button>
-                    <button type="button" class="btn btn-primary">更新</button>
+                    <button type="button" id="selectDirectory" class="btn btn-primary">更新</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

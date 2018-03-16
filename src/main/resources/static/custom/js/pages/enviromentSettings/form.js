@@ -3,6 +3,7 @@
 
     "use strict";
     var formChange = false;
+    var selectedPath;
 
     $(function () {
         setFormChangeListener();
@@ -82,9 +83,15 @@
             }
         });
         $('#tree').on('nodeSelected', function(event, data) {
-            console.log("nodeSelected: data: ", data);
+            selectedPath = data.path;
         });
         $('#directoriesModal').modal();
+        $("#selectDirectory").click(function () {
+            if(selectedPath){
+                $("#storagePath").val(selectedPath);
+            }
+            $('#directoriesModal').modal('toggle');
+        })
     }
 
     function setGoBackListener(name){
