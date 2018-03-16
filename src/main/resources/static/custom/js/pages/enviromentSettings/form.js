@@ -16,25 +16,29 @@
         });
     }
 
-    function getTree() {
+    function getTreeOptions() {
         // Some logic to retrieve, or generate tree structure
         var tree = [
             {
                 text: "Node 1",
                 state: {
-                    expanded: false,
-                    selected: true
+                    expanded: true
                 },
-                tags: ['available'],
                 nodes: [
                     {
                         text: "Child 1",
+                        state: {
+                            expanded: true
+                        },
                         nodes: [
                             {
                                 text: "Grandchild 1"
                             },
                             {
-                                text: "Grandchild 2"
+                                text: "Grandchild 2",
+                                state: {
+                                    selected: true
+                                },
                             }
                         ]
                     },
@@ -44,7 +48,18 @@
                 ]
             },
             {
-                text: "Parent 2"
+                text: "Parent 2",
+                state: {
+                    expanded: false
+                },
+                nodes: [
+                    {
+                        text: "Grandchild 2.1"
+                    },
+                    {
+                        text: "Grandchild 2.2",
+                    }
+                ]
             },
             {
                 text: "Parent 3"
@@ -56,13 +71,17 @@
                 text: "Parent 5"
             }
         ];
-        return tree;
+        return {
+            data: tree,
+            collapseIcon: "glyphicon glyphicon-folder-open",
+            expandIcon: "glyphicon glyphicon-folder-open",
+            emptyIcon: "glyphicon glyphicon-folder-close",
+        };
     }
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
-            console.log("ahaha");
-            $('#tree').treeview({data: getTree()});
+            $('#tree').treeview(getTreeOptions());
             $('#directoriesModal').modal();
         })
     }
