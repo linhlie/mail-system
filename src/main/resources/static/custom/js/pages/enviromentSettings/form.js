@@ -71,6 +71,7 @@
     }
 
     function showDirectoryTree(data){
+        selectedPath = undefined;
         $('#tree').treeview(getTreeOptions(data));
         $('#tree').on('nodeExpanded', function(event, data) {
             var node = $('#tree').treeview('getNode', data.nodeId);
