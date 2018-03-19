@@ -83,6 +83,26 @@ public class SettingsController {
         }
     }
 
+    @RequestMapping(value="/enviromentSettings/createSubFolder", method = RequestMethod.POST)
+    @ResponseBody
+    ResponseEntity<?> createSubFolder (@RequestParam(value = "path", required = true) String path){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            File directory = new File(path);
+            if (!directory.exists()){
+                directory.mkdirs();
+            }
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("createSubFolder: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
     @RequestMapping(value = "/mailAccountSettings", method = RequestMethod.GET)
     public String getMailAccountSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
         page = page - 1;

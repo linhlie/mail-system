@@ -65,6 +65,7 @@
 		onNodeDisabled: undefined,
 		onNodeEnabled: undefined,
 		onNodeExpanded: undefined,
+		onNodeAddNode: undefined,
 		onNodeSelected: undefined,
 		onNodeUnchecked: undefined,
 		onNodeUnselected: undefined,
@@ -196,6 +197,7 @@
 		this.$element.off('nodeDisabled');
 		this.$element.off('nodeEnabled');
 		this.$element.off('nodeExpanded');
+		this.$element.off('nodeAddNode');
 		this.$element.off('nodeSelected');
 		this.$element.off('nodeUnchecked');
 		this.$element.off('nodeUnselected');
@@ -228,6 +230,10 @@
 		if (typeof (this.options.onNodeExpanded) === 'function') {
 			this.$element.on('nodeExpanded', this.options.onNodeExpanded);
 		}
+
+        if (typeof (this.options.onNodeAddNode) === 'function') {
+            this.$element.on('nodeAddNode', this.options.onNodeAddNode);
+        }
 
 		if (typeof (this.options.onNodeSelected) === 'function') {
 			this.$element.on('nodeSelected', this.options.onNodeSelected);
@@ -335,11 +341,16 @@
 			this.toggleCheckedState(node, _default.options);
 			this.render();
 		}
+        else if ((classList.indexOf('add-node-icon') !== -1)) {
+
+            this.toggleAddNodeState(node, _default.options);
+            this.render();
+        }
 		else {
 			
 			if (node.selectable) {
-				this.toggleSelectedState(node, _default.options);
-			} else {
+                this.toggleSelectedState(node, _default.options);
+            } else {
 				this.toggleExpandedState(node, _default.options);
 			}
 
@@ -359,6 +370,11 @@
 		}
 		return node;
 	};
+
+    Tree.prototype.toggleAddNodeState = function (node, options) {
+        if (!node) return;
+        this.$element.trigger('nodeAddNode', $.extend(true, {}, node));
+    };
 
 	Tree.prototype.toggleExpandedState = function (node, options) {
 		if (!node) return;
@@ -606,6 +622,11 @@
 							.append(tag)
 						);
 				});
+			}
+
+            // Add customized content
+            if (_this.options.customize) {
+                _this.options.customize(treeItem, node);
 			}
 
 			// Add item to the tree

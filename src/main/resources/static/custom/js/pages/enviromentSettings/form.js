@@ -23,7 +23,16 @@
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
-            levels: 1
+            levels: 1,
+            customize: function(treeItem, node){
+                // Add button
+                var html = '<a class="btn btn-default" style="float: right; padding: 0; background-color: transparent; border: none;">' +
+                        '<i class="icon add-node-icon glyphicon glyphicon-plus"></i>' +
+                        '</a>';
+                var tag = $(html);
+                tag.attr("data-nodeid", node.nodeId);
+                treeItem.append(tag);
+            }
         };
     }
     
@@ -86,6 +95,52 @@
         $('#tree').on('nodeSelected', function(event, data) {
             selectedPath = data.path;
         });
+        $('#tree').on('nodeAddNode', function(event, data) {
+            var node = $('#tree').treeview('getNode', data.nodeId);
+            $('#addSubDirectoryModal').modal();
+            $('#parentPath').val(node.path);
+            $("#createSubFolder").off('click');
+            $("#createSubFolder").click(function () {
+                var fullNodeName = $("#subFolderName").val();
+                $('#addSubDirectoryModal').modal('hide');
+                fullNodeName = fullNodeName.trim();
+                if (!fullNodeName) {
+                    return;
+                }
+                if(fullNodeName.indexOf("/") == 0){
+                    fullNodeName = fullNodeName.substring(1);
+                }
+                var fullPath = node.path + "/" + fullNodeName;
+                var nodeName = fullNodeName;
+                var index = fullNodeName.indexOf("/");
+                if(index >= 1){
+                    nodeName = fullNodeName.substring(0, index);
+                }
+                createSubFolder(fullPath, function () {
+                    console.log("createSubFolder: done: ", node);
+                    if(node.nodes.length == 0){
+                        console.log("createSubFolder: reloadDirectoryTree");
+                        loadDirectoryTree.call(this, node.path, true, function (data) {
+                            node.nodes = data[0].nodes;
+                            $('#tree').treeview('setInitialStates', node, 0);
+                            $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);
+                        })
+                    } else {
+                        console.log("createSubFolder: push new node: " + nodeName);
+                        node.nodes.push({
+                            text: nodeName,
+                            path: node.path + "/" + nodeName,
+                            nodes: []
+                        });
+                        $('#tree').treeview('setInitialStates', node, 0);
+                        $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);
+                    }
+                }, function (error) {
+                    console.log("createSubFolder: end with error: ", error);
+                    //TODO: show create subfolder error:
+                });
+            })
+        });
         $('#directoriesModal').modal();
         $("#selectDirectory").click(function () {
             if(selectedPath){
@@ -110,6 +165,35 @@
 
     function goBack() {
         window.history.back();
+    }
+    
+    function createSubFolder(path, success, error) {
+        var url = "/admin/enviromentSettings/createSubFolder";
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: url + "?path="+encodeURIComponent(path),
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                console.log("createSubFolder success");
+                if(data.status){
+                    if(typeof success === "function"){
+                        success();
+                    }
+                } else {
+                    if(typeof error === "function"){
+                        error("failed");
+                    }
+                }
+            },
+            error: function (e) {
+                console.error("createSubFolder ERROR : ", e);
+                if(typeof error === "function"){
+                    error(e);
+                }
+            }
+        });
     }
 
 })(jQuery);
