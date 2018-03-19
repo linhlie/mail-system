@@ -86,6 +86,7 @@ public class MatchingConditionService {
     }
 
     public List<MatchingResult> matching(MatchingConditionForm matchingConditionForm){
+        logger.info("start matching");
         List<MatchingResult> results = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();
         List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
@@ -99,10 +100,12 @@ public class MatchingConditionService {
         List<Email> matchSourceList = mergeResultGroups(groupedSourceConditions);
         findMailMatching(emailList, groupedDestinationConditions, distinguish);
         List<Email> matchDestinationList = mergeResultGroups(groupedDestinationConditions);
+        logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
         List<String> matchingWords = getWordList(matchingConditionForm);
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
+        logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         HashMap<String, MatchingResult> matchingResultMap = new HashMap<String, MatchingResult>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
@@ -121,6 +124,7 @@ public class MatchingConditionService {
             }
         }
         results = new ArrayList<MatchingResult>(matchingResultMap.values());
+        logger.info("Matching done: " + results.size());
         return results;
     }
 
@@ -285,22 +289,22 @@ public class MatchingConditionService {
             part = Utils.trim(part);
             switch (option){
                 case EQ:
-                    match = conditionDate.compareTo(part) == 0;
+                    match = part.compareTo(conditionDate) == 0;
                     break;
                 case NE:
-                    match = conditionDate.compareTo(part) != 0;
+                    match = part.compareTo(conditionDate)  != 0;
                     break;
                 case GE:
-                    match = conditionDate.compareTo(part) >= 0;
+                    match = part.compareTo(conditionDate)  >= 0;
                     break;
                 case GT:
-                    match = conditionDate.compareTo(part) > 0;
+                    match = part.compareTo(conditionDate)  > 0;
                     break;
                 case LE:
-                    match = conditionDate.compareTo(part) <= 0;
+                    match = part.compareTo(conditionDate)  <= 0;
                     break;
                 case LT:
-                    match = conditionDate.compareTo(part) < 0;
+                    match = part.compareTo(conditionDate)  < 0;
                     break;
                 case INC:
                 case NINC:
@@ -407,7 +411,9 @@ public class MatchingConditionService {
                     result.addMatchWord(word);
                 }
             }
-            matchingWordResults.add(result);
+            if(result.hasMatchWord()){
+                matchingWordResults.add(result);
+            }
         }
         return matchingWordResults;
     }

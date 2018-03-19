@@ -35,7 +35,13 @@ public class FuzzyWordService {
     }
 
     public List<Word> findAllExclusionWord(Word word){
-        return findAllFuzzyWord(word, FuzzyWord.Type.EXCLUSION);
+        List<Word> result = new ArrayList<Word>();
+        long wordId = word.getId();
+        List<FuzzyWord> fuzzyWordList1 = fuzzyWordDAO.findByWordIdAndFuzzyType(wordId, FuzzyWord.Type.EXCLUSION);
+        for(FuzzyWord fuzzyWord : fuzzyWordList1){
+            result.add(fuzzyWord.getAssociatedWord());
+        }
+        return result;
     }
 
     public List<Word> findAllSameWord(Word word){

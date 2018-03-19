@@ -45,6 +45,10 @@ public class MatchingWordResult {
         return false;
     }
 
+    public boolean hasMatchWord(){
+        return (this.words != null && this.words.size() > 0);
+    }
+
     public List<String> intersect (MatchingWordResult other){
         List<String> list1 = this.getWords();
         List<String> list2 = other.getWords();
