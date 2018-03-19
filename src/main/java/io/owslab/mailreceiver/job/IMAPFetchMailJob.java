@@ -88,7 +88,7 @@ public class IMAPFetchMailJob implements Runnable {
         try {
 
             Store store = createStore(account);
-            if(account.getUserName() != null){
+            if(account.getUserName() != null && account.getUserName().length() > 0){
                 store.connect(account.getMailServerAddress(), account.getUserName(), account.getPassword());
             } else {
                 store.connect(account.getMailServerAddress(), account.getAccount(), account.getPassword());

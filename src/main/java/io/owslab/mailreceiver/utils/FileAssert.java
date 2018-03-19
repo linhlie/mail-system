@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.utils;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class FileAssert {
 
@@ -10,11 +11,14 @@ public class FileAssert {
         }
         FileAssertResult result = new FileAssertResult(folder);
         if(subFolders){
-            for (File file : folder.listFiles()) {
+            File[] files = folder.listFiles();
+            Arrays.sort(files);
+            for (File file : files) {
                 if (file.isDirectory()) {
-                    if (file.getName().indexOf("-") != 0) {
-                        result.addNode(file);
-                    }
+//                    if (file.getName().indexOf("-") != 0) {
+//                        result.addNode(file);
+//                    }
+                    result.addNode(file);
                 }
             }
         }
