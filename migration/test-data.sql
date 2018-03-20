@@ -1,11 +1,16 @@
 SET NAMES utf8 COLLATE utf8_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
-INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
-    VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
+-- INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
+--     VALUES ('khanhlvb@ows.vn', 'Lekhanh281', 'imap.gmail.com', 993);
+--
+-- INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
+--     VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
 
-INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
-    VALUES ('ows-test@world-link-system.com', 'o2018wa01e', 'af125.secure.ne.jp', 993);
+INSERT INTO `email_account_settings` (`account`, `user_name`, `password`, `mail_server_address`, `mail_server_port`, `mail_protocol`, `encryption_protocol`, `authentication_protocol`, `proxy_server`, `disabled`, `created_at`, `updated_at`, `type`)
+VALUES
+	('section-sales@ipc-japan.com', '', 'IpSecSa95953', 'af152.secure.ne.jp', 993, 0, 1, 0, '', 1, NULL, '2018-03-19 09:22:43', 0);
+
 
 INSERT INTO replace_numbers(`character`, replace_value)
 VALUES ('K', 1000);

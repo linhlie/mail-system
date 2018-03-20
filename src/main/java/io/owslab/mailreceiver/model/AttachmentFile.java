@@ -30,6 +30,8 @@ public class AttachmentFile {
 
     private Date deletedAt;
 
+    private long size;
+
     public AttachmentFile() {
     }
 
@@ -54,6 +56,26 @@ public class AttachmentFile {
         this.metaData = metaData;
         this.deleted = deleted;
         this.deletedAt = deletedAt;
+    }
+
+    public AttachmentFile(String messageId, String fileName, String storagePath, Date createdAt, String metaData, long size) {
+        this.messageId = messageId;
+        this.fileName = fileName;
+        this.storagePath = storagePath;
+        this.createdAt = createdAt;
+        this.metaData = metaData;
+        this.size = size;
+    }
+
+    public AttachmentFile(String messageId, String fileName, String storagePath, Date createdAt, String metaData, boolean deleted, Date deletedAt, long size) {
+        this.messageId = messageId;
+        this.fileName = fileName;
+        this.storagePath = storagePath;
+        this.createdAt = createdAt;
+        this.metaData = metaData;
+        this.deleted = deleted;
+        this.deletedAt = deletedAt;
+        this.size = size;
     }
 
     public long getId() {
@@ -118,6 +140,14 @@ public class AttachmentFile {
 
     public void setDeletedAt(Date deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     @Override

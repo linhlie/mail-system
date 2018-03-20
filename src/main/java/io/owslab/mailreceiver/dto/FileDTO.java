@@ -10,12 +10,14 @@ public class FileDTO {
     private String messageId;
     private String fileName;
     private String storagePath;
+    private long size;
 
     public FileDTO(AttachmentFile file) {
         this.setId(file.getId());
         this.setMessageId(file.getMessageId());
         this.setFileName(file.getFileName());
         this.setStoragePath(file.getStoragePath());
+        this.setSize(file.getSize());
     }
 
     public long getId() {
@@ -48,5 +50,13 @@ public class FileDTO {
 
     public void setStoragePath(String storagePath) {
         this.storagePath = storagePath;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

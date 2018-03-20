@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import javax.mail.search.*;
 import java.io.File;
 import java.io.IOException;
@@ -270,21 +267,23 @@ public class IMAPFetchMailJob implements Runnable {
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
-                    logger.info("Start Save file: " + part.getFileName());
-                    String fileName = part.getFileName();
+                    String fileName = MimeUtility.decodeText(part.getFileName());
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
                     File saveDirectory = new File(saveDirectoryPath);
                     if (! saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    part.saveFile(saveDirectoryPath + File.separator + fileName);
+                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    logger.info("Start Save file: " + fileName + " " + file.length());
+                    part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
                             fileName,
                             saveDirectoryPath,
                             new Date(),
-                            null
+                            null,
+                            file.length()
                     );
                     logger.info("Save file: " + attachmentFile.toString());
                     fileDAO.save(attachmentFile);

@@ -84,12 +84,13 @@ DROP TABLE IF EXISTS `files`;
 CREATE TABLE `files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `message_id` VARCHAR(191) NOT NULL,
-  `file_name` VARCHAR(191) NOT NULL,
+  `file_name` VARCHAR(191) NOT NULL COLLATE utf8_general_ci,
   `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
   `deleted_at` DATETIME DEFAULT NULL,
+  `size` LONG,
   FOREIGN KEY fk_receive_email(message_id)
   REFERENCES emails(message_id)
     ON UPDATE CASCADE
