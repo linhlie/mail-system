@@ -169,7 +169,7 @@
                     if(i > 0){
                         filesInnerHTML += "<br/>";
                     }
-                    filesInnerHTML += ("<span><b>" + file.fileName + ": </b>" + file.storagePath + "</span>")
+                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
                 disableButton(openFileFolderButtonId, false);

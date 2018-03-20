@@ -7,10 +7,13 @@ import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.MatchingResult;
+import io.owslab.mailreceiver.utils.MediaTypeUtils;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +21,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +54,9 @@ public class MatchingSettingsController {
 
     @Autowired
     private MailBoxService mailBoxService;
+
+    @Autowired
+    private ServletContext servletContext;
 
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -185,5 +193,37 @@ public class MatchingSettingsController {
         result.setStatus(true);
         result.setList(mailDetail);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/download")
+    public void downloadFile3(HttpServletResponse response,
+                              @RequestParam(value = "fileName") String fileName, @RequestParam(value = "path") String path) throws IOException {
+
+        MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, fileName);
+//        System.out.println("fileName: " + path + "/" + fileName);
+//        System.out.println("mediaType: " + mediaType);
+
+        File file = new File(path + "/" + fileName);
+
+        // Content-Type
+        // application/pdf
+        response.setContentType(mediaType.getType());
+
+        // Content-Disposition
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName());
+
+        // Content-Length
+        response.setContentLength((int) file.length());
+
+        BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(file));
+        BufferedOutputStream outStream = new BufferedOutputStream(response.getOutputStream());
+
+        byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+        while ((bytesRead = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, bytesRead);
+        }
+        outStream.flush();
+        inStream.close();
     }
 }
