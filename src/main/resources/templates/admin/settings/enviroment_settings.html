@@ -13,6 +13,11 @@
                         <h3 class="box-title">環境設定</h3>
                     </div>
                     <div class="box-body">
+                        <div th:if="${saved == true}">
+                            <div class="callout callout-success">
+                                <p>保存された設定</p>
+                            </div>
+                        </div>
                         <form id="enviromentSettingsForm" class="form-horizontal" th:action="@{/admin/enviromentSettings}"
                               th:object="${enviromentSettingForm}" method="POST" >
                             <div class="form-group">

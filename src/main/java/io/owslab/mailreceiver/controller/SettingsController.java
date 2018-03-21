@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.util.*;
@@ -45,7 +46,7 @@ public class SettingsController {
     private EnviromentSettingService enviromentSettingService;
 
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.GET)
-    public String enviromentSettings(Model model) {
+    public String enviromentSettings(Model model, RedirectAttributes redirectAttrs) {
         HashMap<String, String> map = enviromentSettingService.getAll();
         EnviromentSettingForm enviromentSettingForm = new EnviromentSettingForm();
         enviromentSettingForm.setMap(map);
@@ -54,11 +55,12 @@ public class SettingsController {
     }
 
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.POST)
-    public String updateEnviromentSettings(Model model, @ModelAttribute("enviromentSettingForm") EnviromentSettingForm enviromentSettingForm) {
+    public String updateEnviromentSettings(Model model, @ModelAttribute("enviromentSettingForm") EnviromentSettingForm enviromentSettingForm, RedirectAttributes redirectAttrs) {
         Map<String, String> map = enviromentSettingForm.getMap();
         for (String key : map.keySet()) {
             enviromentSettingService.set(key, map.get(key));
         }
+        redirectAttrs.addFlashAttribute("saved", true);
         return "redirect:/admin/enviromentSettings";
     }
 

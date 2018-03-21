@@ -15,7 +15,7 @@
                     <div class="box-body">
                         <div th:if="${saved == true}">
                             <div class="callout callout-success">
-                                <p>Admin account info saved.</p>
+                                <p>管理者アカウント情報が保存されました</p>
                             </div>
                         </div>
                         <form th:action="@{/admin/administratorSetting}" th:object="${administratorSettingForm}" method="post">
