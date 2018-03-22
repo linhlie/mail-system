@@ -295,7 +295,7 @@
                     sessionStorage.setItem("matchingResultData", matchingResult);
                     window.location = '/user/matchingResult';
                 } else {
-                    console.error("[ERROR] submit failed: ", e);
+                    console.error("[ERROR] submit failed: ");
                 }
             },
             error: function (e) {

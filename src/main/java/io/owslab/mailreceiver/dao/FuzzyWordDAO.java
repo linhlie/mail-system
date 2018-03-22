@@ -11,19 +11,19 @@ import java.util.List;
 @Transactional
 public interface FuzzyWordDAO extends CrudRepository<FuzzyWord, Long> {
     @Query(
-            value = "select * from Fuzzy_Words fw where fw.word_id=:wordId and fw.with_word_id=:withWordId",
+            value = "select * from fuzzy_words fw where fw.word_id=:wordId and fw.with_word_id=:withWordId",
             nativeQuery = true
     )
     List<FuzzyWord> findByWordIdAndWithWordId(@Param("wordId") long wordId, @Param("withWordId") long withWordId);
 
     @Query(
-            value = "select * from Fuzzy_Words fw where fw.word_id=:wordId and fw.fuzzy_type=:fuzzyType",
+            value = "select * from fuzzy_words fw where fw.word_id=:wordId and fw.fuzzy_type=:fuzzyType",
             nativeQuery = true
     )
     List<FuzzyWord> findByWordIdAndFuzzyType(@Param("wordId") long wordId, @Param("fuzzyType") int fuzzyType);
 
     @Query(
-            value = "select * from Fuzzy_Words fw where fw.with_word_id=:withWordId and fw.fuzzy_type=:fuzzyType",
+            value = "select * from fuzzy_words fw where fw.with_word_id=:withWordId and fw.fuzzy_type=:fuzzyType",
             nativeQuery = true
     )
     List<FuzzyWord> findByWithWordIdAndFuzzyType(@Param("withWordId") long withWordId, @Param("fuzzyType") int fuzzyType);
