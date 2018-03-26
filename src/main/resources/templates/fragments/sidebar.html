@@ -26,6 +26,17 @@
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="header">設定</li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+            <a href="#" th:href="@{/user/fuzzyWord}">
+                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+            <a href="#" th:href="@{/user/numberTreatment}">
+                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
+            </a>
+        </li>
         <li class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
             <a href="#" th:href="@{/admin/administratorSetting}">
@@ -35,16 +46,6 @@
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
             <a href="#" th:href="@{/admin/mailbox}">
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
-            <a href="#" th:href="@{/user/fuzzyWord}">
-                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
-            <a href="#" th:href="@{/user/numberTreatment}">
-                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview">
