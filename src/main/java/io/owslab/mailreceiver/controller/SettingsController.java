@@ -108,9 +108,9 @@ public class SettingsController {
     @RequestMapping(value = "/mailAccountSettings", method = RequestMethod.GET)
     public String getMailAccountSettings(@RequestParam(value = "page", required = false, defaultValue = "1") int page, Model model) {
         page = page - 1;
-        PageRequest pageRequest = new PageRequest(page, PAGE_SIZE);
+        PageRequest pageRequest = new PageRequest(page, 1);
         Page<EmailAccountSetting> pages = accountsSettingsService.list(pageRequest);
-        PageWrapper<EmailAccountSetting> pageWrapper = new PageWrapper<EmailAccountSetting>(pages, "/mailAccountSettings");
+        PageWrapper<EmailAccountSetting> pageWrapper = new PageWrapper<EmailAccountSetting>(pages, "/admin/mailAccountSettings");
         List<EmailAccountSetting> list = pages.getContent();
         List<EmailAccountSettingDTO> dtoList = new ArrayList<>();
         for(EmailAccountSetting emailAccountSetting : list){
@@ -209,6 +209,25 @@ public class SettingsController {
         newAccount.setId(id);
         accountsSettingsService.save(newAccount);
         return "redirect:/admin/mailAccountSettings";
+    }
+
+    @RequestMapping(value = { "/deleteAccount" }, method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> deleteAccount(
+            Model model,
+            @RequestParam(value = "id") long id, @RequestParam(value = "deleteMail") boolean deleteMail) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            accountsSettingsService.delete(id, deleteMail);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("deleteAccount: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 
     @RequestMapping("/receiveRuleSettings")

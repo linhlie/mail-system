@@ -49,11 +49,7 @@ CREATE TABLE `emails` (
   `created_at` DATETIME DEFAULT NULL,
   `meta_data` TEXT DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE,
-  `deleted_at` DATETIME DEFAULT NULL,
-  FOREIGN KEY fk_receive_email_account(account_id)
-  REFERENCES email_account_settings(id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
+  `deleted_at` DATETIME DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 CREATE TABLE `files` (

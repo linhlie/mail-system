@@ -119,6 +119,30 @@
             </div>
         </div>
     </section>
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    メール アカウン削除
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-check">
+                            <input type="checkbox" checked="checked" class="form-check-input" id="keepMailCheckbox"/>
+                            <label class="form-check-label" for="keepMailCheckbox">メール関連を維持する</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">終了</button>
+                    <button id="deleteMailConfirm" type="button" class="btn btn-danger btn-ok">削除</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/mailAccount/list.js"></script>
+</th:block>
 </body>
 </html>
