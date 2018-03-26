@@ -18,12 +18,7 @@
                         <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                             <div class="row">
                                 <div class="col-xs-12" style="padding-bottom: 10px">
-                                    <a href="#" th:href="@{/admin/mailAccountSettings/add}"><div type="button" class="btn btn-default btn-xs">受信メールアカウント追加</div></a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12" style="padding-bottom: 10px">
-                                    <a href="#" th:href="@{/admin/mailAccountSettings/addSend}"><div type="button" class="btn btn-default btn-xs">送信メールアカウント追加</div></a>
+                                    <a href="#" th:href="@{/admin/mailAccountSettings/add}"><div type="button" class="btn btn-default btn-xs">メールアカウント追加</div></a>
                                 </div>
                             </div>
                             <div class="row">
@@ -36,28 +31,20 @@
                                                 aria-label="Mail address:">
                                                 メールアドレス
                                             </th>
-                                            <th tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
-                                                aria-label="User name:">
-                                                ユーザー名
-                                            </th>
-                                            <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
-                                                aria-label="Type: ">種類
-                                            </th>
                                             <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
                                                 aria-label="Disabled: ">休止
                                             </th>
                                             <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
                                                 aria-label="Edit: ">編集
                                             </th>
+                                            <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
+                                                aria-label="Delete: ">削除
+                                            </th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr role="row" class="odd" th:each="item:${list}">
                                             <td th:text="${item.account}"></td>
-                                            <td th:text="${item.userName}"></td>
-                                            <td style="text-align: center">
-                                                <span th:text="${item.type eq 1 ? '送信' : '受信'}"></span>
-                                            </td>
                                             <td style="text-align: center">
                                                 <div class="checkbox">
                                                     <label>
@@ -66,9 +53,14 @@
                                                 </div>
                                             </td>
                                             <td style="text-align: center">
-                                                <a th:if="${item.type eq 0}" th:href="@{/admin/mailAccountSettings/update(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
-                                                <a th:if="${item.type eq 1}" th:href="@{/admin/mailAccountSettings/updateSend(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
+                                                <a th:href="@{/admin/mailAccountSettings/update(id=${item.id})}"><span class="glyphicon glyphicon-edit" title="编辑"></span></a>
                                             </td>
+                                            <td class="text-center">
+                                                <span name="trash" title="删除" th:data="${item.id}"
+                                                      style="cursor: pointer" class="glyphicon glyphicon-trash">
+                                                </span>
+                                            </td>
+
                                         </tr>
                                         </tbody>
                                     </table>
