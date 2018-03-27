@@ -7,22 +7,53 @@
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
     var openFileFolderButtonId = '#openFileFolderBtn';
-    var matchingResultStr;
-    matchingResultStr = sessionStorage.getItem("matchingResultData");
-    matchingResultStr = matchingResultStr || "null";
     var matchingResult = null;
     var currentDestinationResult = [];
-    try {
-        matchingResult  = JSON.parse(matchingResultStr);
-    } catch (error) {
-        console.error("[ERROR] parse matching result error: ", error);
-    }
-    console.log("window.matchingResultData: ", matchingResult);
 
     $(function () {
+        var matchingConditionStr;
+        matchingConditionStr = sessionStorage.getItem("matchingConditionData");
+        if(matchingConditionStr){
+            $('body').loadingModal({
+                position: 'auto',
+                text: 'マッチング中...',
+                color: '#fff',
+                opacity: '0.7',
+                backgroundColor: 'rgb(0,0,0)',
+                animation: 'doubleBounce',
+            });
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/user/matchingSettings/submitForm",
+                data: matchingConditionStr,
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    $('body').loadingModal('hide');
+                    if(data && data.status){
+                        matchingResult = data.list;
+                    } else {
+                        console.error("[ERROR] submit failed: ");
+                    }
+                    updateData();
+                },
+                error: function (e) {
+                    console.error("[ERROR] submit error: ", e);
+                    $('body').loadingModal('hide');
+                    updateData();
+                }
+            });
+        } else {
+            updateData();
+        }
+    });
+    
+    function updateData() {
         showSourceData(sourceTableId, matchingResult);
         disableButton(openFileFolderButtonId, true);
-    });
+    }
 
     function showSourceData(tableId, data) {
         removeAllRow(tableId);

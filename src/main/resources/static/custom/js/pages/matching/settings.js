@@ -270,40 +270,8 @@
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true"
         };
         disableButton(submitFormBtnId, true);
-        $('body').loadingModal({
-            position: 'auto',
-            text: 'マッチング中...',
-            color: '#fff',
-            opacity: '0.7',
-            backgroundColor: 'rgb(0,0,0)',
-            animation: 'doubleBounce',
-        });
-        $.ajax({
-            type: "POST",
-            contentType: "application/json",
-            url: "/user/matchingSettings/submitForm",
-            data: JSON.stringify(form),
-            dataType: 'json',
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                $('body').loadingModal('hide');
-                disableButton(submitFormBtnId, false);
-                if(data && data.status){
-                    var matchingResult = JSON.stringify(data.list);
-                    matchingResult = matchingResult || null;
-                    sessionStorage.setItem("matchingResultData", matchingResult);
-                    window.location = '/user/matchingResult';
-                } else {
-                    console.error("[ERROR] submit failed: ");
-                }
-            },
-            error: function (e) {
-                console.error("[ERROR] submit error: ", e);
-                $('body').loadingModal('hide');
-                disableButton(submitFormBtnId, false);
-            }
-        });
+        sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
+        window.location = '/user/matchingResult';
     }
 
 })(jQuery);
