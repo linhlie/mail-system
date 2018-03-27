@@ -1,9 +1,11 @@
 package io.owslab.mailreceiver.service.mail;
 
+import io.owslab.mailreceiver.dao.EmailAccountDAO;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
 import io.owslab.mailreceiver.job.IMAPFetchMailJob;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.slf4j.Logger;
@@ -23,7 +25,10 @@ public class FetchMailsService {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailsService.class);
     private final ExecutorService executorService = Executors.newFixedThreadPool(3);
     @Autowired
-    private EmailAccountSettingsDAO emailAccountSettingsDAO;
+    private EmailAccountSettingService emailAccountSettingService;
+
+    @Autowired
+    private EmailAccountDAO emailAccountDAO;
 
     @Autowired
     private EmailDAO emailDAO;
@@ -35,12 +40,13 @@ public class FetchMailsService {
     private EnviromentSettingService enviromentSettingService;
 
     public void start(){
-        List<EmailAccountSetting> list = emailAccountSettingsDAO.findByTypeAndDisabled(EmailAccountSetting.Type.RECEIVE, false);
+        List<EmailAccount> list = emailAccountDAO.findByDisabled(false);
         if(list.size() > 0) {
             for(int i = 0, n = list.size(); i < n; i++){
-                EmailAccountSetting account = list.get(i);
-                if(account.getMailProtocol() == EmailAccountSetting.Protocol.IMAP){
-                    executorService.execute(new IMAPFetchMailJob(emailDAO, fileDAO, enviromentSettingService, account));
+                EmailAccount account = list.get(i);
+                EmailAccountSetting accountSetting = emailAccountSettingService.findOneReceive(account.getId());
+                if(accountSetting != null && accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.IMAP){
+                    executorService.execute(new IMAPFetchMailJob(emailDAO, fileDAO, enviromentSettingService, accountSetting, account));
                 }
             }
         }

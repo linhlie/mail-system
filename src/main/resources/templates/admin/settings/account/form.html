@@ -4,25 +4,60 @@
     <title>メール アカウント設定</title>
 </head>
 <body>
-<div layout:fragment="content" th:with="isUpdate=${param.id != null}">
+<div layout:fragment="content">
     <section class="content-header">
-        <h1 th:text="${isUpdate} ? 'メール アカウント編集': 'メール アカウント新規登録'">
-        </h1>
+        <h1>メール アカウント編集</h1>
     </section>
     <section class="content">
         <div class="row">
             <div class="col-md-10 col-sm-12 col-xs-12">
                 <div class="box box-default">
                     <div class="box-body">
-                        <form id="receiveMailForm" class="form-horizontal" th:action="@{${api}}"
-                              th:object="${receiveAccountForm}" method="POST">
+                        <form id="mailAccountForm" class="form-horizontal" th:action="@{${api}}"
+                              th:object="${mailAccountForm}" method="POST">
                             <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{account}" type="email" class="form-control" required="required" th:readonly="true"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 col-xs-5 control-label text-left">このアカウントの受信を休止する</label>
+
+                                <div class="col-xs-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input th:field="*{disabled}" type="checkbox"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
+                                    <button type="submit" class="btn btn-success">更新</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="resetMailFormBtn" type="button" class="btn btn-default">項目クリア</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="receiveMailForm" class="form-horizontal" th:action="@{${receiveApi}}"
+                              th:object="${receiveAccountForm}" method="POST">
+                            <div class="form-group">
+                            </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">受信メールサーバー</label>
 
                                 <div class="col-md-2 col-xs-3">
                                     <!--<input type="text" class="form-control"/>-->
-                                    <select id="mailProtocol" th:field="*{mailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                    <select id="receiveMailProtocol" th:field="*{mailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                         <option value="0" selected="selected">IMAP</option>
                                         <option value="1" >POP3</option>
                                     </select>
@@ -35,14 +70,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
 
                                 <div class="col-md-2 col-xs-3">
-                                    <input id="mailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control" required="required"/>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
-
-                                <div class="col-md-6 col-xs-5">
-                                    <input th:field="*{account}" type="email" class="form-control" required="required" th:readonly="${isUpdate}"/>
+                                    <input id="receiveMailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -92,27 +120,99 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-md-3 col-xs-5 control-label text-left">このアカウントの受信を休止する</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
+                                    <button type="submit" class="btn btn-success">更新</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="resetReceiveFormBtn" type="button" class="btn btn-default">項目クリア</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                </div>
+                            </div>
+                        </form>
+                        <form id="sendMailForm" class="form-horizontal" th:action="@{${sendApi}}"
+                              th:object="${sendAccountForm}" method="POST">
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">送信メールサーバー</label>
 
-                                <div class="col-xs-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input th:field="*{disabled}" type="checkbox"/>
-                                        </label>
-                                    </div>
+                                <div class="col-md-2 col-xs-3">
+                                    <!--<input type="text" class="form-control"/>-->
+                                    <select id="mailProtocol" th:field="*{mailProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="2" selected="selected">SMTP</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-7 col-xs-6">
+                                    <input th:field="*{mailServerAddress}" type="text" class="form-control" required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">ポート</label>
+
+                                <div class="col-md-2 col-xs-3">
+                                    <input id="mailPort" th:field="*{mailServerPort}" type="number" min="0" class="form-control" required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">ユーザーID</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{userName}" type="text" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">パスワード</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input name="password" th:value="*{password}" type="password" class="form-control" required="required" autocomplete="new-password"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">接続の保護</label>
+
+                                <div class="col-xs-4">
+                                    <select th:field="*{encryptionProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">なし</option>
+                                        <option value="1">SSL/TLS</option>
+                                        <option value="2">STARTTLS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">認証方式</label>
+
+                                <div class="col-xs-4">
+                                    <select th:field="*{authenticationProtocol}" style="width: 100%; border-radius: 0;" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
+                                        <option value="0" selected="selected">通常のパスワード認証</option>
+                                        <option value="1">暗号化されたパスワード認証</option>
+                                        <option value="2">Kerberos/GSSAPI</option>
+                                        <option value="3">NTLM</option>
+                                        <option value="4">TLS証明書</option>
+                                        <option value="5">OAuth2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">PROXYサーバー</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{proxyServer}" type="text" class="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group">
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
-                                    <button th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
+                                    <button type="submit" class="btn btn-success">更新</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
-                                    <button th:data="${isUpdate}" name="resetBtn" type="button" class="btn btn-default">項目クリア</button>
+                                    <button name="resetSendFormBtn" type="button" class="btn btn-default">項目クリア</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
-                                    <button th:data="${isUpdate}" name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
                                 </div>
                             </div>
                         </form>

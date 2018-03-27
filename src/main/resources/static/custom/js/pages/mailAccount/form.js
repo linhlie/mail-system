@@ -4,23 +4,42 @@
     "use strict";
     var IMAP = 0;
     var POP3 = 1;
-    var formChange = false;
+    var accountFormChange = false;
+    var receiveFormChange = false;
+    var sendFormChange = false;
 
     $(function () {
-        setFormChangeListener();
+        setFormsChangeListener();
         setMailProtocolChangeListener();
         setGoBackListener('backBtn');
-        setResetListener('resetBtn');
+        setResetListener('resetMailFormBtn', function () {
+            $('#mailAccountForm').trigger("reset");
+            accountFormChange = false;
+        });
+        setResetListener('resetReceiveFormBtn', function () {
+            $('#receiveMailForm').trigger("reset");
+            receiveFormChange = false;
+        });
+        setResetListener('resetSendFormBtn', function () {
+            $('#sendMailForm').trigger("reset");
+            sendFormChange = false;
+        });
     });
 
-    function setFormChangeListener() {
+    function setFormsChangeListener() {
+        $('#mailAccountForm').change(function() {
+            accountFormChange = true;
+        });
         $('#receiveMailForm').change(function() {
-            formChange = true;
+            receiveFormChange = true;
+        });
+        $('#sendMailForm').change(function() {
+            sendFormChange = true;
         });
     }
 
     function setMailProtocolChangeListener() {
-        $('#mailProtocol').change(function(){
+        $('#receiveMailProtocol').change(function(){
             var protocol = $(this).find("option:selected").attr('value');
             var port = 993;
             if(protocol == IMAP) {
@@ -28,32 +47,21 @@
             } else if ( protocol == POP3) {
                 port = 995;
             }
-            $('#mailPort').val(port);
+            $('#receiveMailPort').val(port);
         });
     }
     
-    function setResetListener(name) {
+    function setResetListener(name, callback) {
         $("button[name='"+name+"']").click(function () {
-            var isUpdate = $(this).attr("data");
-            if(isUpdate === "false") {
-                if(formChange){
-                    var isClear = confirm("本当にリセットフォームが必要ですか。");
-                    if(isClear){
-                        $('#receiveMailForm').trigger("reset");
-                        formChange = false;
-                    }
-                }
-            } else {
-                $('#receiveMailForm').trigger("reset");
-                formChange = false;
+            if(typeof callback === "function"){
+                callback();
             }
         })
     }
 
     function setGoBackListener(name){
         $("button[name='"+name+"']").click(function () {
-            var isUpdate = $(this).attr("data");
-            if(isUpdate === "true" && formChange) {
+            if(accountFormChange || receiveFormChange || sendFormChange) {
                 var isBack = confirm("離れたいですか。");
                 if(isBack){
                     goBack();

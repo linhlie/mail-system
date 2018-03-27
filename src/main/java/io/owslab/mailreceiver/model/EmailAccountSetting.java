@@ -17,7 +17,7 @@ public class EmailAccountSetting {
     private long id;
 
     @NotNull
-    private String account;
+    private long accountId;
 
     private String userName;
 
@@ -41,8 +41,6 @@ public class EmailAccountSetting {
 
     private String proxyServer;
 
-    private boolean disabled;
-
     private Date createdAt;
 
     private Date updatedAt;
@@ -57,7 +55,7 @@ public class EmailAccountSetting {
     }
 
     public EmailAccountSetting(AccountForm form, boolean isUpdate){
-        this.account = form.getAccount();
+        this.accountId = form.getAccountId();
         this.userName = form.getUserName();
         this.password = form.getPassword();
         this.mailServerAddress = form.getMailServerAddress();
@@ -66,7 +64,6 @@ public class EmailAccountSetting {
         this.encryptionProtocol = form.getEncryptionProtocol();
         this.authenticationProtocol = form.getAuthenticationProtocol();
         this.proxyServer = form.getProxyServer();
-        this.disabled = form.isDisabled();
         this.type = form.getType();
         if(isUpdate){
             this.updatedAt = new Date();
@@ -75,8 +72,8 @@ public class EmailAccountSetting {
         }
     }
 
-    public EmailAccountSetting(String account, String userName, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
-        this.account = account;
+    public EmailAccountSetting(long accountId, String userName, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
+        this.accountId = accountId;
         this.userName = userName;
         this.password = password;
         this.mailServerAddress = mailServerAddress;
@@ -85,7 +82,6 @@ public class EmailAccountSetting {
         this.encryptionProtocol = encryptionProtocol;
         this.authenticationProtocol = authenticationProtocol;
         this.proxyServer = proxyServer;
-        this.disabled = disabled;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.type = type;
@@ -99,12 +95,12 @@ public class EmailAccountSetting {
         this.id = id;
     }
 
-    public String getAccount() {
-        return account;
+    public long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
     }
 
     public String getPassword() {
@@ -163,14 +159,6 @@ public class EmailAccountSetting {
         this.proxyServer = proxyServer;
     }
 
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -201,11 +189,6 @@ public class EmailAccountSetting {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    @Override
-    public String toString(){
-        return this.getAccount() + " " + this.getPassword();
     }
 
     public class Protocol {

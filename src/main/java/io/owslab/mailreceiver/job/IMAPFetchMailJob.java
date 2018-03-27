@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -31,15 +32,17 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
     private final EnviromentSettingService enviromentSettingService;
-    private final EmailAccountSetting account;
+    private final EmailAccountSetting accountSetting;
+    private final EmailAccount account;
 
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, EmailAccountSetting account) {
+    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, EmailAccountSetting accountSetting, EmailAccount account) {
         this.emailDAO = emailDAO;
         this.fileDAO = fileDAO;
         this.enviromentSettingService = enviromentSettingService;
+        this.accountSetting = accountSetting;
         this.account = account;
     }
 
@@ -54,9 +57,9 @@ public class IMAPFetchMailJob implements Runnable {
         if(n > 0){
             Email lastEmail = listEmail.get(0);
             Date lastEmailSentAt = lastEmail.getSentAt();
-            check(account, lastEmailSentAt);
+            check(account, accountSetting, lastEmailSentAt);
         } else {
-            check(account, null);
+            check(account, accountSetting, null);
         }
     }
 
@@ -80,15 +83,15 @@ public class IMAPFetchMailJob implements Runnable {
         return store;
     }
 
-    public void check(EmailAccountSetting account, Date fromDate)
+    public void check(EmailAccount account, EmailAccountSetting accountSetting, Date fromDate)
     {
         try {
 
-            Store store = createStore(account);
-            if(account.getUserName() != null && account.getUserName().length() > 0){
-                store.connect(account.getMailServerAddress(), account.getUserName(), account.getPassword());
+            Store store = createStore(accountSetting);
+            if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
+                store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
             } else {
-                store.connect(account.getMailServerAddress(), account.getAccount(), account.getPassword());
+                store.connect(accountSetting.getMailServerAddress(), account.getAccount(), accountSetting.getPassword());
             }
 
             //create the folder object and open it
@@ -138,13 +141,13 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private boolean isEmailExist(MimeMessage message, EmailAccountSetting account) throws MessagingException {
+    private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
         String messageId = buildMessageId(message, account);
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0;
     }
 
-    private Email buildReceivedMail(MimeMessage message, EmailAccountSetting account) {
+    private Email buildReceivedMail(MimeMessage message, EmailAccount account) {
         try {
             Email email =  new Email();
             String messageId = buildMessageId(message, account);
@@ -215,7 +218,7 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private String buildMessageId(MimeMessage message, EmailAccountSetting account) throws MessagingException {
+    private String buildMessageId(MimeMessage message, EmailAccount account) throws MessagingException {
         return account.getAccount() + "+" + message.getMessageID();
     }
 

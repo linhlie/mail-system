@@ -21,10 +21,18 @@ CREATE TABLE `accounts` (
   UNIQUE KEY unique_user_name (user_name)
 ) ENGINE = InnoDB;
 
+DROP TABLE IF EXISTS `email_accounts`;
+CREATE TABLE `email_accounts` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `account` VARCHAR(120) NOT NULL,
+  `disabled` BOOLEAN DEFAULT FALSE,
+  UNIQUE KEY unique_account (account)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 DROP TABLE IF EXISTS `email_account_settings`;
 CREATE TABLE `email_account_settings` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `account` VARCHAR(120) NOT NULL,
+  `account_id` INT NOT NULL,
   `user_name` VARCHAR(120) DEFAULT NULL,
   `password` VARCHAR(32) NOT NULL,
   `mail_server_address` VARCHAR(191) NOT NULL,
@@ -33,11 +41,14 @@ CREATE TABLE `email_account_settings` (
   `encryption_protocol`SMALLINT(6) NOT NULL DEFAULT '0'COMMENT '0、なし 1. SSL/TLS, 2. STARTTLS',
   `authentication_protocol` SMALLINT(6) NOT NULL DEFAULT '0' COMMENT '0. 通常のパスワード認証 1. 暗号化されたパスワード認証 2. Kerberos/GSSAPI 3. NTLM 4. TLS証明書 5. OAuth2',
   `proxy_server` VARCHAR(191) DEFAULT NULL,
-  `disabled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT NULL,
   `updated_at` DATETIME DEFAULT NULL,
   `type` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、受信 1. 送信',
-  UNIQUE KEY unique_account (account, type)
+  UNIQUE KEY unique_account_type (account_id, type),
+  FOREIGN KEY fk_email_account(account_id)
+  REFERENCES email_accounts(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO email_account_settings(account, password, mail_server_address, mail_server_port)
