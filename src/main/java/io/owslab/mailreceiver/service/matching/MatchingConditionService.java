@@ -2,7 +2,6 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
-import io.owslab.mailreceiver.dto.EmailDTO;
 import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
@@ -96,10 +95,20 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
         List<Email> emailList = mailBoxService.getAll();
         boolean distinguish = matchingConditionForm.isDistinguish();
-        findMailMatching(emailList, groupedSourceConditions, distinguish);
-        List<Email> matchSourceList = mergeResultGroups(groupedSourceConditions);
-        findMailMatching(emailList, groupedDestinationConditions, distinguish);
-        List<Email> matchDestinationList = mergeResultGroups(groupedDestinationConditions);
+        List<Email> matchSourceList;
+        if(groupedSourceConditions.size() > 0) {
+            findMailMatching(emailList, groupedSourceConditions, distinguish);
+            matchSourceList = mergeResultGroups(groupedSourceConditions);
+        } else {
+            matchSourceList = emailList;
+        }
+        List<Email> matchDestinationList;
+        if(groupedSourceConditions.size() > 0) {
+            findMailMatching(emailList, groupedDestinationConditions, distinguish);
+            matchDestinationList = mergeResultGroups(groupedDestinationConditions);
+        } else {
+            matchDestinationList = emailList;
+        }
         logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
         List<String> matchingWords = getWordList(matchingConditionForm);
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
@@ -115,7 +124,8 @@ public class MatchingConditionService {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
                 if(intersectWords.size() == 0) continue;;
                 List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-                boolean matching = isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
+                boolean matching = groupedMatchingConditions.size() == 0
+                        || isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
                 if(matching){
                     for(String word : intersectWords) {
                         addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail());
