@@ -27,8 +27,8 @@
                                                 <table class="table table-bordered">
                                                     <thead>
                                                     <tr>
-                                                        <th class="col-xs-11">単語</th>
-                                                        <th class="col-xs-1 text-center">
+                                                        <th class="col-xs-10">単語</th>
+                                                        <th class="col-xs-2 text-center">
                                                         </th>
                                                     </tr>
                                                     </thead>
@@ -39,7 +39,7 @@
                                                                 <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center"><button type="submit"><i class="fa fa-search"/></button></td>
+                                                        <td class="text-center"><button type="submit">条件</button></td>
                                                     </tr>
                                                     <tr th:each="item:${wordList}">
                                                         <td th:text="${item.word}"></td>
