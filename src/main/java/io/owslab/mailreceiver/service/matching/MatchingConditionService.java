@@ -192,10 +192,10 @@ public class MatchingConditionService {
         MailItemOption option = MailItemOption.fromValue(condition.getItem());
         switch (option){
             case SENDER:
-                match = isMatchingPart(source.getTo(), target, condition, distinguish);
+                match = isMatchingPart(source.getFrom(), target, condition, distinguish);
                 break;
             case RECEIVER:
-                match = isMatchingPart(source.getFrom(), target, condition, distinguish);
+                match = isMatchingPart(source.getTo(), target, condition, distinguish);
                 break;
             case SUBJECT:
                 match = isMatchingPart(source.getSubject(), target, condition, distinguish);
