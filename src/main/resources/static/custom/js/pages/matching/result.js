@@ -9,8 +9,11 @@
     var openFileFolderButtonId = '#openFileFolderBtn';
     var matchingResult = null;
     var currentDestinationResult = [];
+    var onlyDisplayNonZeroRow = true;
 
     $(function () {
+        onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
+        setupDisplatNonZeroListener();
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
         if(matchingConditionStr){
@@ -50,6 +53,13 @@
         }
     });
     
+    function setupDisplatNonZeroListener() {
+        $('#displayNonZeroCheckbox').change(function() {
+            onlyDisplayNonZeroRow = $(this).is(":checked");
+            updateData();
+        });
+    }
+    
     function updateData() {
         showSourceData(sourceTableId, matchingResult);
         disableButton(openFileFolderButtonId, true);
@@ -59,6 +69,10 @@
         removeAllRow(tableId);
         if(data.length > 0){
             for(var i = 0; i < data.length; i ++){
+                if(onlyDisplayNonZeroRow && data[i]
+                    && data[i].destinationList && data[i].destinationList.length == 0){
+                    continue;
+                }
                 addRowWithData(tableId, data[i], i, function () {
                     setRowClickListener("showSourceMail", showSourceMail);
                     setRowClickListener("sourceRow", selectedRow);
