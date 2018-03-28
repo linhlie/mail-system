@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -47,6 +48,9 @@ public class MatchingConditionService {
     private NumberTreatment numberTreatment;
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    @Value("${mailreceiver.app.daysago}")
+    private int daysago;
 
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
@@ -82,7 +86,7 @@ public class MatchingConditionService {
                     CombineOption.AND.getValue(),
                     MailItemOption.RECEIVED_DATE.getValue(),
                     ConditionOption.GE.getValue(),
-                    formatter.format(getSevenDayAgo()),
+                    formatter.format(getDaysAgo()),
                     MatchingCondition.Type.SOURCE
             );
 
@@ -106,7 +110,7 @@ public class MatchingConditionService {
                     CombineOption.AND.getValue(),
                     MailItemOption.RECEIVED_DATE.getValue(),
                     ConditionOption.GE.getValue(),
-                    formatter.format(getSevenDayAgo()),
+                    formatter.format(getDaysAgo()),
                     MatchingCondition.Type.DESTINATION
             );
 
@@ -690,8 +694,8 @@ public class MatchingConditionService {
         }
     }
 
-    private Date getSevenDayAgo(){
+    private Date getDaysAgo(){
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
-        return new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
+        return new Date(System.currentTimeMillis() - (daysago * DAY_IN_MS));
     }
 }
