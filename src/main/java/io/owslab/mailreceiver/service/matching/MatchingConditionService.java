@@ -82,7 +82,7 @@ public class MatchingConditionService {
                     CombineOption.AND.getValue(),
                     MailItemOption.RECEIVED_DATE.getValue(),
                     ConditionOption.GE.getValue(),
-                    formatter.format(new Date()),
+                    formatter.format(getSevenDayAgo()),
                     MatchingCondition.Type.SOURCE
             );
 
@@ -106,7 +106,7 @@ public class MatchingConditionService {
                     CombineOption.AND.getValue(),
                     MailItemOption.RECEIVED_DATE.getValue(),
                     ConditionOption.GE.getValue(),
-                    formatter.format(new Date()),
+                    formatter.format(getSevenDayAgo()),
                     MatchingCondition.Type.DESTINATION
             );
 
@@ -688,5 +688,10 @@ public class MatchingConditionService {
                 matchingResult.addDestination(destination);
             }
         }
+    }
+
+    private Date getSevenDayAgo(){
+        long DAY_IN_MS = 1000 * 60 * 60 * 24;
+        return new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
     }
 }
