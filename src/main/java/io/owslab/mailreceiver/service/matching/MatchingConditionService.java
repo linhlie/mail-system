@@ -46,6 +46,8 @@ public class MatchingConditionService {
 
     private NumberTreatment numberTreatment;
 
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
     public void saveList(List<MatchingCondition> matchingConditions, int type){
         //TODO: Must be transaction
         for(MatchingCondition matchingCondition : matchingConditions){
@@ -66,11 +68,51 @@ public class MatchingConditionService {
     }
 
     public List<MatchingCondition> getSourceConditionList(){
-        return getListByType(MatchingCondition.Type.SOURCE);
+        List<MatchingCondition> conditionList = getListByType(MatchingCondition.Type.SOURCE);
+        MatchingCondition receivedDateCondition = null;
+        for(MatchingCondition condition : conditionList){
+            MailItemOption option = MailItemOption.fromValue(condition.getItem());
+            if(option.equals(MailItemOption.RECEIVED_DATE)){
+                receivedDateCondition = condition;
+            }
+        }
+        if(receivedDateCondition == null){
+            receivedDateCondition = new MatchingCondition(
+                    true,
+                    CombineOption.AND.getValue(),
+                    MailItemOption.RECEIVED_DATE.getValue(),
+                    ConditionOption.GE.getValue(),
+                    formatter.format(new Date()),
+                    MatchingCondition.Type.SOURCE
+            );
+
+            conditionList.add(receivedDateCondition);
+        }
+        return conditionList;
     }
 
     public List<MatchingCondition> getDestinationConditionList(){
-        return getListByType(MatchingCondition.Type.DESTINATION);
+        List<MatchingCondition> conditionList = getListByType(MatchingCondition.Type.DESTINATION);
+        MatchingCondition receivedDateCondition = null;
+        for(MatchingCondition condition : conditionList){
+            MailItemOption option = MailItemOption.fromValue(condition.getItem());
+            if(option.equals(MailItemOption.RECEIVED_DATE)){
+                receivedDateCondition = condition;
+            }
+        }
+        if(receivedDateCondition == null){
+            receivedDateCondition = new MatchingCondition(
+                    true,
+                    CombineOption.AND.getValue(),
+                    MailItemOption.RECEIVED_DATE.getValue(),
+                    ConditionOption.GE.getValue(),
+                    formatter.format(new Date()),
+                    MatchingCondition.Type.DESTINATION
+            );
+
+            conditionList.add(receivedDateCondition);
+        }
+        return conditionList;
     }
 
     public List<MatchingCondition> getMatchingConditionList(){
@@ -243,7 +285,7 @@ public class MatchingConditionService {
                 match = !email.isHasAttachment();
                 break;
             case RECEIVED_DATE:
-                match = isMatchPart(email.getReceivedAt(), condition, distinguish);
+                match = isMatchPart(email.getSentAt(), condition, distinguish);
                 break;
             case NONE:
             default:
@@ -343,7 +385,6 @@ public class MatchingConditionService {
         try {
             ConditionOption option = ConditionOption.fromValue(condition.getCondition());
             String dateValue = condition.getValue();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date conditionDate = formatter.parse(dateValue);
             conditionDate = Utils.trim(conditionDate);
             part = Utils.trim(part);
