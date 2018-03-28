@@ -51,4 +51,24 @@ public enum MatchingItemOption {
         }
         return null;
     }
+
+    public static MatchingItemOption fromText(String text) {
+        switch(text) {
+            case "送信者":
+                return SENDER;
+            case "受信者":
+                return RECEIVER;
+            case "件名":
+                return SUBJECT;
+            case "本文":
+                return BODY;
+            case "数値":
+                return NUMBER;
+            case "数値(上代)":
+                return NUMBER_UPPER;
+            case "数値(下代)":
+                return NUMBER_LOWER;
+        }
+        return null;
+    }
 }

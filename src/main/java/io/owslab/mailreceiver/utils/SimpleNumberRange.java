@@ -38,6 +38,13 @@ public class SimpleNumberRange {
         return numberCompare;
     }
 
+    public NumberCompare getNumberCompare(NumberCompare replaceCompare) {
+        if(replaceCompare != null) {
+            return  replaceCompare;
+        }
+        return numberCompare;
+    }
+
     public int getReplaceValue() {
         return replaceValue;
     }
@@ -54,11 +61,19 @@ public class SimpleNumberRange {
         return value;
     }
 
+    public double getValue(double ratio) {
+        return value*ratio;
+    }
+
     public void setValue(double value) {
         this.value = value;
     }
 
-    public boolean match(SimpleNumberRange other){
+    public boolean match(SimpleNumberRange other, double ratio) {
+        return this.match(other, ratio, null);
+    }
+
+    public boolean match(SimpleNumberRange other, double ratio, NumberCompare replaceCompare){
         if(this.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
             return true;
         }
@@ -66,26 +81,26 @@ public class SimpleNumberRange {
             return true;
         }
         boolean match = false;
-        switch (this.getNumberCompare()){
+        switch (this.getNumberCompare(replaceCompare)){
             case EQ:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() == other.getValue();
+                        match = this.getValue(ratio) == other.getValue();
                         break;
                     case NE:
-                        match = this.getValue() != other.getValue();
+                        match = this.getValue(ratio) != other.getValue();
                         break;
                     case GE:
-                        match = this.getValue() >= other.getValue();
+                        match = this.getValue(ratio) >= other.getValue();
                         break;
                     case GT:
-                        match = this.getValue() > other.getValue();
+                        match = this.getValue(ratio) > other.getValue();
                         break;
                     case LE:
-                        match = this.getValue() <= other.getValue();
+                        match = this.getValue(ratio) <= other.getValue();
                         break;
                     case LT:
-                        match = this.getValue() < other.getValue();
+                        match = this.getValue(ratio) < other.getValue();
                         break;
                     default:
                         match = false;
@@ -94,10 +109,10 @@ public class SimpleNumberRange {
             case NE:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() != other.getValue();
+                        match = this.getValue(ratio) != other.getValue();
                         break;
                     case NE:
-                        match = this.getValue() == other.getValue();
+                        match = this.getValue(ratio) == other.getValue();
                         break;
                     case GE:
                         match = true;
@@ -118,7 +133,7 @@ public class SimpleNumberRange {
             case GE:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() <= other.getValue();
+                        match = this.getValue(ratio) <= other.getValue();
                         break;
                     case NE:
                         match = true;
@@ -130,10 +145,10 @@ public class SimpleNumberRange {
                         match = true;
                         break;
                     case LE:
-                        match = this.getValue() <= other.getValue();
+                        match = this.getValue(ratio) <= other.getValue();
                         break;
                     case LT:
-                        match = this.getValue() < other.getValue();
+                        match = this.getValue(ratio) < other.getValue();
                         break;
                     default:
                         match = false;
@@ -142,7 +157,7 @@ public class SimpleNumberRange {
             case GT:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() <= other.getValue();
+                        match = this.getValue(ratio) <= other.getValue();
                         break;
                     case NE:
                         match = true;
@@ -154,10 +169,10 @@ public class SimpleNumberRange {
                         match = true;
                         break;
                     case LE:
-                        match = this.getValue() < other.getValue();
+                        match = this.getValue(ratio) < other.getValue();
                         break;
                     case LT:
-                        match = this.getValue() < other.getValue();
+                        match = this.getValue(ratio) < other.getValue();
                         break;
                     default:
                         match = false;
@@ -166,16 +181,16 @@ public class SimpleNumberRange {
             case LE:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() >= other.getValue();
+                        match = this.getValue(ratio) >= other.getValue();
                         break;
                     case NE:
                         match = true;
                         break;
                     case GE:
-                        match = this.getValue() >= other.getValue();
+                        match = this.getValue(ratio) >= other.getValue();
                         break;
                     case GT:
-                        match = this.getValue() > other.getValue();
+                        match = this.getValue(ratio) > other.getValue();
                         break;
                     case LE:
                         match = true;
@@ -190,16 +205,16 @@ public class SimpleNumberRange {
             case LT:
                 switch (other.getNumberCompare()){
                     case EQ:
-                        match = this.getValue() > other.getValue();
+                        match = this.getValue(ratio) > other.getValue();
                         break;
                     case NE:
                         match = true;
                         break;
                     case GE:
-                        match = this.getValue() > other.getValue();
+                        match = this.getValue(ratio) > other.getValue();
                         break;
                     case GT:
-                        match = this.getValue() > other.getValue();
+                        match = this.getValue(ratio) > other.getValue();
                         break;
                     case LE:
                         match = true;

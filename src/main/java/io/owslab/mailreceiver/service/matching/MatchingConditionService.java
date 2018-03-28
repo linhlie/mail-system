@@ -2,10 +2,7 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
-import io.owslab.mailreceiver.enums.CombineOption;
-import io.owslab.mailreceiver.enums.ConditionOption;
-import io.owslab.mailreceiver.enums.MailItemOption;
-import io.owslab.mailreceiver.enums.NumberCompare;
+import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
@@ -195,16 +192,16 @@ public class MatchingConditionService {
         MailItemOption option = MailItemOption.fromValue(condition.getItem());
         switch (option){
             case SENDER:
-                match = isMatchPart(target.getTo(), condition, distinguish);
+                match = isMatchingPart(source.getTo(), target, condition, distinguish);
                 break;
             case RECEIVER:
-                match = isMatchPart(target.getFrom(), condition, distinguish);
+                match = isMatchingPart(source.getFrom(), target, condition, distinguish);
                 break;
             case SUBJECT:
-                match = isMatchPart(target.getSubject(), condition, distinguish);
+                match = isMatchingPart(source.getSubject(), target, condition, distinguish);
                 break;
             case BODY:
-                match = isMatchPart(target.getOptimizedBody(), condition, distinguish);
+                match = isMatchingPart(source.getOptimizedBody(), target, condition, distinguish);
                 break;
             case NUMBER:
             case NUMBER_UPPER:
@@ -253,6 +250,59 @@ public class MatchingConditionService {
                 break;
         }
         return match;
+    }
+
+    private boolean isMatchingPart (String part,Email target, MatchingCondition condition, boolean distinguish){
+        boolean match = false;
+        ConditionOption option = ConditionOption.fromValue(condition.getCondition());
+        String optimizedPart = getOptimizedText(part, distinguish);
+        String optimizedValue = getTargetPartValue(target, condition, distinguish);
+        switch (option){
+            case INC:
+                match = optimizedPart.indexOf(optimizedValue) >= 0;
+                break;
+            case NINC:
+                match = optimizedPart.indexOf(optimizedValue) == -1;
+                break;
+            case EQ:
+                match = optimizedPart.equals(optimizedValue);
+                break;
+            case NE:
+                match = !optimizedPart.equals(optimizedValue);
+                break;
+            default:
+                break;
+        }
+        return match;
+    }
+
+    private String getTargetPartValue(Email target, MatchingCondition condition, boolean distinguish){
+        String conditionValue = condition.getValue();
+        String optimizedValue = getOptimizedText(conditionValue, distinguish);
+        String targetPart = optimizedValue;
+        MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
+        switch (option){
+            case SENDER:
+                targetPart = target.getFrom();
+                break;
+            case RECEIVER:
+                targetPart = target.getTo();
+                break;
+            case SUBJECT:
+                targetPart = target.getSubject();
+                break;
+            case BODY:
+                targetPart = target.getOptimizedBody();
+                break;
+            case NUMBER:
+            case NUMBER_LOWER:
+            case NUMBER_UPPER:
+                targetPart = target.getSubjectAndOptimizedBody();
+                break;
+            default:
+                break;
+        }
+        return targetPart;
     }
 
     private boolean isMatchPart (String part, MatchingCondition condition, boolean distinguish){
@@ -431,15 +481,15 @@ public class MatchingConditionService {
     private boolean isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         String conditionValue = condition.getValue();
-        if(conditionValue.indexOf('#') != 0){
-            return isMatchRange(target, condition, distinguish);
+        MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
+        if(option == null){
+            return isMatchRange(source, condition, distinguish);
         } else {
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
             String optimizedSourcePart = getOptimizedText(source.getSubjectAndOptimizedBody(), false);
-            String optimizedTargetPart = getOptimizedText(target.getSubjectAndOptimizedBody(), false);
-            String optimizedValue = getOptimizedText(conditionValue, false);
-            //TODO handle name after #
-
+            String optimizedTargetPart = getTargetPartValue(target, condition, false);
+            List<FullNumberRange> sourceRanges;
+            List<FullNumberRange> targetRanges;
             switch (conditionOption){
                 case WITHIN:
                 case EQ:
@@ -448,8 +498,8 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
-                    List<FullNumberRange> sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart, true);
-                    List<FullNumberRange> targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedTargetPart);
+                    sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart, true);
+                    targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId()+conditionValue, optimizedTargetPart);
                     match = hasMatchRange(sourceRanges, targetRanges, condition);
                     break;
                 default:
@@ -471,6 +521,18 @@ public class MatchingConditionService {
             FullNumberRange findRange;
             List<FullNumberRange> toFindListRange;
 
+            double ratio = 1;
+            if(numberTreatment != null){
+                switch (mailItemOption){
+                    case NUMBER_UPPER:
+                        ratio = numberTreatment.getUpperLimitRate();
+                        break;
+                    case NUMBER_LOWER:
+                        ratio = numberTreatment.getLowerLimitRate();
+                        break;
+                }
+            }
+
             switch (conditionOption){
                 case WITHIN:
                     String cacheId = optimizedValue + "OwsCacheIdRandom89172398";
@@ -480,20 +542,10 @@ public class MatchingConditionService {
                         return match;
                     }
                     findRange = forFindListRange.get(0);
-                    if(numberTreatment != null){
-                        switch (mailItemOption){
-                            case NUMBER_UPPER:
-                                findRange.multiple(numberTreatment.getUpperLimitRate());
-                                break;
-                            case NUMBER_LOWER:
-                                findRange.multiple(numberTreatment.getLowerLimitRate());
-                                break;
-                        }
-                    }
                     toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
-                            if(findRange.match(range)){
+                            if(range.match(findRange, ratio)){
                                 match = true;
                                 break;
                             }
@@ -509,23 +561,13 @@ public class MatchingConditionService {
                 case LE:
                 case LT:
                     Double numberCondition = Double.parseDouble(optimizedValue);
-                    if(numberTreatment != null){
-                        switch (mailItemOption){
-                            case NUMBER_UPPER:
-                                numberCondition = numberCondition * numberTreatment.getUpperLimitRate();
-                                break;
-                            case NUMBER_LOWER:
-                                numberCondition = numberCondition * numberTreatment.getLowerLimitRate();
-                                break;
-                        }
-                    }
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
                     findRange = new FullNumberRange(simpleRange);
                     toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
-                            if(findRange.match(range)){
+                            if(range.match(findRange, ratio)){
                                 match = true;
                                 break;
                             }
@@ -563,17 +605,25 @@ public class MatchingConditionService {
         boolean match = false;
         MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
         ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
-        for(FullNumberRange findRange : sourceRanges){
+        MatchingItemOption matchingOption = MatchingItemOption.fromText(condition.getValue());
+        double ratio = 1;
+        if(numberTreatment != null){
             if(mailItemOption.equals(MailItemOption.NUMBER_UPPER)){
-                findRange.multiple(numberTreatment.getUpperLimitRate());
+                ratio = ratio * numberTreatment.getUpperLimitRate();
             } else if (mailItemOption.equals(MailItemOption.NUMBER_LOWER)){
-                findRange.multiple(numberTreatment.getLowerLimitRate());
+                ratio = ratio * numberTreatment.getLowerLimitRate();
             }
-            findRange.replace(NumberCompare.fromConditionOption(conditionOption));
-//            System.out.println("hasMatchRange " + findRange.toString());
+
+            if(matchingOption != null && matchingOption.equals(MatchingItemOption.NUMBER_UPPER)){
+                ratio = ratio / numberTreatment.getUpperLimitRate();
+            } else if (matchingOption != null && matchingOption.equals(MatchingItemOption.NUMBER_LOWER)){
+                ratio = ratio / numberTreatment.getLowerLimitRate();
+            }
+        }
+        for(FullNumberRange findRange : sourceRanges){
+            NumberCompare replaceCompare = NumberCompare.fromConditionOption(conditionOption);
             for(FullNumberRange range : targetRanges){
-//                System.out.println("with " + range.toString());
-                if(findRange.match(range)){
+                if(findRange.match(range, ratio, replaceCompare)){
                     match = true;
                     break;
                 }

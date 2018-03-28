@@ -50,11 +50,18 @@ public class FullNumberRange {
         this.right = right;
     }
 
-    public boolean match(FullNumberRange other){
-        return (this.getLeft().match(other.getLeft())
-                && this.getLeft().match(other.getRight()))
-                && (this.getRight().match(other.getLeft())
-                && this.getRight().match(other.getRight()));
+    public boolean match(FullNumberRange other, double ratio, NumberCompare replaceCompare){
+        return (this.getLeft().match(other.getLeft(), ratio, replaceCompare)
+                && this.getLeft().match(other.getRight(), ratio, replaceCompare))
+                && (this.getRight().match(other.getLeft(), ratio, replaceCompare)
+                && this.getRight().match(other.getRight(), ratio, replaceCompare));
+    }
+
+    public boolean match(FullNumberRange other, double ratio){
+        return (this.getLeft().match(other.getLeft(), ratio)
+                && this.getLeft().match(other.getRight(), ratio))
+                && (this.getRight().match(other.getLeft(), ratio)
+                && this.getRight().match(other.getRight(), ratio));
     }
 
     public String toString(){
