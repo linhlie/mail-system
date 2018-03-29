@@ -182,6 +182,7 @@
     }
 
     function showDestinationMail() {
+        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
         var rowData = currentDestinationResult[index];
@@ -191,6 +192,7 @@
     }
     
     function selectedRow() {
+        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
         showSourceMail.call(this);
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");

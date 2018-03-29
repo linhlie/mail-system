@@ -439,4 +439,8 @@ table#sourceMatch, table#destinationMatch {
     bottom: 4px;
 }
 
+.matching-result table.dataTable tr.highlight-selected {
+    background-color: #ffffcc;
+}
+
 
