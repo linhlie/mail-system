@@ -10,6 +10,8 @@
     var matchingResult = null;
     var currentDestinationResult = [];
     var onlyDisplayNonZeroRow = true;
+    var sourceMatchDataTable;
+    var destinationMatchDataTable;
 
     $(function () {
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
@@ -66,6 +68,7 @@
     }
 
     function showSourceData(tableId, data) {
+        destroySortSource();
         removeAllRow(tableId);
         if(data.length > 0){
             for(var i = 0; i < data.length; i ++){
@@ -74,17 +77,33 @@
                     continue;
                 }
                 addRowWithData(tableId, data[i], i, function () {
-                    setRowClickListener("showSourceMail", showSourceMail);
                     setRowClickListener("sourceRow", selectedRow);
                 });
             }
         }
+        initSortSource();
+    }
+
+    function destroySortSource() {
+        if(!!sourceMatchDataTable){
+            sourceMatchDataTable.destroy();
+        }
+    }
+    
+    function initSortSource() {
+        sourceMatchDataTable = $("#sourceMatch").DataTable({
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "order": [],
+        });
     }
     
     function showDestinationData(tableId, data) {
         var word = data.word;
         var source = data.source;
         currentDestinationResult = data.destinationList;
+        destroySortDestination();
         removeAllRow(tableId);
         if(currentDestinationResult.length > 0){
             for(var i = 0; i < currentDestinationResult.length; i ++){
@@ -94,6 +113,22 @@
                 });
             }
         }
+        initSortDestination();
+    }
+
+    function destroySortDestination() {
+        if(!!destinationMatchDataTable){
+            destinationMatchDataTable.destroy();
+        }
+    }
+
+    function initSortDestination() {
+        destinationMatchDataTable = $("#destinationMatch").DataTable({
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "order": []
+        });
     }
 
     function addRowWithData(tableId, data, index, callback) {
@@ -156,6 +191,7 @@
     }
     
     function selectedRow() {
+        showSourceMail.call(this);
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
         var rowData = matchingResult[index];

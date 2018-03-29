@@ -22,29 +22,25 @@
                     /><span> 絞り込みと先マッチしたのみ表示する</span>
                     <div class="main-left">
                         <div class="table-container">
-                            <table id="sourceMatch" class="table table-bordered">
+                            <table id="sourceMatch" class="table table-bordered table-hover dataTable">
                                 <thead>
                                 <tr>
-                                    <th class="col-xs-2">ワード</th>
-                                    <th class="col-xs-2">マッチ件数</th>
-                                    <th class="col-xs-2">受信日時</th>
-                                    <th class="col-xs-2">送信者</th>
-                                    <th class="col-xs-2">受信者</th>
-                                    <th class="col-xs-2">件名</th>
-                                    <th>添付</th>
+                                    <th>ワード</th>
+                                    <th>マッチ件数</th>
+                                    <th>受信日時</th>
+                                    <th>送信者</th>
+                                    <th>受信者</th>
+                                    <th>件名</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr class="hidden">
+                                <tr role="row" class="hidden">
                                     <td class="clickable" name="sourceRow" th:data="word"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="destinationList"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="source.receivedAt"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="source.from"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="source.to"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="source.subject"><span></span></td>
-                                    <td class="clickable text-center" name="showSourceMail">
-                                        <span>OPEN</span>
-                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -53,27 +49,23 @@
                             <h4>絞り込み元</h4>
                         </div>
                         <div class="table-container">
-                            <table id="destinationMatch" class="table table-bordered">
+                            <table id="destinationMatch" class="table table-bordered dataTable">
                                 <thead>
                                 <tr>
-                                    <th class="col-xs-2">ワード</th>
-                                    <th class="col-xs-2">受信日時</th>
-                                    <th class="col-xs-2">送信者</th>
-                                    <th class="col-xs-2">受信者</th>
-                                    <th class="col-xs-2">件名</th>
-                                    <th class="col-xs-1">添付</th>
+                                    <th>ワード</th>
+                                    <th>受信日時</th>
+                                    <th>送信者</th>
+                                    <th>受信者</th>
+                                    <th>件名</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr class="hidden">
-                                    <td th:data="word"><span></span></td>
-                                    <td th:data="receivedAt"><span></span></td>
-                                    <td th:data="from"><span></span></td>
-                                    <td th:data="to"><span></span></td>
-                                    <td th:data="subject"><span></span></td>
-                                    <td class="clickable text-center" name="showDestinationMail">
-                                        <span>OPEN</span>
-                                    </td>
+                                <tr role="row" class="hidden">
+                                    <td class="clickable text-center" name="showDestinationMail" th:data="word"><span></span></td>
+                                    <td class="clickable text-center" name="showDestinationMail" th:data="receivedAt"><span></span></td>
+                                    <td class="clickable text-center" name="showDestinationMail" th:data="from"><span></span></td>
+                                    <td class="clickable text-center" name="showDestinationMail" th:data="to"><span></span></td>
+                                    <td class="clickable text-center" name="showDestinationMail" th:data="subject"><span></span></td>
                                 </tr>
                                 </tbody>
                             </table>

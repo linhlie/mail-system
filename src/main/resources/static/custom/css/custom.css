@@ -426,4 +426,17 @@ input.form-error {
     padding-right: 10px;
 }
 
+table#sourceMatch, table#destinationMatch {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.matching-result table.dataTable thead .sorting:after,
+.matching-result table.dataTable thead .sorting_asc:after,
+.matching-result table.dataTable thead .sorting_desc:after,
+.matching-result table.dataTable thead .sorting_asc_disabled:after,
+.matching-result table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 4px;
+}
+
 
