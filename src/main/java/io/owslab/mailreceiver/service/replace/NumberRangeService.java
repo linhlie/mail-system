@@ -10,10 +10,7 @@ import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +54,7 @@ public class NumberRangeService {
 //            System.out.println("Reuse range: " + keyMap);
             return fullRangeMap.get(keyMap);
         }
-        HashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new HashMap<String, ArrayList<SimpleNumberRange>>();
+        LinkedHashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new LinkedHashMap<>();
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);
         List<ReplaceLetter> afReplaceLetters = replaceLetterService.getSignificantList(false);
@@ -390,7 +387,7 @@ public class NumberRangeService {
         }
     }
 
-    private synchronized void addToList(HashMap<String, ArrayList<SimpleNumberRange>> map, String mapKey, SimpleNumberRange range) {
+    private synchronized void addToList(LinkedHashMap<String, ArrayList<SimpleNumberRange>> map, String mapKey, SimpleNumberRange range) {
         ArrayList<SimpleNumberRange> rangesList = map.get(mapKey);
 
         // if list does not exist create it
