@@ -146,7 +146,7 @@ public class MatchingConditionService {
             matchSourceList = emailList;
         }
         List<Email> matchDestinationList;
-        if(groupedSourceConditions.size() > 0) {
+        if(groupedDestinationConditions.size() > 0) {
             findMailMatching(emailList, groupedDestinationConditions, distinguish);
             matchDestinationList = mergeResultGroups(groupedDestinationConditions);
         } else {
@@ -185,14 +185,15 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
         MatchingConditionGroup group = new MatchingConditionGroup();
         for(MatchingCondition condition : conditions){
-            if(condition.getRemove() == MatchingCondition.Remove.REMOVED) continue;
-            if(!condition.isGroup()){
-                if(!group.isEmpty()){
-                    result.add(group);
+            if(condition.getRemove() != MatchingCondition.Remove.REMOVED) {
+                if(!condition.isGroup()){
+                    if(!group.isEmpty()){
+                        result.add(group);
+                    }
+                    group = new MatchingConditionGroup();
                 }
-                group = new MatchingConditionGroup();
+                group.add(new MatchingConditionResult(condition));
             }
-            group.add(new MatchingConditionResult(condition));
             if(conditions.indexOf(condition) == (conditions.size() - 1)) {
                 result.add(group);
             }
