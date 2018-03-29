@@ -68,6 +68,7 @@
     }
 
     function showSourceData(tableId, data) {
+        console.log("showSourceData: ", data);
         destroySortSource();
         removeAllRow(tableId);
         if(data.length > 0){

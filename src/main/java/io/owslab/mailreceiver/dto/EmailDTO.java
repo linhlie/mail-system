@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.utils.FullNumberRange;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.threeten.bp.DateTimeUtils;
 
@@ -34,6 +35,8 @@ public class EmailDTO {
 
     private int contentType;
 
+    private String matchRange;
+
     public EmailDTO(Email email) {
         this.setMessageId(email.getMessageId());
         this.setAccountId(email.getAccountId());
@@ -47,6 +50,11 @@ public class EmailDTO {
         this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd"));
         this.setHasAttachment(email.isHasAttachment());
         this.setContentType(email.getContentType());
+    }
+
+    public EmailDTO(Email email, FullNumberRange matchRange) {
+        this(email);
+        this.setMatchRange(matchRange);
     }
 
     public String getMessageId() {
@@ -143,5 +151,17 @@ public class EmailDTO {
 
     public void setContentType(int contentType) {
         this.contentType = contentType;
+    }
+
+    public String getMatchRange() {
+        return matchRange;
+    }
+
+    public void setMatchRange(String matchRange) {
+        this.matchRange = matchRange;
+    }
+
+    public void setMatchRange(FullNumberRange matchRange){
+        this.matchRange = matchRange != null ? matchRange.toString() : null;
     }
 }

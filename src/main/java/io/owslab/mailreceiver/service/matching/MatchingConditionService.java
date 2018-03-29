@@ -167,11 +167,11 @@ public class MatchingConditionService {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
                 if(intersectWords.size() == 0) continue;;
                 List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-                boolean matching = groupedMatchingConditions.size() == 0
-                        || isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
-                if(matching){
+                MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
+                        new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
+                if(matchingPartResult.isMatch()){
                     for(String word : intersectWords) {
-                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail());
+                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange());
                     }
                 }
             }
@@ -215,51 +215,63 @@ public class MatchingConditionService {
         return groupList;
     }
 
-    private boolean isMailMatching(MatchingWordResult sourceResult,
+    private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
                                                           MatchingWordResult destinationResult,
                                                           List<MatchingConditionGroup> groupList,
                                                           boolean distinguish){
+        MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
+        FullNumberRange firstMatchRange = null;
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
                 MatchingCondition condition = result.getMatchingCondition();
                 Email targetEmail = destinationResult.getEmail();
-//                System.out.println("isMailMatching: " + sourceResult.getEmail().getSubject() + "/"+ targetEmail.getSubject());
-                if(isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish)){
+                MatchingPartResult matchingPartResult = isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish);
+                if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
+                    firstMatchRange = matchingPartResult.getMatchRange();
+                }
+                if(matchingPartResult.isMatch()){
                     result.add(targetEmail);
                 }
             }
         }
 
         List<Email> matching = mergeResultGroups(groupList);
-        return matching.size() > 0;
+        finalMatchingPartResult.setMatch(matching.size() > 0);
+        finalMatchingPartResult.setMatchRange(firstMatchRange);
+        return finalMatchingPartResult;
     }
 
-    private boolean isMatch(Email source, Email target, MatchingCondition condition, boolean distinguish){
+    private MatchingPartResult isMatch(Email source, Email target, MatchingCondition condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
         boolean match = false;
         MailItemOption option = MailItemOption.fromValue(condition.getItem());
         switch (option){
             case SENDER:
                 match = isMatchingPart(source.getFrom(), target, condition, distinguish);
+                result.setMatch(match);
                 break;
             case RECEIVER:
                 match = isMatchingPart(source.getTo(), target, condition, distinguish);
+                result.setMatch(match);
                 break;
             case SUBJECT:
                 match = isMatchingPart(source.getSubject(), target, condition, distinguish);
+                result.setMatch(match);
                 break;
             case BODY:
                 match = isMatchingPart(source.getOptimizedBody(), target, condition, distinguish);
+                result.setMatch(match);
                 break;
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(source, target, condition, distinguish);
+                result = isMatchRange(source, target, condition, distinguish);
                 break;
             case NONE:
             default:
                 break;
         }
-        return match;
+        return result;
     }
 
     private boolean isMatch(Email email, MatchingCondition condition, boolean distinguish){
@@ -281,7 +293,8 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-                match = isMatchRange(email, condition, distinguish);
+                MatchingPartResult matchingPartResult = isMatchRange(email, condition, distinguish);
+                match = matchingPartResult.isMatch();
                 break;
             case HAS_ATTACHMENT:
                 match = email.isHasAttachment();
@@ -524,8 +537,8 @@ public class MatchingConditionService {
         return matchingWordResults;
     }
 
-    private boolean isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
-        boolean match = false;
+    private MatchingPartResult isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
         String conditionValue = condition.getValue();
         MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
         if(option == null){
@@ -546,17 +559,17 @@ public class MatchingConditionService {
                 case LT:
                     sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart, true);
                     targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId()+conditionValue, optimizedTargetPart);
-                    match = hasMatchRange(sourceRanges, targetRanges, condition);
+                    result = hasMatchRange(sourceRanges, targetRanges, condition);
                     break;
                 default:
                     break;
             }
         }
-        return match;
+        return result;
     }
 
-    private boolean isMatchRange(Email target, MatchingCondition condition, boolean distinguish){
-        boolean match = false;
+    private MatchingPartResult isMatchRange(Email target, MatchingCondition condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
         try {
             MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
@@ -584,20 +597,21 @@ public class MatchingConditionService {
                     String cacheId = optimizedValue + "OwsCacheIdRandom89172398";
                     List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(cacheId, optimizedValue);
                     if(forFindListRange.size() == 0){
-                        match = true;
-                        return match;
+                        result.setMatch(true);
+                        return result;
                     }
                     findRange = forFindListRange.get(0);
                     toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(range.match(findRange, ratio)){
-                                match = true;
+                                result.setMatch(true);
+                                result.setMatchRange(range);
                                 break;
                             }
                         }
                     } else {
-                        match = true;
+                        result.setMatch(true);
                     }
                     break;
                 case EQ:
@@ -614,12 +628,13 @@ public class MatchingConditionService {
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(range.match(findRange, ratio)){
-                                match = true;
+                                result.setMatch(true);
+                                result.setMatchRange(range);
                                 break;
                             }
                         }
                     } else { //Not found a range => auto natch
-                        match = true;
+                        result.setMatch(true);
                     }
                     break;
                 default:
@@ -628,7 +643,7 @@ public class MatchingConditionService {
         } catch (NumberFormatException e) {
             logger.error("NumberFormatException: " + e.getMessage());
         }
-        return match;
+        return result;
     }
 
 
@@ -646,9 +661,9 @@ public class MatchingConditionService {
         return normalizedMatchingWords;
     }
 
-    private boolean hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, MatchingCondition condition) {
-        if(targetRanges.size() == 0) return true;
-        boolean match = false;
+    private MatchingPartResult hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, MatchingCondition condition) {
+        if(targetRanges.size() == 0) return new MatchingPartResult(true);
+        MatchingPartResult result = new MatchingPartResult();
         MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
         ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
         MatchingItemOption matchingOption = MatchingItemOption.fromText(condition.getValue());
@@ -670,27 +685,32 @@ public class MatchingConditionService {
             NumberCompare replaceCompare = NumberCompare.fromConditionOption(conditionOption);
             for(FullNumberRange range : targetRanges){
                 if(findRange.match(range, ratio, replaceCompare)){
-                    match = true;
+                    result.setMatch(true);
+                    result.setMatchRange(range);
                     break;
                 }
             }
-            if(match) break;
+            if(result.isMatch()) break;
         }
-        return match;
+        return result;
     }
 
     private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination) {
+        this.addToList(map, word, source, destination, null);
+    }
+
+    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination, FullNumberRange matchRange) {
         String mapKey = word + "+" + source.getMessageId();
         MatchingResult matchingResult = map.get(mapKey);
         if(matchingResult == null) {
             matchingResult = new MatchingResult(word, source);
             if(destination != null) {
-                matchingResult.addDestination(destination);
+                matchingResult.addDestination(destination, matchRange);
             }
             map.put(mapKey, matchingResult);
         } else {
             if(destination != null) {
-                matchingResult.addDestination(destination);
+                matchingResult.addDestination(destination, matchRange);
             }
         }
     }

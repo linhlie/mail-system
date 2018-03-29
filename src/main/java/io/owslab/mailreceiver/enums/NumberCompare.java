@@ -4,18 +4,20 @@ package io.owslab.mailreceiver.enums;
  * Created by khanhlvb on 3/8/18.
  */
 public enum NumberCompare {
-    AUTOMATCH(1),
-    EQ(2),
-    NE(3),
-    GE(4),
-    GT(5),
-    LE(6),
-    LT(7);
+    AUTOMATCH(1, ""),
+    EQ(2, "等しい"),
+    NE(3, "異なる"),
+    GE(4, "以上"),
+    GT(5, "超"),
+    LE(6, "以下"),
+    LT(7, "未満");
 
     private final int value;
+    private final String text;
 
-    NumberCompare(int value) {
+    NumberCompare(int value, String text) {
         this.value = value;
+        this.text = text;
     }
 
     public static NumberCompare fromConditionOption(ConditionOption condition) {
@@ -51,5 +53,13 @@ public enum NumberCompare {
                 return EQ;
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getText() {
+        return text;
     }
 }

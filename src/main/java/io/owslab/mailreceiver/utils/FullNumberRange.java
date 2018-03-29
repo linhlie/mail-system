@@ -65,7 +65,15 @@ public class FullNumberRange {
     }
 
     public String toString(){
-        return this.getLeft().toString() + " ~ " + this.getRight().toString();
+        String result = "";
+        String leftPart = this.getLeft().toString();
+        String rightPart = this.getRight().toString();
+        result = result + leftPart;
+        if(result.length() > 0 && rightPart.length() > 0){
+            result = result + " & ";
+        }
+        result = result + rightPart;
+        return result;
     }
 
     public void multiple(Double multipleWidth){

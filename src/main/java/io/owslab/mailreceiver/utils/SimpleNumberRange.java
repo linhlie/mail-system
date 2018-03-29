@@ -233,7 +233,15 @@ public class SimpleNumberRange {
     }
 
     public String toString(){
-        return this.getNumberCompare().toString() + " " + this.getValue();
+        if(this.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
+            return "";
+        }
+
+        double value = this.getValue();
+        if((value % 1) == 0){
+            return ((int)value)+ "" + this.getNumberCompare().getText() ;
+        }
+        return this.getValue() + "" + this.getNumberCompare().getText() ;
     }
 
     public void multiple(Double multipleWidth){
