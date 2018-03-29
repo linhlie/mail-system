@@ -529,7 +529,7 @@ public class MatchingConditionService {
         String conditionValue = condition.getValue();
         MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
         if(option == null){
-            return isMatchRange(source, condition, distinguish);
+            return isMatchRange(target, condition, distinguish);
         } else {
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
             String optimizedSourcePart = getOptimizedText(source.getSubjectAndOptimizedBody(), false);
