@@ -70,7 +70,7 @@ public class FullNumberRange {
         String rightPart = this.getRight().toString();
         result = result + leftPart;
         if(result.length() > 0 && rightPart.length() > 0){
-            result = result + " & ";
+            result = result.substring(0, result.length() - 1);
         }
         result = result + rightPart;
         return result;

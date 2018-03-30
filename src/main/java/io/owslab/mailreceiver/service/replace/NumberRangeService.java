@@ -51,7 +51,6 @@ public class NumberRangeService {
         if(input == null || input.length() == 0) return result;
         String keyMap = cacheId + Boolean.toString(individual);
         if(fullRangeMap.get(keyMap) != null){
-//            System.out.println("Reuse range: " + keyMap);
             return fullRangeMap.get(keyMap);
         }
         LinkedHashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new LinkedHashMap<>();
@@ -72,38 +71,54 @@ public class NumberRangeService {
                     numberElement.getStartAt(), true);
             ReplaceUnit afNumberUnit = findMatchReplaceUnit(replaceUnits, optimizedInput, realNumberResult.getEndAt());
             int afEndAt = afNumberUnit != null ? realNumberResult.getEndAt() + afNumberUnit.getUnit().length() : realNumberResult.getEndAt();
+            String afNumberUnitText = afNumberUnit != null ? afNumberUnit.getUnit() : null;
             ReplaceLetterResult afNumberLetterResult = findMatchReplaceLetter(afReplaceLetters, optimizedInput,
                     afEndAt, false);
 
             SimpleNumberRange simpleNumberRange;
             String position;
-            String letter;
             if(bfNumberLetterResult != null || afNumberLetterResult != null){
                 if(bfNumberLetterResult != null){
                     ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
                     position = Integer.toString((bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length()));
-                    simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue(), bfNumberLetter.getReplace());
+                    simpleNumberRange = new SimpleNumberRange(
+                            realNumberResult.getValue(),
+                            bfNumberLetter.getReplace(),
+                            number,
+                            realNumberResult.getReplaceText(),
+                            afNumberUnitText,
+                            bfNumberLetter.getLetter(),
+                            true);
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
-                    letter = bfNumberLetter.getLetter();
                     addToList(rangeMap, position, simpleNumberRange);
-//                    System.out.println(position + " " + letter + " " + realNumberResult.getValue());
                 }
                 if(afNumberLetterResult != null){
                     ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
                     position = Integer.toString(afNumberLetterResult.getStartAt());
-                    simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue(), afNumberLetter.getReplace());
+                    simpleNumberRange = new SimpleNumberRange(
+                            realNumberResult.getValue(),
+                            afNumberLetter.getReplace(),
+                            number,
+                            realNumberResult.getReplaceText(),
+                            afNumberUnitText,
+                            afNumberLetter.getLetter(),
+                            false
+                    );
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
-                    letter = afNumberLetter.getLetter();
                     addToList(rangeMap, position, simpleNumberRange);
-//                    System.out.println(position + " " + letter + " " + realNumberResult.getValue());
                 }
             } else {
                 position = Integer.toString(realNumberResult.getStartAt());
-                simpleNumberRange = new SimpleNumberRange(realNumberResult.getValue());
+                simpleNumberRange = new SimpleNumberRange(
+                        realNumberResult.getValue(),
+                        number,
+                        realNumberResult.getReplaceText(),
+                        afNumberUnitText,
+                        null,
+                        false
+                );
                 simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
-                letter = "=";
                 addToList(rangeMap, position, simpleNumberRange);
-//                System.out.println(position + " " + letter + " " + realNumberResult.getValue());
             }
         }
 
@@ -231,7 +246,7 @@ public class NumberRangeService {
             double realNumber = numberElement.getValue() * replaceNumber.getReplaceValue();
             int realEndAt = numberElement.getEndAt() + replaceNumber.getCharacter().length();
             int realStartAt = numberElement.getStartAt();
-            result = new NumberResult(realNumber, realStartAt, realEndAt, replaceNumber.getReplaceValue());
+            result = new NumberResult(realNumber, realStartAt, realEndAt, replaceNumber.getReplaceValue(), replaceNumber.getCharacter());
         }
         return result;
     }
@@ -337,12 +352,18 @@ public class NumberRangeService {
         private final int startAt;
         private final int endAt;
         private final int replaceValue;
+        private final String replaceText;
 
-        public NumberResult(Double value, int startAt, int endAt, int replaceValue) {
+        public NumberResult(Double value, int startAt, int endAt, int replaceValue, String replaceText) {
             this.value = value;
             this.startAt = startAt;
             this.endAt = endAt;
             this.replaceValue = replaceValue;
+            this.replaceText = replaceText;
+        }
+
+        public NumberResult(Double value, int startAt, int endAt, int replaceValue) {
+            this(value, startAt, endAt, replaceValue, null);
         }
 
         public NumberResult(NumberElement numberElement) {
@@ -350,6 +371,7 @@ public class NumberRangeService {
             this.startAt = numberElement.getStartAt();
             this.endAt = numberElement.getEndAt();
             this.replaceValue = 1;
+            this.replaceText = null;
         }
 
         public Double getValue() {
@@ -366,6 +388,10 @@ public class NumberRangeService {
 
         public int getReplaceValue() {
             return replaceValue;
+        }
+
+        public String getReplaceText() {
+            return replaceText;
         }
     }
 

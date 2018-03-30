@@ -2,6 +2,8 @@ package io.owslab.mailreceiver.utils;
 
 import io.owslab.mailreceiver.enums.NumberCompare;
 
+import java.util.Objects;
+
 /**
  * Created by khanhlvb on 3/8/18.
  */
@@ -9,6 +11,30 @@ public class SimpleNumberRange {
     private NumberCompare numberCompare;
     private double value;
     private int replaceValue;
+    private double rawValue;
+    private String replaceNumberText;
+    private String replaceUnitText;
+    private String replaceLetterText;
+    private boolean bfNumber;
+
+    public SimpleNumberRange(double value, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
+        this(value, 4, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber);
+    }
+
+    public SimpleNumberRange(double value, int replace, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
+        this(value, replace, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber);
+    }
+
+    public SimpleNumberRange(double value, int replace, int replaceValue, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
+        this.value = value;
+        this.numberCompare = NumberCompare.fromReplace(replace);
+        this.replaceValue = replaceValue;
+        this.rawValue = rawValue;
+        this.replaceNumberText = replaceNumberText;
+        this.replaceUnitText = replaceUnitText;
+        this.replaceLetterText = replaceLetterText;
+        this.bfNumber = bfNumber;
+    }
 
     public SimpleNumberRange(NumberCompare numberCompare, double value) {
         this.numberCompare = numberCompare;
@@ -67,6 +93,46 @@ public class SimpleNumberRange {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    public double getRawValue() {
+        return rawValue;
+    }
+
+    public void setRawValue(double rawValue) {
+        this.rawValue = rawValue;
+    }
+
+    public String getReplaceNumberText() {
+        return replaceNumberText;
+    }
+
+    public void setReplaceNumberText(String replaceNumberText) {
+        this.replaceNumberText = replaceNumberText;
+    }
+
+    public String getReplaceUnitText() {
+        return replaceUnitText;
+    }
+
+    public void setReplaceUnitText(String replaceUnitText) {
+        this.replaceUnitText = replaceUnitText;
+    }
+
+    public String getReplaceLetterText() {
+        return replaceLetterText;
+    }
+
+    public void setReplaceLetterText(String replaceLetterText) {
+        this.replaceLetterText = replaceLetterText;
+    }
+
+    public boolean isBfNumber() {
+        return bfNumber;
+    }
+
+    public void setBfNumber(boolean bfNumber) {
+        this.bfNumber = bfNumber;
     }
 
     public boolean match(SimpleNumberRange other, double ratio) {
@@ -237,11 +303,16 @@ public class SimpleNumberRange {
             return "";
         }
 
-        double value = this.getValue();
+        String result;
+
+        double value = this.getRawValue();
         if((value % 1) == 0){
-            return ((int)value)+ "" + this.getNumberCompare().getText() ;
+            result = ((int)value) + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
+        } else {
+            result = this.getValue() + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
         }
-        return this.getValue() + "" + this.getNumberCompare().getText() ;
+        result = this.isBfNumber() ? Objects.toString(this.getReplaceLetterText(), "") + result : result + Objects.toString(this.getReplaceLetterText(), "");
+        return result;
     }
 
     public void multiple(Double multipleWidth){
