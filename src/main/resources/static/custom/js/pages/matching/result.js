@@ -237,6 +237,7 @@
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
         mailBodyDiv.innerHTML = "";
+        updateMailEditorContent("");
         mailAttachmentDiv.innerHTML = "";
         if(data){
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
@@ -245,6 +246,7 @@
             '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             mailBodyDiv.innerHTML = data.originalBody;
+            updateMailEditorContent(data.originalBody);
             var files = data.files ? data.files : [];
             if(files.length > 0){
                 var filesInnerHTML = "";
@@ -263,6 +265,18 @@
         } else {
             disableButton(openFileFolderButtonId, true);
         }
+    }
+
+    function updateMailEditorContent(content){
+        var editor = tinymce.get('mailBody');
+        editor.setContent(content);
+        editor.undoManager.clear();
+        editor.undoManager.add();
+    }
+    
+    function getMailEditorContent() {
+        var editor = tinymce.get('mailBody');
+        console.log("Mail editor content: ", editor.getContent());
     }
 
     function disableButton(buttonId, disabled) {
