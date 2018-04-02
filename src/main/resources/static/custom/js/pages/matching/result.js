@@ -6,6 +6,10 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var rdMailSubjectId = 'rdMailSubject';
+    var rdMailBodyId = 'rdMailBody';
+    var rdMailAttachmentId = 'rdMailAttachment';
+    var rdMailReceiverId = 'rdMailReceiver';
     var openFileFolderButtonId = '#openFileFolderBtn';
     var matchingResult = null;
     var currentDestinationResult = [];
@@ -121,8 +125,7 @@
                 var index = row.getAttribute("data");
                 var rowData = currentDestinationResult[index];
                 if(rowData && rowData.messageId){
-                    console.log("sendToMoto: ", rowData.messageId, rowData.matchRange); //Down use can duoi
-                    //TODO: popup
+                    showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, false)
                 }
             });
             setRowClickListener("sendToSaki", function () {
@@ -131,8 +134,7 @@
                 var rowData = currentDestinationResult[index];
                 if(rowData){
                     if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                        console.log("sendToSaki: ", selectedRowData.source.messageId, rowData.range); //Up use can tren
-                        //TODO: popup
+                        showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, true)
                     }
                 }
             });
@@ -203,7 +205,9 @@
         var index = row.getAttribute("data");
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
-            showMail(rowData.source.messageId);
+            showMail(rowData.source.messageId, function (result) {
+                showMailContent(result)
+            });
         }
     }
 
@@ -213,7 +217,9 @@
         var index = row.getAttribute("data");
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
-            showMail(rowData.messageId);
+            showMail(rowData.messageId, function (result) {
+                showMailContent(result);
+            });
         }
     }
     
@@ -235,7 +241,7 @@
         }
     }
     
-    function showMail(messageId) {
+    function showMail(messageId, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
         $.ajax({
             type: "GET",
@@ -244,14 +250,21 @@
             cache: false,
             timeout: 600000,
             success: function (data) {
+                var result;
                 if(data.status){
                     if(data.list && data.list.length > 0){
-                        showMailContent(data.list[0])
+                        result = data.list[0];
                     }
+                }
+                if(typeof callback === "function"){
+                    callback(result);
                 }
             },
             error: function (e) {
                 console.error("getMail ERROR : ", e);
+                if(typeof callback === "function"){
+                    callback();
+                }
             }
         });
     }
@@ -263,7 +276,7 @@
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
         mailBodyDiv.innerHTML = "";
-        updateMailEditorContent("");
+        // updateMailEditorContent("");
         mailAttachmentDiv.innerHTML = "";
         if(data){
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
@@ -272,7 +285,7 @@
             '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             mailBodyDiv.innerHTML = data.originalBody;
-            updateMailEditorContent(data.originalBody);
+            // updateMailEditorContent(data.originalBody);
             var files = data.files ? data.files : [];
             if(files.length > 0){
                 var filesInnerHTML = "";
@@ -293,22 +306,52 @@
         }
     }
 
+    function showMailContenttToEditor(data, receiver) {
+        document.getElementById(rdMailReceiverId).value = receiver;
+        updateMailEditorContent("");
+        if(data){
+            document.getElementById(rdMailSubjectId).value = data.subject;
+            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            updateMailEditorContent(data.originalBody);
+            var files = data.files ? data.files : [];
+            if(files.length > 0){
+                var filesInnerHTML = "";
+                for(var i = 0; i < files.length; i++ ){
+                    var file = files[i];
+                    if(i > 0){
+                        filesInnerHTML += "<br/>";
+                    }
+                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
+                }
+                // mailAttachmentDiv.innerHTML = filesInnerHTML;
+            }
+        }
+    }
+
     function updateMailEditorContent(content){
-        // var editor = tinymce.get('mailBody');
-        // editor.setContent(content);
-        // editor.undoManager.clear();
-        // editor.undoManager.add();
+        var editor = tinymce.get('rdMailBody');
+        editor.setContent(content);
+        editor.undoManager.clear();
+        editor.undoManager.add();
     }
     
     function getMailEditorContent() {
-        // var editor = tinymce.get('mailBody');
-        // console.log("Mail editor content: ", editor.getContent());
+        var editor = tinymce.get('rdMailBody');
+        console.log("Mail editor content: ", editor.getContent());
     }
 
     function disableButton(buttonId, disabled) {
         if(buttonId && buttonId.length > 0){
             $(buttonId).prop("disabled", disabled);
         }
+    }
+    
+    function showMailEditor(messageId, receiver, textRange, isUseUpperLimit) {
+        console.log("showMailEditor: ", receiver, textRange, isUseUpperLimit);
+        $('#sendMailModal').modal();
+        showMail(messageId, function (result) {
+            showMailContenttToEditor(result, receiver)
+        });
     }
 
 })(jQuery);

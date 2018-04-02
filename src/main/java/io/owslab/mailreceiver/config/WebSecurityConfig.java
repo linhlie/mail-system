@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedPage("/403");
+        http.headers().frameOptions().sameOrigin();
     }
 
     @Autowired
