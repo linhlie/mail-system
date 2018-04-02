@@ -81,6 +81,21 @@
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script src="/bootstrap/js/bootstrap-treeview.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src='/plugins/tinymce/tinymce.min.js?apiKey=bu1fa56lzusg46w01kclsayj9hvotfdpr98naf55i5t498bm'></script>
+<script>
+    tinymce.init({
+        selector: '#mailBody',
+        theme: 'modern',
+        height: 400,
+        plugins: [
+            'advlist autolink link image lists charmap preview hr anchor pagebreak',
+            'searchreplace wordcount visualblocks visualchars code insertdatetime nonbreaking',
+            'save table contextmenu directionality template paste textcolor'
+        ],
+        menubar: 'edit view insert format table',
+        toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+    });
+</script>
 <script src="/plugins/morris/morris.min.js"></script>
 <script src="/plugins/sparkline/jquery.sparkline.min.js"></script>
 <script src="/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>

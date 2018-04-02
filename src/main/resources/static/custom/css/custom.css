@@ -443,4 +443,8 @@ table#sourceMatch, table#destinationMatch {
     background-color: #ffffcc;
 }
 
+.mce-tinymce.mce-container.mce-panel {
+    margin-top: 10px !important;
+}
+
 
