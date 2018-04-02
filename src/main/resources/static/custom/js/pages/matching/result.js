@@ -268,15 +268,15 @@
     }
 
     function updateMailEditorContent(content){
-        var editor = tinymce.get('mailBody');
-        editor.setContent(content);
-        editor.undoManager.clear();
-        editor.undoManager.add();
+        // var editor = tinymce.get('mailBody');
+        // editor.setContent(content);
+        // editor.undoManager.clear();
+        // editor.undoManager.add();
     }
     
     function getMailEditorContent() {
-        var editor = tinymce.get('mailBody');
-        console.log("Mail editor content: ", editor.getContent());
+        // var editor = tinymce.get('mailBody');
+        // console.log("Mail editor content: ", editor.getContent());
     }
 
     function disableButton(buttonId, disabled) {

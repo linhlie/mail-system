@@ -37,6 +37,8 @@ public class EmailDTO {
 
     private String matchRange;
 
+    private String range;
+
     public EmailDTO(Email email) {
         this.setMessageId(email.getMessageId());
         this.setAccountId(email.getAccountId());
@@ -52,9 +54,10 @@ public class EmailDTO {
         this.setContentType(email.getContentType());
     }
 
-    public EmailDTO(Email email, FullNumberRange matchRange) {
+    public EmailDTO(Email email, FullNumberRange matchRange, FullNumberRange range) {
         this(email);
         this.setMatchRange(matchRange);
+        this.setRange(range);
     }
 
     public String getMessageId() {
@@ -163,5 +166,17 @@ public class EmailDTO {
 
     public void setMatchRange(FullNumberRange matchRange){
         this.matchRange = matchRange != null ? matchRange.toString() : null;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public void setRange(FullNumberRange range){
+        this.range = range != null ? range.toString() : null;
     }
 }

@@ -171,7 +171,7 @@ public class MatchingConditionService {
                         new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
                 if(matchingPartResult.isMatch()){
                     for(String word : intersectWords) {
-                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange());
+                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange(), matchingPartResult.getRange());
                     }
                 }
             }
@@ -221,6 +221,7 @@ public class MatchingConditionService {
                                                           boolean distinguish){
         MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
         FullNumberRange firstMatchRange = null;
+        FullNumberRange firstRange = null;
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
                 MatchingCondition condition = result.getMatchingCondition();
@@ -228,6 +229,7 @@ public class MatchingConditionService {
                 MatchingPartResult matchingPartResult = isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish);
                 if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
                     firstMatchRange = matchingPartResult.getMatchRange();
+                    firstRange = matchingPartResult.getRange();
                 }
                 if(matchingPartResult.isMatch()){
                     result.add(targetEmail);
@@ -238,6 +240,7 @@ public class MatchingConditionService {
         List<Email> matching = mergeResultGroups(groupList);
         finalMatchingPartResult.setMatch(matching.size() > 0);
         finalMatchingPartResult.setMatchRange(firstMatchRange);
+        finalMatchingPartResult.setRange(firstRange);
         return finalMatchingPartResult;
     }
 
@@ -557,7 +560,7 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
-                    sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart, true);
+                    sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart);
                     targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId()+conditionValue, optimizedTargetPart);
                     result = hasMatchRange(sourceRanges, targetRanges, condition);
                     break;
@@ -607,6 +610,7 @@ public class MatchingConditionService {
                             if(range.match(findRange, ratio)){
                                 result.setMatch(true);
                                 result.setMatchRange(range);
+                                result.setRange(findRange);
                                 break;
                             }
                         }
@@ -630,6 +634,7 @@ public class MatchingConditionService {
                             if(range.match(findRange, ratio)){
                                 result.setMatch(true);
                                 result.setMatchRange(range);
+                                result.setRange(findRange);
                                 break;
                             }
                         }
@@ -687,6 +692,7 @@ public class MatchingConditionService {
                 if(findRange.match(range, ratio, replaceCompare)){
                     result.setMatch(true);
                     result.setMatchRange(range);
+                    result.setRange(findRange);
                     break;
                 }
             }
@@ -696,21 +702,21 @@ public class MatchingConditionService {
     }
 
     private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination) {
-        this.addToList(map, word, source, destination, null);
+        this.addToList(map, word, source, destination, null, null);
     }
 
-    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination, FullNumberRange matchRange) {
+    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination, FullNumberRange matchRange, FullNumberRange range) {
         String mapKey = word + "+" + source.getMessageId();
         MatchingResult matchingResult = map.get(mapKey);
         if(matchingResult == null) {
             matchingResult = new MatchingResult(word, source);
             if(destination != null) {
-                matchingResult.addDestination(destination, matchRange);
+                matchingResult.addDestination(destination, matchRange, range);
             }
             map.put(mapKey, matchingResult);
         } else {
             if(destination != null) {
-                matchingResult.addDestination(destination, matchRange);
+                matchingResult.addDestination(destination, matchRange, range);
             }
         }
     }

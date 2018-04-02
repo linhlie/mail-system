@@ -51,11 +51,11 @@ public class MatchingResult {
     }
 
     public boolean addDestination(Email destination){
-        return this.addDestination(destination, null);
+        return this.addDestination(destination, null, null);
     }
 
-    public boolean addDestination(Email destination, FullNumberRange matchRange){
-        return this.destinationList.add(new EmailDTO(destination, matchRange));
+    public boolean addDestination(Email destination, FullNumberRange matchRange, FullNumberRange range){
+        return this.destinationList.add(new EmailDTO(destination, matchRange, range));
     }
 
     public void addDestinations(List<EmailDTO> destinationList){

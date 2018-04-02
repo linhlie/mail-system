@@ -6,22 +6,28 @@ package io.owslab.mailreceiver.utils;
 public class MatchingPartResult {
     private boolean match;
     private FullNumberRange matchRange;
+    private FullNumberRange range;
 
     public MatchingPartResult() {
         this(false);
     }
 
     public MatchingPartResult(boolean match) {
-        this(match, null);
+        this(match, null, null);
     }
 
-    public MatchingPartResult(FullNumberRange matchRange) {
-        this(true, matchRange);
+    public MatchingPartResult(FullNumberRange matchRange, FullNumberRange range) {
+        this(true, matchRange, range);
     }
 
     public MatchingPartResult(boolean match, FullNumberRange matchRange) {
+        this(match, matchRange, null);
+    }
+
+    public MatchingPartResult(boolean match, FullNumberRange matchRange, FullNumberRange range) {
         this.match = match;
         this.matchRange = matchRange;
+        this.range = range;
     }
 
     public boolean isMatch() {
@@ -38,5 +44,13 @@ public class MatchingPartResult {
 
     public void setMatchRange(FullNumberRange matchRange) {
         this.matchRange = matchRange;
+    }
+
+    public FullNumberRange getRange() {
+        return range;
+    }
+
+    public void setRange(FullNumberRange range) {
+        this.range = range;
     }
 }
