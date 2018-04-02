@@ -304,7 +304,7 @@
                                                         </select>
                                                     </td>
                                                     <td th:data="value">
-                                                        <input type="text" name="city" list="itemlist" placeholder=""/>
+                                                        <input type="text" name="matchingValue" list="itemlist" placeholder=""/>
                                                         <datalist id="itemlist">
                                                             <option th:each="option : ${matchingItemOptions}"
                                                                     th:data-value="${option.value}"

@@ -105,6 +105,20 @@
             $(this)[0].parentNode.parentNode.className+=' hidden';
         })
     }
+    
+    function setInputAutoComplete(name) {
+        $("input[name='"+name+"']").off('click');
+        $("input[name='"+name+"']").off('mouseleave');
+        $("input[name='"+name+"']").on('click', function() {
+            $(this).attr('placeholder',$(this).val());
+            $(this).val('');
+        });
+        $("input[name='"+name+"']").on('mouseleave', function() {
+            if ($(this).val() == '') {
+                $(this).val($(this).attr('placeholder'));
+            }
+        });
+    }
 
     function setAddReplaceLetterRowListener(name, tableId, data) {
         $("span[name='"+name+"']").click(function () {
@@ -168,6 +182,7 @@
         clone.className = undefined;
         body.appendChild(clone);
         setRemoveRowListener("removeConditionRow");
+        setInputAutoComplete("matchingValue");
     }
     
     function addRowWithData(tableId, data) {
