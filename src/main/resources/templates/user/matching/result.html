@@ -46,7 +46,7 @@
                             </table>
                         </div>
                         <div class="table-name-container">
-                            <h4>絞り込み元</h4>
+                            <h4>絞り込み先</h4>
                         </div>
                         <div class="table-container">
                             <table id="destinationMatch" class="table table-bordered table-hover dataTable">
@@ -58,6 +58,8 @@
                                     <th>送信者</th>
                                     <th>受信者</th>
                                     <th>件名</th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -68,6 +70,12 @@
                                     <td class="clickable" name="showDestinationMail" th:data="from"><span></span></td>
                                     <td class="clickable" name="showDestinationMail" th:data="to"><span></span></td>
                                     <td class="clickable" name="showDestinationMail" th:data="subject"><span></span></td>
+                                    <td class="clickable text-center">
+                                        <span>元に</span>
+                                    </td>
+                                    <td class="clickable text-center">
+                                        <span>先に</span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

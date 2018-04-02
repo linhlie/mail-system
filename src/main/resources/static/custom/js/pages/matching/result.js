@@ -101,20 +101,22 @@
     }
     
     function showDestinationData(tableId, data) {
-        var word = data.word;
-        var source = data.source;
-        currentDestinationResult = data.destinationList;
-        destroySortDestination();
-        removeAllRow(tableId);
-        if(currentDestinationResult.length > 0){
-            for(var i = 0; i < currentDestinationResult.length; i ++){
-                currentDestinationResult[i].word = word;
-                addRowWithData(tableId, currentDestinationResult[i], i, function () {
-                    setRowClickListener("showDestinationMail", showDestinationMail);
-                });
+        setTimeout(function () {
+            var word = data.word;
+            var source = data.source;
+            currentDestinationResult = data.destinationList;
+            destroySortDestination();
+            removeAllRow(tableId);
+            if(currentDestinationResult.length > 0){
+                for(var i = 0; i < currentDestinationResult.length; i ++){
+                    currentDestinationResult[i].word = word;
+                    addRowWithData(tableId, currentDestinationResult[i], i, function () {
+                        setRowClickListener("showDestinationMail", showDestinationMail);
+                    });
+                }
             }
-        }
-        initSortDestination();
+            initSortDestination();
+        }.bind(this), 0);
     }
 
     function destroySortDestination() {
@@ -128,7 +130,10 @@
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,
-            "order": []
+            "order": [],
+            columnDefs: [
+                { orderable: false, targets: [-1, -2] }
+            ]
         });
     }
 
