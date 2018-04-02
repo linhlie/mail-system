@@ -12,6 +12,7 @@
     var onlyDisplayNonZeroRow = true;
     var sourceMatchDataTable;
     var destinationMatchDataTable;
+    var selectedRowData;
 
     $(function () {
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
@@ -115,6 +116,26 @@
                     });
                 }
             }
+            setRowClickListener("sendToMoto", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = currentDestinationResult[index];
+                if(rowData && rowData.messageId){
+                    console.log("sendToMoto: ", rowData.messageId, rowData.matchRange); //Down use can duoi
+                    //TODO: popup
+                }
+            });
+            setRowClickListener("sendToSaki", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = currentDestinationResult[index];
+                if(rowData){
+                    if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
+                        console.log("sendToSaki: ", selectedRowData.source.messageId, rowData.range); //Up use can tren
+                        //TODO: popup
+                    }
+                }
+            });
             initSortDestination();
         }.bind(this), 0);
     }
@@ -184,7 +205,6 @@
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId);
         }
-        //TODO: show mail
     }
 
     function showDestinationMail() {
@@ -203,6 +223,7 @@
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
         var rowData = matchingResult[index];
+        selectedRowData = rowData;
         showDestinationData(destinationTableId, rowData);
     }
 
