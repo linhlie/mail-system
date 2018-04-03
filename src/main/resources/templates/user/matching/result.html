@@ -101,11 +101,23 @@
                     <h4 class="modal-title">推薦状</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                    <div class="form-group row">
+                        <label for="rdMailSender" class="col-sm-1">送信者:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                    <div class="form-group row">
+                        <label for="rdMailReceiver" class="col-sm-1">受信者:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="rdMailSubject" class="col-sm-1">件名:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                        </div>
                     </div>
                     <textarea id="rdMailBody"></textarea>
                     <div id="rdMailAttachment" class="rd-mail-part rd-mail-attachment"></div>

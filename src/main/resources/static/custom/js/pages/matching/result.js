@@ -9,6 +9,7 @@
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
     var rdMailAttachmentId = 'rdMailAttachment';
+    var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var openFileFolderButtonId = '#openFileFolderBtn';
     var matchingResult = null;
@@ -349,6 +350,7 @@
         rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
         if(data){
+            document.getElementById(rdMailSenderId).value = data.to;
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
@@ -382,7 +384,7 @@
     
     function getMailEditorContent() {
         var editor = tinymce.get(rdMailBodyId);
-        console.log("Mail editor content: ", editor.getContent());
+        return editor.getContent();
     }
 
     function disableButton(buttonId, disabled) {
@@ -392,11 +394,21 @@
     }
     
     function showMailEditor(messageId, receiver, textRange, isUseUpperLimit) {
-        console.log("showMailEditor: ", receiver, textRange, isUseUpperLimit);
         $('#sendMailModal').modal();
         showMailWithReplacedRange(messageId, textRange, isUseUpperLimit, function (result) {
             showMailContenttToEditor(result, receiver)
         });
+        $('#sendSuggestMail').off('click');
+        $("#sendSuggestMail").click(function () {
+            var form = {
+                messageId: messageId,
+                subject: $( "#" + rdMailSubjectId).val(),
+                receiver: $( "#" + rdMailReceiverId).val(),
+                content: getMailEditorContent()
+            }
+            console.log("sendSuggestMail:", form);
+            $('#sendMailModal').modal('hide');
+        })
     }
 
 })(jQuery);
