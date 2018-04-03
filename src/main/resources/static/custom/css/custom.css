@@ -360,7 +360,7 @@ input.form-error {
     display:table-cell; vertical-align:middle;
 }
 
-.matching-result .mail-part {
+.matching-result .mail-part, .rd-mail-part {
     width: 100%;
     border: #a5a5a5 solid 1px;
     overflow: scroll;
@@ -377,6 +377,11 @@ input.form-error {
 
 .matching-result .mail-part.mail-attachment {
     margin-top: 10px;
+    height: 30px;
+}
+
+.rd-mail-part.rd-mail-attachment {
+    margin-top: 15px;
     height: 30px;
 }
 

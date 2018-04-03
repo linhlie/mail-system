@@ -345,6 +345,8 @@
 
     function showMailContenttToEditor(data, receiver) {
         document.getElementById(rdMailReceiverId).value = receiver;
+        var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
+        rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSubjectId).value = data.subject;
@@ -364,13 +366,13 @@
                     }
                     filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
                 }
-                // mailAttachmentDiv.innerHTML = filesInnerHTML;
+                rdMailAttachmentDiv.innerHTML = filesInnerHTML;
             }
         }
     }
 
     function updateMailEditorContent(content, preventClear){
-        var editor = tinymce.get('rdMailBody');
+        var editor = tinymce.get(rdMailBodyId);
         editor.setContent(content);
         if(!preventClear){
             editor.undoManager.clear();
@@ -379,7 +381,7 @@
     }
     
     function getMailEditorContent() {
-        var editor = tinymce.get('rdMailBody');
+        var editor = tinymce.get(rdMailBodyId);
         console.log("Mail editor content: ", editor.getContent());
     }
 
