@@ -19,6 +19,7 @@
     var selectedRowData;
 
     $(function () {
+        fixingForTinyMCEOnModal()
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
         var matchingConditionStr;
@@ -59,6 +60,14 @@
             updateData();
         }
     });
+
+    function fixingForTinyMCEOnModal() {
+        $(document).on('focusin', function(e) {
+            if ($(e.target).closest(".mce-window").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+    }
     
     function setupDisplatNonZeroListener() {
         $('#displayNonZeroCheckbox').change(function() {
