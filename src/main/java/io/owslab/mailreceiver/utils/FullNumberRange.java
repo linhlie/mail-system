@@ -65,9 +65,13 @@ public class FullNumberRange {
     }
 
     public String toString(){
+        return toString(1);
+    }
+
+    public String toString(double multiple){
         String result = "";
-        String leftPart = this.getLeft().toString();
-        String rightPart = this.getRight().toString();
+        String leftPart = this.getLeft().toString(multiple);
+        String rightPart = this.getRight().toString(multiple);
         result = result + leftPart;
         if(result.length() > 0 && rightPart.length() > 0){
             result = result.substring(0, result.length() - 1);

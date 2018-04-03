@@ -5,6 +5,10 @@ import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.NumberTreatment;
+import io.owslab.mailreceiver.service.replace.NumberRangeService;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.utils.FullNumberRange;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,11 +26,19 @@ import java.util.regex.Pattern;
  */
 @Service
 public class MailBoxService {
+    public static final String HIGHLIGHT_RANGE_COLOR = "#ff9900";
     @Autowired
     private EmailDAO emailDAO;
 
     @Autowired
     private FileDAO fileDAO;
+
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
+
+
+    @Autowired
+    private NumberRangeService numberRangeService;
 
     public long count(){
         return emailDAO.countByDeleted(false);
@@ -86,5 +98,42 @@ public class MailBoxService {
             results.add(result);
         }
         return results;
+    }
+
+    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String rangeStr, boolean isUseUpperLimit){
+        List<DetailMailDTO> results = new ArrayList<>();
+        List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
+        List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(rangeStr, rangeStr, false, false);
+        FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
+        NumberTreatment numberTreatment = numberTreatmentService.getFirst();
+        double ratio = 1;
+        if(numberTreatment != null){
+            ratio = isUseUpperLimit ? numberTreatment.getUpperLimitRate() : numberTreatment.getLowerLimitRate();
+        }
+        String firstRangeStr = null;
+        if(firstRange != null){
+            firstRangeStr = firstRange.toString(ratio);
+        }
+        for(Email email : emailList) {
+            DetailMailDTO result = new DetailMailDTO(email);
+            if(rangeStr != null && firstRangeStr != null){
+                String rawBody = result.getOriginalBody();
+                String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
+                result.setReplacedBody(replacedBody);
+            }
+            List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+            for(AttachmentFile file : files){
+                result.addFile(file);
+            }
+            results.add(result);
+        }
+        return results;
+    }
+
+    private String replaceAllContent(String source, String regex, String replacement){
+        String styleReplacement = "<span style=\"color: " + HIGHLIGHT_RANGE_COLOR + ";\">" + replacement + "</span>";
+
+        String replaced = source.replaceAll(regex, styleReplacement);
+        return replaced;
     }
 }

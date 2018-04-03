@@ -99,6 +99,10 @@ public class SimpleNumberRange {
         return rawValue;
     }
 
+    public double getRawValue(double ratio) {
+        return rawValue*ratio;
+    }
+
     public void setRawValue(double rawValue) {
         this.rawValue = rawValue;
     }
@@ -299,17 +303,22 @@ public class SimpleNumberRange {
     }
 
     public String toString(){
+        return toString(1);
+    }
+
+    public String toString(double multiple){
         if(this.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
             return "";
         }
 
         String result;
 
-        double value = this.getRawValue();
+        double value = this.getRawValue(multiple);
         if((value % 1) == 0){
             result = ((int)value) + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
         } else {
-            result = this.getValue() + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
+            value = NumberFormat.round(value, 2);
+            result = value + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
         }
         result = this.isBfNumber() ? Objects.toString(this.getReplaceLetterText(), "") + result : result + Objects.toString(this.getReplaceLetterText(), "");
         return result;

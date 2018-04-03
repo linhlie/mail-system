@@ -195,6 +195,19 @@ public class MatchingSettingsController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value="/matchingResult/editEmail", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
+                                          @RequestParam(value = "range", required = false) String range,
+                                          @RequestParam(value = "isUpper", required = false) boolean isUpper){
+        AjaxResponseBody result = new AjaxResponseBody();
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, range, isUpper);
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(mailDetail);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/download")
     public void downloadFile3(HttpServletResponse response,
                               @RequestParam(value = "fileName") String fileName, @RequestParam(value = "path") String path) throws IOException {

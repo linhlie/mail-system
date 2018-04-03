@@ -45,12 +45,15 @@ public class NumberRangeService {
     public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input){
         return buildNumberRangeForInput(cacheId, input, false);
     }
-
     public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input, boolean individual){
+        return buildNumberRangeForInput(cacheId, input, individual, true);
+    }
+
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input, boolean individual, boolean useCache){
         List<FullNumberRange> result = new ArrayList<>();
         if(input == null || input.length() == 0) return result;
         String keyMap = cacheId + Boolean.toString(individual);
-        if(fullRangeMap.get(keyMap) != null){
+        if(useCache && fullRangeMap.get(keyMap) != null){
             return fullRangeMap.get(keyMap);
         }
         LinkedHashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new LinkedHashMap<>();
@@ -161,7 +164,9 @@ public class NumberRangeService {
 //        for(FullNumberRange fullNumberRange : result) {
 //            System.out.println("fullNumberRange: " + fullNumberRange.toString());
 //        }
-        fullRangeMap.put(keyMap, result);
+        if(useCache){
+            fullRangeMap.put(keyMap, result);
+        }
         return result;
     }
 

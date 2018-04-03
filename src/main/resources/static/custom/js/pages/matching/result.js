@@ -278,6 +278,34 @@
         });
     }
 
+    function showMailWithReplacedRange(messageId, range, isUpper, callback) {
+        messageId = messageId.replace(/\+/g, '%2B');
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&range=" + range + "&isUpper=" + isUpper,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                var result;
+                if(data.status){
+                    if(data.list && data.list.length > 0){
+                        result = data.list[0];
+                    }
+                }
+                if(typeof callback === "function"){
+                    callback(result);
+                }
+            },
+            error: function (e) {
+                console.error("getMail ERROR : ", e);
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
     function showMailContent(data) {
         // console.log("showMailContent: ", data);
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
@@ -321,7 +349,11 @@
         if(data){
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
             updateMailEditorContent(data.originalBody);
+            if( data.replacedBody != null){
+                updateMailEditorContent(data.replacedBody, true);
+            }
             var files = data.files ? data.files : [];
             if(files.length > 0){
                 var filesInnerHTML = "";
@@ -337,10 +369,12 @@
         }
     }
 
-    function updateMailEditorContent(content){
+    function updateMailEditorContent(content, preventClear){
         var editor = tinymce.get('rdMailBody');
         editor.setContent(content);
-        editor.undoManager.clear();
+        if(!preventClear){
+            editor.undoManager.clear();
+        }
         editor.undoManager.add();
     }
     
@@ -358,7 +392,7 @@
     function showMailEditor(messageId, receiver, textRange, isUseUpperLimit) {
         console.log("showMailEditor: ", receiver, textRange, isUseUpperLimit);
         $('#sendMailModal').modal();
-        showMail(messageId, function (result) {
+        showMailWithReplacedRange(messageId, textRange, isUseUpperLimit, function (result) {
             showMailContenttToEditor(result, receiver)
         });
     }

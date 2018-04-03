@@ -37,6 +37,7 @@ public class DetailMailDTO {
     private int contentType;
 
     private String originalBody;
+    private String replacedBody;
 
     private List<FileDTO> files;
 
@@ -163,6 +164,14 @@ public class DetailMailDTO {
         conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
         String japaneseOptimizedText = KanaConverter.convertKana(originalBody, conv_op_flags);
         this.originalBody = japaneseOptimizedText;
+    }
+
+    public String getReplacedBody() {
+        return replacedBody;
+    }
+
+    public void setReplacedBody(String replacedBody) {
+        this.replacedBody = replacedBody;
     }
 
     public List<FileDTO> getFiles() {
