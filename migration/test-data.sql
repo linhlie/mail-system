@@ -33,10 +33,10 @@ VALUES
 
 INSERT INTO `replace_letters` (`letter`, `position`, `replace`, `hidden`)
 VALUES
-	('~', 0, 1, 0);
-INSERT INTO `replace_letters` (`letter`, `position`, `replace`, `hidden`)
-VALUES
-	('~', 1, 0, 0);
+  ('~', 0, 1, 0),
+  ('~', 1, 0, 0),
+	('〜', 0, 1, 0),
+	('〜', 1, 0, 0);
 
 INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
 VALUES
