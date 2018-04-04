@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
+import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -238,5 +239,30 @@ public class MatchingSettingsController {
         }
         outStream.flush();
         inStream.close();
+    }
+
+    @PostMapping("/sendRecommendationMail")
+    @ResponseBody
+    public ResponseEntity<?> sendRecommendationMail(
+            Model model,
+            @Valid @RequestBody SendMailForm sendMailForm, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+//            System.out.println("sendRecommendationMail: " + sendMailForm.getContent());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("sendRecommendationMail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }

@@ -405,9 +405,31 @@
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
                 content: getMailEditorContent()
-            }
-            console.log("sendSuggestMail:", form);
-            $('#sendMailModal').modal('hide');
+            };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/user/sendRecommendationMail",
+                data: JSON.stringify(form),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    console.log("sendSuggestMail: ", data);
+                    $('#sendMailModal').modal('hide');
+                    if(data && data.status){
+                        //TODO: noti send mail success
+                    } else {
+                        //TODO: noti send mail failed
+                    }
+
+                },
+                error: function (e) {
+                    console.log("ERROR : sendSuggestMail: ", e);
+                    $('#sendMailModal').modal('hide');
+                    //TODO: noti send mail error
+                }
+            });
         })
     }
 
