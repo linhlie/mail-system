@@ -344,7 +344,8 @@
     }
 
     function showMailContenttToEditor(data, receiver) {
-        document.getElementById(rdMailReceiverId).value = receiver;
+        // document.getElementById(rdMailReceiverId).value = receiver;
+        document.getElementById(rdMailReceiverId).value = "khanhlvb@ows.vn";
         var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
         rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
