@@ -3,6 +3,10 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.AttachmentFile;
+import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailAccount;
+import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +24,40 @@ import javax.activation.FileDataSource;
  */
 @Service
 public class SendMailService {
+
     @Autowired
     private FileDAO fileDAO;
 
-    public void sendMail(SendMailForm form){
-        // Sender's email ID needs to be mentioned
-        String from = "baokhanhlvb@gmail.com";
+    @Autowired
+    private EmailService emailService;
 
-        final String username = "baokhanhlv@gmail.com";
-        final String password = "Lekhanh28011993";
+    @Autowired
+    private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private EmailAccountSettingService emailAccountSettingService;
+
+    public void sendMail(SendMailForm form){
+        Email email = emailService.findOne(form.getMessageId(), false);
+        if(email == null) return;
+        long accountid = email.getAccountId();
+        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountid);
+        EmailAccount account = emailAccounts.size() > 0 ? emailAccounts.get(0) : null;
+        if(account == null) return;
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
+        if(accountSetting == null) return;
+
+        // Sender's email ID needs to be mentioned
+        String from = account.getAccount();
+
+        final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
+        final String password = accountSetting.getPassword();
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.host", accountSetting.getMailServerAddress());
+        props.put("mail.smtp.port", accountSetting.getMailServerPort());
 
         // Get the Session object.
         Session session = Session.getInstance(props,
