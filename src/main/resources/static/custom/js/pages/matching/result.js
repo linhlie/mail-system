@@ -83,7 +83,6 @@
     }
 
     function showSourceData(tableId, data) {
-        console.log("showSourceData: ", data);
         destroySortSource();
         removeAllRow(tableId);
         if(data.length > 0){
@@ -400,6 +399,8 @@
         });
         $('#sendSuggestMail').off('click');
         $("#sendSuggestMail").click(function () {
+            var btn = $(this);
+            btn.button('loading');
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
@@ -415,6 +416,7 @@
                 cache: false,
                 timeout: 600000,
                 success: function (data) {
+                    btn.button('reset');
                     console.log("sendSuggestMail: ", data);
                     $('#sendMailModal').modal('hide');
                     if(data && data.status){
@@ -425,6 +427,7 @@
 
                 },
                 error: function (e) {
+                    btn.button('reset');
                     console.log("ERROR : sendSuggestMail: ", e);
                     $('#sendMailModal').modal('hide');
                     //TODO: noti send mail error
