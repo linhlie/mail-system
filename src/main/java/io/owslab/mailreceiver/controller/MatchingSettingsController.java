@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.MediaTypeUtils;
@@ -58,6 +59,9 @@ public class MatchingSettingsController {
 
     @Autowired
     private ServletContext servletContext;
+
+    @Autowired
+    private SendMailService sendMailService;
 
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -254,7 +258,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-//            System.out.println("sendRecommendationMail: " + sendMailForm.getContent());
+            sendMailService.sendMail(sendMailForm);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
