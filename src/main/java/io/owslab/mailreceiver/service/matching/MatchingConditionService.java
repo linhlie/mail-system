@@ -21,6 +21,11 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by khanhlvb on 3/6/18.
@@ -523,21 +528,59 @@ public class MatchingConditionService {
         return result;
     }
 
+//    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
+//        List<MatchingWordResult> matchingWordResults = new ArrayList<>();
+//        for(Email email : emailList){
+//            String contentToSearch = email.getSubjectAndOptimizedBody();
+//            MatchingWordResult result = new MatchingWordResult(email);
+//            for(String word : words){
+//                if(emailWordJobService.matchWord(email.getMessageId(), contentToSearch, word)){
+//                    result.addMatchWord(word);
+//                }
+//            }
+//            if(result.hasMatchWord()){
+//                matchingWordResults.add(result);
+//            }
+//        }
+//        return matchingWordResults;
+//    }
+
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
+        ExecutorService executorService= Executors.newFixedThreadPool(1000);
+        List<Callable<List<MatchingWordResult>>> callableList=new ArrayList<Callable<List<MatchingWordResult>>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
+
         for(Email email : emailList){
-            String contentToSearch = email.getSubjectAndOptimizedBody();
-            MatchingWordResult result = new MatchingWordResult(email);
-            for(String word : words){
-                if(emailWordJobService.matchWord(email.getMessageId(), contentToSearch, word)){
-                    result.addMatchWord(word);
-                }
-            }
-            if(result.hasMatchWord()){
-                matchingWordResults.add(result);
-            }
+            callableList.add(getInstanceOfCallable(words, email, matchingWordResults));
+        }
+        try {
+            executorService.invokeAll(callableList);
+            executorService.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return matchingWordResults;
+    }
+
+    private Callable<List<MatchingWordResult>> getInstanceOfCallable(final List<String> words, final Email email, final List<MatchingWordResult> matchingWordResults) {
+
+        Callable<List<MatchingWordResult>> clientPlanCall=new Callable<List<MatchingWordResult>>(){
+            public List<MatchingWordResult> call() {
+                String contentToSearch = email.getSubjectAndOptimizedBody();
+                MatchingWordResult result = new MatchingWordResult(email);
+                for(String word : words){
+                    if(emailWordJobService.matchWord(email.getMessageId(), contentToSearch, word)){
+                        result.addMatchWord(word);
+                    }
+                }
+                if(result.hasMatchWord()){
+                    matchingWordResults.add(result);
+                }
+                return matchingWordResults;
+            }
+        };
+
+        return clientPlanCall;
     }
 
     private MatchingPartResult isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
