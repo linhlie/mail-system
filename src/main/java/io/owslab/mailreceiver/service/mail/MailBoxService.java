@@ -61,7 +61,11 @@ public class MailBoxService {
     }
 
     public List<Email> getAll(){
-        if(cachedEmailList == null){
+        return getAll(false);
+    }
+
+    public List<Email> getAll(boolean forceUpdate){
+        if(forceUpdate || cachedEmailList == null){
             cachedEmailList = emailDAO.findByDeleted(false);
         }
         return cachedEmailList;

@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
@@ -62,6 +63,9 @@ public class ApplicationStartup {
     @Autowired
     private NumberRangeService numberRangeService;
 
+    @Autowired
+    private MailBoxService mailBoxService;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @Bean
@@ -106,6 +110,7 @@ public class ApplicationStartup {
         enviromentSettingService.init();
         addAdminAccount();
         addMemberAccount();
+        mailBoxService.getAll(true);
         fetchMailScheduler.start();
         deleteOldMailsScheduler.start();
 //        buildMatchEmailWordScheduler.start();

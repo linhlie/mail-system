@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,7 +25,7 @@ import java.util.concurrent.Executors;
 @Service
 public class FetchMailsService {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailsService.class);
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     @Autowired
     private EmailAccountSettingService emailAccountSettingService;
 
@@ -39,17 +41,38 @@ public class FetchMailsService {
     @Autowired
     private EnviromentSettingService enviromentSettingService;
 
+    @Autowired
+    private MailBoxService mailBoxService;
+
     public void start(){
         List<EmailAccount> list = emailAccountDAO.findByDisabled(false);
+        List<Callable<Void>> callables = new ArrayList<>();
         if(list.size() > 0) {
             for(int i = 0, n = list.size(); i < n; i++){
                 EmailAccount account = list.get(i);
                 EmailAccountSetting accountSetting = emailAccountSettingService.findOneReceive(account.getId());
                 if(accountSetting != null && accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.IMAP){
-                    executorService.execute(new IMAPFetchMailJob(emailDAO, fileDAO, enviromentSettingService, accountSetting, account));
+                    callables.add(toCallable(new IMAPFetchMailJob(emailDAO, fileDAO, enviromentSettingService, accountSetting, account)));
                 }
             }
         }
+        try {
+            executorService.invokeAll(callables);
+            executorService.shutdown();
+            mailBoxService.getAll(true);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Callable<Void> toCallable(final Runnable runnable) {
+        return new Callable<Void>() {
+            @Override
+            public Void call() {
+                runnable.run();
+                return null;
+            }
+        };
     }
 }
 
