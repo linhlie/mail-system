@@ -547,7 +547,7 @@ public class MatchingConditionService {
 //    }
 
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
-        ExecutorService executorService= Executors.newFixedThreadPool(1000);
+        ExecutorService executorService= Executors.newFixedThreadPool(50);
         List<Callable<List<MatchingWordResult>>> callableList=new ArrayList<Callable<List<MatchingWordResult>>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
 
