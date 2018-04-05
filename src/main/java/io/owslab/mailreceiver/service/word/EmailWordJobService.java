@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.EmailWord;
 import io.owslab.mailreceiver.model.EmailWordJob;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
+import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,5 +121,35 @@ public class EmailWordJobService {
             result.addAll(findResult);
         }
         return result;
+    }
+
+    public MatchingWordResult matchWords(Email email, List<String> words){
+        MatchingWordResult result = new MatchingWordResult(email);
+        ExecutorService executorService= Executors.newFixedThreadPool(3);
+        List<Callable<MatchingWordResult>> callableList=new ArrayList<Callable<MatchingWordResult>>();
+        for(String word : words){
+            callableList.add(getInstanceOfCallable(email, word, result));
+        }
+        try {
+            executorService.invokeAll(callableList);
+            executorService.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private Callable<MatchingWordResult> getInstanceOfCallable(final Email email, final String word, final MatchingWordResult result) {
+
+        Callable<MatchingWordResult> matchingWordResultCallable = new Callable<MatchingWordResult>(){
+            public MatchingWordResult call() {
+                if(matchWord(email.getMessageId(), email.getSubjectAndOptimizedBody(), word)){
+                    result.addMatchWord(word);
+                }
+                return result;
+            }
+        };
+
+        return matchingWordResultCallable;
     }
 }

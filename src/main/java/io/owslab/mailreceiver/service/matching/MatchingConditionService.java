@@ -142,6 +142,7 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
         List<Email> emailList = mailBoxService.getAll();
+        logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
         List<Email> matchSourceList;
         if(groupedSourceConditions.size() > 0) {
@@ -566,13 +567,7 @@ public class MatchingConditionService {
 
         Callable<List<MatchingWordResult>> clientPlanCall=new Callable<List<MatchingWordResult>>(){
             public List<MatchingWordResult> call() {
-                String contentToSearch = email.getSubjectAndOptimizedBody();
-                MatchingWordResult result = new MatchingWordResult(email);
-                for(String word : words){
-                    if(emailWordJobService.matchWord(email.getMessageId(), contentToSearch, word)){
-                        result.addMatchWord(word);
-                    }
-                }
+                MatchingWordResult result = emailWordJobService.matchWords(email, words);
                 if(result.hasMatchWord()){
                     matchingWordResults.add(result);
                 }
