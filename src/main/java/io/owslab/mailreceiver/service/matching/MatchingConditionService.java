@@ -208,17 +208,36 @@ public class MatchingConditionService {
     }
 
     private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish){
-        for(Email email : emailList){
-            for(MatchingConditionGroup group : groupList){
-                for(MatchingConditionResult result : group.getConditionResults()){
-                    MatchingCondition condition = result.getMatchingCondition();
-                    if(isMatch(email, condition, distinguish)){
-                        result.add(email);
-                    }
+        for(MatchingConditionGroup group : groupList){
+            for(MatchingConditionResult result : group.getConditionResults()){
+                ExecutorService executorService= Executors.newFixedThreadPool(20);
+                List<Callable<MatchingConditionResult>> callableList=new ArrayList<Callable<MatchingConditionResult>>();
+                for(Email email : emailList){
+                    callableList.add(getMatchingConditionResultCallable(email, result, distinguish));
+                }
+                try {
+                    executorService.invokeAll(callableList);
+                    executorService.shutdown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
         return groupList;
+    }
+
+    private Callable<MatchingConditionResult> getMatchingConditionResultCallable(Email email, MatchingConditionResult result, boolean distinguish){
+        Callable<MatchingConditionResult> callable = new Callable<MatchingConditionResult>(){
+            public MatchingConditionResult call() {
+                MatchingCondition condition = result.getMatchingCondition();
+                if(isMatch(email, condition, distinguish)){
+                    result.add(email);
+                }
+                return result;
+            }
+        };
+
+        return callable;
     }
 
     private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
