@@ -165,6 +165,8 @@ public class MatchingConditionService {
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         HashMap<String, MatchingResult> matchingResultMap = new HashMap<String, MatchingResult>();
+        ExecutorService executorService = Executors.newFixedThreadPool(50);
+        List<Callable<Void>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
                 addToList(matchingResultMap, word, sourceResult.getEmail(), null);
@@ -172,6 +174,26 @@ public class MatchingConditionService {
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
                 if(intersectWords.size() == 0) continue;;
+                callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish, matchingResultMap));
+            }
+        }
+        try {
+            executorService.invokeAll(callables);
+            executorService.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        results = new ArrayList<MatchingResult>(matchingResultMap.values());
+        logger.info("Matching done: " + results.size());
+        return results;
+    }
+
+    private Callable<Void> toCallable(final List<String> intersectWords, final List<MatchingCondition> matchingConditionList,
+                                      final MatchingWordResult sourceResult, final MatchingWordResult destinationResult,
+                                      final boolean distinguish, HashMap<String, MatchingResult> matchingResultMap) {
+        return new Callable<Void>() {
+            @Override
+            public Void call() {
                 List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
                 MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
                         new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
@@ -180,11 +202,9 @@ public class MatchingConditionService {
                         addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange(), matchingPartResult.getRange());
                     }
                 }
+                return null;
             }
-        }
-        results = new ArrayList<MatchingResult>(matchingResultMap.values());
-        logger.info("Matching done: " + results.size());
-        return results;
+        };
     }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
