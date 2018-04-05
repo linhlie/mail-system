@@ -39,6 +39,8 @@ public class MailBoxService {
 
     @Autowired
     private NumberRangeService numberRangeService;
+    
+    private List<Email> cachedEmailList = null;
 
     public long count(){
         return emailDAO.countByDeleted(false);
@@ -59,7 +61,10 @@ public class MailBoxService {
     }
 
     public List<Email> getAll(){
-        return emailDAO.findByDeleted(false);
+        if(cachedEmailList == null){
+            cachedEmailList = emailDAO.findByDeleted(false);
+        }
+        return cachedEmailList;
     }
 
     public static String optimizeText(String original){
