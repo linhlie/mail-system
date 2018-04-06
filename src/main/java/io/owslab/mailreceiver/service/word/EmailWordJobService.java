@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,27 +124,35 @@ public class EmailWordJobService {
     public MatchingWordResult matchWords(Email email, List<String> words){
         MatchingWordResult result = new MatchingWordResult(email);
         ExecutorService executorService= Executors.newFixedThreadPool(3);
-        List<Callable<MatchingWordResult>> callableList=new ArrayList<Callable<MatchingWordResult>>();
+        List<Callable<String>> callableList=new ArrayList<Callable<String>>();
         for(String word : words){
-            callableList.add(getInstanceOfCallable(email, word, result));
+            callableList.add(getInstanceOfCallable(email, word));
         }
         try {
-            executorService.invokeAll(callableList);
-            executorService.shutdown();
+            List<Future<String>> futures = executorService.invokeAll(callableList);
+            for(Future<String> future: futures) {
+                String word = future.get();
+                if(word != null){
+                    result.addMatchWord(word);
+                }
+            }
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    private Callable<MatchingWordResult> getInstanceOfCallable(final Email email, final String word, final MatchingWordResult result) {
+    private Callable<String> getInstanceOfCallable(final Email email, final String word) {
 
-        Callable<MatchingWordResult> matchingWordResultCallable = new Callable<MatchingWordResult>(){
-            public MatchingWordResult call() {
+        Callable<String> matchingWordResultCallable = new Callable<String>(){
+            public String call() {
                 if(matchWord(email.getMessageId(), email.getSubjectAndOptimizedBody(), word)){
-                    result.addMatchWord(word);
+                    return word;
+                } else {
+                    return null;
                 }
-                return result;
             }
         };
 
