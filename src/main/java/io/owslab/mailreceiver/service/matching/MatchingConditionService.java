@@ -162,7 +162,8 @@ public class MatchingConditionService {
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        preBuildRanges(matchingConditionList, matchWordSource, matchWordDestination);
+        ExecutorService executorService = Executors.newFixedThreadPool(50);
         List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
@@ -177,6 +178,7 @@ public class MatchingConditionService {
         logger.info("start range invokeAll pharse: " + callables.size());
         try {
             List<Future<MatchingPartResult>> futures = executorService.invokeAll(callables);
+            executorService.shutdown();
             for(Future<MatchingPartResult> future: futures) {
                 MatchingPartResult result = future.get();
                 if(result.isMatch()){
@@ -211,6 +213,49 @@ public class MatchingConditionService {
         };
     }
 
+    private void preBuildRanges(List<MatchingCondition> conditionList, List<MatchingWordResult> matchSource, List<MatchingWordResult> matchDestination){
+        boolean mustPreBuild = false;
+        for(MatchingCondition condition : conditionList) {
+            MailItemOption option = MailItemOption.fromValue(condition.getItem());
+            if(option.equals(MailItemOption.NUMBER) || option.equals(MailItemOption.NUMBER_LOWER) || option.equals(MailItemOption.NUMBER_UPPER)) {
+                mustPreBuild = true;
+                break;
+            }
+        }
+
+        if(!mustPreBuild) return;
+        ExecutorService executorService= Executors.newFixedThreadPool(500);
+        List<Callable<Void>> callableList=new ArrayList<Callable<Void>>();
+        for(MatchingWordResult result : matchSource){
+            if(result.hasMatchWord()) {
+                callableList.add(preBuildRange(result.getEmail()));
+            }
+        }
+        for(MatchingWordResult result : matchDestination){
+            if(result.hasMatchWord()) {
+                callableList.add(preBuildRange(result.getEmail()));
+            }
+        }
+        try {
+            executorService.invokeAll(callableList);
+            executorService.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    private Callable<Void> preBuildRange(Email email){
+        Callable<Void> callable = new Callable<Void>(){
+            public Void call() {
+            numberRangeService.buildNumberRangeForInput(email.getMessageId(), email.getOptimizedText(false));
+                return null;
+            }
+        };
+
+        return callable;
+    }
+
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
         MatchingConditionGroup group = new MatchingConditionGroup();
@@ -241,6 +286,7 @@ public class MatchingConditionService {
                 }
                 try {
                     List<Future<Email>> futures = executorService.invokeAll(callableList);
+                    executorService.shutdown();
                     for(Future<Email> future: futures) {
                         Email email = future.get();
                         if(email != null){
@@ -607,6 +653,7 @@ public class MatchingConditionService {
         }
         try {
             List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
+            executorService.shutdown();
             for(Future<MatchingWordResult> future: futures) {
                 MatchingWordResult result = future.get();
                 if(result != null){

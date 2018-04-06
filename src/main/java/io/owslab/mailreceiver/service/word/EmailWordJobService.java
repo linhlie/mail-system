@@ -130,6 +130,7 @@ public class EmailWordJobService {
         }
         try {
             List<Future<String>> futures = executorService.invokeAll(callableList);
+            executorService.shutdown();
             for(Future<String> future: futures) {
                 String word = future.get();
                 if(word != null){
