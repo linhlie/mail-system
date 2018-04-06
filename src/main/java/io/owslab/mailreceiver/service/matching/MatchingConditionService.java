@@ -224,7 +224,7 @@ public class MatchingConditionService {
         }
 
         if(!mustPreBuild) return;
-        ExecutorService executorService= Executors.newFixedThreadPool(100);
+        ExecutorService executorService= Executors.newFixedThreadPool(50);
         List<Callable<Void>> callableList=new ArrayList<Callable<Void>>();
         for(MatchingWordResult result : matchSource){
             if(result.hasMatchWord()) {
