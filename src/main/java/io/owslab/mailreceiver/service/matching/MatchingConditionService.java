@@ -599,7 +599,6 @@ public class MatchingConditionService {
             callableList.add(getInstanceOfCallable(words, email));
         }
         try {
-            executorService.invokeAll(callableList);
             List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
             for(Future<MatchingWordResult> future: futures) {
                 MatchingWordResult result = future.get();
