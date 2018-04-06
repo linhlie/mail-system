@@ -1,12 +1,20 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.model.Email;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by khanhlvb on 3/29/18.
  */
 public class MatchingPartResult {
     private boolean match;
+    private Email sourceMail;
+    private Email destinationMail;
     private FullNumberRange matchRange;
     private FullNumberRange range;
+    private List<String> intersectWords;
 
     public MatchingPartResult() {
         this(false);
@@ -28,6 +36,7 @@ public class MatchingPartResult {
         this.match = match;
         this.matchRange = matchRange;
         this.range = range;
+        this.intersectWords = new ArrayList<>();
     }
 
     public boolean isMatch() {
@@ -52,5 +61,29 @@ public class MatchingPartResult {
 
     public void setRange(FullNumberRange range) {
         this.range = range;
+    }
+
+    public List<String> getIntersectWords() {
+        return intersectWords;
+    }
+
+    public void setIntersectWords(List<String> intersectWords) {
+        this.intersectWords = intersectWords;
+    }
+
+    public Email getSourceMail() {
+        return sourceMail;
+    }
+
+    public void setSourceMail(Email sourceMail) {
+        this.sourceMail = sourceMail;
+    }
+
+    public Email getDestinationMail() {
+        return destinationMail;
+    }
+
+    public void setDestinationMail(Email destinationMail) {
+        this.destinationMail = destinationMail;
     }
 }

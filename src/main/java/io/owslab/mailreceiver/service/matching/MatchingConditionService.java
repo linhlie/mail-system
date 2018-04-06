@@ -163,7 +163,7 @@ public class MatchingConditionService {
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-        List<Callable<Void>> callables = new ArrayList<>();
+        List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
                 addToList(matchingResultMap, word, sourceResult.getEmail(), null);
@@ -171,14 +171,23 @@ public class MatchingConditionService {
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
                 if(intersectWords.size() == 0) continue;
-                callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish, matchingResultMap));
+                callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish));
             }
         }
         logger.info("start range invokeAll pharse: " + callables.size());
         try {
-            executorService.invokeAll(callables);
-            executorService.shutdown();
+            List<Future<MatchingPartResult>> futures = executorService.invokeAll(callables);
+            for(Future<MatchingPartResult> future: futures) {
+                MatchingPartResult result = future.get();
+                if(result.isMatch()){
+                    for(String word : result.getIntersectWords()) {
+                        addToList(matchingResultMap, word, result.getSourceMail(), result.getDestinationMail(), result.getMatchRange(), result.getRange());
+                    }
+                }
+            }
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         results = new ArrayList<MatchingResult>(matchingResultMap.values());
@@ -186,23 +195,39 @@ public class MatchingConditionService {
         return results;
     }
 
-    private Callable<Void> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
+    private Callable<MatchingPartResult> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
                                       MatchingWordResult sourceResult, MatchingWordResult destinationResult,
-                                      boolean distinguish, ConcurrentHashMap<String, MatchingResult> matchingResultMap) {
-        return new Callable<Void>() {
-            public Void call() {
+                                      boolean distinguish) {
+        return new Callable<MatchingPartResult>() {
+            public MatchingPartResult call() {
                 List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
                 MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
                         new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
-                if(matchingPartResult.isMatch()){
-                    for(String word : intersectWords) {
-                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange(), matchingPartResult.getRange());
-                    }
-                }
-                return null;
+                matchingPartResult.setSourceMail(sourceResult.getEmail());
+                matchingPartResult.setDestinationMail(destinationResult.getEmail());
+                matchingPartResult.setIntersectWords(intersectWords);
+                return matchingPartResult;
             }
         };
     }
+
+//    private Callable<Void> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
+//                                      MatchingWordResult sourceResult, MatchingWordResult destinationResult,
+//                                      boolean distinguish, ConcurrentHashMap<String, MatchingResult> matchingResultMap) {
+//        return new Callable<Void>() {
+//            public Void call() {
+//                List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
+//                MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
+//                        new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
+//                if(matchingPartResult.isMatch()){
+//                    for(String word : intersectWords) {
+//                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange(), matchingPartResult.getRange());
+//                    }
+//                }
+//                return null;
+//            }
+//        };
+//    }
 
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
