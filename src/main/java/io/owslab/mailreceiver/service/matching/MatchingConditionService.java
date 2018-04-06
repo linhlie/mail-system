@@ -592,30 +592,39 @@ public class MatchingConditionService {
 
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
         ExecutorService executorService= Executors.newFixedThreadPool(50);
-        List<Callable<List<MatchingWordResult>>> callableList=new ArrayList<Callable<List<MatchingWordResult>>>();
+        List<Callable<MatchingWordResult>> callableList =new ArrayList<Callable<MatchingWordResult>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
 
         for(Email email : emailList){
-            callableList.add(getInstanceOfCallable(words, email, matchingWordResults));
+            callableList.add(getInstanceOfCallable(words, email));
         }
         try {
             executorService.invokeAll(callableList);
-            executorService.shutdown();
+            List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
+            for(Future<MatchingWordResult> future: futures) {
+                MatchingWordResult result = future.get();
+                if(result != null){
+                    matchingWordResults.add(result);
+                }
+            }
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         return matchingWordResults;
     }
 
-    private Callable<List<MatchingWordResult>> getInstanceOfCallable(final List<String> words, final Email email, final List<MatchingWordResult> matchingWordResults) {
+    private Callable<MatchingWordResult> getInstanceOfCallable(final List<String> words, final Email email) {
 
-        Callable<List<MatchingWordResult>> clientPlanCall=new Callable<List<MatchingWordResult>>(){
-            public List<MatchingWordResult> call() {
+        Callable<MatchingWordResult> clientPlanCall=new Callable<MatchingWordResult>(){
+            public MatchingWordResult call() {
                 MatchingWordResult result = emailWordJobService.matchWords(email, words);
                 if(result.hasMatchWord()){
-                    matchingWordResults.add(result);
+                    return result;
+                } else {
+                    return null;
                 }
-                return matchingWordResults;
             }
         };
 
