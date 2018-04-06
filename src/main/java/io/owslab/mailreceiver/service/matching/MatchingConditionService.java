@@ -211,24 +211,6 @@ public class MatchingConditionService {
         };
     }
 
-//    private Callable<Void> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
-//                                      MatchingWordResult sourceResult, MatchingWordResult destinationResult,
-//                                      boolean distinguish, ConcurrentHashMap<String, MatchingResult> matchingResultMap) {
-//        return new Callable<Void>() {
-//            public Void call() {
-//                List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-//                MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
-//                        new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
-//                if(matchingPartResult.isMatch()){
-//                    for(String word : intersectWords) {
-//                        addToList(matchingResultMap, word, sourceResult.getEmail(), destinationResult.getEmail(), matchingPartResult.getMatchRange(), matchingPartResult.getRange());
-//                    }
-//                }
-//                return null;
-//            }
-//        };
-//    }
-
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
         MatchingConditionGroup group = new MatchingConditionGroup();
