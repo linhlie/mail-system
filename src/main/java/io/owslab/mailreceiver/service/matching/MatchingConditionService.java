@@ -162,8 +162,8 @@ public class MatchingConditionService {
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
-        preBuildRanges(matchingConditionList, matchWordSource, matchWordDestination);
-        ExecutorService executorService = Executors.newFixedThreadPool(50);
+//        preBuildRanges(matchingConditionList, matchWordSource, matchWordDestination);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
@@ -224,7 +224,7 @@ public class MatchingConditionService {
         }
 
         if(!mustPreBuild) return;
-        ExecutorService executorService= Executors.newFixedThreadPool(50);
+        ExecutorService executorService= Executors.newFixedThreadPool(10);
         List<Callable<Void>> callableList=new ArrayList<Callable<Void>>();
         for(MatchingWordResult result : matchSource){
             if(result.hasMatchWord()) {
