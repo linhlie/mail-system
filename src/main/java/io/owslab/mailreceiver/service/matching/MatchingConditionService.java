@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -164,8 +161,8 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
-        HashMap<String, MatchingResult> matchingResultMap = new HashMap<String, MatchingResult>();
-        ExecutorService executorService = Executors.newFixedThreadPool(50);
+        ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         List<Callable<Void>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
@@ -173,10 +170,11 @@ public class MatchingConditionService {
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
-                if(intersectWords.size() == 0) continue;;
+                if(intersectWords.size() == 0) continue;
                 callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish, matchingResultMap));
             }
         }
+        logger.info("start range invokeAll pharse: " + callables.size());
         try {
             executorService.invokeAll(callables);
             executorService.shutdown();
@@ -188,11 +186,10 @@ public class MatchingConditionService {
         return results;
     }
 
-    private Callable<Void> toCallable(final List<String> intersectWords, final List<MatchingCondition> matchingConditionList,
-                                      final MatchingWordResult sourceResult, final MatchingWordResult destinationResult,
-                                      final boolean distinguish, HashMap<String, MatchingResult> matchingResultMap) {
+    private Callable<Void> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
+                                      MatchingWordResult sourceResult, MatchingWordResult destinationResult,
+                                      boolean distinguish, ConcurrentHashMap<String, MatchingResult> matchingResultMap) {
         return new Callable<Void>() {
-            @Override
             public Void call() {
                 List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
                 MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
@@ -625,7 +622,7 @@ public class MatchingConditionService {
             return isMatchRange(target, condition, distinguish);
         } else {
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
-            String optimizedSourcePart = getOptimizedText(source.getSubjectAndOptimizedBody(), false);
+            String optimizedSourcePart = source.getOptimizedText(false);
             String optimizedTargetPart = getTargetPartValue(target, condition, false);
             List<FullNumberRange> sourceRanges;
             List<FullNumberRange> targetRanges;
@@ -637,8 +634,12 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
+                    String postFixCacheId = conditionValue;
+                    if(conditionValue.indexOf("数値") > 0) {
+                        postFixCacheId = "";
+                    }
                     sourceRanges = numberRangeService.buildNumberRangeForInput(source.getMessageId(), optimizedSourcePart);
-                    targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId()+conditionValue, optimizedTargetPart);
+                    targetRanges = numberRangeService.buildNumberRangeForInput(target.getMessageId()+postFixCacheId, optimizedTargetPart);
                     result = hasMatchRange(sourceRanges, targetRanges, condition);
                     break;
                 default:
@@ -654,7 +655,7 @@ public class MatchingConditionService {
             MailItemOption mailItemOption = MailItemOption.fromValue(condition.getItem());
             ConditionOption conditionOption = ConditionOption.fromValue(condition.getCondition());
             String conditionValue = condition.getValue();
-            String optimizedPart = getOptimizedText(target.getSubjectAndOptimizedBody(), false);
+            String optimizedPart = target.getOptimizedText(false);
             String optimizedValue = getOptimizedText(conditionValue, false);
 
             FullNumberRange findRange;
@@ -778,11 +779,11 @@ public class MatchingConditionService {
         return result;
     }
 
-    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination) {
+    private synchronized void addToList(ConcurrentHashMap<String, MatchingResult> map, String word, Email source, Email destination) {
         this.addToList(map, word, source, destination, null, null);
     }
 
-    private synchronized void addToList(HashMap<String, MatchingResult> map, String word, Email source, Email destination, FullNumberRange matchRange, FullNumberRange range) {
+    private synchronized void addToList(ConcurrentHashMap<String, MatchingResult> map, String word, Email source, Email destination, FullNumberRange matchRange, FullNumberRange range) {
         String mapKey = word + "+" + source.getMessageId();
         MatchingResult matchingResult = map.get(mapKey);
         if(matchingResult == null) {
