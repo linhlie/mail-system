@@ -228,14 +228,21 @@ public class MatchingConditionService {
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
                 ExecutorService executorService= Executors.newFixedThreadPool(20);
-                List<Callable<MatchingConditionResult>> callableList=new ArrayList<Callable<MatchingConditionResult>>();
+                List<Callable<Email>> callableList=new ArrayList<Callable<Email>>();
                 for(Email email : emailList){
                     callableList.add(getMatchingConditionResultCallable(email, result, distinguish));
                 }
                 try {
-                    executorService.invokeAll(callableList);
-                    executorService.shutdown();
+                    List<Future<Email>> futures = executorService.invokeAll(callableList);
+                    for(Future<Email> future: futures) {
+                        Email email = future.get();
+                        if(email != null){
+                            result.add(email);
+                        }
+                    }
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -243,14 +250,15 @@ public class MatchingConditionService {
         return groupList;
     }
 
-    private Callable<MatchingConditionResult> getMatchingConditionResultCallable(Email email, MatchingConditionResult result, boolean distinguish){
-        Callable<MatchingConditionResult> callable = new Callable<MatchingConditionResult>(){
-            public MatchingConditionResult call() {
+    private Callable<Email> getMatchingConditionResultCallable(Email email, MatchingConditionResult result, boolean distinguish){
+        Callable<Email> callable = new Callable<Email>(){
+            public Email call() {
                 MatchingCondition condition = result.getMatchingCondition();
                 if(isMatch(email, condition, distinguish)){
-                    result.add(email);
+                    return email;
+                } else {
+                    return null;
                 }
-                return result;
             }
         };
 
