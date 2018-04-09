@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by khanhlvb on 1/19/18.
@@ -57,8 +58,7 @@ public class FetchMailsService {
             }
         }
         try {
-            executorService.invokeAll(callables);
-            executorService.shutdown();
+            List<Future<Void>> futures = executorService.invokeAll(callables);
             mailBoxService.getAll(true);
         } catch (InterruptedException e) {
             e.printStackTrace();
