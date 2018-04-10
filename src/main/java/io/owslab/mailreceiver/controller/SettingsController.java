@@ -1,10 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EmailAccountDTO;
-import io.owslab.mailreceiver.form.EnviromentSettingForm;
-import io.owslab.mailreceiver.form.MailAccountForm;
-import io.owslab.mailreceiver.form.ReceiveAccountForm;
-import io.owslab.mailreceiver.form.SendAccountForm;
+import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -152,57 +149,35 @@ public class SettingsController {
         MailAccountForm mailAccountForm = new MailAccountForm(account);
         ReceiveAccountForm receiveAccountForm = emailAccountSettingService.getReceiveAccountForm(account.getId());
         SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(account.getId());
-        model.addAttribute("mailAccountForm", mailAccountForm);
-        model.addAttribute("receiveAccountForm", receiveAccountForm);
-        model.addAttribute("sendAccountForm", sendAccountForm);
+        FullAccountForm fullAccountForm = new FullAccountForm(mailAccountForm, receiveAccountForm, sendAccountForm);
+        model.addAttribute("fullAccountForm", fullAccountForm);
         model.addAttribute("api", "/admin/updateAccount/" + id);
-        model.addAttribute("receiveApi", "/admin/updateReceiveAccount/" + id);
-        model.addAttribute("sendApi", "/admin/updateSendAccount/" + id);
         return "admin/settings/account/form";
     }
 
     @RequestMapping(value = "/updateAccount/{id}", method = RequestMethod.POST)
-    public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("mailAccountForm") MailAccountForm mailAccountForm) {
+    public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("fullAccountForm") FullAccountForm fullAccountForm) {
         List<EmailAccount> listAccount = mailAccountsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
         else {
+            MailAccountForm mailAccountForm = fullAccountForm.getMailAccountForm();
+            ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
+            SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
             EmailAccount emailAccount = listAccount.get(0);
             emailAccount.setDisabled(mailAccountForm.isDisabled());
             mailAccountsService.save(emailAccount);
-        }
-        return "redirect:/admin/mailAccountSettings";
-    }
-
-    @RequestMapping(value = "/updateReceiveAccount/{id}", method = RequestMethod.POST)
-    public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("receiveAccountForm") ReceiveAccountForm receiveAccountForm) {
-        List<EmailAccount> listAccount = mailAccountsService.findById(id);
-        if(listAccount.isEmpty()){
-            //TODO: account not found error
-        } else {
-            EmailAccount emailAccount = listAccount.get(0);
-            EmailAccountSetting existAccountSetting = emailAccountSettingService.findOneReceive(id);
-            EmailAccountSetting newAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
-            newAccountSetting.setAccountId(emailAccount.getId());
-            if(existAccountSetting != null) newAccountSetting.setId(existAccountSetting.getId());
-            emailAccountSettingService.save(newAccountSetting);
-        }
-        return "redirect:/admin/mailAccountSettings";
-    }
-
-    @RequestMapping(value = "/updateSendAccount/{id}", method = RequestMethod.POST)
-    public String updateSendAccount(@PathVariable("id") long id, Model model, @ModelAttribute("sendAccountForm") SendAccountForm sendAccountForm) {
-        List<EmailAccount> listAccount = mailAccountsService.findById(id);
-        if(listAccount.isEmpty()){
-            //TODO: account not found error
-        } else {
-            EmailAccount emailAccount = listAccount.get(0);
-            EmailAccountSetting existAccountSetting = emailAccountSettingService.findOneSend(id);
-            EmailAccountSetting newAccountSetting = new EmailAccountSetting(sendAccountForm, true);
-            newAccountSetting.setAccountId(emailAccount.getId());
-            if(existAccountSetting != null) newAccountSetting.setId(existAccountSetting.getId());
-            emailAccountSettingService.save(newAccountSetting);
+            EmailAccountSetting existReceiveAccountSetting = emailAccountSettingService.findOneReceive(id);
+            EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
+            newReceiveAccountSetting.setAccountId(emailAccount.getId());
+            if(existReceiveAccountSetting != null) newReceiveAccountSetting.setId(existReceiveAccountSetting.getId());
+            emailAccountSettingService.save(newReceiveAccountSetting);
+            EmailAccountSetting existSendAccountSetting = emailAccountSettingService.findOneSend(id);
+            EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
+            newSendAccountSetting.setAccountId(emailAccount.getId());
+            if(existSendAccountSetting != null) newSendAccountSetting.setId(existSendAccountSetting.getId());
+            emailAccountSettingService.save(newSendAccountSetting);
         }
         return "redirect:/admin/mailAccountSettings";
     }

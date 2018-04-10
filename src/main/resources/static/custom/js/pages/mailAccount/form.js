@@ -4,37 +4,21 @@
     "use strict";
     var IMAP = 0;
     var POP3 = 1;
-    var accountFormChange = false;
-    var receiveFormChange = false;
-    var sendFormChange = false;
+    var formChange = false;
 
     $(function () {
         setFormsChangeListener();
         setMailProtocolChangeListener();
         setGoBackListener('backBtn');
-        setResetListener('resetMailFormBtn', function () {
-            $('#mailAccountForm').trigger("reset");
-            accountFormChange = false;
-        });
-        setResetListener('resetReceiveFormBtn', function () {
-            $('#receiveMailForm').trigger("reset");
-            receiveFormChange = false;
-        });
-        setResetListener('resetSendFormBtn', function () {
-            $('#sendMailForm').trigger("reset");
-            sendFormChange = false;
+        setResetListener('resetFormBtn', function () {
+            $('#fullAccountForm').trigger("reset");
+            formChange = false;
         });
     });
 
     function setFormsChangeListener() {
-        $('#mailAccountForm').change(function() {
-            accountFormChange = true;
-        });
-        $('#receiveMailForm').change(function() {
-            receiveFormChange = true;
-        });
-        $('#sendMailForm').change(function() {
-            sendFormChange = true;
+        $('#fullAccountForm').change(function() {
+            formChange = true;
         });
     }
 
@@ -61,7 +45,7 @@
 
     function setGoBackListener(name){
         $("button[name='"+name+"']").click(function () {
-            if(accountFormChange || receiveFormChange || sendFormChange) {
+            if(formChange) {
                 var isBack = confirm("離れたいですか。");
                 if(isBack){
                     goBack();
