@@ -345,7 +345,7 @@
 
     function showMailContenttToEditor(data, receiver) {
         // document.getElementById(rdMailReceiverId).value = receiver;
-        document.getElementById(rdMailReceiverId).value = "khanhlvb@ows.vn";
+        document.getElementById(rdMailReceiverId).value = "ows-test@world-link-system.com";
         var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
         rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
