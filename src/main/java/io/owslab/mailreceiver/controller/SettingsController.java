@@ -169,19 +169,22 @@ public class SettingsController {
         ReceiveAccountForm receiveAccountForm = emailAccountSettingService.getReceiveAccountForm(account.getId());
         SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(account.getId());
         FullAccountForm fullAccountForm = new FullAccountForm(mailAccountForm, receiveAccountForm, sendAccountForm);
+        fullAccountForm.setAccountId(id);
         model.addAttribute("fullAccountForm", fullAccountForm);
         model.addAttribute("api", "/admin/mailAccountSettings/update?id=" + id);
         return "admin/settings/account/form";
     }
 
     @RequestMapping(value = "/mailAccountSettings/update", method = RequestMethod.POST)
-    public String updateReceiveAccount(@RequestParam(value = "id") long id, Model model, @ModelAttribute("fullAccountForm") @Validated FullAccountForm fullAccountForm,
+    public String updateReceiveAccount(@RequestParam(value = "id") long id, Model model, @ModelAttribute("fullAccountForm") FullAccountForm fullAccountForm,
                                        BindingResult result, RedirectAttributes redirectAttrs) {
         List<EmailAccount> listAccount = mailAccountsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
         else {
+            fullAccountForm.setAccountId(id);
+            mailAccountSettingValidator.validate(fullAccountForm, result);
             if (result.hasErrors()) {
                 return "admin/settings/account/form";
             }
