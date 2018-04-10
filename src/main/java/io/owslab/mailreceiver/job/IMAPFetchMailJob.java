@@ -12,6 +12,7 @@ import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
+import io.owslab.mailreceiver.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,19 @@ public class IMAPFetchMailJob implements Runnable {
             //create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
+            boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
+            if(isDeleteOldMail){
+                Date now = new Date();
+                int beforeDayRange = enviromentSettingService.getDeleteAfter();
+                Date beforeDate = Utils.addDayToDate(now, -beforeDayRange);
+                if(fromDate != null) {
+                    if(fromDate.compareTo(beforeDate) < 0){
+                        fromDate = beforeDate;
+                    }
+                } else {
+                    fromDate = beforeDate;
+                }
+            }
             int openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 

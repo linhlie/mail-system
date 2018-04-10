@@ -17,4 +17,11 @@ public class Utils {
 
         return calendar.getTime();
     }
+
+    public static Date addDayToDate(Date date, int day){
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, day);
+        return c.getTime();
+    }
 }
