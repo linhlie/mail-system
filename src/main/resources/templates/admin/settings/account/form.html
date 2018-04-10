@@ -37,6 +37,11 @@
                             <div class="form-group">
                                 <h4 style="margin-left: 15px; margin-right: 15px;"><b>受信</b></h4>
                             </div>
+                            <div th:if="${#fields.hasErrors('rUserName')}">
+                                <div class="callout callout-danger">
+                                    <p>接続に失敗しました。情報を確認してください。</p>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">受信メールサーバー</label>
 
@@ -106,6 +111,11 @@
                             </div>
                             <div class="form-group">
                                 <h4 style="margin-left: 15px; margin-right: 15px;"><b>送信</b></h4>
+                            </div>
+                            <div th:if="${#fields.hasErrors('sUserName')}">
+                                <div class="callout callout-danger">
+                                    <p>接続に失敗しました。情報を確認してください。</p>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">送信メールサーバー</label>

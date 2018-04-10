@@ -11,6 +11,7 @@ import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.FileAssertResult;
 import io.owslab.mailreceiver.utils.PageWrapper;
+import io.owslab.mailreceiver.validator.MailAccountSettingValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,6 +45,21 @@ public class SettingsController {
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private MailAccountSettingValidator mailAccountSettingValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder dataBinder) {
+        Object target = dataBinder.getTarget();
+        if (target == null) {
+            return;
+        }
+
+        if (target.getClass() == FullAccountForm.class) {
+            dataBinder.setValidator(mailAccountSettingValidator);
+        }
+    }
 
     @RequestMapping(value = "/enviromentSettings", method = RequestMethod.GET)
     public String enviromentSettings(Model model, RedirectAttributes redirectAttrs) {
@@ -151,17 +170,21 @@ public class SettingsController {
         SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(account.getId());
         FullAccountForm fullAccountForm = new FullAccountForm(mailAccountForm, receiveAccountForm, sendAccountForm);
         model.addAttribute("fullAccountForm", fullAccountForm);
-        model.addAttribute("api", "/admin/updateAccount/" + id);
+        model.addAttribute("api", "/admin/mailAccountSettings/update?id=" + id);
         return "admin/settings/account/form";
     }
 
-    @RequestMapping(value = "/updateAccount/{id}", method = RequestMethod.POST)
-    public String updateReceiveAccount(@PathVariable("id") long id, Model model, @ModelAttribute("fullAccountForm") FullAccountForm fullAccountForm) {
+    @RequestMapping(value = "/mailAccountSettings/update", method = RequestMethod.POST)
+    public String updateReceiveAccount(@RequestParam(value = "id") long id, Model model, @ModelAttribute("fullAccountForm") @Validated FullAccountForm fullAccountForm,
+                                       BindingResult result, RedirectAttributes redirectAttrs) {
         List<EmailAccount> listAccount = mailAccountsService.findById(id);
         if(listAccount.isEmpty()){
             //TODO: account not found error
         }
         else {
+            if (result.hasErrors()) {
+                return "admin/settings/account/form";
+            }
             MailAccountForm mailAccountForm = fullAccountForm.getMailAccountForm();
             ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
             SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
