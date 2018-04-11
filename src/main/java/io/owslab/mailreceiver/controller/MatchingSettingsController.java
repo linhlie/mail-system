@@ -204,9 +204,9 @@ public class MatchingSettingsController {
     @ResponseBody
     ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
                                           @RequestParam(value = "range", required = false) String range,
-                                          @RequestParam(value = "isUpper", required = false) boolean isUpper){
+                                          @RequestParam(value = "replaceType", required = false) int replaceType){
         AjaxResponseBody result = new AjaxResponseBody();
-        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, range, isUpper);
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, range, replaceType);
         result.setMsg("done");
         result.setStatus(true);
         result.setList(mailDetail);

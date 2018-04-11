@@ -27,6 +27,9 @@ import java.util.regex.Pattern;
 @Service
 public class MailBoxService {
     public static final String HIGHLIGHT_RANGE_COLOR = "#ff9900";
+    public static final int USE_RAW = 0;
+    public static final int USE_LOWER_LIMIT = 1;
+    public static final int USE_UPPER_LIMIT = 2;
     @Autowired
     private EmailDAO emailDAO;
 
@@ -109,15 +112,15 @@ public class MailBoxService {
         return results;
     }
 
-    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String rangeStr, boolean isUseUpperLimit){
+    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String rangeStr, int replaceType){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(rangeStr, rangeStr, false, false);
         FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         double ratio = 1;
-        if(numberTreatment != null){
-            ratio = isUseUpperLimit ? numberTreatment.getUpperLimitRate() : numberTreatment.getLowerLimitRate();
+        if(replaceType > USE_RAW && numberTreatment != null){
+            ratio = replaceType == USE_UPPER_LIMIT ? numberTreatment.getUpperLimitRate() : numberTreatment.getLowerLimitRate();
         }
         String firstRangeStr = null;
         if(firstRange != null){

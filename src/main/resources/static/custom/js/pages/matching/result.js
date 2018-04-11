@@ -18,6 +18,8 @@
     var sourceMatchDataTable;
     var destinationMatchDataTable;
     var selectedRowData;
+    var motoReplaceSelectorId = "#motoReplaceSelector";
+    var sakiReplaceSelectorId = "#sakiReplaceSelector";
 
     $(function () {
         fixingForTinyMCEOnModal()
@@ -135,20 +137,22 @@
                 }
                 setTimeout(function () {
                     setRowClickListener("sendToMoto", function () {
+                        var replaceType = $(motoReplaceSelectorId).val();
                         var row = $(this)[0].parentNode;
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, false)
+                            showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, replaceType)
                         }
                     });
                     setRowClickListener("sendToSaki", function () {
+                        var replaceType = $(sakiReplaceSelectorId).val();
                         var row = $(this)[0].parentNode;
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, true)
+                                showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, replaceType)
                             }
                         }
                     });
@@ -299,12 +303,12 @@
         });
     }
 
-    function showMailWithReplacedRange(messageId, range, isUpper, callback) {
+    function showMailWithReplacedRange(messageId, range, replaceType, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&range=" + range + "&isUpper=" + isUpper,
+            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&range=" + range + "&replaceType=" + replaceType,
             cache: false,
             timeout: 600000,
             success: function (data) {
@@ -417,9 +421,9 @@
         }
     }
     
-    function showMailEditor(messageId, receiver, textRange, isUseUpperLimit) {
+    function showMailEditor(messageId, receiver, textRange, replaceType) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, textRange, isUseUpperLimit, function (result) {
+        showMailWithReplacedRange(messageId, textRange, replaceType, function (result) {
             showMailContenttToEditor(result, receiver)
         });
         $('#sendSuggestMail').off('click');
