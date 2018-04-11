@@ -121,6 +121,10 @@ public class FetchMailsService {
             this.setTotal(this.getTotal()+1);
         }
 
+        public void decreaseTotal(){
+            this.setTotal(this.getTotal()-1);
+        }
+
         public void completed(){
             this.setDone(this.getTotal());
         }
