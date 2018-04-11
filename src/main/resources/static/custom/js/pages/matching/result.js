@@ -110,7 +110,7 @@
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,
-            "order": [],
+            "order": [[ 2, "desc" ]]
         });
     }
     
@@ -162,7 +162,7 @@
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,
-            "order": [],
+            "order": [[ 2, "desc" ]],
             columnDefs: [
                 { orderable: false, targets: [-1, -2] }
             ]
