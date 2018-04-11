@@ -120,6 +120,10 @@ public class FetchMailsService {
         public void increaseTotal(){
             this.setTotal(this.getTotal()+1);
         }
+
+        public void completed(){
+            this.setDone(this.getTotal());
+        }
     }
 
     public FetchMailProgress getTotalFetchMailProgress(){

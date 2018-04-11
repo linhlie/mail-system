@@ -152,15 +152,15 @@ public class IMAPFetchMailJob implements Runnable {
                     continue;
                 }
                 System.out.println(message.getSubject());
-                mailProgress.increaseTotal();
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
-                mailProgress.increase();
                 saveFiles(message, email);
+                mailProgress.increaseTotal();
             } catch (Exception e) {
 //                e.printStackTrace();
             }
         }
+        mailProgress.completed();
     }
 
     private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
