@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.validator;
 
 import io.owslab.mailreceiver.form.FullAccountForm;
+import io.owslab.mailreceiver.form.MailAccountForm;
 import io.owslab.mailreceiver.form.ReceiveAccountForm;
 import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.model.EmailAccount;
@@ -36,29 +37,24 @@ public class MailAccountSettingValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         FullAccountForm fullAccountForm = (FullAccountForm) target;
-        List<EmailAccount> listAccount = mailAccountsService.findById(fullAccountForm.getAccountId());
-        if(listAccount.isEmpty()){
-            //TODO: account not found error
-            System.out.println("validate empty account:"  + fullAccountForm.getAccountId());
-        } else {
-            ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
-            SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
-            EmailAccount emailAccount = listAccount.get(0);
-            EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
-            newReceiveAccountSetting.setAccountId(emailAccount.getId());
-            EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
-            newSendAccountSetting.setAccountId(emailAccount.getId());
-            try {
-                check(emailAccount, newReceiveAccountSetting);
-            } catch (Exception e) {
-                errors.rejectValue("rUserName", "Authentication.fullAccountForm.rUserName");
-            }
+        MailAccountForm mailAccountForm = fullAccountForm.getMailAccountForm();
+        ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
+        SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
+        EmailAccount emailAccount = new EmailAccount(mailAccountForm);
+        EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
+        newReceiveAccountSetting.setAccountId(emailAccount.getId());
+        EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
+        newSendAccountSetting.setAccountId(emailAccount.getId());
+        try {
+            check(emailAccount, newReceiveAccountSetting);
+        } catch (Exception e) {
+            errors.rejectValue("rUserName", "Authentication.fullAccountForm.rUserName");
+        }
 
-            try {
-                check(emailAccount, newSendAccountSetting);
-            } catch (Exception e) {
-                errors.rejectValue("sUserName", "Authentication.fullAccountForm.sUserName");
-            }
+        try {
+            check(emailAccount, newSendAccountSetting);
+        } catch (Exception e) {
+            errors.rejectValue("sUserName", "Authentication.fullAccountForm.sUserName");
         }
     }
 

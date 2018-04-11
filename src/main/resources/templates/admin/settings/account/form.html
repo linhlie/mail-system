@@ -4,9 +4,9 @@
     <title>メール アカウント設定</title>
 </head>
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content" th:with="isUpdate=${param.id != null}">
     <section class="content-header">
-        <h1>メール アカウント編集</h1>
+        <h1 th:text="${isUpdate} ? 'メール アカウント編集': 'メール アカウント新規登録'"></h1>
     </section>
     <section class="content">
         <div class="row">
@@ -20,7 +20,7 @@
                                 <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
 
                                 <div class="col-md-6 col-xs-5">
-                                    <input th:field="*{account}" type="email" class="form-control" required="required" th:readonly="true"/>
+                                    <input th:field="*{account}" type="email" class="form-control" required="required" th:readonly="${isUpdate}"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -187,13 +187,13 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
-                                    <button type="submit" class="btn btn-success">更新</button>
+                                    <button th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
-                                    <button name="resetFormBtn" type="button" class="btn btn-default">項目クリア</button>
+                                    <button th:data="${isUpdate}" name="resetFormBtn" type="button" class="btn btn-default">項目クリア</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
-                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                    <button th:data="${isUpdate}" name="backBtn" type="button" class="btn btn-danger">終了</button>
                                 </div>
                             </div>
                         </form>

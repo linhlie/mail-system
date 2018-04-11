@@ -143,18 +143,32 @@ public class SettingsController {
     }
     @RequestMapping(value = "/mailAccountSettings/add", method = RequestMethod.GET)
     public String getAddMailAccount(Model model) {
-        MailAccountForm mailAccountForm = new MailAccountForm();
-        model.addAttribute("mailAccountForm", mailAccountForm);
-        model.addAttribute("api", "/admin/addMailAccount");
-        return "admin/settings/account/addForm";
+        FullAccountForm fullAccountForm = new FullAccountForm();
+        fullAccountForm.setrMailServerPort(993);
+        fullAccountForm.setsMailServerPort(25);
+        model.addAttribute("fullAccountForm", fullAccountForm);
+        model.addAttribute("api", "/admin/mailAccountSettings/add");
+        return "admin/settings/account/form";
     }
 
-    @RequestMapping(value = { "/addMailAccount" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/mailAccountSettings/add" }, method = RequestMethod.POST)
     public String saveReceiveAccount(
-            Model model,
-            @ModelAttribute("mailAccountForm") MailAccountForm mailAccountForm) {
-        EmailAccount emailAccount = new EmailAccount(mailAccountForm);
-        mailAccountsService.save(emailAccount);
+            Model model, @ModelAttribute("fullAccountForm") FullAccountForm fullAccountForm,
+            BindingResult result, RedirectAttributes redirectAttrs) {
+        mailAccountSettingValidator.validate(fullAccountForm, result);
+        if (result.hasErrors()) {
+            return "admin/settings/account/form";
+        }
+        MailAccountForm mailAccountForm = fullAccountForm.getMailAccountForm();
+        ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
+        SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
+        EmailAccount emailAccount = mailAccountsService.save(new EmailAccount(mailAccountForm));
+        EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
+        newReceiveAccountSetting.setAccountId(emailAccount.getId());
+        emailAccountSettingService.save(newReceiveAccountSetting);
+        EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
+        newSendAccountSetting.setAccountId(emailAccount.getId());
+        emailAccountSettingService.save(newSendAccountSetting);
         return "redirect:/admin/mailAccountSettings";
     }
 

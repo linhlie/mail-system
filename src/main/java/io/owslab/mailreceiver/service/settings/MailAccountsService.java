@@ -34,8 +34,8 @@ public class MailAccountsService {
         return emailAccountDAO.findById(id);
     }
 
-    public void save(EmailAccount account){
-        emailAccountDAO.save(account);
+    public EmailAccount save(EmailAccount account){
+        return emailAccountDAO.save(account);
     }
 
     public void delete(long accountId, boolean deleteMail){

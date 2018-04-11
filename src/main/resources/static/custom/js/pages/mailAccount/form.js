@@ -10,10 +10,7 @@
         setFormsChangeListener();
         setMailProtocolChangeListener();
         setGoBackListener('backBtn');
-        setResetListener('resetFormBtn', function () {
-            $('#fullAccountForm').trigger("reset");
-            formChange = false;
-        });
+        setResetListener('resetFormBtn');
     });
 
     function setFormsChangeListener() {
@@ -35,17 +32,28 @@
         });
     }
     
-    function setResetListener(name, callback) {
+    function setResetListener(name) {
         $("button[name='"+name+"']").click(function () {
-            if(typeof callback === "function"){
-                callback();
+            var isUpdate = $(this).attr("data");
+            if(isUpdate === "false") {
+                if(formChange){
+                    var isClear = confirm("本当にリセットフォームが必要ですか。");
+                    if(isClear){
+                        $('#fullAccountForm').trigger("reset");
+                        formChange = false;
+                    }
+                }
+            } else {
+                $('#fullAccountForm').trigger("reset");
+                formChange = false;
             }
         })
     }
 
     function setGoBackListener(name){
         $("button[name='"+name+"']").click(function () {
-            if(formChange) {
+            var isUpdate = $(this).attr("data");
+            if(isUpdate === "true" && formChange) {
                 var isBack = confirm("離れたいですか。");
                 if(isBack){
                     goBack();
