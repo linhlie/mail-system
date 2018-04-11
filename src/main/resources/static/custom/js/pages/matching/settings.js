@@ -18,9 +18,8 @@
         setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
         setRemoveRowListener("removeConditionRow");
-        // getSourceListData();
-        // getDestinationListData();
-        // getMatchingListData();
+        // getSourceListData(true);
+        // getDestinationListData(true);
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
@@ -93,17 +92,25 @@
         })
     }
     
-    function getSourceListData() {
-        var name = prompt("Please enter saved name", "");
-        if (name != null) {
-            getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
+    function getSourceListData(skip) {
+        if(skip){
+            getListData("/user/matchingSettings/source", null, sourceTableId, getSourceBtnId);
+        } else {
+            var name = prompt("Please enter saved name", "");
+            if (name != null) {
+                getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
+            }
         }
     }
 
-    function getDestinationListData() {
-        var name = prompt("Please enter saved name", "");
-        if (name != null) {
-            getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
+    function getDestinationListData(skip) {
+        if(skip){
+            getListData("/user/matchingSettings/destination", null, destinationTableId, getDestinationBtnId);
+        } else {
+            var name = prompt("Please enter saved name", "");
+            if (name != null) {
+                getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
+            }
         }
     }
 
@@ -120,13 +127,43 @@
             var key = url + "@" + name;
             data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : [];
         }
-        //TODO: add default date row
+        console.log("getListData: ", data);
         removeAllRow(tableId);
-        if(data.length > 0){
-            for(var i = 0; i < data.length; i ++){
-                addRowWithData(tableId, data[i]);
+        data = addDefaultReceiveDateRow(data);
+        for(var i = 0; i < data.length; i ++){
+            addRowWithData(tableId, data[i]);
+        }
+    }
+
+    function addDefaultReceiveDateRow(data) {
+        var receivedDateCondition = null;
+        for(var i = 0; i < data.length; i ++){
+            var condition = data[i];
+            if(condition.item == "9"){
+                receivedDateCondition = condition;
             }
         }
+        if(receivedDateCondition == null){
+            var sevenDayAgo = new Date();
+            sevenDayAgo.setDate(sevenDayAgo.getDate() - 7);
+            var month = '' + (sevenDayAgo.getMonth() + 1);
+            var day = '' + sevenDayAgo.getDate();
+            var year = sevenDayAgo.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            receivedDateCondition = {
+                combine: "0",
+                condition: "4",
+                group: true,
+                id: "",
+                item: "9",
+                remove: 0,
+                value: year + "-" + month + "-" + day,
+            }
+            data.push(receivedDateCondition);
+        }
+        return data;
     }
 
     function disableButton(buttonId, disabled) {
