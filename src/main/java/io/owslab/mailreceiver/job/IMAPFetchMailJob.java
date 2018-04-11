@@ -9,10 +9,13 @@ import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.service.BeanUtil;
+import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
 import io.owslab.mailreceiver.utils.Utils;
+import org.hibernate.annotations.Fetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,18 +36,21 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
     private final EnviromentSettingService enviromentSettingService;
+    private final FetchMailsService fetchMailsService;
     private final EmailAccountSetting accountSetting;
     private final EmailAccount account;
-
+    private final FetchMailsService.FetchMailProgress mailProgress;
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, EmailAccountSetting accountSetting, EmailAccount account) {
-        this.emailDAO = emailDAO;
-        this.fileDAO = fileDAO;
-        this.enviromentSettingService = enviromentSettingService;
+    public IMAPFetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
+        this.emailDAO = BeanUtil.getBean(EmailDAO.class);
+        this.fileDAO = BeanUtil.getBean(FileDAO.class);
+        this.enviromentSettingService = BeanUtil.getBean(EnviromentSettingService.class);
+        this.fetchMailsService = BeanUtil.getBean(FetchMailsService.class);
         this.accountSetting = accountSetting;
         this.account = account;
+        this.mailProgress = this.fetchMailsService.getMailProgressInstance();
     }
 
     @Override
@@ -139,7 +145,9 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void fetchEmail(Message[] messages) {
+        mailProgress.setTotal(messages.length);
         for (int i = 0, n = messages.length; i < n; i++) {
+            mailProgress.increase();
             try {
                 MimeMessage message = (MimeMessage) messages[i];
                 if(isEmailExist(message, account)) {
