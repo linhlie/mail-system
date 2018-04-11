@@ -336,6 +336,7 @@
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
                 disableButton(openFileFolderButtonId, false);
             } else {
+                mailAttachmentDiv.innerHTML = "添付ファイルなし";
                 disableButton(openFileFolderButtonId, true);
             }
         } else {
@@ -369,6 +370,8 @@
                     filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
                 }
                 rdMailAttachmentDiv.innerHTML = filesInnerHTML;
+            } else {
+                rdMailAttachmentDiv.innerHTML = "添付ファイルなし";
             }
         }
     }
