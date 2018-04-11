@@ -259,17 +259,21 @@ public class MatchingConditionService {
     private List<MatchingConditionGroup> divideIntoGroups(List<MatchingCondition> conditions){
         List<MatchingConditionGroup> result = new ArrayList<MatchingConditionGroup>();
         MatchingConditionGroup group = new MatchingConditionGroup();
+        List<MatchingCondition> filteredConditions = new ArrayList<>();
         for(MatchingCondition condition : conditions){
             if(condition.getRemove() != MatchingCondition.Remove.REMOVED) {
-                if(!condition.isGroup()){
-                    if(!group.isEmpty()){
-                        result.add(group);
-                    }
-                    group = new MatchingConditionGroup();
-                }
-                group.add(new MatchingConditionResult(condition));
+                filteredConditions.add(condition);
             }
-            if(conditions.indexOf(condition) == (conditions.size() - 1)) {
+        }
+        for(MatchingCondition condition : filteredConditions){
+            if(!condition.isGroup()){
+                if(!group.isEmpty()){
+                    result.add(group);
+                }
+                group = new MatchingConditionGroup();
+            }
+            group.add(new MatchingConditionResult(condition));
+            if(filteredConditions.indexOf(condition) == (filteredConditions.size() - 1)) {
                 result.add(group);
             }
         }
