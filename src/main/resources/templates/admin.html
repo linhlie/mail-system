@@ -27,6 +27,24 @@
                 </a>
                 <!-- /.info-box -->
             </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box bg-green">
+                    <span class="info-box-icon"><i class="fa fa-envelope-o"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Fetch mails</span>
+                        <span class="info-box-number" th:text="${mailProgressDone} + '/' + ${mailProgressTotal}"></span>
+
+                        <div class="progress">
+                            <div class="progress-bar" th:style="'width:' + ${mailProgressPercent} +'%;'"></div>
+                        </div>
+                        <span class="progress-description" th:text="'Last update: ' + ${mailProgressLastUpdate}">
+                  </span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
         </div>
         <!-- /.row -->
     </section>
