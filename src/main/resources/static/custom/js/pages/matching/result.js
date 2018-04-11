@@ -97,6 +97,7 @@
             }
         }
         initSortSource();
+        selectFirstRow();
     }
 
     function destroySortSource() {
@@ -229,6 +230,20 @@
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
             });
+        }
+    }
+    
+    function selectFirstRow() {
+        if(matchingResult && matchingResult.length > 0){
+            $('#' + sourceTableId).find(' tbody tr:first').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+            var rowData = matchingResult[0];
+            if(rowData && rowData.source && rowData.source.messageId){
+                showMail(rowData.source.messageId, function (result) {
+                    showMailContent(result)
+                });
+            }
+            selectedRowData = rowData;
+            showDestinationData(destinationTableId, rowData);
         }
     }
     
