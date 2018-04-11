@@ -156,7 +156,7 @@
                                 addRowWithData(tableId, data.list[i]);
                             }
                         } else {
-                            addRow(tableId);
+                            // addRow(tableId);
                         }
                     }
                 }
