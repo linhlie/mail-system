@@ -76,44 +76,6 @@
                                                                         </span>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td class="hidden" th:data="id">
-                                                        <span></span>
-                                                    </td>
-                                                    <td class="text-center" th:data="group">
-                                                        <input name="group"
-                                                               type="checkbox"
-                                                        />
-                                                    </td>
-                                                    <td class="select-container" th:data="combine">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${combineOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="item">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${mailItemOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="condition">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${conditionOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td th:data="value"><input type="text" placeholder=""/></td>
-                                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-remove">
-                                                                        </span>
-                                                    </td>
-                                                </tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -151,44 +113,6 @@
                                                 </thead>
                                                 <tbody>
                                                 <tr class="hidden skip">
-                                                    <td class="hidden" th:data="id">
-                                                        <span></span>
-                                                    </td>
-                                                    <td class="text-center" th:data="group">
-                                                        <input name="group"
-                                                               type="checkbox"
-                                                        />
-                                                    </td>
-                                                    <td class="select-container" th:data="combine">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${combineOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="item">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${mailItemOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="condition">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${conditionOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td th:data="value"><input type="text" placeholder=""/></td>
-                                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-remove">
-                                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
                                                     <td class="hidden" th:data="id">
                                                         <span></span>
                                                     </td>

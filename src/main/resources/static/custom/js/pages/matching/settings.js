@@ -18,9 +18,9 @@
         setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
         setRemoveRowListener("removeConditionRow");
-        getSourceListData();
-        getDestinationListData();
-        getMatchingListData();
+        // getSourceListData();
+        // getDestinationListData();
+        // getMatchingListData();
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
@@ -38,65 +38,32 @@
     }
 
     function saveSourceListData(){
-        var data = buildDataFromTable(sourceTableId);
-        var form = {
-            "sourceConditionList": data
-        };
-        saveListData(
-            "/user/matchingSettings/saveSource",
-            form,
-            function onSuccess() {
-                getSourceListData();
-            },
-            function onError(e) {
-                console.error("[ERR] saveSourceListData: ", e);
-            }
-        )
+        var name = prompt("Please enter saved name", "");
+        if (name != null && name.length > 0) {
+            var data = buildDataFromTable(sourceTableId);
+            saveListData(
+                "/user/matchingSettings/source",
+                name,
+                data
+            )
+        }
     }
 
     function saveDestinationListData(){
-        var data = buildDataFromTable(destinationTableId);
-        var form = {
-            "destinationConditionList": data
-        };
-        saveListData(
-            "/user/matchingSettings/saveDestination",
-            form,
-            function onSuccess() {
-                getDestinationListData();
-            },
-            function onError(e) {
-                console.error("[ERR] saveDestinationListData: ", e);
-            }
-        )
+        var name = prompt("Please enter saved name", "");
+        if (name != null && name.length > 0) {
+            var data = buildDataFromTable(destinationTableId);
+            saveListData(
+                "/user/matchingSettings/destination",
+                name,
+                data
+            )
+        }
     }
 
-    function saveListData(url, data, success, error) {
-        $.ajax({
-            type: "POST",
-            contentType: "application/json",
-            url: url,
-            data: JSON.stringify(data),
-            dataType: 'json',
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                if(data && data.status){
-                    if(typeof success === "function"){
-                        success();
-                    }
-                } else {
-                    if(typeof error === "function"){
-                        error();
-                    }
-                }
-            },
-            error: function (e) {
-                if(typeof error === "function"){
-                    error(e);
-                }
-            }
-        });
+    function saveListData(url, name,  data) {
+        var key = url + "@" + name;
+        localStorage.setItem(key, JSON.stringify(data));
     }
 
     function setRemoveRowListener(name) {
@@ -127,45 +94,39 @@
     }
     
     function getSourceListData() {
-        getListData("/user/matchingSettings/source", sourceTableId, getSourceBtnId);
+        var name = prompt("Please enter saved name", "");
+        if (name != null) {
+            getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
+        }
     }
 
     function getDestinationListData() {
-        getListData("/user/matchingSettings/destination", destinationTableId, getDestinationBtnId);
+        var name = prompt("Please enter saved name", "");
+        if (name != null) {
+            getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
+        }
     }
 
-    function getMatchingListData() {
-        getListData("/user/matchingSettings/matching", matchingTableId);
-    }
+    // function getMatchingListData() {
+    //     var name = prompt("Please enter saved name", "");
+    //     if (name != null) {
+    //         getListData("/user/matchingSettings/matching", name, matchingTableId);
+    //     }
+    // }
 
-    function getListData(url, tableId, buttonId) {
-        disableButton(buttonId, true);
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                disableButton(buttonId, false);
-                if(data.status){
-                    if(data.list){
-                        removeAllRow(tableId);
-                        if(data.list.length > 0){
-                            for(var i = 0; i < data.list.length; i ++){
-                                addRowWithData(tableId, data.list[i]);
-                            }
-                        } else {
-                            // addRow(tableId);
-                        }
-                    }
-                }
-            },
-            error: function (e) {
-                console.error("getListData ERROR : ", e);
-                disableButton(buttonId, false);
+    function getListData(url, name, tableId) {
+        var data = [];
+        if(name && name.length > 0){
+            var key = url + "@" + name;
+            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : [];
+        }
+        //TODO: add default date row
+        removeAllRow(tableId);
+        if(data.length > 0){
+            for(var i = 0; i < data.length; i ++){
+                addRowWithData(tableId, data[i]);
             }
-        });
+        }
     }
 
     function disableButton(buttonId, disabled) {
