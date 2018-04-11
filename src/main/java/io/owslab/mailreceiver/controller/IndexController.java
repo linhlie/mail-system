@@ -47,10 +47,7 @@ public class IndexController {
         long numberOfMessage = mailBoxService.count();
         model.addAttribute("numberOfMessage", numberOfMessage);
         FetchMailsService.FetchMailProgress mailProgress = fetchMailsService.getTotalFetchMailProgress();
-        model.addAttribute("mailProgressDone", mailProgress.getDone());
-        model.addAttribute("mailProgressTotal", mailProgress.getTotal());
-        double percent = mailProgress.getTotal() == 0 ? 0 : ((double)mailProgress.getDone() / (double)mailProgress.getTotal()) * 100;
-        model.addAttribute("mailProgressPercent", (int) percent);
+        model.addAttribute("mailProgressRemain", mailProgress.getTotal() - mailProgress.getDone());
         model.addAttribute("mailProgressLastUpdate", df.format(new Date()));
         return "admin";
     }
