@@ -116,6 +116,7 @@
     }
     
     function showDestinationData(tableId, data) {
+        console.log("showDestinationData: ", data);
         setTimeout(function () {
             var word = data.word;
             var source = data.source;
@@ -123,33 +124,38 @@
             destroySortDestination();
             removeAllRow(tableId);
             if(currentDestinationResult.length > 0){
-                for(var i = 0; i < currentDestinationResult.length; i ++){
-                    currentDestinationResult[i].word = word;
-                    addRowWithData(tableId, currentDestinationResult[i], i, function () {
-                        setRowClickListener("showDestinationMail", showDestinationMail);
+                for(var i = 0; i < currentDestinationResult.length; i++){
+                    var index = i;
+                    setTimeout(function () {
+                        currentDestinationResult[index].word = word;
+                        addRowWithData(tableId, currentDestinationResult[index], index, function () {
+                            setRowClickListener("showDestinationMail", showDestinationMail);
+                        });
+                    }, 1);
+                }
+                setTimeout(function () {
+                    setRowClickListener("sendToMoto", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if(rowData && rowData.messageId){
+                            showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, false)
+                        }
                     });
-                }
+                    setRowClickListener("sendToSaki", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if(rowData){
+                            if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
+                                showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, true)
+                            }
+                        }
+                    });
+                    initSortDestination();
+                }, 2 * currentDestinationResult.length)
             }
-            setRowClickListener("sendToMoto", function () {
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                var rowData = currentDestinationResult[index];
-                if(rowData && rowData.messageId){
-                    showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, false)
-                }
-            });
-            setRowClickListener("sendToSaki", function () {
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                var rowData = currentDestinationResult[index];
-                if(rowData){
-                    if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                        showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, true)
-                    }
-                }
-            });
-            initSortDestination();
-        }.bind(this), 0);
+        }.bind(this), 100);
     }
 
     function destroySortDestination() {
@@ -163,7 +169,7 @@
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,
-            "order": [[ 2, "desc" ]],
+            "order": [[ 3, "desc" ]],
             columnDefs: [
                 { orderable: false, targets: [-1, -2] }
             ]
