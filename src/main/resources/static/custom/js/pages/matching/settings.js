@@ -18,8 +18,8 @@
         setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
         setRemoveRowListener("removeConditionRow");
-        // getSourceListData(true);
-        // getDestinationListData(true);
+        getDefaultSourceListData();
+        getDefaultDestinationListData();
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
@@ -120,6 +120,43 @@
     //         getListData("/user/matchingSettings/matching", name, matchingTableId);
     //     }
     // }
+    
+    function getDefaultSourceListData() {
+        var data = [];
+        var condition = {
+            combine: "-1",
+            condition: "-1",
+            group: false,
+            id: "",
+            item: "7",
+            remove: 0,
+            value: "",
+        };
+        data.push(condition);
+        showDefaultListData(data, sourceTableId);
+    }
+
+    function getDefaultDestinationListData() {
+        var data = [];
+        var condition = {
+            combine: "-1",
+            condition: "-1",
+            group: false,
+            id: "",
+            item: "8",
+            remove: 0,
+            value: "",
+        };
+        data.push(condition);
+        showDefaultListData(data, destinationTableId);
+    }
+
+    function showDefaultListData(data, tableId) {
+        data = addDefaultReceiveDateRow(data);
+        for(var i = 0; i < data.length; i ++){
+            addRowWithData(tableId, data[i]);
+        }
+    }
 
     function getListData(url, name, tableId) {
         var data = [];
