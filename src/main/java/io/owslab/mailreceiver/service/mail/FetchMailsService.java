@@ -116,6 +116,10 @@ public class FetchMailsService {
         public void increase(){
             this.setDone(this.getDone()+1);
         }
+
+        public void increaseTotal(){
+            this.setTotal(this.getTotal()+1);
+        }
     }
 
     public FetchMailProgress getTotalFetchMailProgress(){
