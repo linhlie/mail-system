@@ -129,4 +129,13 @@ public class EnviromentSettingService {
         String value = this.getSetting(START_UP_WITH_PC_KEY, DEFAULT_START_UP_WITH_PC);
         return value != null && value.equals("1");
     }
+
+    public boolean getDebugOn(){
+        String value = this.getSetting(DEBUG_ON_KEY, DEFAULT_DEBUG_ON);
+        return value != null && value.equals("1");
+    }
+
+    public String getDebugReceiveMailAddress(){
+        return this.getSetting(DEBUG_RECEIVE_MAIL_ADDRESS_KEY, DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS);
+    }
 }

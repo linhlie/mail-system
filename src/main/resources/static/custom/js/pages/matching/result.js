@@ -21,7 +21,11 @@
     var motoReplaceSelectorId = "#motoReplaceSelector";
     var sakiReplaceSelectorId = "#sakiReplaceSelector";
 
+    var isDebug = true;
+    var debugMailAddress = "ows-test@world-link-system.com";
+
     $(function () {
+        getEnvSettings();
         fixingForTinyMCEOnModal()
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
@@ -381,8 +385,8 @@
     }
 
     function showMailContenttToEditor(data, receiver) {
-        // document.getElementById(rdMailReceiverId).value = receiver;
-        document.getElementById(rdMailReceiverId).value = "ows-test@world-link-system.com";
+        receiver = isDebug ? debugMailAddress : receiver;
+        document.getElementById(rdMailReceiverId).value = receiver;
         var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
         rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
@@ -474,6 +478,30 @@
                 }
             });
         })
+    }
+    
+    function getEnvSettings() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/matchingResult/envSettings",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                try {
+                    var result = data && data.msg ? JSON.parse(data.msg) : null;
+                    if(result){
+                        isDebug = result["debug_on"];
+                        debugMailAddress = result["debug_receive_mail_address"];
+                    }
+                } catch (error){
+                    console.error("getEnvSettings ERROR : ", error);
+                }
+            },
+            error: function (e) {
+                console.error("getEnvSettings FAILED : ", e);
+            }
+        });
     }
 
 })(jQuery);

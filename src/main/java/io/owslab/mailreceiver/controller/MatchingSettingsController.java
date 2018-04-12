@@ -8,9 +8,11 @@ import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.MediaTypeUtils;
 import io.owslab.mailreceiver.utils.SelectOption;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,9 @@ public class MatchingSettingsController {
 
     @Autowired
     private SendMailService sendMailService;
+
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
 
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -268,5 +273,17 @@ public class MatchingSettingsController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value="/matchingResult/envSettings", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEnvSettingsInJSON (){
+        AjaxResponseBody result = new AjaxResponseBody();
+        JSONObject obj = new JSONObject();
+        obj.put("debug_on", enviromentSettingService.getDebugOn());
+        obj.put("debug_receive_mail_address", enviromentSettingService.getDebugReceiveMailAddress());
+        result.setMsg(obj.toString());
+        result.setStatus(true);
+        return ResponseEntity.ok(result);
     }
 }
