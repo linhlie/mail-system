@@ -134,6 +134,7 @@
             destroySortDestination();
             removeAllRow(tableId);
             if(currentDestinationResult.length > 0){
+                console.log("start currentDestinationResult");
                 for(var i = 0; i < currentDestinationResult.length; i++){
                     var index = i;
                     setTimeout(function () {
@@ -141,7 +142,7 @@
                         addRowWithData(tableId, currentDestinationResult[index], index, function () {
                             setRowClickListener("showDestinationMail", showDestinationMail);
                         });
-                    }, 1);
+                    }, 5 * index);
                 }
                 setTimeout(function () {
                     setRowClickListener("sendToMoto", function () {
@@ -166,9 +167,9 @@
                     });
                     initSortDestination();
                     $('body').loadingModal('hide');
-                }, currentDestinationResult.length + 1)
+                }, (currentDestinationResult.length + 1) * 5)
             }
-        }.bind(this), 1);
+        }, 50)
     }
 
     function destroySortDestination() {
@@ -191,6 +192,7 @@
 
     function addRowWithData(tableId, data, index, callback) {
         var table = document.getElementById(tableId);
+        if(!table) return;
         var body = table.tBodies[0];
         var rowToClone = table.rows[1];
         var row = rowToClone.cloneNode(true);
