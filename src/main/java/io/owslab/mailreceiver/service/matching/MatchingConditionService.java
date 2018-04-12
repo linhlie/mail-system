@@ -506,9 +506,11 @@ public class MatchingConditionService {
         //TODO: condition value date string may have many format???;
         if(part == null) return false;
         boolean match = false;
+        ConditionOption option = ConditionOption.fromValue(condition.getCondition());
+        String dateValue = condition.getValue();
         try {
-            ConditionOption option = ConditionOption.fromValue(condition.getCondition());
-            String dateValue = condition.getValue();
+//            ConditionOption option = ConditionOption.fromValue(condition.getCondition());
+//            String dateValue = condition.getValue();
             Date conditionDate = formatter.parse(dateValue);
             conditionDate = Utils.trim(conditionDate);
             part = Utils.trim(part);
@@ -538,7 +540,8 @@ public class MatchingConditionService {
                 default:
                     break;
             }
-        } catch (ParseException e){
+        } catch (Exception e){
+            logger.warn("dateValue: " + dateValue);
             logger.error(e.getMessage());
         }
         return match;
