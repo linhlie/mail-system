@@ -357,7 +357,7 @@
         mailAttachmentDiv.innerHTML = "";
         if(data){
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
-                '<h5><b>' + data.subject + '</b></h5>' +
+                '<h4>' + data.subject + '</h4>' +
             '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
             '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');

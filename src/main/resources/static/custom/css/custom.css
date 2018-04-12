@@ -416,13 +416,7 @@ input.form-error {
 }
 
 .matching-result .mailbox-read-info {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.matching-result .mailbox-read-info h6 {
-    margin-top: 0;
-    margin-bottom: 0;
+    padding: 0;
 }
 
 .matching-result .mail-part.mail-body, .matching-result .mail-part.mail-attachment {
