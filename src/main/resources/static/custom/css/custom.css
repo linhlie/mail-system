@@ -375,9 +375,12 @@ input.form-error {
     height: 490px;
 }
 
-.matching-result .mail-part.mail-attachment {
+.matching-result .mail-attachment {
+    padding: 5px 10px;
+    min-height: 30px;
     margin-top: 10px;
-    height: 30px;
+    border: #a5a5a5 solid 1px;
+    width: 100%;
 }
 
 .rd-mail-part.rd-mail-attachment {
