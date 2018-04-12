@@ -118,8 +118,16 @@
     }
     
     function showDestinationData(tableId, data) {
-        console.log("showDestinationData: ", data);
         setTimeout(function () {
+            $('body').loadingModal('destroy');
+            $('body').loadingModal({
+                position: 'auto',
+                text: 'Loading...',
+                color: '#fff',
+                opacity: '0.7',
+                backgroundColor: 'rgb(0,0,0)',
+                animation: 'doubleBounce',
+            });
             var word = data.word;
             var source = data.source;
             currentDestinationResult = data.destinationList;
@@ -157,9 +165,10 @@
                         }
                     });
                     initSortDestination();
-                }, 2 * currentDestinationResult.length)
+                    $('body').loadingModal('hide');
+                }, currentDestinationResult.length + 1)
             }
-        }.bind(this), 100);
+        }.bind(this), 1);
     }
 
     function destroySortDestination() {
@@ -269,7 +278,7 @@
 
     function removeAllRow(tableId) { //Except header row
         var table = document.getElementById(tableId);
-        while(table.rows.length > 2){
+        while(table && table.rows && table.rows.length > 2){
             var row = table.rows[2];
             row.parentNode.removeChild(row);
         }
