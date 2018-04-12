@@ -312,11 +312,14 @@
     }
     
     function submit() {
+        var matchingWords = $(matchingWordsAreaId).val();
+        matchingWords = matchingWords.toLocaleLowerCase();
+        matchingWords = matchingWords.trim();
         var form = {
             "sourceConditionList" : buildDataFromTable(sourceTableId),
             "destinationConditionList" : buildDataFromTable(destinationTableId),
             "matchingConditionList" : buildDataFromTable(matchingTableId),
-            "matchingWords": $(matchingWordsAreaId).val(),
+            "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true"
         };
         console.log("form: ", form);
