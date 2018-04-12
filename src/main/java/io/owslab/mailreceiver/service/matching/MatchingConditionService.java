@@ -51,6 +51,8 @@ public class MatchingConditionService {
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
+
     @Value("${mailreceiver.app.daysago}")
     private int daysago;
 
@@ -163,7 +165,6 @@ public class MatchingConditionService {
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
 //        preBuildRanges(matchingConditionList, matchWordSource, matchWordDestination);
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
         List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
@@ -178,7 +179,6 @@ public class MatchingConditionService {
         logger.info("start range invokeAll pharse: " + callables.size());
         try {
             List<Future<MatchingPartResult>> futures = executorService.invokeAll(callables);
-            executorService.shutdown();
             for(Future<MatchingPartResult> future: futures) {
                 MatchingPartResult result = future.get();
                 if(result.isMatch()){
@@ -224,7 +224,6 @@ public class MatchingConditionService {
         }
 
         if(!mustPreBuild) return;
-        ExecutorService executorService= Executors.newFixedThreadPool(10);
         List<Callable<Void>> callableList=new ArrayList<Callable<Void>>();
         for(MatchingWordResult result : matchSource){
             if(result.hasMatchWord()) {
@@ -238,7 +237,6 @@ public class MatchingConditionService {
         }
         try {
             executorService.invokeAll(callableList);
-            executorService.shutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -283,14 +281,12 @@ public class MatchingConditionService {
     private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish){
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
-                ExecutorService executorService= Executors.newFixedThreadPool(20);
                 List<Callable<Email>> callableList=new ArrayList<Callable<Email>>();
                 for(Email email : emailList){
                     callableList.add(getMatchingConditionResultCallable(email, result, distinguish));
                 }
                 try {
                     List<Future<Email>> futures = executorService.invokeAll(callableList);
-                    executorService.shutdown();
                     for(Future<Email> future: futures) {
                         Email email = future.get();
                         if(email != null){
@@ -648,7 +644,6 @@ public class MatchingConditionService {
 //    }
 
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
-        ExecutorService executorService= Executors.newFixedThreadPool(50);
         List<Callable<MatchingWordResult>> callableList =new ArrayList<Callable<MatchingWordResult>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
 
@@ -657,7 +652,6 @@ public class MatchingConditionService {
         }
         try {
             List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
-            executorService.shutdown();
             for(Future<MatchingWordResult> future: futures) {
                 MatchingWordResult result = future.get();
                 if(result != null){

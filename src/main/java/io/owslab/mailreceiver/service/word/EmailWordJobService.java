@@ -40,6 +40,8 @@ public class EmailWordJobService {
     @Autowired
     private FuzzyWordService fuzzyWordService;
 
+    private ExecutorService executorService= Executors.newFixedThreadPool(3);
+
     private HashMap<String, ArrayList<Integer>> wordFoundMap = new HashMap<String, ArrayList<Integer>>();
 
     public void buildMatchData(){
@@ -123,14 +125,12 @@ public class EmailWordJobService {
 
     public MatchingWordResult matchWords(Email email, List<String> words){
         MatchingWordResult result = new MatchingWordResult(email);
-        ExecutorService executorService= Executors.newFixedThreadPool(3);
         List<Callable<String>> callableList=new ArrayList<Callable<String>>();
         for(String word : words){
             callableList.add(getInstanceOfCallable(email, word));
         }
         try {
             List<Future<String>> futures = executorService.invokeAll(callableList);
-            executorService.shutdown();
             for(Future<String> future: futures) {
                 String word = future.get();
                 if(word != null){
