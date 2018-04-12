@@ -511,7 +511,13 @@ public class MatchingConditionService {
         try {
 //            ConditionOption option = ConditionOption.fromValue(condition.getCondition());
 //            String dateValue = condition.getValue();
-            Date conditionDate = formatter.parse(dateValue);
+            Date conditionDate;
+            if(dateValue.matches("-?\\d+")){
+                Date now = new Date();
+                conditionDate = Utils.addDayToDate(now, Integer.parseInt(dateValue));
+            } else {
+                conditionDate = formatter.parse(dateValue);
+            }
             conditionDate = Utils.trim(conditionDate);
             part = Utils.trim(part);
             switch (option){
