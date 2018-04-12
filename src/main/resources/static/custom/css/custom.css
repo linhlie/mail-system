@@ -366,12 +366,16 @@ input.form-error {
     overflow: scroll;
 }
 
-.matching-result .mail-part.mail-subject {
-    height: 40px;
+.matching-result .mail-subject {
+    min-height: 40px;
+    border: #a5a5a5 solid 1px;
+    width: 100%;
+    padding: 0px 10px;
+    padding-top: 5px;
 }
 
 .matching-result .mail-part.mail-body {
-    margin-top: 20px;
+    margin-top: 10px;
     height: 490px;
 }
 
