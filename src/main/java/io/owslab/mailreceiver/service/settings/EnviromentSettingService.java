@@ -25,6 +25,8 @@ public class EnviromentSettingService {
     public static final String DELETE_OLD_MAIL_KEY = "delete_old_mail";
     public static final String DELETE_AFTER_KEY = "delete_after";
     public static final String START_UP_WITH_PC_KEY = "start_up_with_pc";
+    public static final String DEBUG_ON_KEY = "debug_on";
+    public static final String DEBUG_RECEIVE_MAIL_ADDRESS_KEY = "debug_receive_mail_address";
 
     private static final String DEFAULT_STORAGE_PATH = ApplicationStartup.DEFAULT_STORAGE_PATH;
     private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
@@ -32,6 +34,8 @@ public class EnviromentSettingService {
     private static final String DEFAULT_DELETE_OLD_MAIL = "0";
     private static final String DEFAULT_DELETE_AFTER = "30";
     private static final String DEFAULT_START_UP_WITH_PC = "0";
+    private static final String DEFAULT_DEBUG_ON = "1";
+    private static final String DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS = "ows-test@world-link-system.com";
 
     public static final HashMap<String, String> defaultKVStore = createMap();
 
@@ -44,6 +48,8 @@ public class EnviromentSettingService {
         map.put(DELETE_OLD_MAIL_KEY, DEFAULT_DELETE_OLD_MAIL);
         map.put(DELETE_AFTER_KEY, DEFAULT_DELETE_AFTER);
         map.put(START_UP_WITH_PC_KEY, DEFAULT_START_UP_WITH_PC);
+        map.put(DEBUG_ON_KEY, DEFAULT_DEBUG_ON);
+        map.put(DEBUG_RECEIVE_MAIL_ADDRESS_KEY, DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS);
         return map;
     }
 

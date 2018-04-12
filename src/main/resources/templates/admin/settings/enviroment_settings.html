@@ -100,6 +100,30 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="debugMode" class="col-sm-3 col-xs-4 control-label text-left">デバッグモード</label>
+
+                                <div class="col-sm-9 col-xs-8">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input
+                                                    type="checkbox"
+                                                    th:field="*{map['__debug_on__']}"
+                                                    th:value="1"
+                                                    th:checked="*{map['__debug_on__'] != '1' ? false : true}"
+                                                    id="debugMode"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 col-xs-4 control-label text-left">デバッグ受信メール</label>
+
+                                <div class="col-md-4 col-sm-5 col-xs-6">
+                                    <input th:field="*{map['__debug_receive_mail_address__']}" type="email" class="form-control" placeholder="Mail address" required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-10">
