@@ -7,7 +7,7 @@ import java.util.Date;
  * Created by khanhlvb on 3/7/18.
  */
 public class Utils {
-    public static Date trim(Date date) {
+    public synchronized static Date trim(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -18,7 +18,7 @@ public class Utils {
         return calendar.getTime();
     }
 
-    public static Date addDayToDate(Date date, int day){
+    public synchronized static Date addDayToDate(Date date, int day){
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         c.add(Calendar.DATE, day);
