@@ -502,7 +502,7 @@ public class MatchingConditionService {
         return match;
     }
 
-    private boolean isMatchPart (Date part, MatchingCondition condition, boolean distinguish) {
+    private synchronized boolean isMatchPart (Date part, MatchingCondition condition, boolean distinguish) {
         //TODO: condition value date string may have many format???;
         if(part == null) return false;
         boolean match = false;
@@ -542,7 +542,7 @@ public class MatchingConditionService {
             }
         } catch (Exception e){
             logger.warn("dateValue: " + dateValue);
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
         return match;
     }
