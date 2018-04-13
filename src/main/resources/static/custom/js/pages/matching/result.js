@@ -140,13 +140,7 @@
             if(currentDestinationResult.length > 0){
                 console.log("start currentDestinationResult");
                 for(var i = 0; i < currentDestinationResult.length; i++){
-                    var index = i;
-                    setTimeout(function () {
-                        currentDestinationResult[index].word = word;
-                        addRowWithData(tableId, currentDestinationResult[index], index, function () {
-                            setRowClickListener("showDestinationMail", showDestinationMail);
-                        });
-                    }, 5 * index);
+                    showDataRow(i);
                 }
                 setTimeout(function () {
                     setRowClickListener("sendToMoto", function () {
@@ -171,9 +165,18 @@
                     });
                     initSortDestination();
                     $('body').loadingModal('hide');
-                }, (currentDestinationResult.length + 1) * 5)
+                }, (currentDestinationResult.length + 1))
             }
         }, 50)
+    }
+
+    function showDataRow(index) {
+        setTimeout(function () {
+            currentDestinationResult[index].word = word;
+            addRowWithData(tableId, currentDestinationResult[index], index, function () {
+                setRowClickListener("showDestinationMail", showDestinationMail);
+            });
+        },  index);
     }
 
     function destroySortDestination() {
