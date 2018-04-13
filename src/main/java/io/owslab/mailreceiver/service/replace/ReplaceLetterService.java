@@ -5,6 +5,8 @@ import io.owslab.mailreceiver.model.NumberTreatment;
 import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.types.ReplaceLetterType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  * Created by khanhlvb on 2/22/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class ReplaceLetterService {
 
     @Autowired
@@ -20,10 +23,12 @@ public class ReplaceLetterService {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
+    @Cacheable(key="\"ReplaceLetterService:getList\"")
     public List<ReplaceLetter> getList(){
         return replaceLetterDAO.findByHidden(false);
     }
 
+    @Cacheable(key="\"ReplaceLetterService:getSignificantList:\"+#beforeNumber")
     public List<ReplaceLetter> getSignificantList(Boolean beforeNumber){
         int position = beforeNumber ? ReplaceLetter.Position.BF : ReplaceLetter.Position.AF;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
@@ -48,6 +53,7 @@ public class ReplaceLetterService {
         }
     }
 
+    @Cacheable(key="\"ReplaceLetterService:findOne:\"+#letter+'-'+position")
     public ReplaceLetter findOne(String letter, int position){
         List<ReplaceLetter> replaceLetters = replaceLetterDAO.findByLetterAndPosition(letter, position);
         return replaceLetters.size() > 0 ? replaceLetters.get(0) : null;
