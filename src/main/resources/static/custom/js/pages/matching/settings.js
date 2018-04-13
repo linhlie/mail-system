@@ -320,7 +320,8 @@
             "destinationConditionList" : buildDataFromTable(destinationTableId),
             "matchingConditionList" : buildDataFromTable(matchingTableId),
             "matchingWords": matchingWords,
-            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true"
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"
         };
         console.log("form: ", form);
         disableButton(submitFormBtnId, true);

@@ -13,6 +13,7 @@ import java.util.List;
 public class MatchingConditionForm {
 
     private boolean distinguish;
+    private boolean spaceEffective;
     private String matchingWords;
     private List<MatchingCondition> sourceConditionList;
     private List<MatchingCondition> destinationConditionList;
@@ -59,5 +60,13 @@ public class MatchingConditionForm {
 
     public void setMatchingWords(String matchingWords) {
         this.matchingWords = matchingWords;
+    }
+
+    public boolean isSpaceEffective() {
+        return spaceEffective;
+    }
+
+    public void setSpaceEffective(boolean spaceEffective) {
+        this.spaceEffective = spaceEffective;
     }
 }

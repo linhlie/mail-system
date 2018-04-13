@@ -143,6 +143,7 @@ public class MatchingConditionService {
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
+        boolean spaceEffective = matchingConditionForm.isSpaceEffective();
         List<Email> matchSourceList;
         if(groupedSourceConditions.size() > 0) {
             findMailMatching(emailList, groupedSourceConditions, distinguish);
@@ -159,8 +160,8 @@ public class MatchingConditionService {
         }
         logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
         List<String> matchingWords = getWordList(matchingConditionForm);
-        List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList);
-        List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList);
+        List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective);
+        List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective);
 //        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
@@ -652,12 +653,12 @@ public class MatchingConditionService {
 //        return matchingWordResults;
 //    }
 
-    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList){
+    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective){
         List<Callable<MatchingWordResult>> callableList =new ArrayList<Callable<MatchingWordResult>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
 
         for(Email email : emailList){
-            callableList.add(getInstanceOfCallable(words, email));
+            callableList.add(getInstanceOfCallable(words, email, spaceEffective));
         }
         try {
             List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
@@ -675,11 +676,11 @@ public class MatchingConditionService {
         return matchingWordResults;
     }
 
-    private Callable<MatchingWordResult> getInstanceOfCallable(final List<String> words, final Email email) {
+    private Callable<MatchingWordResult> getInstanceOfCallable(final List<String> words, final Email email, final boolean spaceEffective) {
 
         Callable<MatchingWordResult> clientPlanCall=new Callable<MatchingWordResult>(){
             public MatchingWordResult call() {
-                MatchingWordResult result = emailWordJobService.matchWords(email, words);
+                MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective);
                 if(result.hasMatchWord()){
                     return result;
                 } else {
