@@ -181,13 +181,13 @@
             }
         }
         if(receivedDateCondition == null){
-            var sevenDayAgo = new Date();
-            sevenDayAgo.setDate(sevenDayAgo.getDate() - 7);
-            var month = '' + (sevenDayAgo.getMonth() + 1);
-            var day = '' + sevenDayAgo.getDate();
-            var year = sevenDayAgo.getFullYear();
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
+            // var sevenDayAgo = new Date();
+            // sevenDayAgo.setDate(sevenDayAgo.getDate() - 7);
+            // var month = '' + (sevenDayAgo.getMonth() + 1);
+            // var day = '' + sevenDayAgo.getDate();
+            // var year = sevenDayAgo.getFullYear();
+            // if (month.length < 2) month = '0' + month;
+            // if (day.length < 2) day = '0' + day;
 
             receivedDateCondition = {
                 combine: "0",
@@ -196,7 +196,7 @@
                 id: "",
                 item: "9",
                 remove: 0,
-                value: year + "-" + month + "-" + day,
+                value: "-7",
             }
             data.push(receivedDateCondition);
         }
