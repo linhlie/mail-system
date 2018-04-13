@@ -1,5 +1,8 @@
 package io.owslab.mailreceiver.model;
 
+import com.mariten.kanatools.KanaConverter;
+import io.owslab.mailreceiver.service.mail.MailBoxService;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -55,6 +58,12 @@ public class Email {
     private boolean deleted;
 
     private Date deletedAt;
+
+    @Transient
+    private String optimizedText;
+
+    @Transient
+    private String optimizedTextDistinguish;
 
     public Email() {
     }
@@ -219,6 +228,10 @@ public class Email {
         return optimizedBody;
     }
 
+    public String getSubjectAndOptimizedBody(){
+        return MailBoxService.optimizeText(this.getSubject()) + "\n" + this.getOptimizedBody();
+    }
+
     public void setOptimizedBody(String optimizedBody) {
         this.optimizedBody = optimizedBody;
     }
@@ -266,5 +279,28 @@ public class Email {
     @Override
     public String toString(){
         return this.getMessageId() + " " + this.getFrom() + " " + this.getTo() + " " + this.getAccountId();
+    }
+
+    public String getOptimizedText(boolean distinguish) {
+        String raw = this.getSubjectAndOptimizedBody();
+        if(this.optimizedTextDistinguish == null) {
+            int conv_op_flags = 0;
+            conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
+            conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
+            String japaneseOptimizedText = KanaConverter.convertKana(raw, conv_op_flags);
+            this.setOptimizedTextDistinguish(japaneseOptimizedText.toLowerCase());
+        }
+        if(this.optimizedText == null){
+            this.setOptimizedText(raw.toLowerCase());
+        }
+        return distinguish ? optimizedTextDistinguish : optimizedText;
+    }
+
+    public void setOptimizedText(String optimizedText) {
+        this.optimizedText = optimizedText;
+    }
+
+    public void setOptimizedTextDistinguish(String optimizedTextDistinguish) {
+        this.optimizedTextDistinguish = optimizedTextDistinguish;
     }
 }

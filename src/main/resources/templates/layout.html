@@ -5,11 +5,12 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">World Link Mail</title>
+    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">e!Helper @メール</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
     <!-- Bootstrap 3.3.6 -->
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap-treeview.min.css" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
     <!-- Ionicons -->
@@ -34,7 +35,11 @@
 
     <link rel="stylesheet" href="/bootstrap/css/dataTables.bootstrap.min.css" />
 
+    <link rel="stylesheet" href="/plugins/loadingModal/jquery.loadingModal.min.css" />
+
     <link rel="stylesheet" href="/custom/css/custom.css"/>
+
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/custom/img/favicon-32x32.png}"/>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -74,7 +79,25 @@
   $.widget.bridge('uibutton', $.ui.button);
 </script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
+<script src="/bootstrap/js/bootstrap-treeview.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src='/plugins/tinymce/tinymce.min.js?apiKey=bu1fa56lzusg46w01kclsayj9hvotfdpr98naf55i5t498bm'></script>
+<script>
+    tinymce.init({
+        selector: '#rdMailBody',
+        language: 'ja',
+        theme: 'modern',
+        statusbar: false,
+        height: 350,
+        plugins: [
+            'advlist autolink link image lists charmap preview hr anchor pagebreak',
+            'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+            'table contextmenu directionality template paste textcolor'
+        ],
+        menubar: 'edit view insert format table',
+        toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+    });
+</script>
 <script src="/plugins/morris/morris.min.js"></script>
 <script src="/plugins/sparkline/jquery.sparkline.min.js"></script>
 <script src="/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
@@ -87,6 +110,9 @@
 <script src="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 <script src="/plugins/slimScroll/jquery.slimscroll.min.js"></script>
 <script src="/plugins/fastclick/fastclick.js"></script>
+<script src="/plugins/loadingModal/jquery.loadingModal.min.js"></script>
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <script src="/custom/js/app.min.js"></script>
 <script src="/custom/js/pages/dashboard.js"></script>
 <script src="/custom/js/demo.js"></script>

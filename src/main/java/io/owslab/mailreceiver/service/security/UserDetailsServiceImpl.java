@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.service.security;
 
-import io.owslab.mailreceiver.dao.AccountDAO;
 import io.owslab.mailreceiver.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,13 +21,11 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Autowired
-    private AccountDAO accountDAO;
+    private AccountService accountService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountDAO.findOne(username);
-
-        System.out.println("Account= " + account);
+        Account account = accountService.findOne(username);
 
         if (account == null) {
             throw new UsernameNotFoundException("User " //

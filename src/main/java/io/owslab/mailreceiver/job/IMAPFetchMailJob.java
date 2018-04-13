@@ -2,22 +2,25 @@ package io.owslab.mailreceiver.job;
 
 import antlr.StringUtils;
 import com.mariten.kanatools.KanaConverter;
+import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.service.BeanUtil;
+import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
+import io.owslab.mailreceiver.utils.Utils;
+import org.hibernate.annotations.Fetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import javax.mail.search.*;
 import java.io.File;
 import java.io.IOException;
@@ -33,16 +36,21 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
     private final EnviromentSettingService enviromentSettingService;
-    private final EmailAccountSetting account;
-
+    private final FetchMailsService fetchMailsService;
+    private final EmailAccountSetting accountSetting;
+    private final EmailAccount account;
+    private final FetchMailsService.FetchMailProgress mailProgress;
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailDAO emailDAO, FileDAO fileDAO, EnviromentSettingService enviromentSettingService, EmailAccountSetting account) {
-        this.emailDAO = emailDAO;
-        this.fileDAO = fileDAO;
-        this.enviromentSettingService = enviromentSettingService;
+    public IMAPFetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
+        this.emailDAO = BeanUtil.getBean(EmailDAO.class);
+        this.fileDAO = BeanUtil.getBean(FileDAO.class);
+        this.enviromentSettingService = BeanUtil.getBean(EnviromentSettingService.class);
+        this.fetchMailsService = BeanUtil.getBean(FetchMailsService.class);
+        this.accountSetting = accountSetting;
         this.account = account;
+        this.mailProgress = this.fetchMailsService.getMailProgressInstance();
     }
 
     @Override
@@ -56,9 +64,9 @@ public class IMAPFetchMailJob implements Runnable {
         if(n > 0){
             Email lastEmail = listEmail.get(0);
             Date lastEmailSentAt = lastEmail.getSentAt();
-            check(account, lastEmailSentAt);
+            check(account, accountSetting, lastEmailSentAt);
         } else {
-            check(account, null);
+            check(account, accountSetting, null);
         }
     }
 
@@ -82,17 +90,33 @@ public class IMAPFetchMailJob implements Runnable {
         return store;
     }
 
-    public void check(EmailAccountSetting account, Date fromDate)
+    public void check(EmailAccount account, EmailAccountSetting accountSetting, Date fromDate)
     {
         try {
 
-            Store store = createStore(account);
-
-            store.connect(account.getMailServerAddress(), account.getAccount(), account.getPassword());
+            Store store = createStore(accountSetting);
+            if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
+                store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
+            } else {
+                store.connect(accountSetting.getMailServerAddress(), account.getAccount(), accountSetting.getPassword());
+            }
 
             //create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
+            boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
+            if(isDeleteOldMail){
+                Date now = new Date();
+                int beforeDayRange = enviromentSettingService.getDeleteAfter();
+                Date beforeDate = Utils.addDayToDate(now, -beforeDayRange);
+                if(fromDate != null) {
+                    if(fromDate.compareTo(beforeDate) < 0){
+                        fromDate = beforeDate;
+                    }
+                } else {
+                    fromDate = beforeDate;
+                }
+            }
             int openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
@@ -121,36 +145,42 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void fetchEmail(Message[] messages) {
+        mailProgress.setTotal(messages.length);
         for (int i = 0, n = messages.length; i < n; i++) {
             try {
                 MimeMessage message = (MimeMessage) messages[i];
                 if(isEmailExist(message, account)) {
+                    mailProgress.decreaseTotal();
                     continue;
                 }
-                System.out.println(message.getSubject());
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
                 saveFiles(message, email);
+                System.out.println(message.getSubject());
+                mailProgress.increase();
             } catch (Exception e) {
+                mailProgress.decreaseTotal();
 //                e.printStackTrace();
             }
         }
     }
 
-    private boolean isEmailExist(MimeMessage message, EmailAccountSetting account) throws MessagingException {
+    private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
         String messageId = buildMessageId(message, account);
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0;
     }
 
-    private Email buildReceivedMail(MimeMessage message, EmailAccountSetting account) {
+    private Email buildReceivedMail(MimeMessage message, EmailAccount account) {
         try {
             Email email =  new Email();
             String messageId = buildMessageId(message, account);
             email.setMessageId(messageId);
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));
-            email.setSubject(message.getSubject());
+            String subject = message.getSubject();
+            subject = EmojiParser.removeAllEmojis(subject);
+            email.setSubject(subject);
             email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
             email.setSentAt(message.getSentDate());
 
@@ -161,8 +191,10 @@ public class IMAPFetchMailJob implements Runnable {
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
             String originalContent = getContentText(message);
+            originalContent = EmojiParser.removeAllEmojis(originalContent);
             email.setOriginalBody(originalContent);
-            String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
+//            String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
+            String beforeOptimizeContent = originalContent;
             String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
             email.setOptimizedBody(optimizedContent);
             return email;
@@ -210,7 +242,7 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private String buildMessageId(MimeMessage message, EmailAccountSetting account) throws MessagingException {
+    private String buildMessageId(MimeMessage message, EmailAccount account) throws MessagingException {
         return account.getAccount() + "+" + message.getMessageID();
     }
 
@@ -262,21 +294,23 @@ public class IMAPFetchMailJob implements Runnable {
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
-                    logger.info("Start Save file: " + part.getFileName());
-                    String fileName = part.getFileName();
+                    String fileName = MimeUtility.decodeText(part.getFileName());
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
                     File saveDirectory = new File(saveDirectoryPath);
                     if (! saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    part.saveFile(saveDirectoryPath + File.separator + fileName);
+                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    logger.info("Start Save file: " + fileName + " " + file.length());
+                    part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
                             fileName,
                             saveDirectoryPath,
                             new Date(),
-                            null
+                            null,
+                            file.length()
                     );
                     logger.info("Save file: " + attachmentFile.toString());
                     fileDAO.save(attachmentFile);

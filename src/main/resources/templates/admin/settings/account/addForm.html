@@ -1,0 +1,63 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>メール アカウント設定</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>メール アカウント新規登録</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-10 col-sm-12 col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <form id="mailAccountForm" class="form-horizontal" th:action="@{${api}}"
+                              th:object="${mailAccountForm}" method="POST">
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">アカウント</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input th:field="*{account}" type="email" class="form-control" required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 col-xs-5 control-label text-left">このアカウントの受信を休止する</label>
+
+                                <div class="col-xs-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input th:field="*{disabled}" type="checkbox"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
+                                    <button type="submit" class="btn btn-success">新規登録</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="resetBtn" type="button" class="btn btn-default">項目クリア</button>
+                                </div>
+                                <div class="col-md-2 col-xs-3 text-center">
+                                    <button name="backBtn" type="button" class="btn btn-danger">終了</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/mailAccount/addForm.js"></script>
+</th:block>
+</body>
+</html>

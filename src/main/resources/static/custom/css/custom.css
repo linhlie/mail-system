@@ -1,3 +1,8 @@
+.content-wrapper {
+    max-height: calc(100vh - 100px);
+    overflow-y: scroll;
+}
+
 .form-horizontal .control-label.text-left {
     text-align: left;
 }
@@ -159,6 +164,113 @@ select:not([multiple]) {
     background-color: transparent;
 }
 
+.mail-analysis .box {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.mail-analysis .note {
+    color: darkgray;
+}
+
+.mail-analysis label.control-label {
+    font-weight: normal;
+}
+
+.mail-analysis div.treatment-container {
+    border: 1px solid #e6e6e6;
+    padding: 15px 20px;
+}
+
+.mail-analysis div.treatment-container label.control-label {
+    font-size: 13px;
+    padding-top: 7px;
+}
+
+.mail-analysis div.treatment-container div.row {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.mail-analysis div.add-padding-bottom {
+    padding-bottom: 10px;
+}
+
+.mail-analysis div.remove-nested-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.mail-analysis div.treatment-container.treatment-padding div.row {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.mail-analysis .form-container {
+    width: 100%;
+    height: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.mail-analysis .table-container {
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.mail-analysis .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.mail-analysis .full-height {
+    height: 100%;
+}
+
+.mail-analysis .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+.mail-analysis .table-container td input[type="checkbox"] {
+    width: auto;
+}
+
+.mail-analysis .table-container td, .mail-analysis .table-container th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.mail-analysis .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+.mail-analysis .table-container td.select-container select {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.mail-analysis .table-container td select {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+.mail-analysis div.matching-container {
+    border: 1px solid #e6e6e6;
+    padding: 5px 30px;
+    margin: 0 15px;
+}
+
+.mail-analysis a.remove {
+    color: #333;
+}
+
 span.form-error {
     color: red !important;
 }
@@ -166,3 +278,178 @@ span.form-error {
 input.form-error {
     border-color: red !important;
 }
+
+.sidebar-menu .treeview-menu.visible {
+    display: block;
+}
+
+.matching-result .matching-result-container {
+    background: white;
+    padding: 10px;
+}
+
+.matching-result .matching-result-container.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.matching-result-container .main-left, .matching-result-container .main-right {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.matching-result .table-container {
+    width: 100%;
+    height: 250px;
+    background-color: darkgray;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.matching-result .table-container table tr th, .matching-result .table-container table tr td {
+    padding: 4px;
+}
+
+.matching-result .table-container table {
+    background-color: white;
+    margin-bottom: 0px;
+}
+
+.matching-result .full-height {
+    height: 100%;
+}
+
+.matching-result .table-container td input {
+    padding: 0;
+    border: none;
+    width: 100%;
+}
+
+.matching-result .table-container td input[type="checkbox"] {
+    width: auto;
+}
+
+.matching-result .table-container td, .matching-result .table-container th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.matching-result .table-container td.select-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #e6e6e6;
+}
+.matching-result .table-container td.select-container select {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.matching-result .table-container td select {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+.matching-result .table-name-container {
+    margin-top: 10px;
+    width: 100%; height: 40px; background-color: transparent;
+    display:table;
+}
+
+.matching-result .table-name-container h4 {
+    display:table-cell; vertical-align:middle;
+}
+
+.matching-result .mail-part, .rd-mail-part {
+    width: 100%;
+    border: #a5a5a5 solid 1px;
+    overflow: scroll;
+}
+
+.matching-result .mail-subject {
+    min-height: 40px;
+    border: #a5a5a5 solid 1px;
+    width: 100%;
+    padding: 0px 10px;
+    padding-top: 5px;
+}
+
+.matching-result .mail-part.mail-body {
+    margin-top: 10px;
+    height: 490px;
+}
+
+.matching-result .mail-attachment {
+    padding: 5px 10px;
+    min-height: 30px;
+    margin-top: 10px;
+    border: #a5a5a5 solid 1px;
+    width: 100%;
+}
+
+.rd-mail-part.rd-mail-attachment {
+    margin-top: 15px;
+    height: 30px;
+}
+
+.matching-result .open-folder-btn {
+    padding-top: 10px;
+}
+
+.matching-result .open-folder-btn button {
+    float: right;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.main-header .logo {
+    font-size: 18px;
+}
+
+.matching-result .table-container th {
+    white-space: nowrap;
+}
+
+.matching-result .table-container td span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: table-cell;
+    max-width: 80px;
+}
+
+.matching-result .table-container tr td.clickable {
+    cursor: pointer;
+}
+
+.matching-result .mailbox-read-info {
+    padding: 0;
+}
+
+.matching-result .mail-part.mail-body, .matching-result .mail-part.mail-attachment {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table#sourceMatch, table#destinationMatch {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.matching-result table.dataTable thead .sorting:after,
+.matching-result table.dataTable thead .sorting_asc:after,
+.matching-result table.dataTable thead .sorting_desc:after,
+.matching-result table.dataTable thead .sorting_asc_disabled:after,
+.matching-result table.dataTable thead .sorting_desc_disabled:after {
+    bottom: 4px;
+}
+
+.matching-result table.dataTable tr.highlight-selected {
+    background-color: #ffffcc;
+}
+
+.mce-tinymce.mce-container.mce-panel {
+    margin-top: 10px !important;
+}
+
+

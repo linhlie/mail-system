@@ -27,6 +27,20 @@
                 </a>
                 <!-- /.info-box -->
             </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div th:class="${mailProgressRemain} > 0 ? 'info-box bg-yellow' : 'info-box bg-green'">
+                    <span class="info-box-icon"><i class="fa fa-envelope-o"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Remain</span>
+                        <span class="info-box-number" th:text="${mailProgressRemain}"></span>
+                        <span class="progress-description" th:text="'Last update: ' + ${mailProgressLastUpdate}">
+                  </span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
         </div>
         <!-- /.row -->
     </section>

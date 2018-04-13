@@ -126,7 +126,7 @@
     function buildReplaceLetterDataTable(tableId) {
         var data = [];
         var table = document.getElementById(tableId);
-        for (i = 1; i < table.rows.length; i++) {
+        for (var i = 1; i < table.rows.length; i++) {
             var objRow = table.rows.item(i);
             var objCells = objRow.cells;
             var rowData = {};
@@ -197,10 +197,10 @@
             cell2.innerHTML = '<input class="text-center" type="text" placeholder="文字"/>';
             cell3.innerHTML = '<select class="form-control select2 select2-hidden-accessible" aria-hidden="true">' +
                 '<option value="" selected="selected" disabled="disabled">選択してください</option>' +
-                '<option value="0" >以上として認識する</option>' +
-                '<option value="1" >以下として認識する</option>' +
-                '<option value="2" >未満として認識する</option>' +
-                '<option value="3" >超として認識する</option>' +
+                '<option value="0" >「以上」として認識する</option>' +
+                '<option value="1" >「以下」として認識する</option>' +
+                '<option value="2" >「未満」として認識する</option>' +
+                '<option value="3" >「超」として認識する</option>' +
                 '</select>'
             cell1.setAttribute('data', data[0]);
             cell2.setAttribute('data', data[1]);

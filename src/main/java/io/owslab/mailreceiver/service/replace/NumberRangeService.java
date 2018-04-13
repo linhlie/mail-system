@@ -2,12 +2,15 @@ package io.owslab.mailreceiver.service.replace;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.NumberRangeDAO;
+import io.owslab.mailreceiver.enums.NumberCompare;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.utils.FullNumberRange;
+import io.owslab.mailreceiver.utils.SimpleNumberRange;
+import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,45 +36,138 @@ public class NumberRangeService {
     @Autowired
     private ReplaceLetterService replaceLetterService;
 
+    private HashMap<String, List<FullNumberRange>> fullRangeMap = new HashMap<String, List<FullNumberRange>>();
+
     public List<NumberRange> getList(){
         return (List<NumberRange>) numberRangeDAO.findAll();
     }
 
-    public void buildNumberRangeForEmail(Email email){
-        if(email == null) return;
-        String input = email.getOptimizedBody();
-        if(input == null || input.length() == 0) return;
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input){
+        return buildNumberRangeForInput(cacheId, input, false);
+    }
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input, boolean individual){
+        return buildNumberRangeForInput(cacheId, input, individual, true);
+    }
+
+    public List<FullNumberRange> buildNumberRangeForInput(String cacheId, String input, boolean individual, boolean useCache){
+        List<FullNumberRange> result = new ArrayList<>();
+        if(input == null || input.length() == 0) return result;
+        String keyMap = cacheId + Boolean.toString(individual);
+        if(useCache && fullRangeMap.get(keyMap) != null){
+            return fullRangeMap.get(keyMap);
+        }
+        LinkedHashMap<String, ArrayList<SimpleNumberRange>> rangeMap = new LinkedHashMap<>();
 
         List<ReplaceLetter> bfReplaceLetters = replaceLetterService.getSignificantList(true);
         List<ReplaceLetter> afReplaceLetters = replaceLetterService.getSignificantList(false);
-        if(bfReplaceLetters.size() == 0 && afReplaceLetters.size() == 0) return;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         List<ReplaceNumber> replaceNumbers = replaceNumberService.getList();
         List<ReplaceUnit> replaceUnits = replaceUnitService.getList();
 
         String optimizedInput = optimizeText(input);
-
         List<NumberElement> numberElements = buildListNumber(optimizedInput);
         for(NumberElement numberElement : numberElements){
             Double number = numberElement.getValue();
             if(number == null) continue;
             NumberResult realNumberResult = findRealNumber(replaceNumbers, optimizedInput, numberElement);
-            if(!isValidNumber(numberTreatment, realNumberResult.getValue())) continue;
             ReplaceLetterResult bfNumberLetterResult = findMatchReplaceLetter(bfReplaceLetters, optimizedInput,
                     numberElement.getStartAt(), true);
             ReplaceUnit afNumberUnit = findMatchReplaceUnit(replaceUnits, optimizedInput, realNumberResult.getEndAt());
             int afEndAt = afNumberUnit != null ? realNumberResult.getEndAt() + afNumberUnit.getUnit().length() : realNumberResult.getEndAt();
+            String afNumberUnitText = afNumberUnit != null ? afNumberUnit.getUnit() : null;
             ReplaceLetterResult afNumberLetterResult = findMatchReplaceLetter(afReplaceLetters, optimizedInput,
                     afEndAt, false);
-            if(bfNumberLetterResult != null){
-                ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
-                System.out.println(bfNumberLetter.getLetter() + " " + realNumberResult.getValue() + " " + (bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length()));
-            }
-            if(afNumberLetterResult != null){
-                ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
-                System.out.println(afNumberLetter.getLetter() + " " + realNumberResult.getValue() + " " + afNumberLetterResult.getStartAt());
+
+            SimpleNumberRange simpleNumberRange;
+            String position;
+            if(bfNumberLetterResult != null || afNumberLetterResult != null){
+                if(bfNumberLetterResult != null){
+                    ReplaceLetter bfNumberLetter = bfNumberLetterResult.getLetter();
+                    position = Integer.toString((bfNumberLetterResult.getStartAt() - bfNumberLetter.getLetter().length()));
+                    simpleNumberRange = new SimpleNumberRange(
+                            realNumberResult.getValue(),
+                            bfNumberLetter.getReplace(),
+                            number,
+                            realNumberResult.getReplaceText(),
+                            afNumberUnitText,
+                            bfNumberLetter.getLetter(),
+                            true);
+                    simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                    addToList(rangeMap, position, simpleNumberRange);
+                }
+                if(afNumberLetterResult != null){
+                    ReplaceLetter afNumberLetter = afNumberLetterResult.getLetter();
+                    position = Integer.toString(afNumberLetterResult.getStartAt());
+                    simpleNumberRange = new SimpleNumberRange(
+                            realNumberResult.getValue(),
+                            afNumberLetter.getReplace(),
+                            number,
+                            realNumberResult.getReplaceText(),
+                            afNumberUnitText,
+                            afNumberLetter.getLetter(),
+                            false
+                    );
+                    simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                    addToList(rangeMap, position, simpleNumberRange);
+                }
+            } else {
+                position = Integer.toString(realNumberResult.getStartAt());
+                simpleNumberRange = new SimpleNumberRange(
+                        realNumberResult.getValue(),
+                        number,
+                        realNumberResult.getReplaceText(),
+                        afNumberUnitText,
+                        null,
+                        false
+                );
+                simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
+                addToList(rangeMap, position, simpleNumberRange);
             }
         }
+
+        for(Map.Entry<String, ArrayList<SimpleNumberRange>> entry : rangeMap.entrySet()) {
+            List<SimpleNumberRange> rangeList = entry.getValue();
+            if(rangeList != null) {
+                if(individual){
+                    for(SimpleNumberRange range : rangeList){
+                        if(isValidRange(numberTreatment, range)){
+                            result.add(new FullNumberRange(range));
+                        }
+                    }
+                } else {
+                    if(rangeList.size() == 2){
+                        SimpleNumberRange firstRange = rangeList.get(0);
+                        SimpleNumberRange secondRange = rangeList.get(1);
+                        if(secondRange.getReplaceValue() != 1 && firstRange.getReplaceValue() == 1){
+                            firstRange.multiple((double) secondRange.getReplaceValue());
+                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
+                            secondRange.multiple((double) firstRange.getReplaceValue());
+                        }
+                        boolean isFirstRangeValid = isValidRange(numberTreatment, firstRange);
+                        boolean isSecondRangeValid = isValidRange(numberTreatment, secondRange);
+                        if(isFirstRangeValid && isSecondRangeValid){
+                            result.add(new FullNumberRange(firstRange, secondRange));
+                        } else if (isFirstRangeValid) {
+                            result.add(new FullNumberRange(firstRange));
+                        } else if (isSecondRangeValid) {
+                            result.add(new FullNumberRange(secondRange));
+                        }
+                    } else if(rangeList.size() == 1) {
+                        if(isValidRange(numberTreatment, rangeList.get(0))){
+                            result.add(new FullNumberRange(rangeList.get(0)));
+                        }
+                    }
+                }
+            }
+        }
+
+//        for(FullNumberRange fullNumberRange : result) {
+//            System.out.println("fullNumberRange: " + fullNumberRange.toString());
+//        }
+        if(useCache){
+            fullRangeMap.put(keyMap, result);
+        }
+        return result;
     }
 
     private String optimizeText(String raw){
@@ -95,6 +191,15 @@ public class NumberRangeService {
             result.add(numberElement);
         }
         return result;
+    }
+
+    private boolean isValidRange(NumberTreatment numberTreatment, SimpleNumberRange range){
+        if(numberTreatment == null) return true;
+        if(range.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
+            return true;
+        } else {
+            return isValidNumber(numberTreatment, range.getValue());
+        }
     }
 
     private boolean isValidNumber(NumberTreatment numberTreatment, Double number){
@@ -146,7 +251,7 @@ public class NumberRangeService {
             double realNumber = numberElement.getValue() * replaceNumber.getReplaceValue();
             int realEndAt = numberElement.getEndAt() + replaceNumber.getCharacter().length();
             int realStartAt = numberElement.getStartAt();
-            result = new NumberResult(realNumber, realStartAt, realEndAt);
+            result = new NumberResult(realNumber, realStartAt, realEndAt, replaceNumber.getReplaceValue(), replaceNumber.getCharacter());
         }
         return result;
     }
@@ -251,17 +356,27 @@ public class NumberRangeService {
         private final Double value;
         private final int startAt;
         private final int endAt;
+        private final int replaceValue;
+        private final String replaceText;
 
-        public NumberResult(Double value, int startAt, int endAt) {
+        public NumberResult(Double value, int startAt, int endAt, int replaceValue, String replaceText) {
             this.value = value;
             this.startAt = startAt;
             this.endAt = endAt;
+            this.replaceValue = replaceValue;
+            this.replaceText = replaceText;
+        }
+
+        public NumberResult(Double value, int startAt, int endAt, int replaceValue) {
+            this(value, startAt, endAt, replaceValue, null);
         }
 
         public NumberResult(NumberElement numberElement) {
             this.value = numberElement.getValue();
             this.startAt = numberElement.getStartAt();
             this.endAt = numberElement.getEndAt();
+            this.replaceValue = 1;
+            this.replaceText = null;
         }
 
         public Double getValue() {
@@ -274,6 +389,14 @@ public class NumberRangeService {
 
         public int getStartAt() {
             return startAt;
+        }
+
+        public int getReplaceValue() {
+            return replaceValue;
+        }
+
+        public String getReplaceText() {
+            return replaceText;
         }
     }
 
@@ -293,5 +416,23 @@ public class NumberRangeService {
         public int getStartAt() {
             return startAt;
         }
+    }
+
+    private synchronized void addToList(LinkedHashMap<String, ArrayList<SimpleNumberRange>> map, String mapKey, SimpleNumberRange range) {
+        ArrayList<SimpleNumberRange> rangesList = map.get(mapKey);
+
+        // if list does not exist create it
+        if(rangesList == null) {
+            rangesList = new ArrayList<SimpleNumberRange>();
+            rangesList.add(range);
+            map.put(mapKey, rangesList);
+        } else {
+            // add if item is not already in list
+            if(!rangesList.contains(range)) rangesList.add(range);
+        }
+    }
+
+    public void clearFullRangeCache(){
+        fullRangeMap.clear();
     }
 }

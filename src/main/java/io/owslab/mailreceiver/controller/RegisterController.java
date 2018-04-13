@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class RegisterController {
 
-    @Autowired
+    /*@Autowired
     private RegisterAccountValidator registerAccountValidator;
 
     @Autowired
@@ -72,5 +72,5 @@ public class RegisterController {
         redirectAttributes.addFlashAttribute("flashUser", newAccount);
 
         return "redirect:/";
-    }
+    }*/
 }

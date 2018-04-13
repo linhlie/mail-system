@@ -21,7 +21,7 @@ import java.util.*;
  */
 @Controller
 public class MailBoxController {
-    public static final int PAGE_SIZE = 5;
+    public static final int PAGE_SIZE = 15;
 
     @Autowired
     private MailBoxService mailBoxService;

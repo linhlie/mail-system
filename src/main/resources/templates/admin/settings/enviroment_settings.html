@@ -13,21 +13,25 @@
                         <h3 class="box-title">環境設定</h3>
                     </div>
                     <div class="box-body">
+                        <div th:if="${saved == true}">
+                            <div class="callout callout-success">
+                                <p>保存された設定</p>
+                            </div>
+                        </div>
                         <form id="enviromentSettingsForm" class="form-horizontal" th:action="@{/admin/enviromentSettings}"
                               th:object="${enviromentSettingForm}" method="POST" >
                             <div class="form-group">
-                                <label for="inputName" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
+                                <label for="storagePath" class="col-sm-3 col-xs-4 control-label text-left">添付ファイルの保存場所</label>
 
                                 <div class="col-sm-7 col-xs-6">
-                                    <input th:field="*{map['__file_storage_path__']}" type="text" class="form-control" id="inputName" placeholder="File storage path"/>
+                                    <input th:readonly="true" id="storagePath" th:field="*{map['__file_storage_path__']}" type="text" class="form-control" placeholder="File storage path"/>
                                 </div>
                                 <!--TODO: a button for click to open File Explorer so that you can select the folder-->
-                                <!--<div class="col-sm-2 col-xs-2">-->
-                                    <!--<div class="btn btn-default btn-file">-->
-                                        <!--<i class="fa fa-folder"></i>-->
-                                        <!--<input type="file" name="storagePath" />-->
-                                    <!--</div>-->
-                                <!--</div>-->
+                                <div class="col-sm-2 col-xs-2">
+                                    <button name="openDirectoriesModal" type="button" class="btn btn-default btn-file">
+                                        <i class="fa fa-folder"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔</label>
@@ -96,6 +100,30 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="debugMode" class="col-sm-3 col-xs-4 control-label text-left">デバッグモード</label>
+
+                                <div class="col-sm-9 col-xs-8">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input
+                                                    type="checkbox"
+                                                    th:field="*{map['__debug_on__']}"
+                                                    th:value="1"
+                                                    th:checked="*{map['__debug_on__'] != '1' ? false : true}"
+                                                    id="debugMode"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 col-xs-4 control-label text-left">デバッグ受信メール</label>
+
+                                <div class="col-md-4 col-sm-5 col-xs-6">
+                                    <input th:field="*{map['__debug_receive_mail_address__']}" type="email" class="form-control" placeholder="Mail address" required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-10">
@@ -116,6 +144,55 @@
             </div>
         </div>
     </section>
+    <div id="directoriesModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">添付ファイルの保存場所設定</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="tree" style="padding: 10px; background-color: #f5f5f5; height: 300px; overflow-y: scroll;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">終了</button>
+                    <button type="button" id="selectDirectory" class="btn btn-primary">更新</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div id="addSubDirectoryModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">サブフォルダを作成する</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="storagePath" class="col-sm-3 col-xs-4 control-label text-left">親パス</label>
+                            <div class="col-sm-7 col-xs-6">
+                                <input id="parentPath" th:readonly="true" type="text" class="form-control" placeholder="親パス"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 col-xs-4 control-label text-left">フォルダ名</label>
+                            <div class="col-sm-7 col-xs-6">
+                                <input id="subFolderName" type="text" class="form-control" placeholder="フォルダ名"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">終了</button>
+                    <button type="button" id="createSubFolder" class="btn btn-primary">作成</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/enviromentSettings/form.js"></script>

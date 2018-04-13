@@ -23,6 +23,9 @@ public class DeleteMailsService {
     @Autowired
     private FileDAO fileDAO;
 
+    @Autowired
+    private MailBoxService mailBoxService;
+
     public void deleteOldMails(Date beforeDate){
         List<Email> emailList = emailDAO.findBySentAtBeforeAndDeletedOrderBySentAtAsc(beforeDate, false);
         System.out.println("Start delete Old mails - total: " + emailList.size());
@@ -44,6 +47,7 @@ public class DeleteMailsService {
             //TODO: transac with delete mail and delete file?
             this.deleteFileBelongToMail(email.getMessageId());
         }
+        mailBoxService.getAll(true);
     }
 
     public void deleteFileBelongToMail(String messageId){

@@ -77,6 +77,8 @@ public class NumberTreatmentController {
             replaceUnitService.saveList(replaceUnits);
             List<ReplaceLetter> replaceLetters = numberTreatmentForm.getReplaceLetterList();
             replaceLetterService.saveList(replaceLetters);
+            //Clear cache number range
+            numberRangeService.clearFullRangeCache();
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

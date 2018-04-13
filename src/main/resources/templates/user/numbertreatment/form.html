@@ -246,10 +246,10 @@
                                                     <td th:data="letter" class="text-center" th:text="${item.letter}"></td>
                                                     <td th:data="replace" class="select-container">
                                                         <select disabled="disabled" class="form-control select2 select2-hidden-accessible" aria-hidden="true">
-                                                            <option value="0" th:selected="(${item.replace} == '0')">以上として認識する</option>
-                                                            <option value="1" th:selected="(${item.replace} == '1')">以下として認識する</option>
-                                                            <option value="2" th:selected="(${item.replace} == '2')">未満として認識する</option>
-                                                            <option value="3" th:selected="(${item.replace} == '3')">超として認識する</option>
+                                                            <option value="0" th:selected="(${item.replace} == '0')">「以上」として認識する</option>
+                                                            <option value="1" th:selected="(${item.replace} == '1')">「以下」として認識する</option>
+                                                            <option value="2" th:selected="(${item.replace} == '2')">「未満」として認識する</option>
+                                                            <option value="3" th:selected="(${item.replace} == '3')">「超」として認識する</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">
@@ -271,10 +271,10 @@
                                                     <td th:data="replace" class="select-container">
                                                         <select class="form-control select2 select2-hidden-accessible" aria-hidden="true">
                                                             <option value="" selected="selected" disabled="disabled">選択してください</option>
-                                                            <option value="0" >以上として認識する</option>
-                                                            <option value="1" >以下として認識する</option>
-                                                            <option value="2" >未満として認識する</option>
-                                                            <option value="3" >超として認識する</option>
+                                                            <option value="0" >「以上」として認識する</option>
+                                                            <option value="1" >「以下」として認識する</option>
+                                                            <option value="2" >「未満」として認識する</option>
+                                                            <option value="3" >「超」として認識する</option>
                                                         </select>
                                                     </td>
                                                     <td class="text-center">

@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.response;
 
+import java.util.List;
+
 /**
  * Created by khanhlvb on 2/8/18.
  */
@@ -7,6 +9,8 @@ public class AjaxResponseBody {
     private String msg;
 
     private boolean status;
+
+    private List list;
 
     public String getMsg() {
         return msg;
@@ -22,6 +26,14 @@ public class AjaxResponseBody {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public List getList() {
+        return list;
+    }
+
+    public void setList(List list) {
+        this.list = list;
     }
 
     public AjaxResponseBody(String msg, boolean status) {

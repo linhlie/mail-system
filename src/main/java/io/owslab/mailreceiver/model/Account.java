@@ -1,9 +1,6 @@
 package io.owslab.mailreceiver.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by khanhlvb on 3/1/18.
@@ -13,6 +10,9 @@ import javax.persistence.Table;
 public class Account {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
     @Column(name = "User_Name", length = 50, nullable = false)
     private String userName;
 
@@ -29,6 +29,10 @@ public class Account {
 
     }
 
+    public Account(long id){
+        this.id = id;
+    }
+
     public Account(String userName, String encryptedPassword) {
         this.userName = userName;
         this.encryptedPassword = encryptedPassword;
@@ -41,6 +45,14 @@ public class Account {
         this.encryptedPassword = encryptedPassword;
         this.active = active;
         this.userRole = userRole;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getUserName() {

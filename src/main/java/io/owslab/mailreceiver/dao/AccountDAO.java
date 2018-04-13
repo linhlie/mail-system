@@ -12,4 +12,5 @@ import java.util.List;
 @Transactional
 public interface AccountDAO extends CrudRepository<Account, String> {
     List<Account> findByUserRole(String userRole);
+    List<Account> findByUserName(String userName);
 }
