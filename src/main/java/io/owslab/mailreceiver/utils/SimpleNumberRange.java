@@ -151,9 +151,9 @@ public class SimpleNumberRange {
             return true;
         }
         boolean match = false;
-        switch (this.getNumberCompare(replaceCompare)){
+        switch (this.getNumberCompare()){
             case EQ:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) == other.getValue();
                         break;
@@ -177,7 +177,7 @@ public class SimpleNumberRange {
                 }
                 break;
             case NE:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) != other.getValue();
                         break;
@@ -201,7 +201,7 @@ public class SimpleNumberRange {
                 }
                 break;
             case GE:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) <= other.getValue();
                         break;
@@ -225,7 +225,7 @@ public class SimpleNumberRange {
                 }
                 break;
             case GT:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) <= other.getValue();
                         break;
@@ -249,7 +249,7 @@ public class SimpleNumberRange {
                 }
                 break;
             case LE:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) >= other.getValue();
                         break;
@@ -273,7 +273,7 @@ public class SimpleNumberRange {
                 }
                 break;
             case LT:
-                switch (other.getNumberCompare()){
+                switch (other.getNumberCompare(replaceCompare)){
                     case EQ:
                         match = this.getValue(ratio) > other.getValue();
                         break;
