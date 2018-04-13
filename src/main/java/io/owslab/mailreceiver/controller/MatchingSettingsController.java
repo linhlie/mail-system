@@ -5,10 +5,12 @@ import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.MatchingResponeBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.MediaTypeUtils;
 import io.owslab.mailreceiver.utils.SelectOption;
@@ -167,7 +169,7 @@ public class MatchingSettingsController {
     public ResponseEntity<?> submitForm(
             Model model,
             @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
-        AjaxResponseBody result = new AjaxResponseBody();
+        MatchingResponeBody result = new MatchingResponeBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
                     .stream().map(x -> x.getDefaultMessage())
@@ -175,11 +177,11 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            List<MatchingResult> matchingResults = matchingConditionService.matching(matchingConditionForm);
-
+            FinalMatchingResult finalMatchingResult = matchingConditionService.matching(matchingConditionForm);
             result.setMsg("done");
             result.setStatus(true);
-            result.setList(matchingResults);
+            result.setList(finalMatchingResult.getMatchingResultList());
+            result.setMailList(finalMatchingResult.getMailList());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error(e.getMessage());
