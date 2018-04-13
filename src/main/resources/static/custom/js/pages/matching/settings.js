@@ -159,16 +159,20 @@
     }
 
     function getListData(url, name, tableId) {
-        var data = [];
+        var data = null;
         if(name && name.length > 0){
             var key = url + "@" + name;
-            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : [];
+            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
         }
-        console.log("getListData: ", data);
-        removeAllRow(tableId);
-        data = addDefaultReceiveDateRow(data);
-        for(var i = 0; i < data.length; i ++){
-            addRowWithData(tableId, data[i]);
+        if(data != null){
+            console.log("getListData: ", data);
+            removeAllRow(tableId);
+            data = addDefaultReceiveDateRow(data);
+            for(var i = 0; i < data.length; i ++){
+                addRowWithData(tableId, data[i]);
+            }
+        } else {
+            alert("見つけませんでした。");
         }
     }
 
