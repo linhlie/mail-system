@@ -3,6 +3,8 @@ package io.owslab.mailreceiver.service.word;
 import io.owslab.mailreceiver.dao.WordDAO;
 import io.owslab.mailreceiver.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +14,18 @@ import java.util.List;
  */
 
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class WordService {
 
     @Autowired
     private WordDAO wordDAO;
 
+    @Cacheable(key="\"WordService:findAll\"")
     public List<Word> findAll(){
         return (List<Word>) wordDAO.findAll();
     }
 
+    @Cacheable(key="\"WordService:findOne:\"+#word")
     public Word findOne(String word){
         String normalizedWord = this.normalize(word);
         if(!normalizedWord.isEmpty()){
@@ -32,6 +37,7 @@ public class WordService {
         return null;
     }
 
+    @Cacheable(key="\"WordService:findById:\"+#id")
     public Word findById(long id){
         List<Word> wordList = wordDAO.findById(id);
         return wordList.size() > 0 ? wordList.get(0) : null;
