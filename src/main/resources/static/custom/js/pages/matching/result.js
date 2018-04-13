@@ -24,6 +24,31 @@
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
+    var replaceSourceHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
+        '<td class="clickable sorting_1" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.to"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
+        '</tr>';
+
+    var replaceDestinationHTML = '<tr role="row" class="hidden even">' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span style="display: inline-table;"></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span style="display: inline-table;"></span></td>' +
+        '<td class="clickable sorting_1" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="to"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td class="clickable text-center" name="sendToMoto" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">元に</button>' +
+        '</td>' +
+        '<td class="clickable text-center" name="sendToSaki" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">先に</button>' +
+        '</td>' +
+        '</tr>';
+
     $(function () {
         getEnvSettings();
         fixingForTinyMCEOnModal()
@@ -90,7 +115,7 @@
 
     function showSourceData(tableId, data) {
         destroySortSource();
-        removeAllRow(tableId);
+        removeAllRow(tableId, replaceSourceHTML);
         if(data.length > 0){
             for(var i = 0; i < data.length; i ++){
                 if(onlyDisplayNonZeroRow && data[i]
@@ -136,7 +161,7 @@
             var source = data.source;
             currentDestinationResult = data.destinationList;
             destroySortDestination();
-            removeAllRow(tableId);
+            removeAllRow(tableId, replaceDestinationHTML);
             if(currentDestinationResult.length > 0){
                 console.log("start currentDestinationResult");
                 for(var i = 0; i < currentDestinationResult.length; i++){
@@ -285,12 +310,8 @@
         showDestinationData(destinationTableId, rowData);
     }
 
-    function removeAllRow(tableId) { //Except header row
-        var table = document.getElementById(tableId);
-        while(table && table.rows && table.rows.length > 2){
-            var row = table.rows[2];
-            row.parentNode.removeChild(row);
-        }
+    function removeAllRow(tableId, replaceHtml) { //Except header row
+        $("#"+ tableId + "> tbody").html(replaceHtml);
     }
     
     function showMail(messageId, callback) {
