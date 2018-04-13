@@ -140,7 +140,7 @@
             if(currentDestinationResult.length > 0){
                 console.log("start currentDestinationResult");
                 for(var i = 0; i < currentDestinationResult.length; i++){
-                    showDataRow(i);
+                    showDataRow(i, word);
                 }
                 setTimeout(function () {
                     setRowClickListener("sendToMoto", function () {
@@ -170,7 +170,7 @@
         }, 50)
     }
 
-    function showDataRow(index) {
+    function showDataRow(index, word) {
         setTimeout(function () {
             currentDestinationResult[index].word = word;
             addRowWithData(tableId, currentDestinationResult[index], index, function () {
