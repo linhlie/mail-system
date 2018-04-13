@@ -126,10 +126,9 @@
                 }
                 var messageId = data[i].source.messageId;
                 data[i].source = Object.assign(data[i].source, mailList[messageId]);
-                addRowWithData(tableId, data[i], i, function () {
-                    setRowClickListener("sourceRow", selectedRow);
-                });
+                addRowWithData(tableId, data[i], i);
             }
+            setRowClickListener("sourceRow", selectedRow);
         }
         initSortSource();
         selectFirstRow();
@@ -172,6 +171,7 @@
                     showDataRow(i, word, tableId);
                 }
                 setTimeout(function () {
+                    setRowClickListener("showDestinationMail", showDestinationMail);
                     setRowClickListener("sendToMoto", function () {
                         var replaceType = $(motoReplaceSelectorId).val();
                         var row = $(this)[0].parentNode;
@@ -194,9 +194,9 @@
                     });
                     initSortDestination();
                     $('body').loadingModal('hide');
-                }, (currentDestinationResult.length + 1))
+                }, currentDestinationResult.length)
             }
-        }, 50)
+        }, 10)
     }
 
     function showDataRow(index, word, tableId) {
@@ -204,10 +204,8 @@
             currentDestinationResult[index].word = word;
             var messageId = currentDestinationResult[index].messageId;
             currentDestinationResult[index] = Object.assign(currentDestinationResult[index], mailList[messageId]);
-            addRowWithData(tableId, currentDestinationResult[index], index, function () {
-                setRowClickListener("showDestinationMail", showDestinationMail);
-            });
-        },  index);
+            addRowWithData(tableId, currentDestinationResult[index], index);
+        },  1);
     }
 
     function destroySortDestination() {
@@ -228,7 +226,7 @@
         });
     }
 
-    function addRowWithData(tableId, data, index, callback) {
+    function addRowWithData(tableId, data, index) {
         var table = document.getElementById(tableId);
         if(!table) return;
         var body = table.tBodies[0];
@@ -255,9 +253,6 @@
             }
         }
         body.appendChild(row);
-        if(typeof callback === "function"){
-            callback(data);
-        }
     }
     
     function setRowClickListener(name, callback) {

@@ -8,6 +8,8 @@ import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SimpleNumberRange;
 import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,6 +21,7 @@ import java.util.regex.Pattern;
  * Created by khanhlvb on 2/23/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class NumberRangeService {
 
     @Autowired
@@ -38,6 +41,7 @@ public class NumberRangeService {
 
     private HashMap<String, List<FullNumberRange>> fullRangeMap = new HashMap<String, List<FullNumberRange>>();
 
+    @Cacheable(key="\"NumberRangeService:getList\"")
     public List<NumberRange> getList(){
         return (List<NumberRange>) numberRangeDAO.findAll();
     }

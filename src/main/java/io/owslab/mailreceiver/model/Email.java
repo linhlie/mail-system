@@ -65,6 +65,9 @@ public class Email {
     @Transient
     private String optimizedTextDistinguish;
 
+    @Transient
+    private String cachedOptimizedBodyAndSubject = null;
+
     public Email() {
     }
 
@@ -229,7 +232,9 @@ public class Email {
     }
 
     public String getSubjectAndOptimizedBody(){
-        return MailBoxService.optimizeText(this.getSubject()) + "\n" + this.getOptimizedBody();
+        if(cachedOptimizedBodyAndSubject == null)
+            cachedOptimizedBodyAndSubject = MailBoxService.optimizeText(this.getSubject()) + "\n" + this.getOptimizedBody();
+        return cachedOptimizedBodyAndSubject;
     }
 
     public void setOptimizedBody(String optimizedBody) {
