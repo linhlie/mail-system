@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
@@ -12,6 +13,7 @@ import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.*;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +133,10 @@ public class MatchingConditionService {
         return matchingConditionDAO.findByType(type);
     }
 
-    public List<MatchingResult> matching(MatchingConditionForm matchingConditionForm){
+    public FinalMatchingResult matching(MatchingConditionForm matchingConditionForm){
         logger.info("start matching");
-        List<MatchingResult> results = new ArrayList<>();
+        List<MatchingResult> matchingResults = new ArrayList<>();
+        Map<String, PreviewMailDTO> previewMailDTOList = new HashMap<>();
         numberTreatment = numberTreatmentService.getFirst();
         List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
         List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
@@ -169,7 +172,9 @@ public class MatchingConditionService {
         List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             for(String word : sourceResult.getWords()){
-                addToList(matchingResultMap, word, sourceResult.getEmail(), null);
+                Email sourceMail = sourceResult.getEmail();
+                previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
+                addToList(matchingResultMap, word, sourceMail, null);
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 List<String> intersectWords = sourceResult.intersect(destinationResult);
@@ -183,8 +188,13 @@ public class MatchingConditionService {
             for(Future<MatchingPartResult> future: futures) {
                 MatchingPartResult result = future.get();
                 if(result.isMatch()){
+                    Email soureMail = result.getSourceMail();
+                    Email destinationMail = result.getDestinationMail();
+                    FullNumberRange matchRange = result.getMatchRange();
+                    FullNumberRange range = result.getRange();
+                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail));
                     for(String word : result.getIntersectWords()) {
-                        addToList(matchingResultMap, word, result.getSourceMail(), result.getDestinationMail(), result.getMatchRange(), result.getRange());
+                        addToList(matchingResultMap, word, soureMail, destinationMail, matchRange, range);
                     }
                 }
             }
@@ -193,9 +203,10 @@ public class MatchingConditionService {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        results = new ArrayList<MatchingResult>(matchingResultMap.values());
-        logger.info("Matching done: " + results.size());
-        return results;
+        matchingResults = new ArrayList<MatchingResult>(matchingResultMap.values());
+        logger.info("Matching done: " + matchingResults.size());
+        FinalMatchingResult result = new FinalMatchingResult(matchingResults, previewMailDTOList);
+        return result;
     }
 
     private Callable<MatchingPartResult> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,

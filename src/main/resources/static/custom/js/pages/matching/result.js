@@ -13,6 +13,7 @@
     var rdMailReceiverId = 'rdMailReceiver';
     var openFileFolderButtonId = '#openFileFolderBtn';
     var matchingResult = null;
+    var mailList = {};
     var currentDestinationResult = [];
     var onlyDisplayNonZeroRow = true;
     var sourceMatchDataTable;
@@ -77,6 +78,7 @@
                     $('body').loadingModal('hide');
                     if(data && data.status){
                         matchingResult = data.list;
+                        mailList = data.mailList || {};
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -122,6 +124,8 @@
                     && data[i].destinationList && data[i].destinationList.length == 0){
                     continue;
                 }
+                var messageId = data[i].source.messageId;
+                data[i].source = Object.assign(data[i].source, mailList[messageId]);
                 addRowWithData(tableId, data[i], i, function () {
                     setRowClickListener("sourceRow", selectedRow);
                 });
@@ -198,6 +202,8 @@
     function showDataRow(index, word, tableId) {
         setTimeout(function () {
             currentDestinationResult[index].word = word;
+            var messageId = currentDestinationResult[index].messageId;
+            currentDestinationResult[index] = Object.assign(currentDestinationResult[index], mailList[messageId]);
             addRowWithData(tableId, currentDestinationResult[index], index, function () {
                 setRowClickListener("showDestinationMail", showDestinationMail);
             });
