@@ -10,6 +10,7 @@ import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,8 +43,6 @@ public class EmailWordJobService {
 
     private ExecutorService executorService= Executors.newFixedThreadPool(3);
 
-    private HashMap<String, ArrayList<Integer>> wordFoundMap = new HashMap<String, ArrayList<Integer>>();
-
     public void buildMatchData(){
 //        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
 //        for(EmailWordJob emailWordJob : emailWordJobList){
@@ -72,16 +71,8 @@ public class EmailWordJobService {
         emailWordJobDAO.delete(emailWordJob.getId());
     }
 
+    @Cacheable(key="\"EmailWordJobService:find:\"+#cacheId+'-'+toFind+'-'+spaceEffective")
     private ArrayList<Integer> find(String cacheId, String toSearch, String toFind, boolean spaceEffective){
-        if(!spaceEffective){
-            toFind = toFind.replaceAll("　", "");
-            toFind = toFind.replaceAll("\\s+","");
-        }
-        String cacheKey = cacheId + "-" + toFind + "-" + spaceEffective;
-        if(wordFoundMap.get(cacheKey) != null){
-//            System.out.println("reuse word: " + cacheKey);
-            return wordFoundMap.get(cacheKey);
-        }
         ArrayList<Integer> result = new ArrayList<Integer>();
         Matcher matcher = Pattern.compile(toFind, Pattern.LITERAL).matcher(toSearch);
         boolean bFound = matcher.find();
@@ -89,7 +80,6 @@ public class EmailWordJobService {
             result.add(matcher.start());
             bFound = matcher.find(matcher.start() + 1);
         }
-        wordFoundMap.put(cacheKey, result);
         return result;
     }
 
@@ -101,6 +91,8 @@ public class EmailWordJobService {
         List<Integer> result;
         if(!spaceEffective){
             toSearch = toSearch.replaceAll(" ", "");
+            wordStr = wordStr.replaceAll("　", "");
+            wordStr = wordStr.replaceAll("\\s+","");
         }
         if(word == null){
             result = find(cacheId, toSearch, wordStr, spaceEffective);
@@ -124,7 +116,12 @@ public class EmailWordJobService {
     private ArrayList<Integer> findWithWordList(String cacheId, String toSearch, List<Word> wordList, boolean spaceEffective){
         ArrayList<Integer> result =  new ArrayList<Integer>();
         for(Word word : wordList){
-            ArrayList<Integer> findResult = find(cacheId, toSearch, word.getWord(), spaceEffective);
+            String toFind = word.getWord();
+            if(!spaceEffective){
+                toFind = toFind.replaceAll("　", "");
+                toFind = toFind.replaceAll("\\s+","");
+            }
+            ArrayList<Integer> findResult = find(cacheId, toSearch, toFind, spaceEffective);
             result.addAll(findResult);
         }
         return result;
