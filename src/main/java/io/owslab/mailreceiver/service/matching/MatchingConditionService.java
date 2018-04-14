@@ -165,21 +165,23 @@ public class MatchingConditionService {
         List<String> matchingWords = getWordList(matchingConditionForm);
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective);
-//        System.out.println(matchSourceList.size() + " " + matchDestinationList.size());
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
-//        preBuildRanges(matchingConditionList, matchWordSource, matchWordDestination);
         List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
+            Email sourceMail = sourceResult.getEmail();
+            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
             for(String word : sourceResult.getWords()){
-                Email sourceMail = sourceResult.getEmail();
-                previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
                 addToList(matchingResultMap, word, sourceMail, null);
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
-                List<String> intersectWords = sourceResult.intersect(destinationResult);
-                if(intersectWords.size() == 0) continue;
-                callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish));
+                if(matchingWords.size() == 0){
+                    callables.add(toCallable(matchingWords, matchingConditionList, sourceResult, destinationResult, distinguish));
+                } else {
+                    List<String> intersectWords = sourceResult.intersect(destinationResult);
+                    if(intersectWords.size() == 0) continue;
+                    callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish));
+                }
             }
         }
         logger.info("start range invokeAll pharse: " + callables.size());
@@ -193,8 +195,12 @@ public class MatchingConditionService {
                     FullNumberRange matchRange = result.getMatchRange();
                     FullNumberRange range = result.getRange();
                     previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail));
-                    for(String word : result.getIntersectWords()) {
-                        addToList(matchingResultMap, word, soureMail, destinationMail, matchRange, range);
+                    if(matchingWords.size() == 0){
+                        addToList(matchingResultMap, null, soureMail, destinationMail, matchRange, range);
+                    } else {
+                        for(String word : result.getIntersectWords()) {
+                            addToList(matchingResultMap, word, soureMail, destinationMail, matchRange, range);
+                        }
                     }
                 }
             }
@@ -692,11 +698,7 @@ public class MatchingConditionService {
         Callable<MatchingWordResult> clientPlanCall=new Callable<MatchingWordResult>(){
             public MatchingWordResult call() {
                 MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective);
-                if(result.hasMatchWord()){
-                    return result;
-                } else {
-                    return null;
-                }
+                return result;
             }
         };
 
