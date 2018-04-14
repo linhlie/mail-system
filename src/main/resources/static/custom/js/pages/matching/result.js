@@ -119,6 +119,7 @@
         destroySortSource();
         removeAllRow(tableId, replaceSourceHTML);
         if(data.length > 0){
+            var html = replaceSourceHTML;
             for(var i = 0; i < data.length; i ++){
                 if(onlyDisplayNonZeroRow && data[i]
                     && data[i].destinationList && data[i].destinationList.length == 0){
@@ -126,8 +127,9 @@
                 }
                 var messageId = data[i].source.messageId;
                 data[i].source = Object.assign(data[i].source, mailList[messageId]);
-                addRowWithData(tableId, data[i], i);
+                html = html + addRowWithData(tableId, data[i], i);
             }
+            $("#"+ tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
         }
         initSortSource();
@@ -165,12 +167,16 @@
             currentDestinationResult = data.destinationList;
             destroySortDestination();
             removeAllRow(tableId, replaceDestinationHTML);
-            if(currentDestinationResult.length > 0){
-                console.log("start currentDestinationResult");
-                for(var i = 0; i < currentDestinationResult.length; i++){
-                    showDataRow(i, word, tableId);
-                }
-                setTimeout(function () {
+            setTimeout(function () {
+                if(currentDestinationResult.length > 0){
+                    var html = replaceDestinationHTML;
+                    for(var i = 0; i < currentDestinationResult.length; i++){
+                        currentDestinationResult[i].word = word;
+                        var messageId = currentDestinationResult[i].messageId;
+                        currentDestinationResult[i] = Object.assign(currentDestinationResult[i], mailList[messageId]);
+                        html = html + addRowWithData(tableId, currentDestinationResult[i], i);
+                    }
+                    $("#"+ tableId + "> tbody").html(html);
                     setRowClickListener("showDestinationMail", showDestinationMail);
                     setRowClickListener("sendToMoto", function () {
                         var replaceType = $(motoReplaceSelectorId).val();
@@ -194,18 +200,9 @@
                     });
                     initSortDestination();
                     $('body').loadingModal('hide');
-                }, currentDestinationResult.length)
-            }
+                }
+            }, 10)
         }, 10)
-    }
-
-    function showDataRow(index, word, tableId) {
-        setTimeout(function () {
-            currentDestinationResult[index].word = word;
-            var messageId = currentDestinationResult[index].messageId;
-            currentDestinationResult[index] = Object.assign(currentDestinationResult[index], mailList[messageId]);
-            addRowWithData(tableId, currentDestinationResult[index], index);
-        },  1);
     }
 
     function destroySortDestination() {
@@ -228,8 +225,7 @@
 
     function addRowWithData(tableId, data, index) {
         var table = document.getElementById(tableId);
-        if(!table) return;
-        var body = table.tBodies[0];
+        if(!table) return "";
         var rowToClone = table.rows[1];
         var row = rowToClone.cloneNode(true);
         row.setAttribute("data", index);
@@ -252,7 +248,8 @@
                 }
             }
         }
-        body.appendChild(row);
+        return row.outerHTML;
+        // body.appendChild(row);
     }
     
     function setRowClickListener(name, callback) {
