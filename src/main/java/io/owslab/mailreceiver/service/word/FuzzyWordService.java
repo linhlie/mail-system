@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class FuzzyWordService {
         fuzzyWordDAO.delete(id);
     }
 
+    @CacheEvict(allEntries = true)
     public void save(FuzzyWord fuzzyWord){
         fuzzyWordDAO.save(fuzzyWord);
     }

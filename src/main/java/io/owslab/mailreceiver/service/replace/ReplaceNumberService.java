@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.ReplaceNumberDAO;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class ReplaceNumberService {
         return (List<ReplaceNumber>) replaceNumberDAO.findAll();
     }
 
+    @CacheEvict(allEntries = true)
     public void saveList(List<ReplaceNumber> replaceNumbers){
         //TODO: Must be transaction
         for(ReplaceNumber replaceNumber : replaceNumbers){

@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.WordDAO;
 import io.owslab.mailreceiver.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,7 @@ public class WordService {
         return wordList.size() > 0 ? wordList.get(0) : null;
     }
 
+    @CacheEvict(allEntries = true)
     public void save(Word word){
         wordDAO.save(word);
     }
