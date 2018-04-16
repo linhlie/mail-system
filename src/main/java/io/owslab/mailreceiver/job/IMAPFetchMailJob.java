@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import javax.swing.text.html.*;
 import javax.swing.text.html.parser.*;
@@ -296,9 +297,15 @@ public class IMAPFetchMailJob implements Runnable {
                     // this part is attachment
                     String fileName = MimeUtility.decodeText(part.getFileName());
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    String currentDateStr = getCurrentDateStr();
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
-                    if (! saveDirectory.exists()){
+                    if (!saveDirectory.exists()){
+                        saveDirectory.mkdir();
+                    }
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectory = new File(saveDirectoryPath);
+                    if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
                     File file = new File(saveDirectoryPath + File.separator + fileName);
@@ -354,5 +361,19 @@ public class IMAPFetchMailJob implements Runnable {
             }
         }
         return result;
+    }
+
+    private String getCurrentDateStr(){
+        String currentDateStr = "";
+        LocalDateTime now = LocalDateTime.now();
+        String year = Integer.toString(now.getYear());
+        String month = Integer.toString(now.getMonthValue());
+        if(month.length() == 1) month = "0" + month;
+        String day = Integer.toString(now.getDayOfMonth());
+        if(day.length() == 1) day = "0" + day;
+        currentDateStr = currentDateStr + year;
+        currentDateStr = currentDateStr + "-" + month;
+        currentDateStr = currentDateStr + "-" + day;
+        return currentDateStr;
     }
 }
