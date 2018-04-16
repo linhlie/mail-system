@@ -28,7 +28,7 @@
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
-        '<td class="clickable sorting_1" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.to"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
@@ -38,7 +38,7 @@
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span style="display: inline-table;"></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span style="display: inline-table;"></span></td>' +
-        '<td class="clickable sorting_1" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
@@ -286,8 +286,10 @@
     
     function selectFirstRow() {
         if(matchingResult && matchingResult.length > 0){
-            $('#' + sourceTableId).find(' tbody tr:first').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            var rowData = matchingResult[0];
+            var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+            var index = firstTr[0].getAttribute("data");
+            var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, function (result) {
                     showMailContent(result)
