@@ -384,7 +384,15 @@
         console.log("form: ", form);
         disableButton(submitFormBtnId, true);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
-        window.location = '/user/matchingResult';
+        // window.location = '/user/matchingResult';
+        var win = window.open('/user/matchingResult', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
     }
 
 })(jQuery);
