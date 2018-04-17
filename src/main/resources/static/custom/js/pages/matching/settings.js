@@ -37,27 +37,71 @@
     }
 
     function saveSourceListData(){
-        var name = prompt("Please enter saved name", "");
-        if (name != null && name.length > 0) {
-            var data = buildDataFromTable(sourceTableId);
-            saveListData(
-                "/user/matchingSettings/source",
-                name,
-                data
-            )
+        var datalistKey = "/user/matchingSettings/listSourceKey";
+        var datalistStr = localStorage.getItem(datalistKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, function (name) {
+            if (name != null && name.length > 0) {
+                if(datalist.indexOf(name) < 0){
+                    datalist.push(name);
+                }
+                localStorage.setItem(datalistKey, JSON.stringify(datalist));
+                var data = buildDataFromTable(sourceTableId);
+                saveListData(
+                    "/user/matchingSettings/source",
+                    name,
+                    data
+                )
+            }
+        })
+    }
+    
+    function showNamePrompt(datalist, callback) {
+        $('#dataModal').modal();
+        datalist = datalist || [];
+        $( '#dataModalName').val('');
+        $('#keylist').html('');
+        for(var i = 0; i < datalist.length; i++){
+            $('#keylist').append("<option value='" + datalist[i] + "'>");
         }
+        setInputAutoComplete("dataModalName");
+        $('#dataModalOk').off('click');
+        $("#dataModalOk").click(function () {
+            var name = $( '#dataModalName').val();
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback(name);
+            }
+        });
+        $('#dataModalCancel').off('click');
+        $("#dataModalCancel").click(function () {
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
     }
 
     function saveDestinationListData(){
-        var name = prompt("Please enter saved name", "");
-        if (name != null && name.length > 0) {
-            var data = buildDataFromTable(destinationTableId);
-            saveListData(
-                "/user/matchingSettings/destination",
-                name,
-                data
-            )
-        }
+        var datalistKey = "/user/matchingSettings/listDestinationKey";
+        var datalistStr = localStorage.getItem(datalistKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, function (name) {
+            if (name != null && name.length > 0) {
+                if(datalist.indexOf(name) < 0){
+                    datalist.push(name);
+                }
+                localStorage.setItem(datalistKey, JSON.stringify(datalist));
+                var data = buildDataFromTable(destinationTableId);
+                saveListData(
+                    "/user/matchingSettings/destination",
+                    name,
+                    data
+                )
+            }
+        })
     }
 
     function saveListData(url, name,  data) {
@@ -96,10 +140,15 @@
         if(skip){
             getListData("/user/matchingSettings/source", null, sourceTableId, getSourceBtnId);
         } else {
-            var name = prompt("Please enter saved name", "");
-            if (name != null) {
-                getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
-            }
+            var datalistKey = "/user/matchingSettings/listSourceKey";
+            var datalistStr = localStorage.getItem(datalistKey);
+            var datalist = JSON.parse(datalistStr);
+            datalist = datalist || [];
+            showNamePrompt(datalist, function (name) {
+                if (name != null && name.length > 0) {
+                    getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
+                }
+            })
         }
     }
 
@@ -107,10 +156,15 @@
         if(skip){
             getListData("/user/matchingSettings/destination", null, destinationTableId, getDestinationBtnId);
         } else {
-            var name = prompt("Please enter saved name", "");
-            if (name != null) {
-                getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
-            }
+            var datalistKey = "/user/matchingSettings/listDestinationKey";
+            var datalistStr = localStorage.getItem(datalistKey);
+            var datalist = JSON.parse(datalistStr);
+            datalist = datalist || [];
+            showNamePrompt(datalist, function (name) {
+                if (name != null && name.length > 0) {
+                    getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
+                }
+            })
         }
     }
 
