@@ -39,6 +39,7 @@ public class SimpleNumberRange {
     public SimpleNumberRange(NumberCompare numberCompare, double value) {
         this.numberCompare = numberCompare;
         this.value = value;
+        this.rawValue = value;
         this.replaceValue = 1;
     }
 

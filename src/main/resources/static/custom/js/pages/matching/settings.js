@@ -10,6 +10,8 @@
     var saveDestinationBtnId = '#saveDestinationBtn';
     var getDestinationBtnId = '#getDestinationBtn';
     var submitFormBtnId = '#submitFormBtn';
+    var extractSourceBtnId = '#extractSourceBtn';
+    var extractDestinationBtnId = '#extractDestinationBtn';
     var matchingWordsAreaId = '#matchingWordsArea';
 
 
@@ -25,6 +27,8 @@
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
         setButtonClickListenter(getDestinationBtnId, getDestinationListData);
         setButtonClickListenter(submitFormBtnId, submit);
+        setButtonClickListenter(extractSourceBtnId, extractSource);
+        setButtonClickListenter(extractDestinationBtnId, extractDestination);
     });
     
     function setButtonClickListenter(id, callback) {
@@ -369,6 +373,36 @@
         return row && row.className && row.className.indexOf("skip") >= 0;
     }
     
+    function extractSource() {
+        disableButton(extractSourceBtnId, true);
+        var data = buildDataFromTable(sourceTableId);
+        console.log("extractSource: ", data);
+        sessionStorage.setItem("extractSourceData", JSON.stringify(data));
+        var win = window.open('/user/extractSource', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
+    }
+    
+    function extractDestination() {
+        disableButton(extractDestinationBtnId, true);
+        var data = buildDataFromTable(destinationTableId);
+        console.log("extractDestination: ", data);
+        sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
+        var win = window.open('/user/extractDestination', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
+    }
+    
     function submit() {
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
@@ -384,7 +418,15 @@
         console.log("form: ", form);
         disableButton(submitFormBtnId, true);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
-        window.location = '/user/matchingResult';
+        // window.location = '/user/matchingResult';
+        var win = window.open('/user/matchingResult', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
     }
 
 })(jQuery);
