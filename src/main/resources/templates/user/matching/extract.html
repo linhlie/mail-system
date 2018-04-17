@@ -1,0 +1,55 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>比較メールのみ抽出</title>
+</head>
+<body>
+<div layout:fragment="content" th:with="isExtractSource=${extract == 'source'}">
+    <section class="content-header">
+        <h1 th:text="${isExtractSource} ? '比較メール元のみ抽出': '比較メール先のみ抽出'"></h1>
+    </section>
+    <section class="content matching-result">
+        <div class="row matching-result-container" style="position: relative">
+            <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+                <div class="col-sm-6">
+                    <h4 th:text="${isExtractSource} ? '絞り込み元': '絞り込み先'"></h4>
+                    <div class="main-left">
+                        <div class="table-container" style="height: 450px;">
+                            <table id="sourceMatch" class="table table-bordered table-hover dataTable">
+                                <thead>
+                                <tr>
+                                    <th>受信日時</th>
+                                    <th>送信者</th>
+                                    <th>受信者</th>
+                                    <th>件名</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr role="row" class="hidden">
+                                    <td class="clickable" name="sourceRow" th:data="source.receivedAt"><span></span></td>
+                                    <td class="clickable" name="sourceRow" th:data="source.from"><span></span></td>
+                                    <td class="clickable" name="sourceRow" th:data="source.to"><span></span></td>
+                                    <td class="clickable" name="sourceRow" th:data="source.subject"><span></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <h4>プレビュー</h4>
+                    <div class="main-right">
+                        <div id="mailSubject" class="mail-subject"></div>
+                        <div id="mailBody" class="mail-part mail-body"></div>
+                        <div id="mailAttachment" class="mail-attachment"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/matching/extract.js"></script>
+</th:block>
+</body>
+</html>

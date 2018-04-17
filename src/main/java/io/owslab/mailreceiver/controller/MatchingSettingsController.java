@@ -288,4 +288,16 @@ public class MatchingSettingsController {
         result.setStatus(true);
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "/extractSource", method = RequestMethod.GET)
+    public String getExtractSource(Model model) {
+        model.addAttribute("extract", "source");
+        return "user/matching/extract";
+    }
+
+    @RequestMapping(value = "/extractDestination", method = RequestMethod.GET)
+    public String getExtractDestination(Model model) {
+        model.addAttribute("extract", "destination");
+        return "user/matching/extract";
+    }
 }
