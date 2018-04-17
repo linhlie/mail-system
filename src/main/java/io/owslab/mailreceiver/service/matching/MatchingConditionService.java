@@ -2,8 +2,10 @@ package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
+import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
@@ -131,6 +133,27 @@ public class MatchingConditionService {
 
     private List<MatchingCondition> getListByType(int type){
         return matchingConditionDAO.findByType(type);
+    }
+
+    public List<ExtractMailDTO> extract(ExtractForm extractForm){
+        List<ExtractMailDTO> extractResult = new ArrayList<>();
+        numberTreatment = numberTreatmentService.getFirst();
+        List<MatchingCondition> conditionList = extractForm.getConditionList();
+        List<MatchingConditionGroup> groupedConditions = divideIntoGroups(conditionList);
+        List<Email> emailList = mailBoxService.getAll();
+        List<Email> matchList;
+        boolean distinguish = extractForm.isDistinguish();
+        if(groupedConditions.size() > 0) {
+            findMailMatching(emailList, groupedConditions, distinguish);
+            matchList = mergeResultGroups(groupedConditions);
+        } else {
+            matchList = emailList;
+        }
+        for(Email email : matchList){
+            extractResult.add(new ExtractMailDTO(email));
+        }
+
+        return extractResult;
     }
 
     public FinalMatchingResult matching(MatchingConditionForm matchingConditionForm){

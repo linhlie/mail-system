@@ -374,9 +374,10 @@
     }
     
     function extractSource() {
-        disableButton(extractSourceBtnId, true);
-        var data = buildDataFromTable(sourceTableId);
-        console.log("extractSource: ", data);
+        var data = {
+            "conditionList" : buildDataFromTable(sourceTableId),
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+        };
         sessionStorage.setItem("extractSourceData", JSON.stringify(data));
         var win = window.open('/user/extractSource', '_blank');
         if (win) {
@@ -389,9 +390,10 @@
     }
     
     function extractDestination() {
-        disableButton(extractDestinationBtnId, true);
-        var data = buildDataFromTable(destinationTableId);
-        console.log("extractDestination: ", data);
+        var data = {
+            "conditionList" : buildDataFromTable(destinationTableId),
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+        };
         sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
         var win = window.open('/user/extractDestination', '_blank');
         if (win) {

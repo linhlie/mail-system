@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.dto.ExtractMailDTO;
+import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.MatchingCondition;
@@ -299,5 +301,31 @@ public class MatchingSettingsController {
     public String getExtractDestination(Model model) {
         model.addAttribute("extract", "destination");
         return "user/matching/extract";
+    }
+
+    @PostMapping("/submitExtract")
+    @ResponseBody
+    public ResponseEntity<?> submitExtract(
+            Model model,
+            @Valid @RequestBody ExtractForm extractForm, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
+        MatchingResponeBody result = new MatchingResponeBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<ExtractMailDTO> extractResult = matchingConditionService.extract(extractForm);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(extractResult);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }
