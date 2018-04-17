@@ -417,8 +417,6 @@
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"
         };
-        console.log("form: ", form);
-        disableButton(submitFormBtnId, true);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
         // window.location = '/user/matchingResult';
         var win = window.open('/user/matchingResult', '_blank');
