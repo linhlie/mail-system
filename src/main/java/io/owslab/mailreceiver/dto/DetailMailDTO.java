@@ -53,8 +53,8 @@ public class DetailMailDTO {
         this.setCc(email.getCc());
         this.setBcc(email.getBcc());
         this.setReplyTo(email.getReplyTo());
-        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:SS", TIME_ZONE, null));
-        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:SS", TIME_ZONE, null));
+        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", TIME_ZONE, null));
+        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", TIME_ZONE, null));
         this.setHasAttachment(email.isHasAttachment());
         this.setContentType(email.getContentType());
         this.setOriginalBody(email.getOriginalBody());
