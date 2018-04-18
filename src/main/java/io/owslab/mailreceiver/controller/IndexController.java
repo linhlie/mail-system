@@ -3,6 +3,8 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 @Controller
 public class IndexController {
@@ -50,6 +53,11 @@ public class IndexController {
         model.addAttribute("mailProgressRemain", mailProgress.getTotal() - mailProgress.getDone());
         model.addAttribute("mailProgressLastUpdate", df.format(new Date()));
         return "admin";
+    }
+
+    @EventListener
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
+        df.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
     }
 
     @GetMapping("/403")
