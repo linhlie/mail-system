@@ -5,6 +5,7 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var totalResultContainId = 'totalResultContain';
     var extractResult = null;
     var sourceMatchDataTable;
     var selectedRowData;
@@ -72,8 +73,14 @@
             $("#"+ tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
         }
+        updateTotalResult(data.length);
         initSortSource();
         selectFirstRow();
+    }
+    
+    function updateTotalResult(total) {
+        var raw = $('#' + totalResultContainId).text();
+        $('#' + totalResultContainId).text(raw + "(" + total + ")")
     }
 
     function destroySortSource() {

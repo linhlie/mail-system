@@ -12,7 +12,7 @@
         <div class="row matching-result-container" style="position: relative">
             <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
                 <div class="col-sm-6">
-                    <h4 th:text="${isExtractSource} ? '絞り込み元': '絞り込み先'"></h4>
+                    <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元': '絞り込み先'"></h4>
                     <div class="main-left">
                         <div class="table-container" style="height: 450px;">
                             <table id="sourceMatch" class="table table-bordered table-hover dataTable">
