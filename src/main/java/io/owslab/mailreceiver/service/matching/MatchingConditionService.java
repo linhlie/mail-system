@@ -153,6 +153,11 @@ public class MatchingConditionService {
             matchList = emailList;
         }
         for(Email email : matchList){
+            if(email.getRangeList().size() == 0){
+                String optimizedPart = email.getOptimizedText(false);
+                List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput(email.getMessageId(), optimizedPart);
+                email.setRangeList(rangeList);
+            }
             extractResult.add(new ExtractMailDTO(email));
         }
 

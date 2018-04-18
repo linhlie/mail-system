@@ -11,6 +11,7 @@
     var selectedRowData;
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="to"><span></span></td>' +
@@ -94,7 +95,7 @@
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,
-            "order": [[ 0, "desc" ]]
+            "order": [[ 1, "desc" ]]
         });
     }
 
