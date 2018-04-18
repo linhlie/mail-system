@@ -81,7 +81,7 @@
     
     function updateTotalResult(total) {
         var raw = $('#' + totalResultContainId).text();
-        $('#' + totalResultContainId).text(raw + "(" + total + ")")
+        $('#' + totalResultContainId).text(raw + " " + total + "件")
     }
 
     function destroySortSource() {
