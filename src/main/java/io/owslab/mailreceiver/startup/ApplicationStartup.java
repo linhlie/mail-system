@@ -16,6 +16,7 @@ import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.SelectOption;
+import io.owslab.mailreceiver.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ public class ApplicationStartup {
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
+        Utils.init();
         initStorageDirectory();
         enviromentSettingService.init();
         addAdminAccount();

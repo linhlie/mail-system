@@ -37,6 +37,8 @@ public class MatchingConditionService {
 
     private static final Logger logger = LoggerFactory.getLogger(MatchingConditionService.class);
 
+    public static final long ONE_DAY_MILLISECONDS = 24 * 60 * 60 *1000;
+
     @Autowired
     private MatchingConditionDAO matchingConditionDAO;
 
@@ -516,29 +518,29 @@ public class MatchingConditionService {
             if(dateValue.matches("-?\\d+")){
                 Date now = new Date();
                 conditionDate = Utils.addDayToDate(now, Integer.parseInt(dateValue));
+                conditionDate = Utils.trim(conditionDate);
             } else {
-                conditionDate = formatter.parse(dateValue);
+                conditionDate = Utils.parseDateStr(dateValue);
             }
-            conditionDate = Utils.trim(conditionDate);
-            part = Utils.trim(part);
+            long diff = part.getTime() - conditionDate.getTime();
             switch (option){
                 case EQ:
-                    match = part.compareTo(conditionDate) == 0;
+                    match = diff >= 0 && diff < ONE_DAY_MILLISECONDS;
                     break;
                 case NE:
-                    match = part.compareTo(conditionDate)  != 0;
+                    match = diff >= ONE_DAY_MILLISECONDS || diff < 0;
                     break;
                 case GE:
-                    match = part.compareTo(conditionDate)  >= 0;
+                    match = diff >= 0;
                     break;
                 case GT:
-                    match = part.compareTo(conditionDate)  > 0;
+                    match = diff >= ONE_DAY_MILLISECONDS;
                     break;
                 case LE:
-                    match = part.compareTo(conditionDate)  <= 0;
+                    match = diff < ONE_DAY_MILLISECONDS;
                     break;
                 case LT:
-                    match = part.compareTo(conditionDate)  < 0;
+                    match = diff < 0;
                     break;
                 case INC:
                 case NINC:
