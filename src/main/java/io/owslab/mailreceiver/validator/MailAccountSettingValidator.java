@@ -48,12 +48,14 @@ public class MailAccountSettingValidator implements Validator {
         try {
             check(emailAccount, newReceiveAccountSetting);
         } catch (Exception e) {
+            e.printStackTrace();
             errors.rejectValue("rUserName", "Authentication.fullAccountForm.rUserName");
         }
 
         try {
             check(emailAccount, newSendAccountSetting);
         } catch (Exception e) {
+            e.printStackTrace();
             errors.rejectValue("sUserName", "Authentication.fullAccountForm.sUserName");
         }
     }
