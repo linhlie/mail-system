@@ -262,7 +262,31 @@
                 '<h5>From: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h5>' +
                 '</div>' +
                 '<div class="mailbox-read-message">' + data.originalBody + '</div>' +
-                '</div>';
+                '</div>' +
+                '<div class="box-footer"> ' +
+                '<ul class="mailbox-attachments clearfix"> ';
+            var files = data.files ? data.files : [];
+            if(files.length > 0){
+                var filesInnerHTML = "";
+                for(var i = 0; i < files.length; i++ ){
+                    var file = files[i];
+                    var fileName = file.fileName;
+                    var fileSize = (file.size/1024) + " KB ";
+                    var fileInnerHTML = '<li> <span class="mailbox-attachment-icon">' +
+                        '<i class="fa fa-file-o"></i>' +
+                        '</span> ' +
+                        '<div class="mailbox-attachment-info"> ' +
+                        '<a href="#" class="mailbox-attachment-name">' +
+                        '<i class="fa fa-paperclip"></i>' + fileName +
+                        '</a> ' +
+                        '<span class="mailbox-attachment-size">' + fileSize + '<a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a> </span> ' +
+                        '</div> ' +
+                        '</li>';
+                    filesInnerHTML += fileInnerHTML
+                }
+                innerHtml = innerHtml + filesInnerHTML;
+            }
+            innerHtml = innerHtml + '</ul></div>';
             printElment.innerHTML = innerHtml;
         }
     }
