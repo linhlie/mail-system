@@ -844,6 +844,7 @@ public class MatchingConditionService {
                     }
                     findRange = forFindListRange.get(0);
                     toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
+                    target.setRangeList(new ArrayList<>());
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(range.match(findRange, ratio)){
@@ -871,6 +872,7 @@ public class MatchingConditionService {
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
                     findRange = new FullNumberRange(simpleRange);
                     toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
+                    target.setRangeList(new ArrayList<>());
                     if(toFindListRange.size() > 0){
                         for(FullNumberRange range : toFindListRange){
                             if(range.match(findRange, ratio)){
