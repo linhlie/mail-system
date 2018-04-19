@@ -28,7 +28,7 @@
                 <div class="col-sm-12">
                     <h4>絞り込み元</h4>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-6" style="padding-top: 5px;">
                     <input name="group"
                            id="displayNonZeroCheckbox"
                            type="checkbox"
@@ -98,12 +98,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <span>プレビュー</span>
+                <div class="col-sm-6" style="padding-top: 5px;">
+                    <span>プレビュー
+                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                            <i class="fa fa-print"></i>
+                        </button>
+                    </span>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
                         <div id="mailBody" class="mail-part mail-body"></div>
                         <div id="mailAttachment" class="mail-attachment"></div>
+                    </div>
+                    <div style="display: none" id="printElement">
                     </div>
                 </div>
             </form>

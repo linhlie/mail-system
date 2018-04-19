@@ -12,6 +12,7 @@
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var openFileFolderButtonId = '#openFileFolderBtn';
+    var printBtnId = 'printBtn';
     var matchingResult = null;
     var mailList = {};
     var currentDestinationResult = [];
@@ -51,8 +52,9 @@
         '</tr>';
 
     $(function () {
+        setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
-        fixingForTinyMCEOnModal()
+        fixingForTinyMCEOnModal();
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
         var matchingConditionStr;
@@ -94,6 +96,15 @@
             updateData();
         }
     });
+
+    function setButtonClickListenter(id, callback) {
+        $('#' + id).off('click');
+        $('#' + id).click(function () {
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
 
     function fixingForTinyMCEOnModal() {
         $(document).on('focusin', function(e) {
@@ -268,6 +279,7 @@
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId, function (result) {
                 showMailContent(result)
+                updatePreviewMailToPrint(result);
             });
         }
     }
@@ -280,6 +292,7 @@
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
+                updatePreviewMailToPrint(result);
             });
         }
     }
@@ -293,6 +306,7 @@
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, function (result) {
                     showMailContent(result)
+                    updatePreviewMailToPrint(result);
                 });
             }
             selectedRowData = rowData;
@@ -526,6 +540,28 @@
                 console.error("getEnvSettings FAILED : ", e);
             }
         });
+    }
+
+    function updatePreviewMailToPrint(data) {
+        var printElment = document.getElementById('printElement');
+        printElment.innerHTML = "";
+        if(data){
+            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            var innerHtml = '<div class="box-body no-padding">' +
+                '<div class="mailbox-read-info">' +
+                '<h3>' + data.subject + '</h3>' +
+                '<h5>From: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h5>' +
+                '</div>' +
+                '<div class="mailbox-read-message">' + data.originalBody + '</div>' +
+                '</div>';
+            printElment.innerHTML = innerHtml;
+        }
+    }
+
+    function printPreviewEmail() {
+        $("#printElement").show();
+        $("#printElement").print();
+        $("#printElement").hide();
     }
 
 })(jQuery);

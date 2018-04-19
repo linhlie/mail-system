@@ -18,7 +18,7 @@
                             <table id="sourceMatch" class="table table-bordered table-hover dataTable">
                                 <thead>
                                 <tr>
-                                    <th>件数</th>
+                                    <th>金額</th>
                                     <th>受信日時</th>
                                     <th>送信者</th>
                                     <th>受信者</th>
@@ -39,11 +39,17 @@
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <h4>プレビュー</h4>
+                    <h4>プレビュー
+                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                            <i class="fa fa-print"></i>
+                        </button>
+                    </h4>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
                         <div id="mailBody" class="mail-part mail-body"></div>
                         <div id="mailAttachment" class="mail-attachment"></div>
+                    </div>
+                    <div style="display: none" id="printElement">
                     </div>
                 </div>
             </form>
