@@ -22,6 +22,8 @@
     var selectedRowData;
     var motoReplaceSelectorId = "#motoReplaceSelector";
     var sakiReplaceSelectorId = "#sakiReplaceSelector";
+    var totalSourceMatchingContainId = "totalSourceMatching";
+    var totalDestinationMatchingContainId = "totalDestinationMatching";
 
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
@@ -150,6 +152,7 @@
     function showSourceData(tableId, data) {
         destroySortSource();
         removeAllRow(tableId, replaceSourceHTML);
+        var sourceMatchingCounter = 0;
         if(data.length > 0){
             var html = replaceSourceHTML;
             for(var i = 0; i < data.length; i ++){
@@ -160,6 +163,7 @@
                 var messageId = data[i].source.messageId;
                 data[i].source = Object.assign(data[i].source, mailList[messageId]);
                 html = html + addRowWithData(tableId, data[i], i);
+                sourceMatchingCounter++;
             }
             $("#"+ tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
@@ -167,6 +171,7 @@
         initSortSource();
         selectFirstRow();
         enableResizeSourceColumns();
+        updateTotalSourceMatching(sourceMatchingCounter);
     }
 
     function destroySortSource() {
@@ -235,6 +240,7 @@
                     $('body').loadingModal('hide');
                     enableResizeDestinationColumns();
                 }
+                updateTotalDestinationMatching(currentDestinationResult.length);
             }, 10)
         }, 10)
     }
@@ -609,6 +615,14 @@
         $("#printElement").show();
         $("#printElement").print();
         $("#printElement").hide();
+    }
+
+    function updateTotalSourceMatching(total) {
+        $('#' + totalSourceMatchingContainId).text("絞り込み元: " + total + "件")
+    }
+
+    function updateTotalDestinationMatching(total) {
+        $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
     }
 
 })(jQuery);
