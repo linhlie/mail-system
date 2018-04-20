@@ -21,8 +21,13 @@
 
     $(function () {
         setButtonClickListenter(printBtnId, printPreviewEmail);
+        enableResizeColums();
         loadExtractData();
     });
+
+    function enableResizeColums() {
+        $("#" + sourceTableId).colResizable({resizeMode:'overflow'});
+    }
 
     function loadExtractData() {
         var extractDataStr;

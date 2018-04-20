@@ -55,6 +55,7 @@
         setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
         fixingForTinyMCEOnModal();
+        enableResizeColums();
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
         var matchingConditionStr;
@@ -96,6 +97,11 @@
             updateData();
         }
     });
+
+    function enableResizeColums() {
+        $("#" + sourceTableId).colResizable({resizeMode:'overflow'});
+        $("#" + destinationTableId).colResizable({resizeMode:'overflow'});
+    }
 
     function setButtonClickListenter(id, callback) {
         $('#' + id).off('click');
