@@ -33,12 +33,3 @@ VALUES
 	('〜', 0, 1, 0),
 	('〜', 1, 0, 0);
 
-INSERT INTO `matching_conditions` (`group`, `combine`, `item`, `condition`, `value`, `type`)
-VALUES
-	(0, -1, 2, 1, '', 0),
-	(0, 0, 7, -1, '', 0),
-	(0, -1, 2, 1, '', 1),
-	(1, 0, 3, 1, 'Microsoft', 1),
-	(0, -1, 2, 0, 'world-link-system', 1),
-	(1, 0, 0, 0, '', 1);
-
