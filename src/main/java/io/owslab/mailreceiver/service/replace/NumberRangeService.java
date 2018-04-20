@@ -95,7 +95,8 @@ public class NumberRangeService {
                             realNumberResult.getReplaceText(),
                             afNumberUnitText,
                             bfNumberLetter.getLetter(),
-                            true);
+                            true,
+                            numberElement.isContainComma());
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                     addToList(rangeMap, position, simpleNumberRange);
                 }
@@ -109,7 +110,8 @@ public class NumberRangeService {
                             realNumberResult.getReplaceText(),
                             afNumberUnitText,
                             afNumberLetter.getLetter(),
-                            false
+                            false,
+                            numberElement.isContainComma()
                     );
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                     addToList(rangeMap, position, simpleNumberRange);
@@ -122,7 +124,8 @@ public class NumberRangeService {
                         realNumberResult.getReplaceText(),
                         afNumberUnitText,
                         null,
-                        false
+                        false,
+                        numberElement.isContainComma()
                 );
                 simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                 addToList(rangeMap, position, simpleNumberRange);
@@ -188,7 +191,7 @@ public class NumberRangeService {
     private ArrayList<NumberElement> buildListNumber(String content){
         //TODO: need better regex handle comma and period
         ArrayList<NumberElement> result = new ArrayList<NumberElement>();
-        Pattern p = Pattern.compile("\\d+(,\\d+)*(\\.\\d+)?");
+        Pattern p = Pattern.compile("\\d+(,\\d{3})*(\\.\\d+)?");
         Matcher m = p.matcher(content);
         while (m.find()) {
             NumberElement numberElement = new NumberElement(m.group(), m.start());
@@ -311,13 +314,16 @@ public class NumberRangeService {
         private int startAt;
         private int endAt;
         private Double value;
+        private boolean containComma;
 
         public NumberElement(String raw, int startAt) {
             this.raw = raw;
             this.startAt = startAt;
             this.endAt = startAt + raw.length();
+            this.containComma = raw.indexOf(",") >= 0;
             try {
-                this.value = Double.parseDouble(raw);
+                this.value = this.containComma ?
+                        Double.parseDouble(raw.replaceAll(",", "")) : Double.parseDouble(raw);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -353,6 +359,14 @@ public class NumberRangeService {
 
         public void setEndAt(int endAt) {
             this.endAt = endAt;
+        }
+
+        public boolean isContainComma() {
+            return containComma;
+        }
+
+        public void setContainComma(boolean containComma) {
+            this.containComma = containComma;
         }
     }
 
