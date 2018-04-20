@@ -21,12 +21,15 @@
 
     $(function () {
         setButtonClickListenter(printBtnId, printPreviewEmail);
-        enableResizeColums();
         loadExtractData();
     });
 
     function enableResizeColums() {
-        $("#" + sourceTableId).colResizable({resizeMode:'overflow'});
+        $("#" + sourceTableId).colResizable(
+            {
+                resizeMode:'overflow',
+            }
+        );
     }
 
     function loadExtractData() {
@@ -97,6 +100,7 @@
         updateTotalResult(data.length);
         initSortSource();
         selectFirstRow();
+        enableResizeColums();
     }
     
     function updateTotalResult(total) {

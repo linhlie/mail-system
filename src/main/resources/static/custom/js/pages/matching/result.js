@@ -55,7 +55,6 @@
         setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
         fixingForTinyMCEOnModal();
-        enableResizeColums();
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
         var matchingConditionStr;
@@ -97,10 +96,26 @@
             updateData();
         }
     });
+    
+    function enableResizeSourceColumns() {
+        enableResizeColums(sourceTableId);
+    }
 
-    function enableResizeColums() {
-        $("#" + sourceTableId).colResizable({resizeMode:'overflow'});
-        $("#" + destinationTableId).colResizable({resizeMode:'overflow'});
+    function enableResizeDestinationColumns() {
+        enableResizeColums(destinationTableId);
+    }
+
+    function enableResizeColums(tableId) {
+        $("#" + tableId).colResizable(
+            {
+                disable: true,
+            }
+        );
+        $("#" + tableId).colResizable(
+            {
+                resizeMode:'overflow'
+            }
+        );
     }
 
     function setButtonClickListenter(id, callback) {
@@ -151,6 +166,7 @@
         }
         initSortSource();
         selectFirstRow();
+        enableResizeSourceColumns();
     }
 
     function destroySortSource() {
@@ -217,6 +233,7 @@
                     });
                     initSortDestination();
                     $('body').loadingModal('hide');
+                    enableResizeDestinationColumns();
                 }
             }, 10)
         }, 10)
