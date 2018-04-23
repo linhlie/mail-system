@@ -92,21 +92,18 @@ public class FuzzyWordController {
             String originalWordStr = wordService.normalize(fuzzyWordForm.getOriginal());
             String associatedWordStr = wordService.normalize(fuzzyWordForm.getAssociatedWord());
             if(originalWordStr.equals(associatedWordStr)){
-                //TODO: throw error if same word
-                throw new Exception("Can't be same word");
+                throw new Exception("同じ単語にすることはできません");
             }
             int fuzzyType = fuzzyWordForm.getFuzzyType();
             Word originalWord = wordService.findOne(originalWordStr);
             Word associatedWord = wordService.findOne(associatedWordStr);
             if(originalWord != null && associatedWord != null) {
                 if(originalWord.getId() == associatedWord.getId()){
-                    //TODO: throw error if same word
-                    throw new Exception("Can't be same word 2: " + originalWord.getId() + " " + associatedWord.getId());
+                    throw new Exception("同じ単語にすることはできません");
                 }
                 FuzzyWord existFuzzyWord = fuzzyWordService.findOne(originalWord, associatedWord);
                 if(existFuzzyWord != null){
-                    //TODO: throw error exist fuzzy word
-                    throw new Exception("Exist data");
+                    throw new Exception("データは既に存在します");
                 }
             } else {
                 if(originalWord == null) {

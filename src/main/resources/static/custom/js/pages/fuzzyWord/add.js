@@ -12,7 +12,7 @@
         fuzzyWordForm["fuzzyType"] = $("select[name='fuzzyType']").val();
 
         $("#btn-submit-fuzzy-word").prop("disabled", true);
-
+        $("#errorContainer").hide();
         $.ajax({
             type: "POST",
             contentType: "application/json",
@@ -32,8 +32,8 @@
                         window.location = '/user/fuzzyWord';
                     }
                 } else {
-                    console.log("FAILED : ", data);
-                    //TODO: failed add word
+                    $( "#errorMessage" ).html( data.msg );
+                    $("#errorContainer").show();
                 }
 
             },

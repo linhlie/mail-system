@@ -22,6 +22,7 @@ public class FuzzyWordService {
     @Autowired
     private FuzzyWordDAO fuzzyWordDAO;
 
+    @CacheEvict(allEntries = true)
     public void delete(long id){
         fuzzyWordDAO.delete(id);
     }

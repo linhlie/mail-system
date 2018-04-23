@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.WordDAO;
 import io.owslab.mailreceiver.model.Word;
+import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,7 +51,6 @@ public class WordService {
     }
 
     public String normalize(String word){
-        //TODO: we need better normalize for japanese
-        return word == null ? "" : word.toLowerCase();
+        return word == null ? "" : Utils.normalize(word);
     }
 }
