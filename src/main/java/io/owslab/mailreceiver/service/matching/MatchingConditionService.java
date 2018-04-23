@@ -784,6 +784,7 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
+                    optimizedValue = optimizedValue.replaceAll(",", "");
                     Double numberCondition = Double.parseDouble(optimizedValue);
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
@@ -868,6 +869,7 @@ public class MatchingConditionService {
                 case GT:
                 case LE:
                 case LT:
+                    optimizedValue = optimizedValue.replaceAll(",", "");
                     Double numberCondition = Double.parseDouble(optimizedValue);
                     NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
                     SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
