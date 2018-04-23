@@ -66,6 +66,7 @@
             }
         }
 
+        hideAllError();
         $(submitButtonId).prop("disabled", true);
 
         $.ajax({
@@ -81,13 +82,13 @@
                 if(data && data.status){
                     window.location.reload();
                 } else {
-                    //TODO: show error
-                    console.log("FAILED : ", data);
+                    handleError(data);
                 }
 
             },
             error: function (e) {
                 //TODO: show error
+                alert("Something went wrong. Try it later!");
                 console.log("ERROR : ", e);
                 $(submitButtonId).prop("disabled", false);
 
@@ -217,6 +218,55 @@
 
     function goBack() {
         window.history.back();
+    }
+    
+    function handleError(data) {
+        if(data) {
+            var errorCode = data.errorCode;
+            var errorMessage = data.msg;
+            switch (errorCode){
+                case 600:
+                    errorMessage = "データには 「.」「,」「，」を含めることはできません。";
+                    showReplaceNumberError(errorMessage);
+                    break;
+                case 601:
+                    errorMessage = "データには 「.」「,」「，」を含めることはできません。";
+                    showReplaceUnitError(errorMessage);
+                    break;
+                case 602:
+                    errorMessage = "データが正しくフォーマットされていません。";
+                    showReplaceNumberError(errorMessage);
+                    break;
+                default:
+                    showGeneralError(errorMessage);
+                    
+            }
+        }
+    }
+    
+    function showGeneralError(message) {
+        $( "#errorMessage" ).html( message );
+        $("#errorContainer").show();
+    }
+    
+    function showReplaceNumberError(message) {
+        $("#replaceNumberErrorMsg").text(message);
+        $("#replaceNumber").parent().addClass( 'error' );
+        $("#replaceNumberError").show();
+    }
+
+    function showReplaceUnitError(message) {
+        $("#replaceUnitErrorMsg").text(message);
+        $("#replaceUnit").parent().addClass( 'error' );
+        $("#replaceUnitError").show();
+    }
+    
+    function hideAllError() {
+        $("#errorContainer").hide();
+        $("#replaceNumberError").hide();
+        $("#replaceNumber").parent().removeClass( 'error' );
+        $("#replaceUnit").parent().removeClass( 'error' );
+        $("#replaceUnitError").hide();
     }
 
 })(jQuery);

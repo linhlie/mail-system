@@ -501,4 +501,12 @@ input.black-down-triangle.black-down-triangle-center {
     left:-2px;
 }
 
+span.error {
+    color: red;
+}
+
+.table-container.error {
+    border-color: red;
+}
+
 
