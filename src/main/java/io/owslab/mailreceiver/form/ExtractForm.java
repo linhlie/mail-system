@@ -11,6 +11,7 @@ public class ExtractForm {
 
     private List<MatchingCondition> conditionList;
     private boolean distinguish;
+    private boolean spaceEffective;
 
     public ExtractForm() {
     }
@@ -29,5 +30,13 @@ public class ExtractForm {
 
     public void setDistinguish(boolean distinguish) {
         this.distinguish = distinguish;
+    }
+
+    public boolean isSpaceEffective() {
+        return spaceEffective;
+    }
+
+    public void setSpaceEffective(boolean spaceEffective) {
+        this.spaceEffective = spaceEffective;
     }
 }

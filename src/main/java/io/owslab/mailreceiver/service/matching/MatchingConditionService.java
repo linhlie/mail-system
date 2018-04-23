@@ -146,8 +146,9 @@ public class MatchingConditionService {
         List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
         boolean distinguish = extractForm.isDistinguish();
+        boolean spaceEffective = extractForm.isSpaceEffective();
         if(groupedConditions.size() > 0) {
-            findMailMatching(emailList, groupedConditions, distinguish);
+            findMailMatching(emailList, groupedConditions, distinguish, spaceEffective);
             matchList = mergeResultGroups(groupedConditions);
         } else {
             matchList = emailList;
@@ -180,14 +181,14 @@ public class MatchingConditionService {
         boolean spaceEffective = matchingConditionForm.isSpaceEffective();
         List<Email> matchSourceList;
         if(groupedSourceConditions.size() > 0) {
-            findMailMatching(emailList, groupedSourceConditions, distinguish);
+            findMailMatching(emailList, groupedSourceConditions, distinguish, spaceEffective);
             matchSourceList = mergeResultGroups(groupedSourceConditions);
         } else {
             matchSourceList = emailList;
         }
         List<Email> matchDestinationList;
         if(groupedDestinationConditions.size() > 0) {
-            findMailMatching(emailList, groupedDestinationConditions, distinguish);
+            findMailMatching(emailList, groupedDestinationConditions, distinguish, spaceEffective);
             matchDestinationList = mergeResultGroups(groupedDestinationConditions);
         } else {
             matchDestinationList = emailList;
@@ -286,12 +287,12 @@ public class MatchingConditionService {
         return result;
     }
 
-    private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish){
+    private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish, boolean spaceEffective){
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
                 List<Callable<Email>> callableList=new ArrayList<Callable<Email>>();
                 for(Email email : emailList){
-                    callableList.add(getMatchingConditionResultCallable(email, result, distinguish));
+                    callableList.add(getMatchingConditionResultCallable(email, result, distinguish, spaceEffective));
                 }
                 try {
                     List<Future<Email>> futures = executorService.invokeAll(callableList);
@@ -311,11 +312,11 @@ public class MatchingConditionService {
         return groupList;
     }
 
-    private Callable<Email> getMatchingConditionResultCallable(Email email, MatchingConditionResult result, boolean distinguish){
+    private Callable<Email> getMatchingConditionResultCallable(Email email, MatchingConditionResult result, boolean distinguish, boolean spaceEffective){
         Callable<Email> callable = new Callable<Email>(){
             public Email call() {
                 MatchingCondition condition = result.getMatchingCondition();
-                if(isMatch(email, condition, distinguish)){
+                if(isMatch(email, condition, distinguish, spaceEffective)){
                     return email;
                 } else {
                     return null;
@@ -388,21 +389,21 @@ public class MatchingConditionService {
         return result;
     }
 
-    private boolean isMatch(Email email, MatchingCondition condition, boolean distinguish){
+    private boolean isMatch(Email email, MatchingCondition condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
         MailItemOption option = MailItemOption.fromValue(condition.getItem());
         switch (option){
             case SENDER:
-                match = isMatchPart(email.getFrom(), condition, distinguish);
+                match = isMatchPart(email.getFrom(), condition, distinguish, spaceEffective);
                 break;
             case RECEIVER:
-                match = isMatchPart(email.getTo(), condition, distinguish);
+                match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective);
                 break;
             case SUBJECT:
-                match = isMatchPart(email.getSubject(), condition, distinguish);
+                match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective);
                 break;
             case BODY:
-                match = isMatchPart(email.getOptimizedBody(), condition, distinguish);
+                match = isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
                 break;
             case NUMBER:
             case NUMBER_UPPER:
@@ -479,7 +480,7 @@ public class MatchingConditionService {
         return targetPart;
     }
 
-    private boolean isMatchPart (String part, MatchingCondition condition, boolean distinguish){
+    private boolean isMatchPart (String part, MatchingCondition condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
         ConditionOption option = ConditionOption.fromValue(condition.getCondition());
         String conditionValue = condition.getValue();
@@ -487,10 +488,10 @@ public class MatchingConditionService {
         String optimizedValue = getOptimizedText(conditionValue, distinguish);
         switch (option){
             case INC:
-                match = optimizedPart.indexOf(optimizedValue) >= 0;
+                match = emailWordJobService.matchWord(optimizedPart, optimizedPart, optimizedValue, spaceEffective);
                 break;
             case NINC:
-                match = optimizedPart.indexOf(optimizedValue) == -1;
+                match = !emailWordJobService.matchWord(optimizedPart, optimizedPart, optimizedValue, spaceEffective);
                 break;
             case EQ:
                 match = optimizedPart.equals(optimizedValue);

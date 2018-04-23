@@ -377,6 +377,7 @@
         var data = {
             "conditionList" : buildDataFromTable(sourceTableId),
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };
         sessionStorage.setItem("extractSourceData", JSON.stringify(data));
         var win = window.open('/user/extractSource', '_blank');
@@ -393,6 +394,7 @@
         var data = {
             "conditionList" : buildDataFromTable(destinationTableId),
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };
         sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
         var win = window.open('/user/extractDestination', '_blank');
