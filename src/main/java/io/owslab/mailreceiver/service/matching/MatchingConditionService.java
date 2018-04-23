@@ -145,7 +145,8 @@ public class MatchingConditionService {
         List<MatchingConditionGroup> groupedConditions = divideIntoGroups(conditionList);
         List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
-        boolean distinguish = extractForm.isDistinguish();
+//        boolean distinguish = extractForm.isDistinguish();
+        boolean distinguish = false;
         boolean spaceEffective = extractForm.isSpaceEffective();
         if(groupedConditions.size() > 0) {
             findMailMatching(emailList, groupedConditions, distinguish, spaceEffective);

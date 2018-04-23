@@ -67,6 +67,7 @@ public class ReplaceNumber {
 
     public void setReplaceValue(String replaceValueStr) {
         replaceValueStr = replaceValueStr.replaceAll("\\s+","");
+        replaceValueStr = replaceValueStr.replaceAll(",", "");
         replaceValueStr = "1" + replaceValueStr;
         this.replaceValue = Integer.parseInt(replaceValueStr);
     }
