@@ -455,7 +455,7 @@ table#sourceMatch, table#destinationMatch {
 }
 
 .matching-result .table td.fit span {
-    padding-left: 4px !important;
+    padding: 0 4px !important;
 }
 
 .matching-result .table th.fit {

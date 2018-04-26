@@ -22,8 +22,8 @@ public class PreviewMailDTO {
         this.setFrom(email.getFrom());
         this.setSubject(email.getSubject());
         this.setTo(email.getTo());
-        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd", DetailMailDTO.TIME_ZONE, null));
-        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd", DetailMailDTO.TIME_ZONE, null));
+        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
+        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
     }
 
     public long getAccountId() {
