@@ -74,7 +74,9 @@ public class FullNumberRange {
         String rightPart = this.getRight().toString(multiple);
         result = result + leftPart;
         if(result.length() > 0 && rightPart.length() > 0){
-            result = result.substring(0, result.length() - 1);
+            String leftReplace = this.getLeft().getReplaceLetterText();
+            int totalRemove = leftReplace.length() >= 2 && leftReplace.indexOf(" ") == 0 ? leftReplace.length() - 1 : leftReplace.length();
+            result = result.substring(0, result.length() - totalRemove);
         }
         result = result + rightPart;
         return result;

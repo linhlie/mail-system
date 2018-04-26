@@ -147,8 +147,8 @@ public class NumberRangeService {
                         SimpleNumberRange secondRange = rangeList.get(1);
                         if(secondRange.getReplaceValue() != 1 && firstRange.getReplaceValue() == 1){
                             firstRange.multiple((double) secondRange.getReplaceValue());
-                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
-                            secondRange.multiple((double) firstRange.getReplaceValue());
+//                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
+//                            secondRange.multiple((double) firstRange.getReplaceValue());
                         }
                         boolean isFirstRangeValid = isValidRange(numberTreatment, firstRange);
                         boolean isSecondRangeValid = isValidRange(numberTreatment, secondRange);
@@ -271,6 +271,11 @@ public class NumberRangeService {
             if(findContent.indexOf(rnc) == 0){
                 match = replaceNumber;
                 break;
+            } else if(findContent.indexOf(rnc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")) {
+                ReplaceNumber spaceContainReplaceNumber = new ReplaceNumber(replaceNumber);
+                spaceContainReplaceNumber.setCharacter(" " + spaceContainReplaceNumber.getCharacter());
+                match = spaceContainReplaceNumber;
+                break;
             }
         }
         return match;
@@ -283,6 +288,11 @@ public class NumberRangeService {
             String rnc = replaceUnit.getUnit();
             if(findContent.indexOf(rnc) == 0){
                 match = replaceUnit;
+                break;
+            } else if(findContent.indexOf(rnc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")) {
+                ReplaceUnit spaceContainReplaceUnit = new ReplaceUnit(replaceUnit);
+                spaceContainReplaceUnit.setUnit(" " + spaceContainReplaceUnit.getUnit());
+                match = spaceContainReplaceUnit;
                 break;
             }
         }
@@ -301,8 +311,14 @@ public class NumberRangeService {
                 match = new ReplaceLetterResult(replaceLetter, startAt);
                 break;
             } else if(findContent.indexOf(rlc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")){
-                startAt = isReverse ? startAt - 1 : startAt + 1;
-                match = new ReplaceLetterResult(replaceLetter, startAt);;
+                ReplaceLetter spaceContainReplaceLetter = new ReplaceLetter(replaceLetter);
+                if(isReverse) {
+                    spaceContainReplaceLetter.setLetter(spaceContainReplaceLetter.getLetter() + " ");
+                } else {
+                    spaceContainReplaceLetter.setLetter(" " + spaceContainReplaceLetter.getLetter());
+                }
+                startAt = isReverse ? startAt : startAt + 1;
+                match = new ReplaceLetterResult(spaceContainReplaceLetter, startAt);;
                 break;
             }
         }

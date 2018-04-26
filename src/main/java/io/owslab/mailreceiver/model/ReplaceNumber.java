@@ -35,6 +35,11 @@ public class ReplaceNumber {
         this.replaceValue = replaceValue;
     }
 
+    public ReplaceNumber(ReplaceNumber other) {
+        this.character = other.getCharacter();
+        this.replaceValue = other.getReplaceValue();
+    }
+
     public ReplaceNumber(String character, int replaceValue, int remove) {
         this.character = character;
         this.replaceValue = replaceValue;

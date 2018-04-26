@@ -37,6 +37,12 @@ public class ReplaceLetter {
         this.replace = replace;
     }
 
+    public ReplaceLetter(ReplaceLetter other) {
+        this.letter = other.getLetter();
+        this.position = other.getPosition();
+        this.replace = other.getReplace();
+    }
+
     public ReplaceLetter(String letter, int position, int replace, int remove) {
         this.letter = letter;
         this.position = position;
