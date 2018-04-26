@@ -452,8 +452,8 @@ table#sourceMatch, table#destinationMatch {
     bottom: 4px;
 }
 
-.matching-result table.dataTable tr.highlight-selected {
-    background-color: #ffffcc;
+.matching-result table.tablesorter tr.highlight-selected td {
+     background-color: #ffffcc;
 }
 
 .mce-tinymce.mce-container.mce-panel {

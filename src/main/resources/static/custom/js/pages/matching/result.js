@@ -32,16 +32,16 @@
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="2" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
         '</tr>';
 
-    var replaceDestinationHTML = '<tr role="row" class="hidden even">' +
+    var replaceDestinationHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span style="display: inline-table;"></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span style="display: inline-table;"></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="2" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center" name="sendToMoto" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">元に</button>' +
@@ -52,6 +52,7 @@
         '</tr>';
 
     $(function () {
+        initSortDestination();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
         fixingForTinyMCEOnModal();
@@ -148,7 +149,6 @@
     }
 
     function showSourceData(tableId, data) {
-        destroySortSource();
         removeAllRow(tableId, replaceSourceHTML);
         var sourceMatchingCounter = 0;
         if(data.length > 0){
@@ -171,20 +171,9 @@
         enableResizeSourceColumns();
         updateTotalSourceMatching(sourceMatchingCounter);
     }
-
-    function destroySortSource() {
-        if(!!sourceMatchDataTable){
-            sourceMatchDataTable.destroy();
-        }
-    }
     
     function initSortSource() {
-        sourceMatchDataTable = $("#sourceMatch").DataTable({
-            "bPaginate": false,
-            "bFilter": false,
-            "bInfo": false,
-            "order": [[ 2, "desc" ]]
-        });
+        $("#sourceMatch").tablesorter({ theme : 'default' });
     }
     
     function showDestinationData(tableId, data) {
@@ -201,7 +190,6 @@
             var word = data.word;
             var source = data.source;
             currentDestinationResult = data.destinationList;
-            destroySortDestination();
             removeAllRow(tableId, replaceDestinationHTML);
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
@@ -234,7 +222,7 @@
                             }
                         }
                     });
-                    initSortDestination();
+                    updateDestinationDataTrigger();
                     $('body').loadingModal('hide');
                     enableResizeDestinationColumns();
                 }
@@ -250,15 +238,13 @@
     }
 
     function initSortDestination() {
-        destinationMatchDataTable = $("#destinationMatch").DataTable({
-            "bPaginate": false,
-            "bFilter": false,
-            "bInfo": false,
-            "order": [[ 3, "desc" ]],
-            columnDefs: [
-                { orderable: false, targets: [-1, -2] }
-            ]
-        });
+        $("#destinationMatch").tablesorter({ theme : 'default' });
+    }
+    
+    function updateDestinationDataTrigger() {
+        $("#destinationMatch").trigger("updateAll", [ true, function () {
+            
+        } ]);
     }
 
     function addRowWithData(tableId, data, index) {
@@ -327,8 +313,13 @@
     function selectFirstRow() {
         if(matchingResult && matchingResult.length > 0){
             var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
-            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var index = firstTr[0].getAttribute("data");
+            if(index == null){
+                $('#' + sourceTableId).find(' tbody tr:first').remove();
+                selectFirstRow();
+                return;
+            }
+            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, function (result) {
