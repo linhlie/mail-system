@@ -175,15 +175,24 @@ public class MatchingConditionService {
         List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
         List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
         //TODO: fix AUTO add a condition force range matching
-        MatchingCondition greatOrEqualThenZeroCondtion = new MatchingCondition(
+        MatchingCondition greaterOrEqualCondtion = new MatchingCondition(
                 false,
                 CombineOption.AND.getValue(),
                 MailItemOption.NUMBER.getValue(),
                 ConditionOption.GE.getValue(),
-                "0",
+                MailItemOption.NUMBER.getText(),
                 MatchingCondition.Type.MATCHING
                 );
-        matchingConditionList.add(greatOrEqualThenZeroCondtion);
+        MatchingCondition lessOrEqualCondtion = new MatchingCondition(
+                true,
+                CombineOption.OR.getValue(),
+                MailItemOption.NUMBER.getValue(),
+                ConditionOption.LE.getValue(),
+                MailItemOption.NUMBER.getText(),
+                MatchingCondition.Type.MATCHING
+        );
+        matchingConditionList.add(greaterOrEqualCondtion);
+        matchingConditionList.add(lessOrEqualCondtion);
         List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
         List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
         List<Email> emailList = mailBoxService.getAll();
