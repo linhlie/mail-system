@@ -12,10 +12,9 @@
     var selectedRowData;
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '</tr>';
 
@@ -115,12 +114,11 @@
     }
 
     function initSortSource() {
-        sourceMatchDataTable = $("#sourceMatch").DataTable({
-            "bPaginate": false,
-            "bFilter": false,
-            "bInfo": false,
-            "order": [[ 1, "desc" ]]
-        });
+        $("#sourceMatch").tablesorter(
+            {
+                theme : 'default',
+                sortList: [[1,1], [2,0]]
+            });
     }
 
     function addRowWithData(tableId, data, index) {
