@@ -14,94 +14,124 @@
     var extractDestinationBtnId = '#extractDestinationBtn';
     var matchingWordsAreaId = '#matchingWordsArea';
 
+    var sourceBuilderId = '#source-builder';
+    var destinationBuilderId = '#destination-builder';
+    var matchingBuilderId = '#matching-builder';
+
 
     $(function () {
-        var default_rules = {
-            condition: 'AND',
-            rules: [{
-                id: '0',
-                operator: 'not_contains',
-                value: 'Re:'
-            }]
+        var default_source_rules = {
+            condition: "AND",
+            rules: [
+                {
+                    id: "7",
+                    input: "ratio",
+                    type: "integer",
+                    value: 1
+                },
+                {
+                    id: "8",
+                    operator: "greater_or_equal",
+                    type:  "string",
+                    value: "-7"
+                }
+            ]
         };
 
-        var default_matching_rules = {
-            condition: 'AND',
-            rules: [{
-                id: '0',
-                operator: 'not_contains',
-                value: 'Re:'
-            }]
+        var default_destination_rules = {
+            condition: "AND",
+            rules: [
+                {
+                    id: "7",
+                    input: "ratio",
+                    type: "integer",
+                    value: 0
+                },
+                {
+                    id: "8",
+                    operator: "greater_or_equal",
+                    type:  "string",
+                    value: "-7"
+                }
+            ]
         };
 
-        var default_configs = {
-            plugins: [
-                'sortable',
-                'filter-description',
-                'unique-filter',
-                'bt-tooltip-errors',
-                'bt-selectpicker',
-                'bt-checkbox',
-                'invert',
-            ],
+        var default_plugins = [
+            'sortable',
+            'filter-description',
+            'unique-filter',
+            'bt-tooltip-errors',
+            'bt-selectpicker',
+            'bt-checkbox',
+            'invert',
+        ];
 
-            filters: [{
-                id: '0',
-                label: '送信者',
-                type: 'string',
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '1',
-                label: '受信者',
-                type: 'string',
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '2',
-                label: '件名',
-                type: 'string',
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '3',
-                label: '本文',
-                type: 'string',
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '4',
-                label: '数値',
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
-            }, {
-                id: '5',
-                label: '数値(上代)',
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
-            }, {
-                id: '6',
-                label: '数値(下代)',
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
-            }, {
-                id: '7',
-                label: '添付ファイル',
-                type: 'integer',
-                input: 'radio',
-                values: {
-                    1: '有り',
-                    0: '無し'
-                },
-                colors: {
-                    1: 'success',
-                    0: 'danger'
-                },
-                operators: ['equal']
-            }, {
-                id: '8',
-                label: '受信日',
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
-            }],
+        var default_filters = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '4',
+            label: '数値',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+        }, {
+            id: '5',
+            label: '数値(上代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+        }, {
+            id: '6',
+            label: '数値(下代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+        }, {
+            id: '7',
+            label: '添付ファイル',
+            type: 'integer',
+            input: 'radio',
+            values: {
+                1: '有り',
+                0: '無し'
+            },
+            colors: {
+                1: 'success',
+                0: 'danger'
+            },
+            operators: ['equal']
+        }, {
+            id: '8',
+            label: '受信日',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+        }];
 
-            rules: default_rules
+        var default_source_configs = {
+            plugins: default_plugins,
+            filters: default_filters,
+            rules: default_source_rules
+        };
+
+        var default_destination_configs = {
+            plugins: default_plugins,
+            filters: default_filters,
+            rules: default_destination_rules
         };
 
         var default_matching_configs = {
@@ -176,41 +206,24 @@
             rules: null
         };
 
-        $('#source-builder').queryBuilder(default_configs);
-        $('#destination-builder').queryBuilder(default_configs);
-        $('#matching-builder').queryBuilder(default_matching_configs);
-        var group = $('#matching-builder')[0].queryBuilder.model.root;
+        $(sourceBuilderId).queryBuilder(default_source_configs);
+        $(destinationBuilderId).queryBuilder(default_destination_configs);
+        $(matchingBuilderId).queryBuilder(default_matching_configs);
+        var group = $(matchingBuilderId)[0].queryBuilder.model.root;
         if(group){
             group.empty();
         }
-        // $('#matching-builder').queryBuilder('reset');
 
-        $('#matching-builder').on('afterUpdateRuleFilter.queryBuilder', function(e, group) {
+        $(matchingBuilderId).on('afterUpdateRuleFilter.queryBuilder', function(e, group) {
             setInputAutoComplete("matchingValue");
         });
 
         $('#btn-get').on('click', function() {
-            var result = $('#matching-builder').queryBuilder('getRules');
+            var result = $(matchingBuilderId).queryBuilder('getRules');
             if (!$.isEmptyObject(result)) {
                 alert(JSON.stringify(result, null, 2));
             }
         });
-
-        // $('#btn-reset').on('click', function() {
-        //     $('#source-builder').queryBuilder('reset');
-        // });
-        //
-        // $('#btn-set').on('click', function() {
-        //     $('#source-builder').queryBuilder('setRules', rules_plugins);
-        // });
-        //
-        // $('#btn-get').on('click', function() {
-        //     var result = $('#source-builder').queryBuilder('getRules');
-        //
-        //     if (!$.isEmptyObject(result)) {
-        //         alert(JSON.stringify(result, null, 2));
-        //     }
-        // });
 
         setAddReplaceLetterRowListener('addMotoRow', sourceTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
@@ -237,6 +250,10 @@
     }
 
     function saveSourceListData(){
+        var result = $(sourceBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        console.log("saveSourceListData: ", result);
+        return;
         var datalistKey = "/user/matchingSettings/listSourceKey";
         var datalistStr = localStorage.getItem(datalistKey);
         var datalist = JSON.parse(datalistStr);
@@ -284,6 +301,10 @@
     }
 
     function saveDestinationListData(){
+        var result = $(destinationBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        console.log("saveDestinationListData: ", result);
+        return;
         var datalistKey = "/user/matchingSettings/listDestinationKey";
         var datalistStr = localStorage.getItem(datalistKey);
         var datalist = JSON.parse(datalistStr);
