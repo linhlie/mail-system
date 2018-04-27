@@ -14,10 +14,27 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+                            <!--<datalist id="itemlist">-->
+                                <!--<option th:each="option : ${matchingItemOptions}"-->
+                                        <!--th:data-value="${option.value}"-->
+                                        <!--th:value="${option.text}"/>-->
+                            <!--</datalist>-->
+                            <datalist id="itemlist">
+                                <option data-value="送信者" value="送信者"></option>
+                                <option data-value="受信者" value="受信者"></option>
+                                <option data-value="件名" value="件名"></option>
+                                <option data-value="本文" value="本文"></option>
+                            </datalist>
+                            <datalist id="itemlist2">
+                                <option data-value="数値" value="数値"></option>
+                                <option data-value="数値(上代)" value="数値(上代)"></option>
+                                <option data-value="数値(下代)" value="数値(下代)"></option>
+                            </datalist>
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>比較メール元抽出条件</span>
-                                <div class="form-container">
+                                <div id="source-builder"></div>
+                                <div style="display: none;" class="form-container">
                                     <div class="col-xs-12 full-height remove-nested-padding">
                                         <div class="table-container">
                                             <table id="motoMail" class="table table-bordered">
@@ -94,7 +111,8 @@
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>比較メール先抽出条件</span>
-                                <div class="form-container">
+                                <div id="destination-builder"></div>
+                                <div style="display: none" class="form-container">
                                     <div class="col-xs-12 full-height remove-nested-padding">
                                         <div class="table-container">
                                             <table id="sakiMail" class="table table-bordered">
@@ -182,7 +200,11 @@
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>マッチング条件</span>
-                                <div class="form-container">
+                                <div id="matching-builder"></div>
+                                <div class="btn-group">
+                                    <button id="btn-get" type="button" class="btn btn-primary parse-json" data-target="basic">Get rules</button>
+                                </div>
+                                <div style="display: none" class="form-container">
                                     <div class="col-xs-12 full-height remove-nested-padding">
                                         <div class="table-container">
                                             <table id="matching" class="table table-bordered">
@@ -235,11 +257,11 @@
                                                     </td>
                                                     <td th:data="value">
                                                         <input class="black-down-triangle" type="text" name="matchingValue" list="itemlist" placeholder=""/>
-                                                        <datalist id="itemlist">
-                                                            <option th:each="option : ${matchingItemOptions}"
-                                                                    th:data-value="${option.value}"
-                                                                    th:value="${option.text}"/>
-                                                        </datalist>
+                                                        <!--<datalist id="itemlist">-->
+                                                            <!--<option th:each="option : ${matchingItemOptions}"-->
+                                                                    <!--th:data-value="${option.value}"-->
+                                                                    <!--th:value="${option.text}"/>-->
+                                                        <!--</datalist>-->
                                                     </td>
                                                     <td class="text-center">
                                                                         <span name="removeConditionRow" title="删除"
@@ -289,7 +311,7 @@
                 <div class="modal-body">
                     <div class="form-group row">
                         <div class="col-sm-10 col-sm-offset-1">
-                            <input id="dataModalName" class="form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
                             <datalist id="keylist">
                             </datalist>
                         </div>

@@ -16,6 +16,203 @@
 
 
     $(function () {
+        var default_rules = {
+            condition: 'AND',
+            rules: [{
+                id: '0',
+                operator: 'not_contains',
+                value: 'Re:'
+            }]
+        };
+
+        var default_matching_rules = {
+            condition: 'AND',
+            rules: [{
+                id: '0',
+                operator: 'not_contains',
+                value: 'Re:'
+            }]
+        };
+
+        var default_configs = {
+            plugins: [
+                'sortable',
+                'filter-description',
+                'unique-filter',
+                'bt-tooltip-errors',
+                'bt-selectpicker',
+                'bt-checkbox',
+                'invert',
+            ],
+
+            filters: [{
+                id: '0',
+                label: '送信者',
+                type: 'string',
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '1',
+                label: '受信者',
+                type: 'string',
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '2',
+                label: '件名',
+                type: 'string',
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '3',
+                label: '本文',
+                type: 'string',
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '4',
+                label: '数値',
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }, {
+                id: '5',
+                label: '数値(上代)',
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }, {
+                id: '6',
+                label: '数値(下代)',
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }, {
+                id: '7',
+                label: '添付ファイル',
+                type: 'integer',
+                input: 'radio',
+                values: {
+                    1: '有り',
+                    0: '無し'
+                },
+                colors: {
+                    1: 'success',
+                    0: 'danger'
+                },
+                operators: ['equal']
+            }, {
+                id: '8',
+                label: '受信日',
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+            }],
+
+            rules: default_rules
+        };
+
+        var default_matching_configs = {
+            plugins: [
+                'sortable',
+                'filter-description',
+                'unique-filter',
+                'bt-tooltip-errors',
+                'bt-selectpicker',
+                'bt-checkbox',
+                'invert',
+            ],
+            allow_empty: true,
+            filters: [{
+                id: '0',
+                label: '送信者',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '1',
+                label: '受信者',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '2',
+                label: '件名',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '3',
+                label: '本文',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '4',
+                label: '数値',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }, {
+                id: '5',
+                label: '数値(上代)',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }, {
+                id: '6',
+                label: '数値(下代)',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            }],
+
+            rules: null
+        };
+
+        $('#source-builder').queryBuilder(default_configs);
+        $('#destination-builder').queryBuilder(default_configs);
+        $('#matching-builder').queryBuilder(default_matching_configs);
+        var group = $('#matching-builder')[0].queryBuilder.model.root;
+        if(group){
+            group.empty();
+        }
+        // $('#matching-builder').queryBuilder('reset');
+
+        $('#matching-builder').on('afterUpdateRuleFilter.queryBuilder', function(e, group) {
+            setInputAutoComplete("matchingValue");
+        });
+
+        $('#btn-get').on('click', function() {
+            var result = $('#matching-builder').queryBuilder('getRules');
+            console.log("getRules: ", result);
+            if (!$.isEmptyObject(result)) {
+                alert(JSON.stringify(result, null, 2));
+            }
+        });
+
+        // $('#btn-reset').on('click', function() {
+        //     $('#source-builder').queryBuilder('reset');
+        // });
+        //
+        // $('#btn-set').on('click', function() {
+        //     $('#source-builder').queryBuilder('setRules', rules_plugins);
+        // });
+        //
+        // $('#btn-get').on('click', function() {
+        //     var result = $('#source-builder').queryBuilder('getRules');
+        //
+        //     if (!$.isEmptyObject(result)) {
+        //         alert(JSON.stringify(result, null, 2));
+        //     }
+        // });
+
         setAddReplaceLetterRowListener('addMotoRow', sourceTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
         setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
@@ -120,14 +317,14 @@
         })
     }
     
-    function setInputAutoComplete(name) {
-        $("input[name='"+name+"']").off('click');
-        $("input[name='"+name+"']").off('mouseleave');
-        $("input[name='"+name+"']").on('click', function() {
+    function setInputAutoComplete(className) {
+        $( "." + className ).off('click');
+        $( "." + className ).off('mouseleave');
+        $( "." + className ).on('click', function() {
             $(this).attr('placeholder',$(this).val());
             $(this).val('');
         });
-        $("input[name='"+name+"']").on('mouseleave', function() {
+        $( "." + className ).on('mouseleave', function() {
             if ($(this).val() == '') {
                 $(this).val($(this).attr('placeholder'));
             }
@@ -374,6 +571,8 @@
     }
     
     function extractSource() {
+        console.log("buildDataFromTable(sourceTableId): ", buildDataFromTable(sourceTableId));
+        return;
         var data = {
             "conditionList" : buildDataFromTable(sourceTableId),
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
