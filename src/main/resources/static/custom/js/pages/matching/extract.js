@@ -14,7 +14,7 @@
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '</tr>';
 
