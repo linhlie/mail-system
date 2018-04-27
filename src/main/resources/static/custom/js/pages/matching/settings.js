@@ -90,7 +90,22 @@
             id: '4',
             label: '数値',
             type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: function(value, rule) {
+                    if (!value || value.trim().length === 0) {
+                        return "Value can not be empty!";
+                    } else if (rule.operator.type !== 'in') {
+                        //TODO: japanese number
+                        var pattern = /^\d+$/;
+                        var match = pattern.test(value);
+                        if(!match){
+                            return "Value must be a number greater than or equal to 0";
+                        }
+                    }
+                    return true;
+                }
+            },
         }, {
             id: '5',
             label: '数値(上代)',
