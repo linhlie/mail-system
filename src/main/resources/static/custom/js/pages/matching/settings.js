@@ -191,7 +191,6 @@
 
         $('#btn-get').on('click', function() {
             var result = $('#matching-builder').queryBuilder('getRules');
-            console.log("getRules: ", result);
             if (!$.isEmptyObject(result)) {
                 alert(JSON.stringify(result, null, 2));
             }
