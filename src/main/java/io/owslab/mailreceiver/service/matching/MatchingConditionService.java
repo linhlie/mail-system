@@ -170,15 +170,19 @@ public class MatchingConditionService {
         FilterRule sourceRule = matchingConditionForm.getSourceConditionData();
         FilterRule destinationRule = matchingConditionForm.getDestinationConditionData();
         FilterRule matchingRule = matchingConditionForm.getMatchingConditionData();
-        FilterRule greaterOrEqualThanZeroRule = new FilterRule("4", "greater_or_equal", "0");
-        FilterRule lessOrEqualThanZeroRule = new FilterRule("4", "less_or_equal", "0");
+        FilterRule greaterOrEqualThanZeroRule = new FilterRule("4", "greater_or_equal", "数値");
+        FilterRule lessOrEqualThanZeroRule = new FilterRule("4", "less_or_equal", "数値");
+        FilterRule allRangeMatchRule = new FilterRule();
+        allRangeMatchRule.setCondition("OR");
+        allRangeMatchRule
+                .addRule(greaterOrEqualThanZeroRule)
+                .addRule(lessOrEqualThanZeroRule);
         //TODO: fix AUTO add a condition force range matching
         FilterRule matchingWrapperRule = new FilterRule();
         matchingWrapperRule.setCondition("AND");
         matchingWrapperRule
                 .addRule(matchingRule)
-                .addRule(greaterOrEqualThanZeroRule)
-                .addRule(lessOrEqualThanZeroRule);
+                .addRule(allRangeMatchRule);
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
@@ -377,20 +381,20 @@ public class MatchingConditionService {
         MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
         FullNumberRange firstMatchRange = null;
         FullNumberRange firstRange = null;
+        Email targetEmail = destinationResult.getEmail();
         if(matchingRule.isGroup()){
-            for(FilterRule rule : matchingRule.getRules()){
-                Email targetEmail = destinationResult.getEmail();
-                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
-                if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
-                    firstMatchRange = matchingPartResult.getMatchRange();
-                    firstRange = matchingPartResult.getRange();
+            if(matchingRule.hasSubRules()) {
+                for(FilterRule rule : matchingRule.getRules()){
+                    MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
+                    if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
+                        firstMatchRange = matchingPartResult.getMatchRange();
+                        firstRange = matchingPartResult.getRange();
+                    }
                 }
-                if(matchingPartResult.isMatch()){
-                    matchingRule.add(targetEmail);
-                }
+            } else {
+                matchingRule.add(targetEmail);
             }
         } else {
-            Email targetEmail = destinationResult.getEmail();
             MatchingPartResult matchingPartResult = isMatch(sourceResult.getEmail(), targetEmail, matchingRule, distinguish);
             if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
                 firstMatchRange = matchingPartResult.getMatchRange();

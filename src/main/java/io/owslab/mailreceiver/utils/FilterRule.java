@@ -172,7 +172,7 @@ public class FilterRule {
     }
 
     public List<Email> getMatchEmails(){
-        if(this.isGroup()){
+        if(this.isGroup() && this.hasSubRules()){
             return mergeMatchMails(this.getRules());
         } else {
             return this.getEmails();
@@ -235,5 +235,9 @@ public class FilterRule {
             }
         }
         return CombineOption.NONE;
+    }
+
+    public boolean hasSubRules(){
+        return this.rules != null && this.rules.size() > 0;
     }
 }
