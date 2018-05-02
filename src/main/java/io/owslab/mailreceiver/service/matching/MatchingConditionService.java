@@ -470,7 +470,11 @@ public class MatchingConditionService {
                 match = matchingPartResult.isMatch();
                 break;
             case ATTACHMENT:
-                match = email.isHasAttachment();
+                if(condition.getValue().equalsIgnoreCase(Email.HAS_ATTACHMENT)){
+                    match = email.isHasAttachment();
+                } else {
+                    match = !email.isHasAttachment();
+                }
                 break;
             case RECEIVED_DATE:
                 match = isMatchPart(email.getSentAt(), condition, distinguish);

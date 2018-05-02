@@ -14,6 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "Emails")
 public class Email {
+    public static final String HAS_ATTACHMENT = "1";
+    public static final String NO_ATTACHMENT = "0";
 
     @Id
     private String messageId;
