@@ -6,7 +6,6 @@ import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.ExtractForm;
-import io.owslab.mailreceiver.form.FullAccountForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
@@ -16,18 +15,16 @@ import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.*;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Filter;
 
 /**
  * Created by khanhlvb on 3/6/18.
@@ -141,16 +138,16 @@ public class MatchingConditionService {
     public List<ExtractMailDTO> extract(ExtractForm extractForm){
         List<ExtractMailDTO> extractResult = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();
-        List<MatchingCondition> conditionList = extractForm.getConditionList();
-        List<MatchingConditionGroup> groupedConditions = divideIntoGroups(conditionList);
+        FilterRule rootRule = extractForm.getConditionData();
+//        System.out.println("extract: " + rootRule.toString());
         List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
 //        boolean distinguish = extractForm.isDistinguish();
         boolean distinguish = false;
         boolean spaceEffective = extractForm.isSpaceEffective();
-        if(groupedConditions.size() > 0) {
-            findMailMatching(emailList, groupedConditions, distinguish, spaceEffective);
-            matchList = mergeResultGroups(groupedConditions);
+        if(rootRule.getRules().size() > 0) {
+            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
+            matchList = rootRule.getMatchEmails();
         } else {
             matchList = emailList;
         }
@@ -307,6 +304,46 @@ public class MatchingConditionService {
         return result;
     }
 
+    private void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+        if(filterRule.isGroup()){
+            for(FilterRule rule : filterRule.getRules()){
+                findMailMatching(emailList, rule, distinguish, spaceEffective);
+            }
+        } else {
+            List<Callable<Email>> callableList=new ArrayList<Callable<Email>>();
+            for(Email email : emailList){
+                callableList.add(getMatchingFilterRuleCallable(email, filterRule, distinguish, spaceEffective));
+            }
+            try {
+                List<Future<Email>> futures = executorService.invokeAll(callableList);
+                for(Future<Email> future : futures) {
+                    Email email = future.get();
+                    if(email != null){
+                        filterRule.add(email);
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Callable<Email> getMatchingFilterRuleCallable(Email email, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+        Callable<Email> callable = new Callable<Email>(){
+            public Email call() {
+                if(isMatch(email, filterRule, distinguish, spaceEffective)){
+                    return email;
+                } else {
+                    return null;
+                }
+            }
+        };
+
+        return callable;
+    }
+
     private List<MatchingConditionGroup> findMailMatching(List<Email> emailList, List<MatchingConditionGroup> groupList, boolean distinguish, boolean spaceEffective){
         for(MatchingConditionGroup group : groupList){
             for(MatchingConditionResult result : group.getConditionResults()){
@@ -409,6 +446,44 @@ public class MatchingConditionService {
         return result;
     }
 
+    private boolean isMatch(Email email, FilterRule condition, boolean distinguish, boolean spaceEffective){
+        boolean match = false;
+        MailItemOption option = condition.getMailItemOption();
+        switch (option){
+            case SENDER:
+                match = isMatchPart(email.getFrom(), condition, distinguish, spaceEffective);
+                break;
+            case RECEIVER:
+                match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective);
+                break;
+            case SUBJECT:
+                match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective);
+                break;
+            case BODY:
+                match = isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
+                break;
+            case NUMBER:
+            case NUMBER_UPPER:
+            case NUMBER_LOWER:
+                MatchingPartResult matchingPartResult = isMatchAllRange(email, condition, distinguish);
+                match = matchingPartResult.isMatch();
+                break;
+            case HAS_ATTACHMENT:
+                match = email.isHasAttachment();
+                break;
+            case NO_ATTACHMENT:
+                match = !email.isHasAttachment();
+                break;
+            case RECEIVED_DATE:
+                match = isMatchPart(email.getSentAt(), condition, distinguish);
+                break;
+            case NONE:
+            default:
+                break;
+        }
+        return match;
+    }
+
     private boolean isMatch(Email email, MatchingCondition condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
         MailItemOption option = MailItemOption.fromValue(condition.getItem());
@@ -500,6 +575,37 @@ public class MatchingConditionService {
         return targetPart;
     }
 
+    private boolean isMatchPart (String part, FilterRule condition, boolean distinguish, boolean spaceEffective){
+        boolean match = false;
+        ConditionOption option = condition.getConditionOption();
+        String conditionValue = condition.getValue();
+        String optimizedPart = getOptimizedText(part, distinguish);
+        String optimizedValue = getOptimizedText(conditionValue, distinguish);
+        switch (option){
+            case INC:
+                match = emailWordJobService.matchWord(optimizedPart, optimizedPart, optimizedValue, spaceEffective);
+                break;
+            case NINC:
+                match = !emailWordJobService.matchWord(optimizedPart, optimizedPart, optimizedValue, spaceEffective);
+                break;
+            case EQ:
+                match = optimizedPart.equals(optimizedValue);
+                break;
+            case NE:
+                match = !optimizedPart.equals(optimizedValue);
+                break;
+            case GE:
+            case GT:
+            case LE:
+            case LT:
+            case WITHIN:
+            case NONE:
+            default:
+                break;
+        }
+        return match;
+    }
+
     private boolean isMatchPart (String part, MatchingCondition condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
         ConditionOption option = ConditionOption.fromValue(condition.getCondition());
@@ -527,6 +633,57 @@ public class MatchingConditionService {
             case NONE:
             default:
                 break;
+        }
+        return match;
+    }
+
+    private synchronized boolean isMatchPart (Date part, FilterRule condition, boolean distinguish) {
+        //TODO: condition value date string may have many format???;
+        if(part == null) return false;
+        boolean match = false;
+        ConditionOption option = condition.getConditionOption();
+        String dateValue = condition.getValue();
+        try {
+//            ConditionOption option = ConditionOption.fromValue(condition.getCondition());
+//            String dateValue = condition.getValue();
+            Date conditionDate;
+            if(dateValue.matches("-?\\d+")){
+                Date now = new Date();
+                conditionDate = Utils.addDayToDate(now, Integer.parseInt(dateValue));
+                conditionDate = Utils.trim(conditionDate);
+            } else {
+                conditionDate = Utils.parseDateStr(dateValue);
+            }
+            long diff = part.getTime() - conditionDate.getTime();
+            switch (option){
+                case EQ:
+                    match = diff >= 0 && diff < ONE_DAY_MILLISECONDS;
+                    break;
+                case NE:
+                    match = diff >= ONE_DAY_MILLISECONDS || diff < 0;
+                    break;
+                case GE:
+                    match = diff >= 0;
+                    break;
+                case GT:
+                    match = diff >= ONE_DAY_MILLISECONDS;
+                    break;
+                case LE:
+                    match = diff < ONE_DAY_MILLISECONDS;
+                    break;
+                case LT:
+                    match = diff < 0;
+                    break;
+                case INC:
+                case NINC:
+                case WITHIN:
+                case NONE:
+                default:
+                    break;
+            }
+        } catch (Exception e){
+            logger.warn("dateValue: " + dateValue);
+            e.printStackTrace();
         }
         return match;
     }
@@ -817,6 +974,95 @@ public class MatchingConditionService {
                                 result.setMatchRange(range);
                                 result.setRange(findRange);
                                 break;
+                            }
+                        }
+                    } else { //Not found a range => auto natch
+                        result.setMatch(true);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            logger.error("NumberFormatException: " + e.getMessage());
+        }
+        return result;
+    }
+
+    private MatchingPartResult isMatchAllRange(Email target, FilterRule condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
+        try {
+            MailItemOption mailItemOption = condition.getMailItemOption();
+            ConditionOption conditionOption = condition.getConditionOption();
+            String conditionValue = condition.getValue();
+            String optimizedPart = target.getOptimizedText(false);
+            String optimizedValue = getOptimizedText(conditionValue, false);
+
+            FullNumberRange findRange;
+            List<FullNumberRange> toFindListRange;
+
+            double ratio = 1;
+            if(numberTreatment != null){
+                switch (mailItemOption){
+                    case NUMBER_UPPER:
+                        ratio = numberTreatment.getUpperLimitRate();
+                        break;
+                    case NUMBER_LOWER:
+                        ratio = numberTreatment.getLowerLimitRate();
+                        break;
+                }
+            }
+
+            switch (conditionOption){
+                case WITHIN:
+                    String cacheId = optimizedValue + "OwsCacheIdRandom89172398";
+                    List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(cacheId, optimizedValue);
+                    if(forFindListRange.size() == 0){
+                        result.setMatch(true);
+                        return result;
+                    }
+                    findRange = forFindListRange.get(0);
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
+                    target.setRangeList(new ArrayList<>());
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(range.match(findRange, ratio)){
+                                if(!result.isMatch()){
+                                    result.setMatch(true);
+                                    result.setMatchRange(range);
+                                    result.setRange(findRange);
+                                }
+                                List<FullNumberRange> targetRangeList = target.getRangeList();
+                                targetRangeList.add(range);
+                            }
+                        }
+                    } else {
+                        result.setMatch(true);
+                    }
+                    break;
+                case EQ:
+                case NE:
+                case GE:
+                case GT:
+                case LE:
+                case LT:
+                    optimizedValue = optimizedValue.replaceAll(",", "");
+                    Double numberCondition = Double.parseDouble(optimizedValue);
+                    NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
+                    SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
+                    findRange = new FullNumberRange(simpleRange);
+                    toFindListRange = numberRangeService.buildNumberRangeForInput(target.getMessageId(), optimizedPart);
+                    target.setRangeList(new ArrayList<>());
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(range.match(findRange, ratio)){
+                                if(!result.isMatch()){
+                                    result.setMatch(true);
+                                    result.setMatchRange(range);
+                                    result.setRange(findRange);
+                                }
+                                List<FullNumberRange> targetRangeList = target.getRangeList();
+                                targetRangeList.add(range);
                             }
                         }
                     } else { //Not found a range => auto natch

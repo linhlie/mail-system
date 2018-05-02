@@ -486,8 +486,9 @@
     function extractSource() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
         if(!sourceConditionData) return;
+        console.log("extractSource: ",sourceConditionData);
         var data = {
-            "conditionList" : sourceConditionData,
+            "conditionData" : sourceConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };
@@ -506,7 +507,7 @@
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
         var data = {
-            "conditionList" : destinationConditionData,
+            "conditionData" : destinationConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };

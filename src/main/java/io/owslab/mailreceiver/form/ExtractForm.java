@@ -1,27 +1,22 @@
 package io.owslab.mailreceiver.form;
 
-import io.owslab.mailreceiver.model.MatchingCondition;
-import io.owslab.mailreceiver.model.ReplaceLetter;
-import io.owslab.mailreceiver.model.ReplaceNumber;
-import io.owslab.mailreceiver.model.ReplaceUnit;
-
-import java.util.List;
+import io.owslab.mailreceiver.utils.FilterRule;
 
 public class ExtractForm {
 
-    private List<MatchingCondition> conditionList;
+    private FilterRule conditionData;
     private boolean distinguish;
     private boolean spaceEffective;
 
     public ExtractForm() {
     }
 
-    public List<MatchingCondition> getConditionList() {
-        return conditionList;
+    public FilterRule getConditionData() {
+        return conditionData;
     }
 
-    public void setConditionList(List<MatchingCondition> conditionList) {
-        this.conditionList = conditionList;
+    public void setConditionData(FilterRule conditionData) {
+        this.conditionData = conditionData;
     }
 
     public boolean isDistinguish() {
