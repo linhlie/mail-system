@@ -55,7 +55,7 @@ public class MatchingConditionService {
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     @Value("${mailreceiver.app.daysago}")
     private int daysago;
@@ -605,6 +605,7 @@ public class MatchingConditionService {
         String optimizedValue = getOptimizedText(conditionValue, distinguish);
         String targetPart = optimizedValue;
         MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
+        if(option == null) return targetPart;
         switch (option){
             case SENDER:
                 targetPart = target.getFrom();
