@@ -139,12 +139,14 @@
 
         var default_source_configs = {
             plugins: default_plugins,
+            allow_empty: true,
             filters: default_filters,
             rules: default_source_rules
         };
 
         var default_destination_configs = {
             plugins: default_plugins,
+            allow_empty: true,
             filters: default_filters,
             rules: default_destination_rules
         };
@@ -408,7 +410,41 @@
         }
         return data;
     }
-    
+
+    function buildDataFromBuilder(builderId) {
+        var result = $(builderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        return buildGroupDataFromRaw(result);
+    }
+
+    function buildGroupDataFromRaw(data){
+        var result = {
+            condition: data.condition,
+            rules: buildRulesDataFromRaw(data)
+        }
+        return result;
+    }
+
+    function buildRulesDataFromRaw(data) {
+        var result = [];
+        for(var i = 0; i < data.rules.length; i++){
+            var rawRule = data.rules[i];
+            if(rawRule.id){
+                var rule = {
+                    id: rawRule.id,
+                    operator: rawRule.operator,
+                    type: rawRule.type,
+                    value: rawRule.value
+                }
+                result.push(rule);
+            } else if (rawRule.condition) {
+                var rule = buildGroupDataFromRaw(rawRule);
+                result.push(rule);
+            }
+        }
+        return result;
+    }
+ 
     function buildDataFromTable(tableId) {
         var data = [];
         var table = document.getElementById(tableId);
@@ -448,10 +484,10 @@
     }
     
     function extractSource() {
-        console.log("buildDataFromTable(sourceTableId): ", buildDataFromTable(sourceTableId));
-        return;
+        var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
+        if(!sourceConditionData) return;
         var data = {
-            "conditionList" : buildDataFromTable(sourceTableId),
+            "conditionList" : sourceConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };
@@ -467,8 +503,10 @@
     }
     
     function extractDestination() {
+        var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
+        if(!destinationConditionData) return;
         var data = {
-            "conditionList" : buildDataFromTable(destinationTableId),
+            "conditionList" : destinationConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
         };
@@ -484,13 +522,19 @@
     }
     
     function submit() {
+        var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
+        if(!sourceConditionData) return;
+        var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
+        if(!destinationConditionData) return;
+        var matchingConditionData = buildDataFromBuilder(matchingBuilderId);
+        if(!matchingConditionData) return;
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
         var form = {
-            "sourceConditionList" : buildDataFromTable(sourceTableId),
-            "destinationConditionList" : buildDataFromTable(destinationTableId),
-            "matchingConditionList" : buildDataFromTable(matchingTableId),
+            "sourceConditionList" : sourceConditionData,
+            "destinationConditionList" : destinationConditionData,
+            "matchingConditionList" : matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"
