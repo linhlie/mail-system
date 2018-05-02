@@ -227,10 +227,10 @@
                             }
                         }
                     });
-                    updateDestinationDataTrigger();
-                    $('body').loadingModal('hide');
-                    enableResizeDestinationColumns();
                 }
+                updateDestinationDataTrigger();
+                $('body').loadingModal('hide');
+                enableResizeDestinationColumns();
                 updateTotalDestinationMatching(currentDestinationResult.length);
             }, 10)
         }, 10)
@@ -330,6 +330,7 @@
     function selectFirstRow() {
         if(matchingResult && matchingResult.length > 0){
             var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+            if(!firstTr[0]) return;
             var index = firstTr[0].getAttribute("data");
             if(index == null){
                 $('#' + sourceTableId).find(' tbody tr:first').remove();
