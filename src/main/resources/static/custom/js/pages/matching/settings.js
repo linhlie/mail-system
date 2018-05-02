@@ -2,9 +2,6 @@
 (function () {
     "use strict";
     var formId = '#matchingConditionSettingsForm';
-    var sourceTableId = 'motoMail';
-    var destinationTableId = 'sakiMail';
-    var matchingTableId = 'matching';
     var saveSourceBtnId = '#saveSourceBtn';
     var getSourceBtnId = '#getSourceBtn';
     var saveDestinationBtnId = '#saveDestinationBtn';
@@ -443,44 +440,6 @@
             }
         }
         return result;
-    }
- 
-    function buildDataFromTable(tableId) {
-        var data = [];
-        var table = document.getElementById(tableId);
-        for (var i = 1; i < table.rows.length; i++) {
-            var row = table.rows.item(i);
-            if(isSkipRow(row)) continue;
-            var cells = row.cells;
-            var rowData = {};
-            for (var j = 0; j < cells.length; j++) {
-                var cell = cells.item(j);
-                var cellKey = cell.getAttribute("data");
-                if(!cellKey) continue;
-
-                var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-                if(cellNode){
-                    if(cellNode.nodeName == "INPUT") {
-                        if(cellNode.type == "checkbox"){
-                            rowData[cellKey] = cellNode.checked;
-                        } else if(cellNode.type == "text"){
-                            rowData[cellKey] = cellNode.value;
-                        }
-                    } else if(cellNode.nodeName == "SELECT") {
-                        rowData[cellKey] = cellNode.value;
-                    } else if(cellNode.nodeName == "SPAN") {
-                        rowData[cellKey] = cellNode.textContent;
-                    }
-                }
-            }
-            rowData["remove"] = row.className.indexOf('hidden') >= 0 ? 1 : 0;
-            data.push(rowData);
-        }
-        return data;
-    }
-
-    function isSkipRow(row) {
-        return row && row.className && row.className.indexOf("skip") >= 0;
     }
     
     function extractSource() {
