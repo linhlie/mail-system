@@ -148,6 +148,7 @@ public class MatchingConditionService {
         if(rootRule.getRules().size() > 0) {
             findMailMatching(emailList, rootRule, distinguish, spaceEffective);
             matchList = rootRule.getMatchEmails();
+            System.out.println("matchList size: " + matchList.size());
         } else {
             matchList = emailList;
         }
@@ -468,11 +469,8 @@ public class MatchingConditionService {
                 MatchingPartResult matchingPartResult = isMatchAllRange(email, condition, distinguish);
                 match = matchingPartResult.isMatch();
                 break;
-            case HAS_ATTACHMENT:
+            case ATTACHMENT:
                 match = email.isHasAttachment();
-                break;
-            case NO_ATTACHMENT:
-                match = !email.isHasAttachment();
                 break;
             case RECEIVED_DATE:
                 match = isMatchPart(email.getSentAt(), condition, distinguish);
@@ -506,11 +504,8 @@ public class MatchingConditionService {
                 MatchingPartResult matchingPartResult = isMatchAllRange(email, condition, distinguish);
                 match = matchingPartResult.isMatch();
                 break;
-            case HAS_ATTACHMENT:
+            case ATTACHMENT:
                 match = email.isHasAttachment();
-                break;
-            case NO_ATTACHMENT:
-                match = !email.isHasAttachment();
                 break;
             case RECEIVED_DATE:
                 match = isMatchPart(email.getSentAt(), condition, distinguish);

@@ -12,9 +12,8 @@ public enum MailItemOption {
     NUMBER(4, "数値"),
     NUMBER_UPPER(5, "数値(上代)"),
     NUMBER_LOWER(6, "数値(下代)"),
-    HAS_ATTACHMENT(7, "添付ファイル有り"),
-    NO_ATTACHMENT(8, "添付ファイル無し"),
-    RECEIVED_DATE(9, "受信日");
+    ATTACHMENT(7, "添付ファイル"),
+    RECEIVED_DATE(8, "受信日");
 
     private final int value;
     private final String text;
@@ -51,10 +50,8 @@ public enum MailItemOption {
             case 6:
                 return NUMBER_LOWER;
             case 7:
-                return HAS_ATTACHMENT;
+                return ATTACHMENT;
             case 8:
-                return NO_ATTACHMENT;
-            case 9:
                 return RECEIVED_DATE;
         }
         return null;
