@@ -139,7 +139,6 @@ public class MatchingConditionService {
         List<ExtractMailDTO> extractResult = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();
         FilterRule rootRule = extractForm.getConditionData();
-//        System.out.println("extract: " + rootRule.toString());
         List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
 //        boolean distinguish = extractForm.isDistinguish();
@@ -148,7 +147,6 @@ public class MatchingConditionService {
         if(rootRule.getRules().size() > 0) {
             findMailMatching(emailList, rootRule, distinguish, spaceEffective);
             matchList = rootRule.getMatchEmails();
-            System.out.println("matchList size: " + matchList.size());
         } else {
             matchList = emailList;
         }
@@ -169,45 +167,33 @@ public class MatchingConditionService {
         List<MatchingResult> matchingResults = new ArrayList<>();
         Map<String, PreviewMailDTO> previewMailDTOList = new HashMap<>();
         numberTreatment = numberTreatmentService.getFirst();
-        List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
-        List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
-        List<MatchingCondition> matchingConditionList = matchingConditionForm.getMatchingConditionList();
+        FilterRule sourceRule = matchingConditionForm.getSourceConditionData();
+        FilterRule destinationRule = matchingConditionForm.getDestinationConditionData();
+        FilterRule matchingRule = matchingConditionForm.getMatchingConditionData();
+        FilterRule greaterOrEqualThanZeroRule = new FilterRule("4", "greater_or_equal", "0");
+        FilterRule lessOrEqualThanZeroRule = new FilterRule("4", "less_or_equal", "0");
         //TODO: fix AUTO add a condition force range matching
-        MatchingCondition greaterOrEqualCondtion = new MatchingCondition(
-                false,
-                CombineOption.AND.getValue(),
-                MailItemOption.NUMBER.getValue(),
-                ConditionOption.GE.getValue(),
-                MailItemOption.NUMBER.getText(),
-                MatchingCondition.Type.MATCHING
-                );
-        MatchingCondition lessOrEqualCondtion = new MatchingCondition(
-                true,
-                CombineOption.OR.getValue(),
-                MailItemOption.NUMBER.getValue(),
-                ConditionOption.LE.getValue(),
-                MailItemOption.NUMBER.getText(),
-                MatchingCondition.Type.MATCHING
-        );
-        matchingConditionList.add(greaterOrEqualCondtion);
-        matchingConditionList.add(lessOrEqualCondtion);
-        List<MatchingConditionGroup> groupedSourceConditions = divideIntoGroups(sourceConditionList);
-        List<MatchingConditionGroup> groupedDestinationConditions = divideIntoGroups(destinationConditionList);
+        FilterRule matchingWrapperRule = new FilterRule();
+        matchingWrapperRule.setCondition("AND");
+        matchingWrapperRule
+                .addRule(matchingRule)
+                .addRule(greaterOrEqualThanZeroRule)
+                .addRule(lessOrEqualThanZeroRule);
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
         boolean spaceEffective = matchingConditionForm.isSpaceEffective();
         List<Email> matchSourceList;
-        if(groupedSourceConditions.size() > 0) {
-            findMailMatching(emailList, groupedSourceConditions, distinguish, spaceEffective);
-            matchSourceList = mergeResultGroups(groupedSourceConditions);
+        if(sourceRule.getRules().size() > 0) {
+            findMailMatching(emailList, sourceRule, distinguish, spaceEffective);
+            matchSourceList = sourceRule.getMatchEmails();
         } else {
             matchSourceList = emailList;
         }
         List<Email> matchDestinationList;
-        if(groupedDestinationConditions.size() > 0) {
-            findMailMatching(emailList, groupedDestinationConditions, distinguish, spaceEffective);
-            matchDestinationList = mergeResultGroups(groupedDestinationConditions);
+        if(destinationRule.getRules().size() > 0) {
+            findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
+            matchDestinationList = destinationRule.getMatchEmails();
         } else {
             matchDestinationList = emailList;
         }
@@ -226,11 +212,11 @@ public class MatchingConditionService {
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
                 if(matchingWords.size() == 0){
-                    callables.add(toCallable(matchingWords, matchingConditionList, sourceResult, destinationResult, distinguish));
+                    callables.add(toCallable(matchingWords, matchingWrapperRule, sourceResult, destinationResult, distinguish));
                 } else {
                     List<String> intersectWords = sourceResult.intersect(destinationResult);
                     if(intersectWords.size() == 0) continue;
-                    callables.add(toCallable(intersectWords, matchingConditionList, sourceResult, destinationResult, distinguish));
+                    callables.add(toCallable(intersectWords, matchingWrapperRule, sourceResult, destinationResult, distinguish));
                 }
             }
         }
@@ -265,14 +251,12 @@ public class MatchingConditionService {
         return result;
     }
 
-    private Callable<MatchingPartResult> toCallable(List<String> intersectWords, List<MatchingCondition> matchingConditionList,
+    private Callable<MatchingPartResult> toCallable(List<String> intersectWords, FilterRule matchingRule,
                                       MatchingWordResult sourceResult, MatchingWordResult destinationResult,
                                       boolean distinguish) {
         return new Callable<MatchingPartResult>() {
             public MatchingPartResult call() {
-                List<MatchingConditionGroup> groupedMatchingConditions = divideIntoGroups(matchingConditionList);
-                MatchingPartResult matchingPartResult = groupedMatchingConditions.size() == 0 ?
-                        new MatchingPartResult(true) : isMailMatching(sourceResult, destinationResult, groupedMatchingConditions, distinguish);
+                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, matchingRule, distinguish);
                 matchingPartResult.setSourceMail(sourceResult.getEmail());
                 matchingPartResult.setDestinationMail(destinationResult.getEmail());
                 matchingPartResult.setIntersectWords(intersectWords);
@@ -387,31 +371,74 @@ public class MatchingConditionService {
 
     private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
                                                           MatchingWordResult destinationResult,
-                                                          List<MatchingConditionGroup> groupList,
+                                                          FilterRule rawRule,
                                                           boolean distinguish){
+        FilterRule matchingRule = new FilterRule(rawRule);
         MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
         FullNumberRange firstMatchRange = null;
         FullNumberRange firstRange = null;
-        for(MatchingConditionGroup group : groupList){
-            for(MatchingConditionResult result : group.getConditionResults()){
-                MatchingCondition condition = result.getMatchingCondition();
+        if(matchingRule.isGroup()){
+            for(FilterRule rule : matchingRule.getRules()){
                 Email targetEmail = destinationResult.getEmail();
-                MatchingPartResult matchingPartResult = isMatch(sourceResult.getEmail(), targetEmail, condition, distinguish);
+                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
                 if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
                     firstMatchRange = matchingPartResult.getMatchRange();
                     firstRange = matchingPartResult.getRange();
                 }
                 if(matchingPartResult.isMatch()){
-                    result.add(targetEmail);
+                    matchingRule.add(targetEmail);
                 }
+            }
+        } else {
+            Email targetEmail = destinationResult.getEmail();
+            MatchingPartResult matchingPartResult = isMatch(sourceResult.getEmail(), targetEmail, matchingRule, distinguish);
+            if(firstMatchRange == null && matchingPartResult.getMatchRange() != null) {
+                firstMatchRange = matchingPartResult.getMatchRange();
+                firstRange = matchingPartResult.getRange();
+            }
+            if(matchingPartResult.isMatch()){
+                matchingRule.add(targetEmail);
             }
         }
 
-        List<Email> matching = mergeResultGroups(groupList);
+        List<Email> matching = matchingRule.getMatchEmails();
         finalMatchingPartResult.setMatch(matching.size() > 0);
         finalMatchingPartResult.setMatchRange(firstMatchRange);
         finalMatchingPartResult.setRange(firstRange);
         return finalMatchingPartResult;
+    }
+
+    private MatchingPartResult isMatch(Email source, Email target, FilterRule condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
+        boolean match = false;
+        MailItemOption option = condition.getMailItemOption();
+        switch (option){
+            case SENDER:
+                match = isMatchingPart(source.getFrom(), target, condition, distinguish);
+                result.setMatch(match);
+                break;
+            case RECEIVER:
+                match = isMatchingPart(source.getTo(), target, condition, distinguish);
+                result.setMatch(match);
+                break;
+            case SUBJECT:
+                match = isMatchingPart(source.getSubject(), target, condition, distinguish);
+                result.setMatch(match);
+                break;
+            case BODY:
+                match = isMatchingPart(source.getOptimizedBody(), target, condition, distinguish);
+                result.setMatch(match);
+                break;
+            case NUMBER:
+            case NUMBER_UPPER:
+            case NUMBER_LOWER:
+                result = isMatchRange(source, target, condition, distinguish);
+                break;
+            case NONE:
+            default:
+                break;
+        }
+        return result;
     }
 
     private MatchingPartResult isMatch(Email source, Email target, MatchingCondition condition, boolean distinguish){
@@ -521,6 +548,30 @@ public class MatchingConditionService {
         return match;
     }
 
+    private boolean isMatchingPart (String part,Email target, FilterRule condition, boolean distinguish){
+        boolean match = false;
+        ConditionOption option = condition.getConditionOption();
+        String optimizedPart = getOptimizedText(part, distinguish);
+        String optimizedValue = getTargetPartValue(target, condition, distinguish);
+        switch (option){
+            case INC:
+                match = optimizedPart.indexOf(optimizedValue) >= 0;
+                break;
+            case NINC:
+                match = optimizedPart.indexOf(optimizedValue) == -1;
+                break;
+            case EQ:
+                match = optimizedPart.equals(optimizedValue);
+                break;
+            case NE:
+                match = !optimizedPart.equals(optimizedValue);
+                break;
+            default:
+                break;
+        }
+        return match;
+    }
+
     private boolean isMatchingPart (String part,Email target, MatchingCondition condition, boolean distinguish){
         boolean match = false;
         ConditionOption option = ConditionOption.fromValue(condition.getCondition());
@@ -543,6 +594,35 @@ public class MatchingConditionService {
                 break;
         }
         return match;
+    }
+
+    private String getTargetPartValue(Email target, FilterRule condition, boolean distinguish){
+        String conditionValue = condition.getValue();
+        String optimizedValue = getOptimizedText(conditionValue, distinguish);
+        String targetPart = optimizedValue;
+        MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
+        switch (option){
+            case SENDER:
+                targetPart = target.getFrom();
+                break;
+            case RECEIVER:
+                targetPart = target.getTo();
+                break;
+            case SUBJECT:
+                targetPart = target.getSubject();
+                break;
+            case BODY:
+                targetPart = target.getOptimizedBody();
+                break;
+            case NUMBER:
+            case NUMBER_LOWER:
+            case NUMBER_UPPER:
+                targetPart = target.getSubjectAndOptimizedBody();
+                break;
+            default:
+                break;
+        }
+        return targetPart;
     }
 
     private String getTargetPartValue(Email target, MatchingCondition condition, boolean distinguish){
@@ -872,6 +952,41 @@ public class MatchingConditionService {
         return clientPlanCall;
     }
 
+    private MatchingPartResult isMatchRange(Email source, Email target, FilterRule condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
+        String conditionValue = condition.getValue();
+        MatchingItemOption option = MatchingItemOption.fromText(conditionValue);
+        if(option == null){
+            return isMatchRange(target, condition, distinguish);
+        } else {
+            ConditionOption conditionOption = condition.getConditionOption();
+            String optimizedSourcePart = source.getOptimizedText(false);
+            String optimizedTargetPart = getTargetPartValue(target, condition, false);
+            List<FullNumberRange> sourceRanges;
+            List<FullNumberRange> targetRanges;
+            switch (conditionOption){
+                case WITHIN:
+                case EQ:
+                case NE:
+                case GE:
+                case GT:
+                case LE:
+                case LT:
+                    String postFixCacheId = conditionValue;
+                    if(conditionValue.indexOf("数値") > 0) {
+                        postFixCacheId = "";
+                    }
+                    sourceRanges = getMailRanges(source, source.getMessageId(), optimizedSourcePart);
+                    targetRanges = getMailRanges(target, target.getMessageId()+postFixCacheId, optimizedTargetPart);
+                    result = hasMatchRange(sourceRanges, targetRanges, condition);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return result;
+    }
+
     private MatchingPartResult isMatchRange(Email source, Email target, MatchingCondition condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         String conditionValue = condition.getValue();
@@ -903,6 +1018,87 @@ public class MatchingConditionService {
                 default:
                     break;
             }
+        }
+        return result;
+    }
+
+    private MatchingPartResult isMatchRange(Email target, FilterRule condition, boolean distinguish){
+        MatchingPartResult result = new MatchingPartResult();
+        try {
+            MailItemOption mailItemOption = condition.getMailItemOption();
+            ConditionOption conditionOption = condition.getConditionOption();
+            String conditionValue = condition.getValue();
+            String optimizedPart = target.getOptimizedText(false);
+            String optimizedValue = getOptimizedText(conditionValue, false);
+
+            FullNumberRange findRange;
+            List<FullNumberRange> toFindListRange;
+
+            double ratio = 1;
+            if(numberTreatment != null){
+                switch (mailItemOption){
+                    case NUMBER_UPPER:
+                        ratio = numberTreatment.getUpperLimitRate();
+                        break;
+                    case NUMBER_LOWER:
+                        ratio = numberTreatment.getLowerLimitRate();
+                        break;
+                }
+            }
+
+            switch (conditionOption){
+                case WITHIN:
+                    String cacheId = optimizedValue + "OwsCacheIdRandom89172398";
+                    List<FullNumberRange> forFindListRange = numberRangeService.buildNumberRangeForInput(cacheId, optimizedValue);
+                    if(forFindListRange.size() == 0){
+                        result.setMatch(true);
+                        return result;
+                    }
+                    findRange = forFindListRange.get(0);
+                    toFindListRange = getMailRanges(target, target.getMessageId(), optimizedPart);
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(range.match(findRange, ratio)){
+                                result.setMatch(true);
+                                result.setMatchRange(range);
+                                result.setRange(findRange);
+                                break;
+                            }
+                        }
+                    } else {
+                        result.setMatch(true);
+                    }
+                    break;
+                case EQ:
+                case NE:
+                case GE:
+                case GT:
+                case LE:
+                case LT:
+                    optimizedValue = optimizedValue.replaceAll(",", "");
+                    Double numberCondition = Double.parseDouble(optimizedValue);
+                    NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
+                    SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
+                    findRange = new FullNumberRange(simpleRange);
+                    toFindListRange = getMailRanges(target, target.getMessageId(), optimizedPart);
+                    if(toFindListRange.size() > 0){
+                        for(FullNumberRange range : toFindListRange){
+                            if(range.match(findRange, ratio)){
+                                result.setMatch(true);
+                                result.setMatchRange(range);
+                                result.setRange(findRange);
+                                break;
+                            }
+                        }
+                    } else { //Not found a range => auto natch
+                        result.setMatch(true);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            logger.error("NumberFormatException: " + e.getMessage());
         }
         return result;
     }
@@ -1179,6 +1375,41 @@ public class MatchingConditionService {
             }
         }
         return normalizedMatchingWords;
+    }
+
+    private MatchingPartResult hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, FilterRule condition) {
+        if(targetRanges.size() == 0) return new MatchingPartResult(true);
+        MatchingPartResult result = new MatchingPartResult();
+        MailItemOption mailItemOption = condition.getMailItemOption();
+        ConditionOption conditionOption = condition.getConditionOption();
+        MatchingItemOption matchingOption = MatchingItemOption.fromText(condition.getValue());
+        double ratio = 1;
+        if(numberTreatment != null){
+            if(mailItemOption.equals(MailItemOption.NUMBER_UPPER)){
+                ratio = ratio * numberTreatment.getUpperLimitRate();
+            } else if (mailItemOption.equals(MailItemOption.NUMBER_LOWER)){
+                ratio = ratio * numberTreatment.getLowerLimitRate();
+            }
+
+            if(matchingOption != null && matchingOption.equals(MatchingItemOption.NUMBER_UPPER)){
+                ratio = ratio / numberTreatment.getUpperLimitRate();
+            } else if (matchingOption != null && matchingOption.equals(MatchingItemOption.NUMBER_LOWER)){
+                ratio = ratio / numberTreatment.getLowerLimitRate();
+            }
+        }
+        for(FullNumberRange findRange : sourceRanges){
+            NumberCompare replaceCompare = NumberCompare.fromConditionOption(conditionOption);
+            for(FullNumberRange range : targetRanges){
+                if(findRange.match(range, ratio, replaceCompare)){
+                    result.setMatch(true);
+                    result.setMatchRange(range);
+                    result.setRange(findRange);
+                    break;
+                }
+            }
+            if(result.isMatch()) break;
+        }
+        return result;
     }
 
     private MatchingPartResult hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, MatchingCondition condition) {

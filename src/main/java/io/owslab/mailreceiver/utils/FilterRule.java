@@ -23,14 +23,12 @@ public class FilterRule {
     private ConditionOption conditionOption;
 
     public FilterRule(String condition, List<FilterRule> rules) {
-        System.out.println("FilterRule 3");
         this.condition = condition;
         this.rules = rules;
         this.emails = new ArrayList<>();
     }
 
     public FilterRule(String id, String operator, String type, String value) {
-        System.out.println("FilterRule 2");
         this.id = id;
         this.operator = operator;
         this.type = type;
@@ -39,10 +37,29 @@ public class FilterRule {
         this.emails = new ArrayList<>();
     }
 
+    public FilterRule(String id, String operator, String value) {
+        this(id, operator, "string", value);
+    }
+
     public FilterRule() {
-        System.out.println("FilterRule 1");
         this.rules = new ArrayList<>();
         this.emails = new ArrayList<>();
+    }
+
+    public FilterRule(FilterRule other) {
+        this.rules = new ArrayList<>();
+        this.emails = new ArrayList<>();
+        if(other.isGroup()){
+            this.setCondition(other.getCondition());
+            for(FilterRule rule : other.getRules()) {
+                this.addRule(new FilterRule(rule));
+            }
+        } else {
+            this.setId(other.getId());
+            this.setOperator(other.getOperator());
+            this.setType(other.getType());
+            this.setValue(other.getValue());
+        }
     }
 
     public String getCondition() {
@@ -129,6 +146,13 @@ public class FilterRule {
         return this.emails.add(email);
     }
 
+    public FilterRule addRule(FilterRule rule) {
+        if(this.isGroup()){
+            this.rules.add(rule);
+        }
+        return this;
+    }
+
     public String toString() {
         String result = "{";
         if(this.isGroup()){
@@ -158,14 +182,11 @@ public class FilterRule {
     private List<Email> mergeMatchMails(List<FilterRule> rules){
         List<Email> result = new ArrayList<>();
         CombineOption option = this.getCombineOption();
-        System.out.println("mergeMatchMails: CombineOption: " + option.toString() + "@" + rules.size());
         for(FilterRule rule : rules){
-            System.out.println("mergeEmail rule: "+ rule.toString());
             List<Email> emailList;
             if(rules.indexOf(rule) == 0){
                 emailList = rule.getMatchEmails();
                 result = mergeWithoutDuplicate(result, emailList);
-                System.out.println("emailList 1: "+ emailList.size() + "@" + result.size());
             } else {
                 switch (option){
                     case NONE:
@@ -173,19 +194,14 @@ public class FilterRule {
                     case AND:
                         emailList = rule.getMatchEmails();
                         result = findDuplicateList(result, emailList);
-                        System.out.println("emailList 2: "+ emailList.size() + "@" + result.size());
                         break;
                     case OR:
                         emailList = rule.getMatchEmails();
                         result = mergeWithoutDuplicate(result, emailList);
-                        System.out.println("emailList 3: "+ emailList.size() + "@" + result.size());
                         break;
-                    default:
-                        System.out.println("something wrong");
                 }
             }
         }
-        System.out.println("mergeMatchMails: "+ result.size());
         return result;
     }
 

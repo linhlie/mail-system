@@ -533,9 +533,9 @@
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
         var form = {
-            "sourceConditionList" : sourceConditionData,
-            "destinationConditionList" : destinationConditionData,
-            "matchingConditionList" : matchingConditionData,
+            "sourceConditionData" : sourceConditionData,
+            "destinationConditionData" : destinationConditionData,
+            "matchingConditionData" : matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"

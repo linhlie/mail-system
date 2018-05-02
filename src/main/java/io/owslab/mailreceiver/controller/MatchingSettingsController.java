@@ -114,58 +114,6 @@ public class MatchingSettingsController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/matchingSettings/saveSource")
-    @ResponseBody
-    public ResponseEntity<?> saveSourceConditionList(
-            Model model,
-            @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult) {
-        AjaxResponseBody result = new AjaxResponseBody();
-        if (bindingResult.hasErrors()) {
-            result.setMsg(bindingResult.getAllErrors()
-                    .stream().map(x -> x.getDefaultMessage())
-                    .collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
-        }
-        try {
-            List<MatchingCondition> sourceConditionList = matchingConditionForm.getSourceConditionList();
-            matchingConditionService.saveList(sourceConditionList, MatchingCondition.Type.SOURCE);
-            result.setMsg("done");
-            result.setStatus(true);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-            return ResponseEntity.ok(result);
-        }
-    }
-
-    @PostMapping("/matchingSettings/saveDestination")
-    @ResponseBody
-    public ResponseEntity<?> saveDestinationConditionList(
-            Model model,
-            @Valid @RequestBody MatchingConditionForm matchingConditionForm, BindingResult bindingResult) {
-        AjaxResponseBody result = new AjaxResponseBody();
-        if (bindingResult.hasErrors()) {
-            result.setMsg(bindingResult.getAllErrors()
-                    .stream().map(x -> x.getDefaultMessage())
-                    .collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
-        }
-        try {
-            List<MatchingCondition> destinationConditionList = matchingConditionForm.getDestinationConditionList();
-            matchingConditionService.saveList(destinationConditionList, MatchingCondition.Type.DESTINATION);
-            result.setMsg("done");
-            result.setStatus(true);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-            return ResponseEntity.ok(result);
-        }
-    }
-
     @PostMapping("/matchingSettings/submitForm")
     @ResponseBody
     public ResponseEntity<?> submitForm(
