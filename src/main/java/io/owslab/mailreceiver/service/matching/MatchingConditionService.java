@@ -55,7 +55,7 @@ public class MatchingConditionService {
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     @Value("${mailreceiver.app.daysago}")
     private int daysago;
@@ -260,7 +260,8 @@ public class MatchingConditionService {
                                       boolean distinguish) {
         return new Callable<MatchingPartResult>() {
             public MatchingPartResult call() {
-                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, matchingRule, distinguish);
+                FilterRule copyMatchingRule = new FilterRule(matchingRule);
+                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, copyMatchingRule, distinguish);
                 matchingPartResult.setSourceMail(sourceResult.getEmail());
                 matchingPartResult.setDestinationMail(destinationResult.getEmail());
                 matchingPartResult.setIntersectWords(intersectWords);
@@ -375,9 +376,8 @@ public class MatchingConditionService {
 
     private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
                                                           MatchingWordResult destinationResult,
-                                                          FilterRule rawRule,
+                                                          FilterRule matchingRule,
                                                           boolean distinguish){
-        FilterRule matchingRule = new FilterRule(rawRule);
         MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
         FullNumberRange firstMatchRange = null;
         FullNumberRange firstRange = null;
@@ -884,7 +884,7 @@ public class MatchingConditionService {
         return result;
     }
 
-    private List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
+    public synchronized static List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
         List<Email> list1Copy = new ArrayList<>(list1);
         List<Email> list2Copy = new ArrayList<>(list2);
         list2Copy.removeAll(list1Copy);
@@ -892,7 +892,7 @@ public class MatchingConditionService {
         return list1Copy;
     }
 
-    private List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
+    public synchronized static List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
         List<Email> list = list1.size() >= list2.size() ? list2 : list1;
         List<Email> remainList = list1.size() >= list2.size() ? list1 : list2;
         List<Email> result = new ArrayList<>();

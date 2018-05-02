@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,11 +173,13 @@ public class FilterRule {
     }
 
     public List<Email> getMatchEmails(){
+        List<Email> result;
         if(this.isGroup() && this.hasSubRules()){
-            return mergeMatchMails(this.getRules());
+            result = mergeMatchMails(this.getRules());
         } else {
-            return this.getEmails();
+            result = this.getEmails();
         }
+        return result;
     }
 
     private List<Email> mergeMatchMails(List<FilterRule> rules){
@@ -186,45 +189,24 @@ public class FilterRule {
             List<Email> emailList;
             if(rules.indexOf(rule) == 0){
                 emailList = rule.getMatchEmails();
-                result = mergeWithoutDuplicate(result, emailList);
+                result = MatchingConditionService.mergeWithoutDuplicate(result, emailList);
             } else {
                 switch (option){
                     case NONE:
                         break;
                     case AND:
                         emailList = rule.getMatchEmails();
-                        result = findDuplicateList(result, emailList);
+                        result = MatchingConditionService.findDuplicateList(result, emailList);
                         break;
                     case OR:
                         emailList = rule.getMatchEmails();
-                        result = mergeWithoutDuplicate(result, emailList);
+                        result = MatchingConditionService.mergeWithoutDuplicate(result, emailList);
                         break;
                 }
             }
         }
         return result;
     }
-
-    private List<Email> mergeWithoutDuplicate(List<Email> list1, List<Email> list2){
-        List<Email> list1Copy = new ArrayList<>(list1);
-        List<Email> list2Copy = new ArrayList<>(list2);
-        list2Copy.removeAll(list1Copy);
-        list1Copy.addAll(list2Copy);
-        return list1Copy;
-    }
-
-    private List<Email> findDuplicateList(List<Email> list1, List<Email> list2){
-        List<Email> list = list1.size() >= list2.size() ? list2 : list1;
-        List<Email> remainList = list1.size() >= list2.size() ? list1 : list2;
-        List<Email> result = new ArrayList<>();
-        for(Email email: list){
-            if(remainList.contains(email)){
-                result.add(email);
-            }
-        }
-        return result;
-    }
-
     public CombineOption getCombineOption(){
         if(this.isGroup()){
             switch (this.getCondition()) {
