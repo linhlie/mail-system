@@ -108,10 +108,13 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group row">
-                        <div class="col-sm-10 col-sm-offset-1">
+                        <div class="col-sm-8 col-sm-offset-1">
                             <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
                             <datalist id="keylist">
                             </datalist>
+                        </div>
+                        <div class="col-sm-2">
+                            <button th:disabled="true" type="button" id="dataRemoveItem" class="btn btn-danger">削除</button>
                         </div>
                     </div>
                 </div>

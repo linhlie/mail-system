@@ -15,6 +15,13 @@
     var destinationBuilderId = '#destination-builder';
     var matchingBuilderId = '#matching-builder';
 
+    var removeDatalistItemBtnId = "#dataRemoveItem";
+
+    var sourceListKey = "/user/matchingSettings/listSourceKey";
+    var sourcePrefixUrlKey = "/user/matchingSettings/source";
+    var destinationListKey = "/user/matchingSettings/listDestinationKey";
+    var destinationPrefixUrlKey = "/user/matchingSettings/destination";
+
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
             return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
@@ -298,18 +305,17 @@
     function saveSourceListData(){
         var result = $(sourceBuilderId).queryBuilder('getRules');
         if ($.isEmptyObject(result)) return;
-        var datalistKey = "/user/matchingSettings/listSourceKey";
-        var datalistStr = localStorage.getItem(datalistKey);
+        var datalistStr = localStorage.getItem(sourceListKey);
         var datalist = JSON.parse(datalistStr);
         datalist = datalist || [];
-        showNamePrompt(datalist, function (name) {
+        showNamePrompt(datalist, sourceListKey, function (name) {
             if (name != null && name.length > 0) {
                 if(datalist.indexOf(name) < 0){
                     datalist.push(name);
                 }
-                localStorage.setItem(datalistKey, JSON.stringify(datalist));
+                localStorage.setItem(sourceListKey, JSON.stringify(datalist));
                 saveListData(
-                    "/user/matchingSettings/source",
+                    sourcePrefixUrlKey,
                     name,
                     result
                 )
@@ -317,15 +323,18 @@
         })
     }
     
-    function showNamePrompt(datalist, callback) {
+    function showNamePrompt(datalist, listKey, callback) {
         $('#dataModal').modal();
-        datalist = datalist || [];
         $( '#dataModalName').val('');
-        $('#keylist').html('');
-        for(var i = 0; i < datalist.length; i++){
-            $('#keylist').append("<option value='" + datalist[i] + "'>");
-        }
+        updateKeyList(datalist);
+        $("#dataModalName").off("change paste keyup");
+        $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
         setInputAutoComplete("dataModalName");
+        $(removeDatalistItemBtnId).off('click');
+        $(removeDatalistItemBtnId).click(function () {
+            var name = $( '#dataModalName').val();
+            removeDatalistItem(listKey, name);
+        });
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
@@ -343,21 +352,55 @@
         });
     }
 
+    function removeDatalistItem(listKey, name){
+        var datalistStr = localStorage.getItem(listKey);
+        var datalist = JSON.parse(datalistStr);
+        var index = datalist.indexOf(name);
+        if (index > -1) {
+            datalist.splice(index, 1);
+        }
+        localStorage.setItem(listKey, JSON.stringify(datalist));
+        $( '#dataModalName').val('');
+        updateKeyList(datalist);
+    }
+
+    function updateKeyList(datalist) {
+        datalist = datalist || [];
+        $('#keylist').html('');
+        for(var i = 0; i < datalist.length; i++){
+            $('#keylist').append("<option value='" + datalist[i] + "'>");
+        }
+    }
+
+    function disableRemoveDatalistItem() {
+        var name = $( '#dataModalName').val();
+        if(!name || name.trim().length === 0){
+            disableButton(removeDatalistItemBtnId, true);
+        } else {
+            disableButton(removeDatalistItemBtnId, false);
+        }
+    }
+
+    function disableButton(buttonId, disabled) {
+        if(buttonId && buttonId.length > 0){
+            $(buttonId).prop("disabled", disabled);
+        }
+    }
+
     function saveDestinationListData(){
         var result = $(destinationBuilderId).queryBuilder('getRules');
         if ($.isEmptyObject(result)) return;
-        var datalistKey = "/user/matchingSettings/listDestinationKey";
-        var datalistStr = localStorage.getItem(datalistKey);
+        var datalistStr = localStorage.getItem(destinationListKey);
         var datalist = JSON.parse(datalistStr);
         datalist = datalist || [];
-        showNamePrompt(datalist, function (name) {
+        showNamePrompt(datalist, destinationListKey, function (name) {
             if (name != null && name.length > 0) {
                 if(datalist.indexOf(name) < 0){
                     datalist.push(name);
                 }
-                localStorage.setItem(datalistKey, JSON.stringify(datalist));
+                localStorage.setItem(destinationListKey, JSON.stringify(datalist));
                 saveListData(
-                    "/user/matchingSettings/destination",
+                    destinationPrefixUrlKey,
                     name,
                     result
                 )
@@ -376,6 +419,7 @@
         $( "." + className ).on('click', function() {
             $(this).attr('placeholder',$(this).val());
             $(this).val('');
+            disableRemoveDatalistItem();
         });
         $( "." + className ).on('mouseleave', function() {
             if ($(this).val() == '') {
@@ -386,15 +430,14 @@
     
     function getSourceListData(skip) {
         if(skip){
-            getListData("/user/matchingSettings/source", null, sourceBuilderId);
+            getListData(sourcePrefixUrlKey, null, sourceBuilderId);
         } else {
-            var datalistKey = "/user/matchingSettings/listSourceKey";
-            var datalistStr = localStorage.getItem(datalistKey);
+            var datalistStr = localStorage.getItem(sourceListKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
-            showNamePrompt(datalist, function (name) {
+            showNamePrompt(datalist, sourceListKey, function (name) {
                 if (name != null && name.length > 0) {
-                    getListData("/user/matchingSettings/source", name, sourceBuilderId);
+                    getListData(sourcePrefixUrlKey, name, sourceBuilderId);
                 }
             })
         }
@@ -402,15 +445,14 @@
 
     function getDestinationListData(skip) {
         if(skip){
-            getListData("/user/matchingSettings/destination", null, destinationBuilderId);
+            getListData(destinationPrefixUrlKey, null, destinationBuilderId);
         } else {
-            var datalistKey = "/user/matchingSettings/listDestinationKey";
-            var datalistStr = localStorage.getItem(datalistKey);
+            var datalistStr = localStorage.getItem(destinationListKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
-            showNamePrompt(datalist, function (name) {
+            showNamePrompt(datalist, destinationListKey, function (name) {
                 if (name != null && name.length > 0) {
-                    getListData("/user/matchingSettings/destination", name, destinationBuilderId);
+                    getListData(destinationPrefixUrlKey, name, destinationBuilderId);
                 }
             })
         }
