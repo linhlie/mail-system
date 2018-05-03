@@ -15,6 +15,42 @@
     var destinationBuilderId = '#destination-builder';
     var matchingBuilderId = '#matching-builder';
 
+    function fullWidthNumConvert(fullWidthNum){
+        return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
+            return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
+        });
+    }
+
+    function numberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
+    }
+
+    function matchingMumberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            if(value === "数値" || value === "数値(上代)" || value === "数値(下代)") return true;
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
+    }
 
     $(function () {
         var default_source_rules = {
@@ -89,30 +125,24 @@
             type: 'string',
             operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
             validation: {
-                callback: function(value, rule) {
-                    if (!value || value.trim().length === 0) {
-                        return "Value can not be empty!";
-                    } else if (rule.operator.type !== 'in') {
-                        //TODO: japanese number
-                        var pattern = /^\d+$/;
-                        var match = pattern.test(value);
-                        if(!match){
-                            return "Value must be a number greater than or equal to 0";
-                        }
-                    }
-                    return true;
-                }
+                callback: numberValidator
             },
         }, {
             id: '5',
             label: '数値(上代)',
             type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
         }, {
             id: '6',
             label: '数値(下代)',
             type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
         }, {
             id: '7',
             label: '添付ファイル',
@@ -202,7 +232,10 @@
                     return '<label>比較先項目または値:&nbsp;</label>' +
                     '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
             }, {
                 id: '5',
                 label: '数値(上代)',
@@ -211,7 +244,10 @@
                     return '<label>比較先項目または値:&nbsp;</label>' +
                     '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
             }, {
                 id: '6',
                 label: '数値(下代)',
@@ -220,7 +256,10 @@
                     return '<label>比較先項目または値:&nbsp;</label>' +
                     '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
             }],
 
             rules: null
