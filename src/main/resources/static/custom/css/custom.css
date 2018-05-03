@@ -519,4 +519,12 @@ span.error {
     max-width: none;
 }
 
+.fuzzy-table-container .tablesorter tr.main-table-row-head th {
+    padding: 8px 20px 8px 8px;
+}
+
+.fuzzy-table-container .tablesorter tr.main-table-row-head th div{
+    font-size: 14px;
+}
+
 
