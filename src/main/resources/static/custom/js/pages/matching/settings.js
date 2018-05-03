@@ -164,7 +164,8 @@
                 label: '送信者',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
                 },
                 operators: ['contains', 'not_contains', 'equal', 'not_equal']
             }, {
@@ -172,7 +173,8 @@
                 label: '受信者',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
                 },
                 operators: ['contains', 'not_contains', 'equal', 'not_equal']
             }, {
@@ -188,7 +190,8 @@
                 label: '本文',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
                 },
                 operators: ['contains', 'not_contains', 'equal', 'not_equal']
             }, {
@@ -196,7 +199,8 @@
                 label: '数値',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
             }, {
@@ -204,7 +208,8 @@
                 label: '数値(上代)',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
             }, {
@@ -212,7 +217,8 @@
                 label: '数値(下代)',
                 type: 'string',
                 input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
                 },
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in']
             }],
