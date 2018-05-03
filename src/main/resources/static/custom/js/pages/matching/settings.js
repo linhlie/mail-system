@@ -308,7 +308,7 @@
         var datalistStr = localStorage.getItem(sourceListKey);
         var datalist = JSON.parse(datalistStr);
         datalist = datalist || [];
-        showNamePrompt(datalist, sourceListKey, function (name) {
+        showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
             if (name != null && name.length > 0) {
                 if(datalist.indexOf(name) < 0){
                     datalist.push(name);
@@ -323,7 +323,7 @@
         })
     }
     
-    function showNamePrompt(datalist, listKey, callback) {
+    function showNamePrompt(datalist, listKey, prefixUrlKey, callback) {
         $('#dataModal').modal();
         $( '#dataModalName').val('');
         updateKeyList(datalist);
@@ -333,7 +333,7 @@
         $(removeDatalistItemBtnId).off('click');
         $(removeDatalistItemBtnId).click(function () {
             var name = $( '#dataModalName').val();
-            removeDatalistItem(listKey, name);
+            removeDatalistItem(listKey, prefixUrlKey, name);
         });
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
@@ -352,7 +352,7 @@
         });
     }
 
-    function removeDatalistItem(listKey, name){
+    function removeDatalistItem(listKey, prefixUrlKey, name){
         var datalistStr = localStorage.getItem(listKey);
         var datalist = JSON.parse(datalistStr);
         var index = datalist.indexOf(name);
@@ -360,6 +360,7 @@
             datalist.splice(index, 1);
         }
         localStorage.setItem(listKey, JSON.stringify(datalist));
+        localStorage.removeItem(prefixUrlKey + "@" + name);
         $( '#dataModalName').val('');
         updateKeyList(datalist);
     }
@@ -393,7 +394,7 @@
         var datalistStr = localStorage.getItem(destinationListKey);
         var datalist = JSON.parse(datalistStr);
         datalist = datalist || [];
-        showNamePrompt(datalist, destinationListKey, function (name) {
+        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
             if (name != null && name.length > 0) {
                 if(datalist.indexOf(name) < 0){
                     datalist.push(name);
@@ -435,7 +436,7 @@
             var datalistStr = localStorage.getItem(sourceListKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
-            showNamePrompt(datalist, sourceListKey, function (name) {
+            showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
                 if (name != null && name.length > 0) {
                     getListData(sourcePrefixUrlKey, name, sourceBuilderId);
                 }
@@ -450,7 +451,7 @@
             var datalistStr = localStorage.getItem(destinationListKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
-            showNamePrompt(datalist, destinationListKey, function (name) {
+            showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
                 if (name != null && name.length > 0) {
                     getListData(destinationPrefixUrlKey, name, destinationBuilderId);
                 }
