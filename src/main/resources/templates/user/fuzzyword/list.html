@@ -27,14 +27,15 @@
                                                 <table class="table table-bordered">
                                                     <thead>
                                                     <tr>
-                                                        <th class="col-xs-10">単語</th>
+                                                        <th class="col-xs-5">単語</th>
+                                                        <th class="col-xs-5">主ワード</th>
                                                         <th class="col-xs-2 text-center">
                                                         </th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
                                                     <tr>
-                                                        <td>
+                                                        <td th:colspan="2">
                                                             <div>
                                                                 <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
                                                             </div>
@@ -43,9 +44,10 @@
                                                     </tr>
                                                     <tr th:each="item:${wordList}">
                                                         <td th:text="${item.word}"></td>
+                                                        <td th:text="${item.keyWord}"></td>
                                                         <td class="text-center">
                                                             <a href="#" th:href="@{/user/fuzzyWord(search=${item.word})}">
-                                                                    <span title="删除" th:data="${item.id}"
+                                                                    <span title="删除"
                                                                           style="cursor: pointer"
                                                                           class="glyphicon glyphicon-play">
                                                                     </span>

@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
+import io.owslab.mailreceiver.utils.KeyWordItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +50,13 @@ public class FuzzyWordController {
                 totalFuzzyWord = originalWords.size() + associatedWords.size();
             }
         }
-        model.addAttribute("wordList", wordList);
+        List<KeyWordItem> keyWordItems = new ArrayList<>();
+        for(Word word : wordList) {
+            Word keyWord = fuzzyWordService.findKeyWord(word);
+            String keyWordStr = keyWord != null ? keyWord.getWord() : "";
+            keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+        }
+        model.addAttribute("wordList", keyWordItems);
         model.addAttribute("wordListSize", wordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "user/fuzzyword/list";
