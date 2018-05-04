@@ -24,28 +24,30 @@
                                     <div class="col-xs-5 full-height">
                                         <div class="fuzzy-table-container">
                                             <form action="#" th:action="@{/user/fuzzyWord}">
-                                                <table class="table table-bordered">
+                                                <table id="wordList" style="margin: auto;" class="table table-bordered tablesorter">
                                                     <thead>
-                                                    <tr>
-                                                        <th class="col-xs-10">単語</th>
+                                                    <tr class="main-table-row-head">
+                                                        <th class="col-xs-5">単語</th>
+                                                        <th class="col-xs-5">主ワード</th>
                                                         <th class="col-xs-2 text-center">
                                                         </th>
                                                     </tr>
-                                                    </thead>
-                                                    <tbody>
                                                     <tr>
-                                                        <td>
+                                                        <th th:colspan="2">
                                                             <div>
                                                                 <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
                                                             </div>
-                                                        </td>
-                                                        <td class="text-center"><button type="submit">条件</button></td>
+                                                        </th>
+                                                        <th class="text-center"><button type="submit">条件</button></th>
                                                     </tr>
+                                                    </thead>
+                                                    <tbody>
                                                     <tr th:each="item:${wordList}">
                                                         <td th:text="${item.word}"></td>
+                                                        <td th:text="${item.keyWord}"></td>
                                                         <td class="text-center">
                                                             <a href="#" th:href="@{/user/fuzzyWord(search=${item.word})}">
-                                                                    <span title="删除" th:data="${item.id}"
+                                                                    <span title="删除"
                                                                           style="cursor: pointer"
                                                                           class="glyphicon glyphicon-play">
                                                                     </span>

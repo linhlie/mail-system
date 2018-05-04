@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.form.NumberTreatmentForm;
 import io.owslab.mailreceiver.model.NumberTreatment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class NumberTreatmentService {
         return numberTreatments.size() > 0 ? numberTreatments.get(0) : null;
     }
 
+    @CacheEvict(allEntries = true)
     public void saveForm(NumberTreatmentForm form){
         NumberTreatment numberTreatment = new NumberTreatment(form);
         NumberTreatment existNumberTreatment = getFirst();

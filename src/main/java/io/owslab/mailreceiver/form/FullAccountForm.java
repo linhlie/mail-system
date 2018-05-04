@@ -45,13 +45,16 @@ public class FullAccountForm {
 
     private String sProxyServer;
 
+    private String signature;
+
 
     public FullAccountForm() {
     }
 
     public FullAccountForm(MailAccountForm mailAccountForm, ReceiveAccountForm receiveAccountForm, SendAccountForm sendAccountForm) {
-        this.setAccount(mailAccountForm.getAccount());
-        this.setDisabled(mailAccountForm.isDisabled());
+        this.account = mailAccountForm.getAccount();
+        this.disabled = mailAccountForm.isDisabled();
+        this.signature = mailAccountForm.getSignature();
         this.rUserName = receiveAccountForm.getUserName();
         this.rPassword = receiveAccountForm.getPassword();
         this.rMailServerAddress = receiveAccountForm.getMailServerAddress();
@@ -222,8 +225,16 @@ public class FullAccountForm {
         this.sProxyServer = sProxyServer;
     }
 
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
     public MailAccountForm getMailAccountForm(){
-        return new MailAccountForm(this.getAccount(), this.isDisabled());
+        return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature());
     }
 
     public ReceiveAccountForm getReceiveAccountForm(){

@@ -2,29 +2,295 @@
 (function () {
     "use strict";
     var formId = '#matchingConditionSettingsForm';
-    var sourceTableId = 'motoMail';
-    var destinationTableId = 'sakiMail';
-    var matchingTableId = 'matching';
     var saveSourceBtnId = '#saveSourceBtn';
     var getSourceBtnId = '#getSourceBtn';
     var saveDestinationBtnId = '#saveDestinationBtn';
     var getDestinationBtnId = '#getDestinationBtn';
     var submitFormBtnId = '#submitFormBtn';
+    var extractSourceBtnId = '#extractSourceBtn';
+    var extractDestinationBtnId = '#extractDestinationBtn';
     var matchingWordsAreaId = '#matchingWordsArea';
 
+    var sourceBuilderId = '#source-builder';
+    var destinationBuilderId = '#destination-builder';
+    var matchingBuilderId = '#matching-builder';
+
+    var removeDatalistItemBtnId = "#dataRemoveItem";
+
+    var sourceListKey = "/user/matchingSettings/listSourceKey";
+    var sourcePrefixUrlKey = "/user/matchingSettings/source";
+    var destinationListKey = "/user/matchingSettings/listDestinationKey";
+    var destinationPrefixUrlKey = "/user/matchingSettings/destination";
+
+    function fullWidthNumConvert(fullWidthNum){
+        return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
+            return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
+        });
+    }
+
+    function numberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
+    }
+
+    function matchingMumberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            if(value === "数値" || value === "数値(上代)" || value === "数値(下代)") return true;
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
+    }
 
     $(function () {
-        setAddReplaceLetterRowListener('addMotoRow', sourceTableId, ["group", "combine", "item", "condition", "value"]);
-        setAddReplaceLetterRowListener('addSakiRow', destinationTableId, ["group", "combine", "item", "condition", "value"]);
-        setAddReplaceLetterRowListener('addMatchRow', matchingTableId, ["group", "combine", "item", "condition", "value"]);
-        setRemoveRowListener("removeConditionRow");
-        getDefaultSourceListData();
-        getDefaultDestinationListData();
+        var default_source_rules = {
+            condition: "AND",
+            rules: [
+                {
+                    id: "7",
+                    input: "ratio",
+                    type: "integer",
+                    value: 1
+                },
+                {
+                    id: "8",
+                    operator: "greater_or_equal",
+                    type:  "string",
+                    value: "-7"
+                }
+            ]
+        };
+
+        var default_destination_rules = {
+            condition: "AND",
+            rules: [
+                {
+                    id: "7",
+                    input: "ratio",
+                    type: "integer",
+                    value: 0
+                },
+                {
+                    id: "8",
+                    operator: "greater_or_equal",
+                    type:  "string",
+                    value: "-7"
+                }
+            ]
+        };
+
+        var default_plugins = [
+            'sortable',
+            'filter-description',
+            'unique-filter',
+            'bt-tooltip-errors',
+            'bt-selectpicker',
+            'bt-checkbox',
+            'invert',
+        ];
+
+        var default_filters = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '4',
+            label: '数値',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '5',
+            label: '数値(上代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '6',
+            label: '数値(下代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '7',
+            label: '添付ファイル',
+            type: 'integer',
+            input: 'radio',
+            values: {
+                1: '有り',
+                0: '無し'
+            },
+            colors: {
+                1: 'success',
+                0: 'danger'
+            },
+            operators: ['equal']
+        }, {
+            id: '8',
+            label: '受信日',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+        }];
+
+        var default_source_configs = {
+            plugins: default_plugins,
+            allow_empty: true,
+            filters: default_filters,
+            rules: default_source_rules
+        };
+
+        var default_destination_configs = {
+            plugins: default_plugins,
+            allow_empty: true,
+            filters: default_filters,
+            rules: default_destination_rules
+        };
+
+        var default_matching_configs = {
+            plugins: [
+                'sortable',
+                'filter-description',
+                'unique-filter',
+                'bt-tooltip-errors',
+                'bt-selectpicker',
+                'bt-checkbox',
+                'invert',
+            ],
+            allow_empty: true,
+            filters: [{
+                id: '0',
+                label: '送信者',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '1',
+                label: '受信者',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '2',
+                label: '件名',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '3',
+                label: '本文',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+                },
+                operators: ['contains', 'not_contains', 'equal', 'not_equal']
+            }, {
+                id: '4',
+                label: '数値',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            }, {
+                id: '5',
+                label: '数値(上代)',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            }, {
+                id: '6',
+                label: '数値(下代)',
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            }],
+
+            rules: null
+        };
+
+        $(sourceBuilderId).queryBuilder(default_source_configs);
+        $(destinationBuilderId).queryBuilder(default_destination_configs);
+        $(matchingBuilderId).queryBuilder(default_matching_configs);
+        var group = $(matchingBuilderId)[0].queryBuilder.model.root;
+        if(group){
+            group.empty();
+        }
+
+        $(matchingBuilderId).on('afterUpdateRuleFilter.queryBuilder', function(e, group) {
+            setInputAutoComplete("matchingValue");
+        });
+
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
         setButtonClickListenter(getDestinationBtnId, getDestinationListData);
         setButtonClickListenter(submitFormBtnId, submit);
+        setButtonClickListenter(extractSourceBtnId, extractSource);
+        setButtonClickListenter(extractDestinationBtnId, extractDestination);
     });
     
     function setButtonClickListenter(id, callback) {
@@ -37,174 +303,83 @@
     }
 
     function saveSourceListData(){
-        var name = prompt("Please enter saved name", "");
-        if (name != null && name.length > 0) {
-            var data = buildDataFromTable(sourceTableId);
-            saveListData(
-                "/user/matchingSettings/source",
-                name,
-                data
-            )
-        }
-    }
-
-    function saveDestinationListData(){
-        var name = prompt("Please enter saved name", "");
-        if (name != null && name.length > 0) {
-            var data = buildDataFromTable(destinationTableId);
-            saveListData(
-                "/user/matchingSettings/destination",
-                name,
-                data
-            )
-        }
-    }
-
-    function saveListData(url, name,  data) {
-        var key = url + "@" + name;
-        localStorage.setItem(key, JSON.stringify(data));
-    }
-
-    function setRemoveRowListener(name) {
-        $("span[name='"+name+"']").off('click');
-        $("span[name='"+name+"']").click(function () {
-            $(this)[0].parentNode.parentNode.className+=' hidden';
+        var result = $(sourceBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        var datalistStr = localStorage.getItem(sourceListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                if(datalist.indexOf(name) < 0){
+                    datalist.push(name);
+                }
+                localStorage.setItem(sourceListKey, JSON.stringify(datalist));
+                saveListData(
+                    sourcePrefixUrlKey,
+                    name,
+                    result
+                )
+            }
         })
     }
     
-    function setInputAutoComplete(name) {
-        $("input[name='"+name+"']").off('click');
-        $("input[name='"+name+"']").off('mouseleave');
-        $("input[name='"+name+"']").on('click', function() {
-            $(this).attr('placeholder',$(this).val());
-            $(this).val('');
+    function showNamePrompt(datalist, listKey, prefixUrlKey, callback) {
+        $('#dataModal').modal();
+        $( '#dataModalName').val('');
+        updateKeyList(datalist);
+        $("#dataModalName").off("change paste keyup");
+        $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
+        setInputAutoComplete("dataModalName");
+        $(removeDatalistItemBtnId).off('click');
+        $(removeDatalistItemBtnId).click(function () {
+            var name = $( '#dataModalName').val();
+            removeDatalistItem(listKey, prefixUrlKey, name);
         });
-        $("input[name='"+name+"']").on('mouseleave', function() {
-            if ($(this).val() == '') {
-                $(this).val($(this).attr('placeholder'));
+        $('#dataModalOk').off('click');
+        $("#dataModalOk").click(function () {
+            var name = $( '#dataModalName').val();
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback(name);
+            }
+        });
+        $('#dataModalCancel').off('click');
+        $("#dataModalCancel").click(function () {
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback();
             }
         });
     }
 
-    function setAddReplaceLetterRowListener(name, tableId, data) {
-        $("span[name='"+name+"']").click(function () {
-            addRow(tableId);
-        })
+    function removeDatalistItem(listKey, prefixUrlKey, name){
+        var datalistStr = localStorage.getItem(listKey);
+        var datalist = JSON.parse(datalistStr);
+        var index = datalist.indexOf(name);
+        if (index > -1) {
+            datalist.splice(index, 1);
+        }
+        localStorage.setItem(listKey, JSON.stringify(datalist));
+        localStorage.removeItem(prefixUrlKey + "@" + name);
+        $( '#dataModalName').val('');
+        updateKeyList(datalist);
     }
-    
-    function getSourceListData(skip) {
-        if(skip){
-            getListData("/user/matchingSettings/source", null, sourceTableId, getSourceBtnId);
+
+    function updateKeyList(datalist) {
+        datalist = datalist || [];
+        $('#keylist').html('');
+        for(var i = 0; i < datalist.length; i++){
+            $('#keylist').append("<option value='" + datalist[i] + "'>");
+        }
+    }
+
+    function disableRemoveDatalistItem() {
+        var name = $( '#dataModalName').val();
+        if(!name || name.trim().length === 0){
+            disableButton(removeDatalistItemBtnId, true);
         } else {
-            var name = prompt("Please enter saved name", "");
-            if (name != null) {
-                getListData("/user/matchingSettings/source", name, sourceTableId, getSourceBtnId);
-            }
+            disableButton(removeDatalistItemBtnId, false);
         }
-    }
-
-    function getDestinationListData(skip) {
-        if(skip){
-            getListData("/user/matchingSettings/destination", null, destinationTableId, getDestinationBtnId);
-        } else {
-            var name = prompt("Please enter saved name", "");
-            if (name != null) {
-                getListData("/user/matchingSettings/destination", name, destinationTableId, getDestinationBtnId);
-            }
-        }
-    }
-
-    // function getMatchingListData() {
-    //     var name = prompt("Please enter saved name", "");
-    //     if (name != null) {
-    //         getListData("/user/matchingSettings/matching", name, matchingTableId);
-    //     }
-    // }
-    
-    function getDefaultSourceListData() {
-        var data = [];
-        var condition = {
-            combine: "-1",
-            condition: "-1",
-            group: false,
-            id: "",
-            item: "7",
-            remove: 0,
-            value: "",
-        };
-        data.push(condition);
-        showDefaultListData(data, sourceTableId);
-    }
-
-    function getDefaultDestinationListData() {
-        var data = [];
-        var condition = {
-            combine: "-1",
-            condition: "-1",
-            group: false,
-            id: "",
-            item: "8",
-            remove: 0,
-            value: "",
-        };
-        data.push(condition);
-        showDefaultListData(data, destinationTableId);
-    }
-
-    function showDefaultListData(data, tableId) {
-        data = addDefaultReceiveDateRow(data);
-        for(var i = 0; i < data.length; i ++){
-            addRowWithData(tableId, data[i]);
-        }
-    }
-
-    function getListData(url, name, tableId) {
-        var data = null;
-        if(name && name.length > 0){
-            var key = url + "@" + name;
-            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
-        }
-        if(data != null){
-            console.log("getListData: ", data);
-            removeAllRow(tableId);
-            data = addDefaultReceiveDateRow(data);
-            for(var i = 0; i < data.length; i ++){
-                addRowWithData(tableId, data[i]);
-            }
-        } else {
-            alert("見つけませんでした。");
-        }
-    }
-
-    function addDefaultReceiveDateRow(data) {
-        var receivedDateCondition = null;
-        for(var i = 0; i < data.length; i ++){
-            var condition = data[i];
-            if(condition.item == "9"){
-                receivedDateCondition = condition;
-            }
-        }
-        if(receivedDateCondition == null){
-            // var sevenDayAgo = new Date();
-            // sevenDayAgo.setDate(sevenDayAgo.getDate() - 7);
-            // var month = '' + (sevenDayAgo.getMonth() + 1);
-            // var day = '' + sevenDayAgo.getDate();
-            // var year = sevenDayAgo.getFullYear();
-            // if (month.length < 2) month = '0' + month;
-            // if (day.length < 2) day = '0' + day;
-
-            receivedDateCondition = {
-                combine: "0",
-                condition: "4",
-                group: true,
-                id: "",
-                item: "9",
-                remove: 0,
-                value: "-7",
-            }
-            data.push(receivedDateCondition);
-        }
-        return data;
     }
 
     function disableButton(buttonId, disabled) {
@@ -213,124 +388,215 @@
         }
     }
 
-    function addRow(tableId) {
-        var table = document.getElementById(tableId);
-        var body = table.tBodies[0];
-        var rowToClone = table.rows[1];
-        var clone = rowToClone.cloneNode(true);
-        clone.className = undefined;
-        body.appendChild(clone);
-        setRemoveRowListener("removeConditionRow");
-        setInputAutoComplete("matchingValue");
-    }
-    
-    function addRowWithData(tableId, data) {
-        var table = document.getElementById(tableId);
-        var body = table.tBodies[0];
-        var rowToClone = table.rows[1];
-        var row = rowToClone.cloneNode(true);
-        row.className = undefined;
-        var cells = row.cells;
-        for(var i = 0; i < cells.length; i++){
-            var cell = cells.item(i);
-            var cellKey = cell.getAttribute("data");
-            if(!cellKey) continue;
-            var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-            if(cellNode){
-                if(cellNode.nodeName == "INPUT") {
-                    if(cellNode.type == "checkbox"){
-                        cellNode.checked = data[cellKey];
-                    } else if(cellNode.type == "text"){
-                        cellNode.value = data[cellKey];
-                    }
-                } else if(cellNode.nodeName == "SELECT") {
-                    cellNode.value = data[cellKey];
-                } else if(cellNode.nodeName == "SPAN") {
-                    cellNode.textContent = data[cellKey];
+    function saveDestinationListData(){
+        var result = $(destinationBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        var datalistStr = localStorage.getItem(destinationListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                if(datalist.indexOf(name) < 0){
+                    datalist.push(name);
                 }
+                localStorage.setItem(destinationListKey, JSON.stringify(datalist));
+                saveListData(
+                    destinationPrefixUrlKey,
+                    name,
+                    result
+                )
             }
-        }
-        body.appendChild(row);
-        setRemoveRowListener("removeConditionRow");
+        })
     }
-    
-    function removeAllRow(tableId) { //Except header row
-        var table = document.getElementById(tableId);
-        while(table.rows.length > 2){
-            var row = table.rows[2];
-            row.parentNode.removeChild(row);
-        }
-    }
-    
-    function buildDataFromTable(tableId) {
-        var data = [];
-        var table = document.getElementById(tableId);
-        for (var i = 1; i < table.rows.length; i++) {
-            var row = table.rows.item(i);
-            if(isSkipRow(row)) continue;
-            var cells = row.cells;
-            var rowData = {};
-            for (var j = 0; j < cells.length; j++) {
-                var cell = cells.item(j);
-                var cellKey = cell.getAttribute("data");
-                if(!cellKey) continue;
 
-                var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-                if(cellNode){
-                    if(cellNode.nodeName == "INPUT") {
-                        if(cellNode.type == "checkbox"){
-                            rowData[cellKey] = cellNode.checked;
-                        } else if(cellNode.type == "text"){
-                            rowData[cellKey] = cellNode.value;
-                        }
-                    } else if(cellNode.nodeName == "SELECT") {
-                        rowData[cellKey] = cellNode.value;
-                    } else if(cellNode.nodeName == "SPAN") {
-                        rowData[cellKey] = cellNode.textContent;
-                    }
+    function saveListData(url, name,  data) {
+        var key = url + "@" + name;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    
+    function setInputAutoComplete(className) {
+        $( "." + className ).off('click');
+        $( "." + className ).off('mouseleave');
+        $( "." + className ).on('click', function() {
+            $(this).attr('placeholder',$(this).val());
+            $(this).val('');
+            disableRemoveDatalistItem();
+        });
+        $( "." + className ).on('mouseleave', function() {
+            if ($(this).val() == '') {
+                $(this).val($(this).attr('placeholder'));
+            }
+        });
+    }
+    
+    function getSourceListData(skip) {
+        if(skip){
+            getListData(sourcePrefixUrlKey, null, sourceBuilderId);
+        } else {
+            var datalistStr = localStorage.getItem(sourceListKey);
+            var datalist = JSON.parse(datalistStr);
+            datalist = datalist || [];
+            showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
+                if (name != null && name.length > 0) {
+                    getListData(sourcePrefixUrlKey, name, sourceBuilderId);
+                }
+            })
+        }
+    }
+
+    function getDestinationListData(skip) {
+        if(skip){
+            getListData(destinationPrefixUrlKey, null, destinationBuilderId);
+        } else {
+            var datalistStr = localStorage.getItem(destinationListKey);
+            var datalist = JSON.parse(datalistStr);
+            datalist = datalist || [];
+            showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
+                if (name != null && name.length > 0) {
+                    getListData(destinationPrefixUrlKey, name, destinationBuilderId);
+                }
+            })
+        }
+    }
+
+    function getListData(url, name, builderId) {
+        var data = null;
+        if(name && name.length > 0){
+            var key = url + "@" + name;
+            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
+        }
+        if(data != null){
+            data = addDefaultReceiveDateRow(data);
+            $(builderId).queryBuilder('setRules', data);
+        } else {
+            alert("見つけませんでした。");
+        }
+    }
+
+    function addDefaultReceiveDateRow(data) {
+        var receivedDateCondition = null;
+        if(data.rules) {
+            for(var i = 0; i < data.rules.length; i ++){
+                var condition = data.rules[i];
+                if(condition.id == "8"){
+                    receivedDateCondition = condition;
                 }
             }
-            rowData["remove"] = row.className.indexOf('hidden') >= 0 ? 1 : 0;
-            data.push(rowData);
+        }
+        if(receivedDateCondition == null){
+            receivedDateCondition = {
+                id: "8",
+                operator: "greater_or_equal",
+                type:  "string",
+                value: "-7"
+            }
+            data.rules = data.rules ? data.rules : [];
+            data.rules.push(receivedDateCondition);
         }
         return data;
     }
-    
-    function removeEmptyRowData(data) {
+
+    function buildDataFromBuilder(builderId) {
+        var result = $(builderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        return buildGroupDataFromRaw(result);
+    }
+
+    function buildGroupDataFromRaw(data){
+        var result = {
+            condition: data.condition,
+            rules: buildRulesDataFromRaw(data)
+        }
+        return result;
+    }
+
+    function buildRulesDataFromRaw(data) {
         var result = [];
-        for (var i = 0; i < data.length; i++) {
-            var rowData = data[i];
-            if(!isEmptyRowData(rowData)) {
-                result.push(rowData);
+        for(var i = 0; i < data.rules.length; i++){
+            var rawRule = data.rules[i];
+            if(rawRule.id){
+                var rule = {
+                    id: rawRule.id,
+                    operator: rawRule.operator,
+                    type: rawRule.type,
+                    value: rawRule.value
+                }
+                result.push(rule);
+            } else if (rawRule.condition) {
+                var rule = buildGroupDataFromRaw(rawRule);
+                result.push(rule);
             }
         }
         return result;
     }
     
-    function isEmptyRowData(rowData) {
-        return (rowData["item"] === '-1' || rowData["item"] === -1);
+    function extractSource() {
+        var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
+        if(!sourceConditionData) return;
+        console.log("extractSource: ",sourceConditionData);
+        var data = {
+            "conditionData" : sourceConditionData,
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+        };
+        sessionStorage.setItem("extractSourceData", JSON.stringify(data));
+        var win = window.open('/user/extractSource', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
     }
-
-    function isSkipRow(row) {
-        return row && row.className && row.className.indexOf("skip") >= 0;
+    
+    function extractDestination() {
+        var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
+        if(!destinationConditionData) return;
+        var data = {
+            "conditionData" : destinationConditionData,
+            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+        };
+        sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
+        var win = window.open('/user/extractDestination', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
     }
     
     function submit() {
+        var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
+        if(!sourceConditionData) return;
+        var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
+        if(!destinationConditionData) return;
+        var matchingConditionData = buildDataFromBuilder(matchingBuilderId);
+        if(!matchingConditionData) return;
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
         var form = {
-            "sourceConditionList" : buildDataFromTable(sourceTableId),
-            "destinationConditionList" : buildDataFromTable(destinationTableId),
-            "matchingConditionList" : buildDataFromTable(matchingTableId),
+            "sourceConditionData" : sourceConditionData,
+            "destinationConditionData" : destinationConditionData,
+            "matchingConditionData" : matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"
         };
-        console.log("form: ", form);
-        disableButton(submitFormBtnId, true);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
-        window.location = '/user/matchingResult';
+        // window.location = '/user/matchingResult';
+        var win = window.open('/user/matchingResult', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
     }
 
 })(jQuery);

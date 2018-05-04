@@ -17,6 +17,11 @@
                             <div th:replace="/fragments/fuzzy-description"></div>
                         </div>
                         <div class="row">
+                            <div id="errorContainer" style="display: none; margin: 0 15px;">
+                                <div class="callout callout-danger">
+                                    <p id="errorMessage">.</p>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <form id="fuzzyWordForm" class="form-horizontal" th:action="@{${api}}"
                                       th:object="${fuzzyWordForm}" method="POST" th:data="${api}">

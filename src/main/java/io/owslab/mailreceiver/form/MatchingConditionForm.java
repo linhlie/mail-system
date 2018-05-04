@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.model.ReplaceNumber;
 import io.owslab.mailreceiver.model.ReplaceUnit;
+import io.owslab.mailreceiver.utils.FilterRule;
 
 import java.util.List;
 
@@ -15,35 +16,35 @@ public class MatchingConditionForm {
     private boolean distinguish;
     private boolean spaceEffective;
     private String matchingWords;
-    private List<MatchingCondition> sourceConditionList;
-    private List<MatchingCondition> destinationConditionList;
-    private List<MatchingCondition> matchingConditionList;
+    private FilterRule sourceConditionData;
+    private FilterRule destinationConditionData;
+    private FilterRule matchingConditionData;
 
     public MatchingConditionForm() {
     }
 
-    public List<MatchingCondition> getSourceConditionList() {
-        return sourceConditionList;
+    public FilterRule getSourceConditionData() {
+        return sourceConditionData;
     }
 
-    public void setSourceConditionList(List<MatchingCondition> sourceConditionList) {
-        this.sourceConditionList = sourceConditionList;
+    public void setSourceConditionData(FilterRule sourceConditionData) {
+        this.sourceConditionData = sourceConditionData;
     }
 
-    public List<MatchingCondition> getDestinationConditionList() {
-        return destinationConditionList;
+    public FilterRule getDestinationConditionData() {
+        return destinationConditionData;
     }
 
-    public void setDestinationConditionList(List<MatchingCondition> destinationConditionList) {
-        this.destinationConditionList = destinationConditionList;
+    public void setDestinationConditionData(FilterRule destinationConditionData) {
+        this.destinationConditionData = destinationConditionData;
     }
 
-    public List<MatchingCondition> getMatchingConditionList() {
-        return matchingConditionList;
+    public FilterRule getMatchingConditionData() {
+        return matchingConditionData;
     }
 
-    public void setMatchingConditionList(List<MatchingCondition> matchingConditionList) {
-        this.matchingConditionList = matchingConditionList;
+    public void setMatchingConditionData(FilterRule matchingConditionData) {
+        this.matchingConditionData = matchingConditionData;
     }
 
     public boolean isDistinguish() {

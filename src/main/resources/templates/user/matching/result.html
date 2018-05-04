@@ -26,9 +26,9 @@
             </div>
             <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
                 <div class="col-sm-12">
-                    <h4>絞り込み元</h4>
+                    <h4 id="totalSourceMatching">絞り込み元</h4>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-12" style="padding-top: 5px;">
                     <input name="group"
                            id="displayNonZeroCheckbox"
                            type="checkbox"
@@ -36,60 +36,56 @@
                     /><span> 絞り込みと先マッチしたのみ表示する</span>
                     <div class="main-left">
                         <div class="table-container">
-                            <table id="sourceMatch" class="table table-bordered table-hover dataTable">
+                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter">
                                 <thead>
                                 <tr>
-                                    <th>ワード</th>
-                                    <th>マッチ件数</th>
-                                    <th>受信日時</th>
-                                    <th>送信者</th>
-                                    <th>受信者</th>
+                                    <th class="fit">ワード</th>
+                                    <th class="fit">マッチ件数</th>
+                                    <th class="fit">受信日時</th>
+                                    <th class="fit">送信者</th>
                                     <th>件名</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr role="row" class="hidden">
-                                    <td class="clickable" name="sourceRow" th:data="word"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="destinationList"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="source.receivedAt"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="source.from"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="source.to"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="word"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="destinationList"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="source.receivedAt"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="source.from"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="source.subject"><span></span></td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="table-name-container">
-                            <h4>絞り込み先</h4>
+                            <h4 id="totalDestinationMatching">絞り込み先</h4>
                         </div>
                         <div class="table-container">
-                            <table id="destinationMatch" class="table table-bordered table-hover dataTable">
+                            <table id="destinationMatch" class="table table-bordered table-hover tablesorter">
                                 <thead>
                                 <tr>
-                                    <th>ワード</th>
-                                    <th>元数値</th>
-                                    <th>先数値</th>
-                                    <th>受信日時</th>
-                                    <th>送信者</th>
-                                    <th>受信者</th>
+                                    <th class="fit">ワード</th>
+                                    <th class="fit">元数値</th>
+                                    <th class="fit">先数値</th>
+                                    <th class="fit">受信日時</th>
+                                    <th class="fit">送信者</th>
                                     <th>件名</th>
-                                    <th></th>
-                                    <th></th>
+                                    <th class="fit"></th>
+                                    <th class="fit"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr role="row" class="hidden">
-                                    <td class="clickable" name="showDestinationMail" th:data="word"><span></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="range"><span style="display: inline-table;"></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="matchRange"><span style="display: inline-table;"></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="receivedAt"><span></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="from"><span></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="to"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="word"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="range"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="matchRange"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="receivedAt"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="from"><span></span></td>
                                     <td class="clickable" name="showDestinationMail" th:data="subject"><span></span></td>
-                                    <td class="clickable text-center" name="sendToMoto">
+                                    <td class="clickable text-center fit" name="sendToMoto">
                                         <button type="button" class="btn btn-xs btn-default">元に</button>
                                     </td>
-                                    <td class="clickable text-center" name="sendToSaki">
+                                    <td class="clickable text-center fit" name="sendToSaki">
                                         <button type="button" class="btn btn-xs btn-default">先に</button>
                                     </td>
                                 </tr>
@@ -98,12 +94,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <span>プレビュー</span>
+                <div class="col-sm-12" style="padding-top: 5px;">
+                    <span>プレビュー
+                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                            <i class="fa fa-print"></i>
+                        </button>
+                    </span>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
                         <div id="mailBody" class="mail-part mail-body"></div>
                         <div id="mailAttachment" class="mail-attachment"></div>
+                    </div>
+                    <div style="display: none" id="printElement">
                     </div>
                 </div>
             </form>

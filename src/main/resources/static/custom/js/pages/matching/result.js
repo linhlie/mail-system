@@ -12,6 +12,7 @@
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var openFileFolderButtonId = '#openFileFolderBtn';
+    var printBtnId = 'printBtn';
     var matchingResult = null;
     var mailList = {};
     var currentDestinationResult = [];
@@ -21,38 +22,40 @@
     var selectedRowData;
     var motoReplaceSelectorId = "#motoReplaceSelector";
     var sakiReplaceSelectorId = "#sakiReplaceSelector";
+    var totalSourceMatchingContainId = "totalSourceMatching";
+    var totalDestinationMatchingContainId = "totalDestinationMatching";
 
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
-        '<td class="clickable sorting_1" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.to"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
         '</tr>';
 
-    var replaceDestinationHTML = '<tr role="row" class="hidden even">' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span style="display: inline-table;"></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span style="display: inline-table;"></span></td>' +
-        '<td class="clickable sorting_1" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="to"><span></span></td>' +
+    var replaceDestinationHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center" name="sendToMoto" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center fit" name="sendToMoto" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">元に</button>' +
         '</td>' +
-        '<td class="clickable text-center" name="sendToSaki" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">先に</button>' +
         '</td>' +
         '</tr>';
 
     $(function () {
+        initSortDestination();
+        setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
-        fixingForTinyMCEOnModal()
+        fixingForTinyMCEOnModal();
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
         setupDisplatNonZeroListener();
         var matchingConditionStr;
@@ -94,6 +97,36 @@
             updateData();
         }
     });
+    
+    function enableResizeSourceColumns() {
+        enableResizeColums(sourceTableId);
+    }
+
+    function enableResizeDestinationColumns() {
+        enableResizeColums(destinationTableId);
+    }
+
+    function enableResizeColums(tableId) {
+        $("#" + tableId).colResizable(
+            {
+                disable: true,
+            }
+        );
+        $("#" + tableId).colResizable(
+            {
+                resizeMode:'overflow'
+            }
+        );
+    }
+
+    function setButtonClickListenter(id, callback) {
+        $('#' + id).off('click');
+        $('#' + id).click(function () {
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
 
     function fixingForTinyMCEOnModal() {
         $(document).on('focusin', function(e) {
@@ -116,8 +149,8 @@
     }
 
     function showSourceData(tableId, data) {
-        destroySortSource();
         removeAllRow(tableId, replaceSourceHTML);
+        var sourceMatchingCounter = 0;
         if(data.length > 0){
             var html = replaceSourceHTML;
             for(var i = 0; i < data.length; i ++){
@@ -128,27 +161,24 @@
                 var messageId = data[i].source.messageId;
                 data[i].source = Object.assign(data[i].source, mailList[messageId]);
                 html = html + addRowWithData(tableId, data[i], i);
+                sourceMatchingCounter++;
             }
             $("#"+ tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
         }
         initSortSource();
         selectFirstRow();
-    }
-
-    function destroySortSource() {
-        if(!!sourceMatchDataTable){
-            sourceMatchDataTable.destroy();
-        }
+        enableResizeSourceColumns();
+        updateTotalSourceMatching(sourceMatchingCounter);
     }
     
     function initSortSource() {
-        sourceMatchDataTable = $("#sourceMatch").DataTable({
-            "bPaginate": false,
-            "bFilter": false,
-            "bInfo": false,
-            "order": [[ 2, "desc" ]]
-        });
+        $("#sourceMatch").tablesorter(
+            {
+                theme : 'default',
+                sortList: [[2,1], [3,0]]
+            });
+
     }
     
     function showDestinationData(tableId, data) {
@@ -165,7 +195,6 @@
             var word = data.word;
             var source = data.source;
             currentDestinationResult = data.destinationList;
-            destroySortDestination();
             removeAllRow(tableId, replaceDestinationHTML);
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
@@ -198,9 +227,11 @@
                             }
                         }
                     });
-                    initSortDestination();
-                    $('body').loadingModal('hide');
                 }
+                updateDestinationDataTrigger();
+                $('body').loadingModal('hide');
+                enableResizeDestinationColumns();
+                updateTotalDestinationMatching(currentDestinationResult.length);
             }, 10)
         }, 10)
     }
@@ -212,15 +243,25 @@
     }
 
     function initSortDestination() {
-        destinationMatchDataTable = $("#destinationMatch").DataTable({
-            "bPaginate": false,
-            "bFilter": false,
-            "bInfo": false,
-            "order": [[ 3, "desc" ]],
-            columnDefs: [
-                { orderable: false, targets: [-1, -2] }
-            ]
-        });
+        $("#destinationMatch").tablesorter(
+            {
+                theme : 'default',
+                headers: {
+                    6: {
+                        sorter: false
+                    },
+                    7: {
+                        sorter: false
+                    }
+                },
+                sortList: [[3,1], [4,0]]
+            });
+    }
+    
+    function updateDestinationDataTrigger() {
+        $("#destinationMatch").trigger("updateAll", [ true, function () {
+            
+        } ]);
     }
 
     function addRowWithData(tableId, data, index) {
@@ -268,6 +309,7 @@
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId, function (result) {
                 showMailContent(result)
+                updatePreviewMailToPrint(result);
             });
         }
     }
@@ -280,17 +322,27 @@
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
+                updatePreviewMailToPrint(result);
             });
         }
     }
     
     function selectFirstRow() {
         if(matchingResult && matchingResult.length > 0){
-            $('#' + sourceTableId).find(' tbody tr:first').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            var rowData = matchingResult[0];
+            var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+            if(!firstTr[0]) return;
+            var index = firstTr[0].getAttribute("data");
+            if(index == null){
+                $('#' + sourceTableId).find(' tbody tr:first').remove();
+                selectFirstRow();
+                return;
+            }
+            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+            var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, function (result) {
                     showMailContent(result)
+                    updatePreviewMailToPrint(result);
                 });
             }
             selectedRowData = rowData;
@@ -417,6 +469,8 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
+            data.originalBody = data.originalBody + data.signature;
+            data.replacedBody = data.replacedBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
                 updateMailEditorContent(data.replacedBody, true);
@@ -524,6 +578,60 @@
                 console.error("getEnvSettings FAILED : ", e);
             }
         });
+    }
+
+    function updatePreviewMailToPrint(data) {
+        var printElment = document.getElementById('printElement');
+        printElment.innerHTML = "";
+        if(data){
+            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            var innerHtml = '<div class="box-body no-padding">' +
+                '<div class="mailbox-read-info">' +
+                '<h3>' + data.subject + '</h3>' +
+                '<h5>From: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h5>' +
+                '</div>' +
+                '<div class="mailbox-read-message">' + data.originalBody + '</div>' +
+                '</div>' +
+                '<div class="box-footer"> ' +
+                '<ul class="mailbox-attachments clearfix"> ';
+            var files = data.files ? data.files : [];
+            if(files.length > 0){
+                var filesInnerHTML = "";
+                for(var i = 0; i < files.length; i++ ){
+                    var file = files[i];
+                    var fileName = file.fileName;
+                    var fileSize = (file.size/1024) + " KB ";
+                    var fileInnerHTML = '<li> <span class="mailbox-attachment-icon">' +
+                        '<i class="fa fa-file-o"></i>' +
+                        '</span> ' +
+                        '<div class="mailbox-attachment-info"> ' +
+                        '<a href="#" class="mailbox-attachment-name">' +
+                        '<i class="fa fa-paperclip"></i>' + fileName +
+                        '</a> ' +
+                        '<span class="mailbox-attachment-size">' + fileSize + '<a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a> </span> ' +
+                        '</div> ' +
+                        '</li>';
+                    filesInnerHTML += fileInnerHTML
+                }
+                innerHtml = innerHtml + filesInnerHTML;
+            }
+            innerHtml = innerHtml + '</ul></div>';
+            printElment.innerHTML = innerHtml;
+        }
+    }
+
+    function printPreviewEmail() {
+        $("#printElement").show();
+        $("#printElement").print();
+        $("#printElement").hide();
+    }
+
+    function updateTotalSourceMatching(total) {
+        $('#' + totalSourceMatchingContainId).text("絞り込み元: " + total + "件")
+    }
+
+    function updateTotalDestinationMatching(total) {
+        $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
     }
 
 })(jQuery);

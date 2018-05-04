@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.ReplaceLetter;
 import io.owslab.mailreceiver.types.ReplaceLetterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class ReplaceLetterService {
         return replaceLetterDAO.findByReplaceNotAndPositionAndHidden(ReplaceLetter.Replace.NONE, position, ReplaceLetter.Hidden.TRUE);
     }
 
+    @CacheEvict(allEntries = true)
     public void saveList(List<ReplaceLetter> replaceLetters){
         //TODO: Must be transaction
         for(ReplaceLetter replaceLetter : replaceLetters){

@@ -14,152 +14,48 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+                            <!--<datalist id="itemlist">-->
+                                <!--<option th:each="option : ${matchingItemOptions}"-->
+                                        <!--th:data-value="${option.value}"-->
+                                        <!--th:value="${option.text}"/>-->
+                            <!--</datalist>-->
+                            <datalist id="itemlist">
+                                <option data-value="送信者" value="送信者"></option>
+                                <option data-value="受信者" value="受信者"></option>
+                                <option data-value="件名" value="件名"></option>
+                                <option data-value="本文" value="本文"></option>
+                            </datalist>
+                            <datalist id="itemlist2">
+                                <option data-value="数値" value="数値"></option>
+                                <option data-value="数値(上代)" value="数値(上代)"></option>
+                                <option data-value="数値(下代)" value="数値(下代)"></option>
+                            </datalist>
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>比較メール元抽出条件</span>
-                                <div class="form-container">
-                                    <div class="col-xs-12 full-height remove-nested-padding">
-                                        <div class="table-container">
-                                            <table id="motoMail" class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th class="hidden">Id</th>
-                                                    <th class="col-xs-2">グループ</th>
-                                                    <th class="col-xs-2">AND/OR</th>
-                                                    <th class="col-xs-2">項目</th>
-                                                    <th class="col-xs-3">条件</th>
-                                                    <th class="col-xs-3">値</th>
-                                                    <th class="col-xs-1 text-center">
-                                                        <span name="addMotoRow" title="add"
-                                                              style="cursor: pointer"
-                                                              class="glyphicon glyphicon-plus">
-                                                                        </span>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr class="hidden skip">
-                                                    <td class="hidden" th:data="id">
-                                                        <span></span>
-                                                    </td>
-                                                    <td class="text-center" th:data="group">
-                                                        <input name="group"
-                                                               type="checkbox"
-                                                        />
-                                                    </td>
-                                                    <td class="select-container" th:data="combine">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${combineOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="item">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${mailItemOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="condition">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${conditionOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td th:data="value"><input type="text" placeholder=""/></td>
-                                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-remove">
-                                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="source-builder"></div>
                             </div>
-                            <div class="col-md-offset-4 col-sm-offset-2 col-md-4 col-sm-5 col-xs-6">
+                            <div class="col-md-4">
+                                <button id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う</button>
+                            </div>
+                            <div class="col-md-4">
                                 <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
                             </div>
-                            <div class="col-md-4 col-sm-5 col-xs-6">
+                            <div class="col-md-4">
                                 <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                             </div>
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>比較メール先抽出条件</span>
-                                <div class="form-container">
-                                    <div class="col-xs-12 full-height remove-nested-padding">
-                                        <div class="table-container">
-                                            <table id="sakiMail" class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th class="hidden">Id</th>
-                                                    <th class="col-xs-2">グループ</th>
-                                                    <th class="col-xs-2">AND/OR</th>
-                                                    <th class="col-xs-2">項目</th>
-                                                    <th class="col-xs-3">条件</th>
-                                                    <th class="col-xs-3">値</th>
-                                                    <th class="col-xs-1 text-center">
-                                                        <span name="addSakiRow" title="add"
-                                                              style="cursor: pointer"
-                                                              class="glyphicon glyphicon-plus">
-                                                                        </span>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr class="hidden skip">
-                                                    <td class="hidden" th:data="id">
-                                                        <span></span>
-                                                    </td>
-                                                    <td class="text-center" th:data="group">
-                                                        <input name="group"
-                                                               type="checkbox"
-                                                        />
-                                                    </td>
-                                                    <td class="select-container" th:data="combine">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${combineOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="item">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${mailItemOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="condition">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${conditionOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td th:data="value"><input type="text" placeholder=""/></td>
-                                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-remove">
-                                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="destination-builder"></div>
                             </div>
-                            <div class="col-md-offset-4 col-sm-offset-2 col-md-4 col-sm-5 col-xs-6">
+                            <div class="col-md-4">
+                                <button id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う</button>
+                            </div>
+                            <div class="col-md-4">
                                 <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
                             </div>
-                            <div class="col-md-4 col-sm-5 col-xs-6">
+                            <div class="col-md-4">
                                 <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                             </div>
                             <div class="form-group"></div>
@@ -176,77 +72,7 @@
                             <div class="form-group"></div>
                             <div class="col-xs-12">
                                 <span>マッチング条件</span>
-                                <div class="form-container">
-                                    <div class="col-xs-12 full-height remove-nested-padding">
-                                        <div class="table-container">
-                                            <table id="matching" class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th class="hidden">Id</th>
-                                                    <th class="col-xs-2">グループ</th>
-                                                    <th class="col-xs-2">AND/OR</th>
-                                                    <th class="col-xs-2">比較元項目</th>
-                                                    <th class="col-xs-3">条件</th>
-                                                    <th class="col-xs-3">比較先項目または値</th>
-                                                    <th class="col-xs-1 text-center">
-                                                        <span name="addMatchRow" title="add"
-                                                              style="cursor: pointer"
-                                                              class="glyphicon glyphicon-plus">
-                                                                        </span>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr class="hidden skip">
-                                                    <td class="hidden" th:data="id">
-                                                        <span></span>
-                                                    </td>
-                                                    <td class="text-center" th:data="group">
-                                                        <input name="group"
-                                                               type="checkbox"
-                                                        />
-                                                    </td>
-                                                    <td class="select-container" th:data="combine">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${combineOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="item">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${matchingItemOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td class="select-container" th:data="condition">
-                                                        <select style="width: 100%;" aria-hidden="true">
-                                                            <option th:each="option : ${conditionOptions}"
-                                                                    th:value="${option.value}"
-                                                                    th:utext="${option.text}"/>
-                                                        </select>
-                                                    </td>
-                                                    <td th:data="value">
-                                                        <input type="text" name="matchingValue" list="itemlist" placeholder=""/>
-                                                        <datalist id="itemlist">
-                                                            <option th:each="option : ${matchingItemOptions}"
-                                                                    th:data-value="${option.value}"
-                                                                    th:value="${option.text}"/>
-                                                        </datalist>
-                                                    </td>
-                                                    <td class="text-center">
-                                                                        <span name="removeConditionRow" title="删除"
-                                                                              style="cursor: pointer"
-                                                                              class="glyphicon glyphicon-remove">
-                                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="matching-builder"></div>
                             </div>
                             <div class="form-group"></div>
                             <div class="matching-container">
@@ -273,6 +99,32 @@
             </div>
         </div>
     </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">保存された名前を入力してください</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-sm-8 col-sm-offset-1">
+                            <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                        <div class="col-sm-2">
+                            <button th:disabled="true" type="button" id="dataRemoveItem" class="btn btn-danger">削除</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/matching/settings.js"></script>

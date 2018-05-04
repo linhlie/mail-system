@@ -2,15 +2,20 @@ package io.owslab.mailreceiver.model;
 
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.utils.FullNumberRange;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Emails")
 public class Email {
+    public static final String HAS_ATTACHMENT = "1";
+    public static final String NO_ATTACHMENT = "0";
 
     @Id
     private String messageId;
@@ -68,11 +73,16 @@ public class Email {
     @Transient
     private String cachedOptimizedBodyAndSubject = null;
 
+    @Transient
+    private List<FullNumberRange> rangeList = null;
+
     public Email() {
+        this.rangeList = new ArrayList<>();
     }
 
     public Email(String messageId){
         this.messageId = messageId;
+        this.rangeList = new ArrayList<>();
     }
 
     public Email(long accountId, String from, String subject, String to, String cc, String bcc,
@@ -95,6 +105,7 @@ public class Email {
         this.header = header;
         this.createdAt = createdAt;
         this.metaData = metaData;
+        this.rangeList = new ArrayList<>();
     }
 
     public Email(String messageId, long accountId, String from, String subject, String to,
@@ -121,6 +132,7 @@ public class Email {
         this.metaData = metaData;
         this.deleted = deleted;
         this.deletedAt = deletedAt;
+        this.rangeList = new ArrayList<>();
     }
 
     public String getMessageId() {
@@ -307,5 +319,13 @@ public class Email {
 
     public void setOptimizedTextDistinguish(String optimizedTextDistinguish) {
         this.optimizedTextDistinguish = optimizedTextDistinguish;
+    }
+
+    public List<FullNumberRange> getRangeList() {
+        return rangeList;
+    }
+
+    public void setRangeList(List<FullNumberRange> rangeList) {
+        this.rangeList = rangeList;
     }
 }

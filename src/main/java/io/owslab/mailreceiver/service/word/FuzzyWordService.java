@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,12 @@ public class FuzzyWordService {
     @Autowired
     private FuzzyWordDAO fuzzyWordDAO;
 
+    @CacheEvict(allEntries = true)
     public void delete(long id){
         fuzzyWordDAO.delete(id);
     }
 
+    @CacheEvict(allEntries = true)
     public void save(FuzzyWord fuzzyWord){
         fuzzyWordDAO.save(fuzzyWord);
     }
@@ -45,6 +48,17 @@ public class FuzzyWordService {
         List<FuzzyWord> fuzzyWordList1 = fuzzyWordDAO.findByWordIdAndFuzzyType(wordId, FuzzyWord.Type.EXCLUSION);
         for(FuzzyWord fuzzyWord : fuzzyWordList1){
             result.add(fuzzyWord.getAssociatedWord());
+        }
+        return result;
+    }
+
+    @Cacheable(key="\"FuzzyWordService:findKeyWord:\"+#word.id")
+    public Word findKeyWord(Word word){
+        Word result = null;
+        long wordId = word.getId();
+        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.EXCLUSION);
+        if(fuzzyWordList.size() > 0){
+            result = fuzzyWordList.get(0).getOriginalWord();
         }
         return result;
     }

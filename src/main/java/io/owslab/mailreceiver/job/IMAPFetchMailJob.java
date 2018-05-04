@@ -64,8 +64,11 @@ public class IMAPFetchMailJob implements Runnable {
         int n = listEmail.size();
         if(n > 0){
             Email lastEmail = listEmail.get(0);
-            Date lastEmailSentAt = lastEmail.getSentAt();
-            check(account, accountSetting, lastEmailSentAt);
+            Date lastEmailReceivedAtAt = lastEmail.getReceivedAt();
+            if(lastEmailReceivedAtAt == null){
+                lastEmailReceivedAtAt = lastEmail.getSentAt();
+            }
+            check(account, accountSetting, lastEmailReceivedAtAt);
         } else {
             check(account, accountSetting, null);
         }
@@ -75,7 +78,7 @@ public class IMAPFetchMailJob implements Runnable {
 //        Flags seen = new Flags(Flags.Flag.SEEN);
 //        SearchTerm searchTerm = new FlagTerm(seen, false);
         if(fromDate != null) {
-            SentDateTerm minDateTerm = new SentDateTerm(ComparisonTerm.GE, fromDate);
+            ReceivedDateTerm minDateTerm = new ReceivedDateTerm(ComparisonTerm.GE, fromDate);
             return minDateTerm;
         }
         return null;

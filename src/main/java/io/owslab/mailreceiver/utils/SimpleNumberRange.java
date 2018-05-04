@@ -16,16 +16,17 @@ public class SimpleNumberRange {
     private String replaceUnitText;
     private String replaceLetterText;
     private boolean bfNumber;
+    private boolean containComma;
 
-    public SimpleNumberRange(double value, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
-        this(value, 4, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber);
+    public SimpleNumberRange(double value, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber, boolean containComma) {
+        this(value, 4, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber, containComma);
     }
 
-    public SimpleNumberRange(double value, int replace, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
-        this(value, replace, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber);
+    public SimpleNumberRange(double value, int replace, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber, boolean containComma) {
+        this(value, replace, 1, rawValue, replaceNumberText, replaceUnitText, replaceLetterText, bfNumber, containComma);
     }
 
-    public SimpleNumberRange(double value, int replace, int replaceValue, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber) {
+    public SimpleNumberRange(double value, int replace, int replaceValue, double rawValue, String replaceNumberText, String replaceUnitText, String replaceLetterText, boolean bfNumber, boolean containComma) {
         this.value = value;
         this.numberCompare = NumberCompare.fromReplace(replace);
         this.replaceValue = replaceValue;
@@ -34,30 +35,36 @@ public class SimpleNumberRange {
         this.replaceUnitText = replaceUnitText;
         this.replaceLetterText = replaceLetterText;
         this.bfNumber = bfNumber;
+        this.containComma = containComma;
     }
 
     public SimpleNumberRange(NumberCompare numberCompare, double value) {
         this.numberCompare = numberCompare;
         this.value = value;
+        this.rawValue = value;
         this.replaceValue = 1;
+        this.containComma = false;
     }
 
     public SimpleNumberRange(double value) {
         this.value = value;
         this.numberCompare = NumberCompare.EQ;
         this.replaceValue = 1;
+        this.containComma = false;
     }
 
     public SimpleNumberRange(double value, int replace) {
         this.value = value;
         this.numberCompare = NumberCompare.fromReplace(replace);
         this.replaceValue = 1;
+        this.containComma = false;
     }
 
     public SimpleNumberRange(){
         this.value = 0;
         this.numberCompare = NumberCompare.AUTOMATCH;
         this.replaceValue = 1;
+        this.containComma = false;
     }
 
     public NumberCompare getNumberCompare() {
@@ -137,6 +144,14 @@ public class SimpleNumberRange {
 
     public void setBfNumber(boolean bfNumber) {
         this.bfNumber = bfNumber;
+    }
+
+    public boolean isContainComma() {
+        return containComma;
+    }
+
+    public void setContainComma(boolean containComma) {
+        this.containComma = containComma;
     }
 
     public boolean match(SimpleNumberRange other, double ratio) {
@@ -314,12 +329,14 @@ public class SimpleNumberRange {
         String result;
 
         double value = this.getRawValue(multiple);
+        String valueStr;
         if((value % 1) == 0){
-            result = ((int)value) + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
+            valueStr = this.isContainComma() ? Utils.formatNumber((int)value) : Integer.toString((int)value);
         } else {
             value = NumberFormat.round(value, 2);
-            result = value + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
+            valueStr = this.isContainComma() ? Utils.formatNumber(value) : Double.toString(value);
         }
+        result = valueStr + Objects.toString(this.getReplaceNumberText(), "") + Objects.toString(this.getReplaceUnitText(), "");
         result = this.isBfNumber() ? Objects.toString(this.getReplaceLetterText(), "") + result : result + Objects.toString(this.getReplaceLetterText(), "");
         return result;
     }

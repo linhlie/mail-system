@@ -57,4 +57,28 @@ public enum ConditionOption {
         }
         return null;
     }
+
+    public static ConditionOption fromOperator(String operator) {
+        switch(operator) {
+            case "contains":
+                return INC;
+            case "not_contains":
+                return NINC;
+            case "equal":
+                return EQ;
+            case "not_equal":
+                return NE;
+            case "greater_or_equal":
+                return GE;
+            case "greater":
+                return GT;
+            case "less_or_equal":
+                return LE;
+            case "less":
+                return LT;
+            case "in":
+                return WITHIN;
+        }
+        return null;
+    }
 }

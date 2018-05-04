@@ -4,14 +4,17 @@ import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by khanhlvb on 3/13/18.
  */
 public class DetailMailDTO {
+    public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Tokyo");
     private String messageId;
 
     private long accountId;
@@ -38,6 +41,7 @@ public class DetailMailDTO {
 
     private String originalBody;
     private String replacedBody;
+    private String signature;
 
     private List<FileDTO> files;
 
@@ -50,8 +54,8 @@ public class DetailMailDTO {
         this.setCc(email.getCc());
         this.setBcc(email.getBcc());
         this.setReplyTo(email.getReplyTo());
-        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:SS"));
-        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:SS"));
+        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", TIME_ZONE, null));
+        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", TIME_ZONE, null));
         this.setHasAttachment(email.isHasAttachment());
         this.setContentType(email.getContentType());
         this.setOriginalBody(email.getOriginalBody());
@@ -184,5 +188,13 @@ public class DetailMailDTO {
 
     public boolean addFile(AttachmentFile file) {
         return this.files.add(new FileDTO(file));
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }

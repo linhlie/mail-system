@@ -30,6 +30,11 @@ public class ReplaceUnit {
         this.replaceUnit = replaceUnit;
     }
 
+    public ReplaceUnit(ReplaceUnit other) {
+        this.unit = other.getUnit();
+        this.replaceUnit = other.getReplaceUnit();
+    }
+
     public ReplaceUnit(String unit, String replaceUnit, int remove) {
         this.unit = unit;
         this.replaceUnit = replaceUnit;

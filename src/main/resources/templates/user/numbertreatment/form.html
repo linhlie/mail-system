@@ -13,6 +13,11 @@
             <div class="col-xs-12">
                 <div class="box box-default">
                     <div class="box-body">
+                        <div id="errorContainer" style="display: none">
+                            <div class="callout callout-danger">
+                                <p id="errorMessage"></p>
+                            </div>
+                        </div>
                         <form id="numberTreatmentForm" class="form-horizontal"
                               th:object="${numberTreatmentForm}" method="POST">
                             <div class="form-group"></div>
@@ -42,7 +47,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
-                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
+                                        <input name="upperLimitRate" th:field="*{upperLimitRate}" type="number" step="0.01" min="0" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -57,7 +62,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2 col-xs-4">
-                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="number" step="0.1" min="0" class="form-control" placeholder="入力してください" required="required"/>
+                                        <input name="lowerLimitRate" th:field="*{lowerLimitRate}" type="number" step="0.01" min="0" class="form-control" placeholder="入力してください" required="required"/>
                                     </div>
                                 </div>
                             </div>
@@ -78,6 +83,9 @@
                                         <div class="row">
                                             <div class="col-md-6 col-xs-12">
                                                 <span>ここで登録します（登録は任意）<br/>例：文字「万」置き換え「0000」</span>
+                                                <div id="replaceNumberError" style="display: none">
+                                                    <span id="replaceNumberErrorMsg" class="error"></span>
+                                                </div>
                                                 <div class="form-container">
                                                     <div class="col-xs-10 full-height remove-nested-padding">
                                                         <div class="table-container">
@@ -119,6 +127,9 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <span>円やYENなど単位の登録と統一をここで登録します。<br/>（登録は任意）</span>
+                                                <div id="replaceUnitError" style="display: none">
+                                                    <span id="replaceUnitErrorMsg" class="error"></span>
+                                                </div>
                                                 <div class="form-container">
                                                     <div class="col-xs-10 full-height remove-nested-padding">
                                                         <div class="table-container">

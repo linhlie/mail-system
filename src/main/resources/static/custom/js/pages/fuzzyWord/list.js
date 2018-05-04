@@ -10,6 +10,7 @@
     $(function () {
         // ajaxClick('lock','PUT');
         fuzzyWordDelete('trash','DELETE');
+        initSort();
     });
 
     function fuzzyWordDelete(name, type) {
@@ -44,6 +45,25 @@
                 }
             })
         })
+    }
+
+    function initSort() {
+        $("#wordList").tablesorter(
+            {
+                theme : 'default',
+                headers: {
+                    2: {
+                        sorter: false
+                    },
+                    3: {
+                        sorter: false
+                    },
+                    4: {
+                        sorter: false
+                    },
+                },
+                sortList: [[1,0], [0,0]]
+            });
     }
 
 })(jQuery);

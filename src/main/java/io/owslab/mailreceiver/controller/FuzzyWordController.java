@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
+import io.owslab.mailreceiver.utils.KeyWordItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +50,13 @@ public class FuzzyWordController {
                 totalFuzzyWord = originalWords.size() + associatedWords.size();
             }
         }
-        model.addAttribute("wordList", wordList);
+        List<KeyWordItem> keyWordItems = new ArrayList<>();
+        for(Word word : wordList) {
+            Word keyWord = fuzzyWordService.findKeyWord(word);
+            String keyWordStr = keyWord != null ? keyWord.getWord() : "";
+            keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+        }
+        model.addAttribute("wordList", keyWordItems);
         model.addAttribute("wordListSize", wordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "user/fuzzyword/list";
@@ -92,21 +100,18 @@ public class FuzzyWordController {
             String originalWordStr = wordService.normalize(fuzzyWordForm.getOriginal());
             String associatedWordStr = wordService.normalize(fuzzyWordForm.getAssociatedWord());
             if(originalWordStr.equals(associatedWordStr)){
-                //TODO: throw error if same word
-                throw new Exception("Can't be same word");
+                throw new Exception("同じ単語にすることはできません");
             }
             int fuzzyType = fuzzyWordForm.getFuzzyType();
             Word originalWord = wordService.findOne(originalWordStr);
             Word associatedWord = wordService.findOne(associatedWordStr);
             if(originalWord != null && associatedWord != null) {
                 if(originalWord.getId() == associatedWord.getId()){
-                    //TODO: throw error if same word
-                    throw new Exception("Can't be same word 2: " + originalWord.getId() + " " + associatedWord.getId());
+                    throw new Exception("同じ単語にすることはできません");
                 }
                 FuzzyWord existFuzzyWord = fuzzyWordService.findOne(originalWord, associatedWord);
                 if(existFuzzyWord != null){
-                    //TODO: throw error exist fuzzy word
-                    throw new Exception("Exist data");
+                    throw new Exception("データは既に存在します");
                 }
             } else {
                 if(originalWord == null) {

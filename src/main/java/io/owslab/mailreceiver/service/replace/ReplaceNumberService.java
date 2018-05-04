@@ -2,8 +2,10 @@ package io.owslab.mailreceiver.service.replace;
 
 import io.owslab.mailreceiver.dao.ReplaceNumberDAO;
 import io.owslab.mailreceiver.model.ReplaceNumber;
+import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +26,12 @@ public class ReplaceNumberService {
         return (List<ReplaceNumber>) replaceNumberDAO.findAll();
     }
 
+    @CacheEvict(allEntries = true)
     public void saveList(List<ReplaceNumber> replaceNumbers){
         //TODO: Must be transaction
         for(ReplaceNumber replaceNumber : replaceNumbers){
-            //TODO: character can not be '.' ...
+            String normalizedCharacter = Utils.normalize(replaceNumber.getCharacter());
+            replaceNumber.setCharacter(normalizedCharacter);
             ReplaceNumber existReplaceNumber = findOne(replaceNumber.getCharacter());
             if(existReplaceNumber != null){
                 if(replaceNumber.getRemove() == 1){

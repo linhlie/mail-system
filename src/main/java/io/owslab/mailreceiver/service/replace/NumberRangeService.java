@@ -95,7 +95,8 @@ public class NumberRangeService {
                             realNumberResult.getReplaceText(),
                             afNumberUnitText,
                             bfNumberLetter.getLetter(),
-                            true);
+                            true,
+                            numberElement.isContainComma());
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                     addToList(rangeMap, position, simpleNumberRange);
                 }
@@ -109,7 +110,8 @@ public class NumberRangeService {
                             realNumberResult.getReplaceText(),
                             afNumberUnitText,
                             afNumberLetter.getLetter(),
-                            false
+                            false,
+                            numberElement.isContainComma()
                     );
                     simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                     addToList(rangeMap, position, simpleNumberRange);
@@ -122,7 +124,8 @@ public class NumberRangeService {
                         realNumberResult.getReplaceText(),
                         afNumberUnitText,
                         null,
-                        false
+                        false,
+                        numberElement.isContainComma()
                 );
                 simpleNumberRange.setReplaceValue(realNumberResult.getReplaceValue());
                 addToList(rangeMap, position, simpleNumberRange);
@@ -144,8 +147,8 @@ public class NumberRangeService {
                         SimpleNumberRange secondRange = rangeList.get(1);
                         if(secondRange.getReplaceValue() != 1 && firstRange.getReplaceValue() == 1){
                             firstRange.multiple((double) secondRange.getReplaceValue());
-                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
-                            secondRange.multiple((double) firstRange.getReplaceValue());
+//                        } else if (secondRange.getReplaceValue() == 1 && firstRange.getReplaceValue() != 1) {
+//                            secondRange.multiple((double) firstRange.getReplaceValue());
                         }
                         boolean isFirstRangeValid = isValidRange(numberTreatment, firstRange);
                         boolean isSecondRangeValid = isValidRange(numberTreatment, secondRange);
@@ -188,7 +191,7 @@ public class NumberRangeService {
     private ArrayList<NumberElement> buildListNumber(String content){
         //TODO: need better regex handle comma and period
         ArrayList<NumberElement> result = new ArrayList<NumberElement>();
-        Pattern p = Pattern.compile("-?([0-9]*[.])?[0-9]+");
+        Pattern p = Pattern.compile("\\d+(,\\d{3})*(\\.\\d+)?");
         Matcher m = p.matcher(content);
         while (m.find()) {
             NumberElement numberElement = new NumberElement(m.group(), m.start());
@@ -268,6 +271,11 @@ public class NumberRangeService {
             if(findContent.indexOf(rnc) == 0){
                 match = replaceNumber;
                 break;
+            } else if(findContent.indexOf(rnc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")) {
+                ReplaceNumber spaceContainReplaceNumber = new ReplaceNumber(replaceNumber);
+                spaceContainReplaceNumber.setCharacter(" " + spaceContainReplaceNumber.getCharacter());
+                match = spaceContainReplaceNumber;
+                break;
             }
         }
         return match;
@@ -280,6 +288,11 @@ public class NumberRangeService {
             String rnc = replaceUnit.getUnit();
             if(findContent.indexOf(rnc) == 0){
                 match = replaceUnit;
+                break;
+            } else if(findContent.indexOf(rnc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")) {
+                ReplaceUnit spaceContainReplaceUnit = new ReplaceUnit(replaceUnit);
+                spaceContainReplaceUnit.setUnit(" " + spaceContainReplaceUnit.getUnit());
+                match = spaceContainReplaceUnit;
                 break;
             }
         }
@@ -298,8 +311,14 @@ public class NumberRangeService {
                 match = new ReplaceLetterResult(replaceLetter, startAt);
                 break;
             } else if(findContent.indexOf(rlc)==1 && findContent.substring(0, 1).equalsIgnoreCase(" ")){
-                startAt = isReverse ? startAt - 1 : startAt + 1;
-                match = new ReplaceLetterResult(replaceLetter, startAt);;
+                ReplaceLetter spaceContainReplaceLetter = new ReplaceLetter(replaceLetter);
+                if(isReverse) {
+                    spaceContainReplaceLetter.setLetter(spaceContainReplaceLetter.getLetter() + " ");
+                } else {
+                    spaceContainReplaceLetter.setLetter(" " + spaceContainReplaceLetter.getLetter());
+                }
+                startAt = isReverse ? startAt : startAt + 1;
+                match = new ReplaceLetterResult(spaceContainReplaceLetter, startAt);;
                 break;
             }
         }
@@ -311,13 +330,16 @@ public class NumberRangeService {
         private int startAt;
         private int endAt;
         private Double value;
+        private boolean containComma;
 
         public NumberElement(String raw, int startAt) {
             this.raw = raw;
             this.startAt = startAt;
             this.endAt = startAt + raw.length();
+            this.containComma = raw.indexOf(",") >= 0;
             try {
-                this.value = Double.parseDouble(raw);
+                this.value = this.containComma ?
+                        Double.parseDouble(raw.replaceAll(",", "")) : Double.parseDouble(raw);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -353,6 +375,14 @@ public class NumberRangeService {
 
         public void setEndAt(int endAt) {
             this.endAt = endAt;
+        }
+
+        public boolean isContainComma() {
+            return containComma;
+        }
+
+        public void setContainComma(boolean containComma) {
+            this.containComma = containComma;
         }
     }
 
