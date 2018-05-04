@@ -150,6 +150,22 @@
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/matching/result.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#rdMailBody',
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 350,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+        });
+    </script>
 </th:block>
 </body>
 </html>

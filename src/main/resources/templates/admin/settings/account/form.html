@@ -184,6 +184,13 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">署名</label>
+
+                                <div class="col-md-9 col-xs-8">
+                                    <textarea id="signatureSetting"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
@@ -208,6 +215,22 @@
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/mailAccount/form.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#signatureSetting',
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 250,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+        });
+    </script>
 </th:block>
 </body>
 </html>
