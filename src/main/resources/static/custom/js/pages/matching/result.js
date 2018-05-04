@@ -469,6 +469,8 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
+            data.originalBody = data.originalBody + data.signature;
+            data.replacedBody = data.replacedBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
                 updateMailEditorContent(data.replacedBody, true);

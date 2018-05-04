@@ -41,6 +41,7 @@ public class DetailMailDTO {
 
     private String originalBody;
     private String replacedBody;
+    private String signature;
 
     private List<FileDTO> files;
 
@@ -187,5 +188,13 @@ public class DetailMailDTO {
 
     public boolean addFile(AttachmentFile file) {
         return this.files.add(new FileDTO(file));
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }
