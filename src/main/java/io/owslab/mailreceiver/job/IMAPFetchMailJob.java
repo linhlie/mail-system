@@ -257,9 +257,20 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private String getMailReplyTo(MimeMessage message) throws MessagingException {
-        Address[] repplyTos = message.getReplyTo();
-        String repplyTo = repplyTos == null ? getMailFrom(message) : ((InternetAddress) repplyTos[0]).getAddress();
-        return repplyTo;
+        Address[] replyTos = message.getReplyTo();
+        String replyTo;
+        if(replyTos != null && replyTos.length > 0) {
+            replyTo = ((InternetAddress) replyTos[0]).getAddress();
+            if(replyTos.length > 1) {
+                for(int i = 1; i < replyTos.length; i++){
+                    replyTo = replyTo + ",";
+                    replyTo = replyTo + ((InternetAddress) replyTos[i]).getAddress();
+                }
+            }
+        } else {
+            replyTo = getMailFrom(message);
+        }
+        return replyTo;
     }
 
     private String getRecipientsWithType(MimeMessage message, Message.RecipientType type) throws MessagingException {
