@@ -17,6 +17,25 @@
         $('#fullAccountForm').change(function() {
             formChange = true;
         });
+        tinymce.init({
+            selector: '#signatureSetting',
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 250,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            init_instance_callback: function (editor) {
+                editor.on('Change', function (e) {
+                    formChange = true;
+                });
+            }
+        });
     }
 
     function setMailProtocolChangeListener() {
@@ -39,15 +58,21 @@
                 if(formChange){
                     var isClear = confirm("本当にリセットフォームが必要ですか。");
                     if(isClear){
-                        $('#fullAccountForm').trigger("reset");
-                        formChange = false;
+                        clearForm();
                     }
                 }
             } else {
-                $('#fullAccountForm').trigger("reset");
-                formChange = false;
+                clearForm();
             }
         })
+    }
+    
+    function clearForm() {
+        $('#fullAccountForm').trigger("reset");
+        formChange = false;
+        var editor = tinymce.get("signatureSetting");
+        editor.undoManager.clear();
+        editor.undoManager.add();
     }
 
     function setGoBackListener(name){

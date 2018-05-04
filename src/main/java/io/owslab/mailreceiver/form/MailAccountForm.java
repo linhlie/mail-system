@@ -8,10 +8,12 @@ import io.owslab.mailreceiver.model.EmailAccount;
 public class MailAccountForm {
     private String account;
     private boolean disabled;
+    private String signature;
 
-    public MailAccountForm(String account, boolean disabled) {
+    public MailAccountForm(String account, boolean disabled, String signature) {
         this.account = account;
         this.disabled = disabled;
+        this.signature = signature;
     }
 
     public MailAccountForm() {
@@ -20,6 +22,7 @@ public class MailAccountForm {
     public MailAccountForm(EmailAccount emailAccount) {
         this.account = emailAccount.getAccount();
         this.disabled = emailAccount.isDisabled();
+        this.signature = emailAccount.getSignature();
     }
 
     public String getAccount() {
@@ -36,5 +39,13 @@ public class MailAccountForm {
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }
