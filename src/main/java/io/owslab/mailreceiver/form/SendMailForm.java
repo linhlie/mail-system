@@ -8,15 +8,17 @@ public class SendMailForm {
     private String messageId;
     private String subject;
     private String receiver;
+    private String cc;
     private String content;
 
     public SendMailForm() {
     }
 
-    public SendMailForm(String messageId, String subject, String receiver, String content) {
+    public SendMailForm(String messageId, String subject, String receiver, String cc, String content) {
         this.messageId = messageId;
         this.subject = subject;
         this.receiver = receiver;
+        this.cc = cc;
         this.content = content;
     }
 
@@ -50,5 +52,13 @@ public class SendMailForm {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
     }
 }

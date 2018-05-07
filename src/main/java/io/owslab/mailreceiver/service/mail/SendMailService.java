@@ -50,6 +50,7 @@ public class SendMailService {
         // Sender's email ID needs to be mentioned
         String from = account.getAccount();
         String to = form.getReceiver();
+        String cc = form.getCc();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
         final String password = accountSetting.getPassword();
@@ -80,6 +81,8 @@ public class SendMailService {
             // Set To: header field of the header.
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
+            message.setRecipients(Message.RecipientType.CC,
+                    InternetAddress.parse(cc));
 
             // Set Subject: header field
             message.setSubject(form.getSubject(), "UTF-8");

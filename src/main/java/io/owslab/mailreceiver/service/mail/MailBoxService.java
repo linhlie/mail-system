@@ -132,9 +132,9 @@ public class MailBoxService {
             firstRangeStr = firstRange.toString(ratio);
         }
         for(Email email : emailList) {
-            DetailMailDTO result = new DetailMailDTO(email);
             List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
             EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+            DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount.getAccount());
             String signature = emailAccount == null ? "" : "<br>--<br>" + emailAccount.getSignature();
             if(rangeStr != null && firstRangeStr != null){
                 String rawBody = result.getOriginalBody();

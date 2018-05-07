@@ -1,0 +1,1 @@
+ALTER TABLE `emails` MODIFY `reply_to` TEXT DEFAULT NULL;

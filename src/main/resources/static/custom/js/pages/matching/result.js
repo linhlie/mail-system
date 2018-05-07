@@ -11,6 +11,7 @@
     var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
+    var rdMailCCId = 'rdMailCC';
     var openFileFolderButtonId = '#openFileFolderBtn';
     var printBtnId = 'printBtn';
     var matchingResult = null;
@@ -465,14 +466,20 @@
         rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
         if(data){
-            document.getElementById(rdMailSenderId).value = data.to;
-            document.getElementById(rdMailSubjectId).value = data.subject;
+            document.getElementById(rdMailSenderId).value = data.account;
+            var cc = data.to.split(", ");
+            var index = cc.indexOf(data.account);
+            if(index > -1){
+                cc.splice(index, 1)
+            }
+            document.getElementById(rdMailCCId).value = cc.join(", ");
+            document.getElementById(rdMailSubjectId).value = "Re: " + data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
             data.originalBody = data.originalBody + data.signature;
-            data.replacedBody = data.replacedBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
+                data.replacedBody = data.replacedBody + data.signature;
                 updateMailEditorContent(data.replacedBody, true);
             }
             var files = data.files ? data.files : [];
@@ -519,12 +526,14 @@
         });
         $('#sendSuggestMail').off('click');
         $("#sendSuggestMail").click(function () {
+            //TODO: receiver and cc input value validation, split, match Email regex;
             var btn = $(this);
             btn.button('loading');
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
+                cc: $( "#" + rdMailCCId).val(),
                 content: getMailEditorContent()
             };
             $.ajax({

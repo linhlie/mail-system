@@ -263,7 +263,7 @@ public class IMAPFetchMailJob implements Runnable {
             replyTo = ((InternetAddress) replyTos[0]).getAddress();
             if(replyTos.length > 1) {
                 for(int i = 1; i < replyTos.length; i++){
-                    replyTo = replyTo + ",";
+                    replyTo = replyTo + ", ";
                     replyTo = replyTo + ((InternetAddress) replyTos[i]).getAddress();
                 }
             }
@@ -280,12 +280,10 @@ public class IMAPFetchMailJob implements Runnable {
         for (Address address : recipients) {
             if (address instanceof InternetAddress) {
                 InternetAddress ia = (InternetAddress) address;
-                recipientAddresses.add(ia.toUnicodeString());
-            } else {
-                recipientAddresses.add(address.toString());
+                recipientAddresses.add(ia.getAddress());
             }
         }
-        String recipientAddressesStr = String.join(";", recipientAddresses);
+        String recipientAddressesStr = String.join(", ", recipientAddresses);
         return recipientAddressesStr;
     }
 

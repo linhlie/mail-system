@@ -19,6 +19,8 @@ public class DetailMailDTO {
 
     private long accountId;
 
+    private String account;
+
     private String from;
 
     private String subject;
@@ -60,6 +62,11 @@ public class DetailMailDTO {
         this.setContentType(email.getContentType());
         this.setOriginalBody(email.getOriginalBody());
         this.files = new ArrayList<>();
+    }
+
+    public DetailMailDTO(Email email, String account) {
+        this(email);
+        this.setAccount(account);
     }
 
     public String getMessageId() {
@@ -196,5 +203,13 @@ public class DetailMailDTO {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
