@@ -41,8 +41,6 @@ public class EmailWordJobService {
     @Autowired
     private FuzzyWordService fuzzyWordService;
 
-    private ExecutorService executorService= Executors.newFixedThreadPool(3);
-
     public void buildMatchData(){
 //        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
 //        for(EmailWordJob emailWordJob : emailWordJobList){
@@ -129,38 +127,11 @@ public class EmailWordJobService {
 
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective){
         MatchingWordResult result = new MatchingWordResult(email);
-        List<Callable<String>> callableList=new ArrayList<Callable<String>>();
         for(String word : words){
-            callableList.add(getInstanceOfCallable(email, word, spaceEffective));
-        }
-        try {
-            List<Future<String>> futures = executorService.invokeAll(callableList);
-            for(Future<String> future: futures) {
-                String word = future.get();
-                if(word != null){
-                    result.addMatchWord(word);
-                }
+            if(matchWord(email.getMessageId(), email.getSubjectAndOptimizedBody(), word, spaceEffective)){
+                result.addMatchWord(word);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
         }
         return result;
-    }
-
-    private Callable<String> getInstanceOfCallable(final Email email, final String word, final boolean spaceEffective) {
-
-        Callable<String> matchingWordResultCallable = new Callable<String>(){
-            public String call() {
-                if(matchWord(email.getMessageId(), email.getSubjectAndOptimizedBody(), word, spaceEffective)){
-                    return word;
-                } else {
-                    return null;
-                }
-            }
-        };
-
-        return matchingWordResultCallable;
     }
 }
