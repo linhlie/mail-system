@@ -206,7 +206,6 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective);
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
-        List<Callable<MatchingPartResult>> callables = new ArrayList<>();
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
             previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
@@ -214,59 +213,39 @@ public class MatchingConditionService {
                 addToList(matchingResultMap, word, sourceMail, null);
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
+                List<String> realIntersectWords;
                 if(matchingWords.size() == 0){
-                    callables.add(toCallable(matchingWords, matchingWrapperRule, sourceResult, destinationResult, distinguish));
+                    realIntersectWords = matchingWords;
                 } else {
                     List<String> intersectWords = sourceResult.intersect(destinationResult);
                     if(intersectWords.size() == 0) continue;
-                    callables.add(toCallable(intersectWords, matchingWrapperRule, sourceResult, destinationResult, distinguish));
+                    realIntersectWords = intersectWords;
                 }
-            }
-        }
-        logger.info("start range invokeAll pharse: " + callables.size());
-        try {
-            List<Future<MatchingPartResult>> futures = executorService.invokeAll(callables);
-            for(Future<MatchingPartResult> future: futures) {
-                MatchingPartResult result = future.get();
-                if(result.isMatch()){
-                    Email soureMail = result.getSourceMail();
-                    Email destinationMail = result.getDestinationMail();
-                    FullNumberRange matchRange = result.getMatchRange();
-                    FullNumberRange range = result.getRange();
+                FilterRule copyMatchingRule = new FilterRule(matchingWrapperRule);
+                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, copyMatchingRule, distinguish);
+                matchingPartResult.setSourceMail(sourceResult.getEmail());
+                matchingPartResult.setDestinationMail(destinationResult.getEmail());
+                matchingPartResult.setIntersectWords(realIntersectWords);
+                if(matchingPartResult.isMatch()){
+                    Email soureMail = matchingPartResult.getSourceMail();
+                    Email destinationMail = matchingPartResult.getDestinationMail();
+                    FullNumberRange matchRange = matchingPartResult.getMatchRange();
+                    FullNumberRange range = matchingPartResult.getRange();
                     previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail));
                     if(matchingWords.size() == 0){
                         addToList(matchingResultMap, null, soureMail, destinationMail, matchRange, range);
                     } else {
-                        for(String word : result.getIntersectWords()) {
+                        for(String word : matchingPartResult.getIntersectWords()) {
                             addToList(matchingResultMap, word, soureMail, destinationMail, matchRange, range);
                         }
                     }
                 }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
         }
         matchingResults = new ArrayList<MatchingResult>(matchingResultMap.values());
         logger.info("Matching done: " + matchingResults.size());
         FinalMatchingResult result = new FinalMatchingResult(matchingResults, previewMailDTOList);
         return result;
-    }
-
-    private Callable<MatchingPartResult> toCallable(List<String> intersectWords, FilterRule matchingRule,
-                                      MatchingWordResult sourceResult, MatchingWordResult destinationResult,
-                                      boolean distinguish) {
-        return new Callable<MatchingPartResult>() {
-            public MatchingPartResult call() {
-                FilterRule copyMatchingRule = new FilterRule(matchingRule);
-                MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, copyMatchingRule, distinguish);
-                matchingPartResult.setSourceMail(sourceResult.getEmail());
-                matchingPartResult.setDestinationMail(destinationResult.getEmail());
-                matchingPartResult.setIntersectWords(intersectWords);
-                return matchingPartResult;
-            }
-        };
     }
 
     private void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
@@ -275,38 +254,12 @@ public class MatchingConditionService {
                 findMailMatching(emailList, rule, distinguish, spaceEffective);
             }
         } else {
-            List<Callable<Email>> callableList=new ArrayList<Callable<Email>>();
             for(Email email : emailList){
-                callableList.add(getMatchingFilterRuleCallable(email, filterRule, distinguish, spaceEffective));
-            }
-            try {
-                List<Future<Email>> futures = executorService.invokeAll(callableList);
-                for(Future<Email> future : futures) {
-                    Email email = future.get();
-                    if(email != null){
-                        filterRule.add(email);
-                    }
+                if(isMatch(email, filterRule, distinguish, spaceEffective)){
+                    filterRule.add(email);
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
             }
         }
-    }
-
-    private Callable<Email> getMatchingFilterRuleCallable(Email email, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
-        Callable<Email> callable = new Callable<Email>(){
-            public Email call() {
-                if(isMatch(email, filterRule, distinguish, spaceEffective)){
-                    return email;
-                } else {
-                    return null;
-                }
-            }
-        };
-
-        return callable;
     }
 
     private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
@@ -638,38 +591,12 @@ public class MatchingConditionService {
     }
 
     private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective){
-        List<Callable<MatchingWordResult>> callableList =new ArrayList<Callable<MatchingWordResult>>();
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
-
         for(Email email : emailList){
-            callableList.add(getInstanceOfCallable(words, email, spaceEffective));
-        }
-        try {
-            List<Future<MatchingWordResult>> futures = executorService.invokeAll(callableList);
-            for(Future<MatchingWordResult> future: futures) {
-                MatchingWordResult result = future.get();
-                if(result != null){
-                    matchingWordResults.add(result);
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective);
+            matchingWordResults.add(result);
         }
         return matchingWordResults;
-    }
-
-    private Callable<MatchingWordResult> getInstanceOfCallable(final List<String> words, final Email email, final boolean spaceEffective) {
-
-        Callable<MatchingWordResult> clientPlanCall=new Callable<MatchingWordResult>(){
-            public MatchingWordResult call() {
-                MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective);
-                return result;
-            }
-        };
-
-        return clientPlanCall;
     }
 
     private MatchingPartResult isMatchRange(Email source, Email target, FilterRule condition, boolean distinguish){

@@ -48,7 +48,8 @@ public class DeleteMailsService {
             AttachmentFile fileDoc = files.get(i);
             File file = new File(fileDoc.getStoragePath());
             try {
-                FileUtils.deleteDirectory(file);
+                FileUtils.cleanDirectory(file);
+                file.delete();
             } catch (IOException e) {
                 e.printStackTrace();
             }
