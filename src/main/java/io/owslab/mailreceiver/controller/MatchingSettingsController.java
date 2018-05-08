@@ -160,10 +160,11 @@ public class MatchingSettingsController {
     @RequestMapping(value="/matchingResult/editEmail", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
+                                          @RequestParam(value = "replyId") String replyId,
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "replaceType", required = false) int replaceType){
         AjaxResponseBody result = new AjaxResponseBody();
-        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, range, replaceType);
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, replaceType);
         result.setMsg("done");
         result.setStatus(true);
         result.setList(mailDetail);

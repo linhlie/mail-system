@@ -16,8 +16,11 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+    public static final SimpleDateFormat GMT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
+
     public static void init(){
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+        GMT_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+9"));
     }
     public synchronized static Date trim(Date date) {
         Calendar calendar = Calendar.getInstance();
@@ -54,5 +57,9 @@ public class Utils {
         conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
         String japaneseOptimizedText = KanaConverter.convertKana(raw, conv_op_flags);
         return japaneseOptimizedText.toLowerCase();
+    }
+
+    public synchronized static String formatGMT(Date date){
+        return GMT_FORMAT.format(date);
     }
 }

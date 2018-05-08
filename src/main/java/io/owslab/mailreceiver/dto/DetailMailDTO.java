@@ -37,6 +37,8 @@ public class DetailMailDTO {
 
     private String receivedAt;
 
+    private String replyOrigin;
+
     private boolean hasAttachment;
 
     private int contentType;
@@ -211,5 +213,13 @@ public class DetailMailDTO {
 
     public void setAccount(String account) {
         this.account = account;
+    }
+
+    public String getReplyOrigin() {
+        return replyOrigin;
+    }
+
+    public void setReplyOrigin(String replyOrigin) {
+        this.replyOrigin = replyOrigin;
     }
 }

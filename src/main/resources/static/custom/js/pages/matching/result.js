@@ -214,7 +214,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            showMailEditor(rowData.messageId, selectedRowData.source.from, rowData.matchRange, replaceType)
+                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, replaceType)
                         }
                     });
                     setRowClickListener("sendToSaki", function () {
@@ -224,7 +224,7 @@
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                showMailEditor(selectedRowData.source.messageId, rowData.from, rowData.range, replaceType)
+                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, replaceType)
                             }
                         }
                     });
@@ -393,12 +393,13 @@
         });
     }
 
-    function showMailWithReplacedRange(messageId, range, replaceType, callback) {
+    function showMailWithReplacedRange(messageId, replyId, range, replaceType, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
+        replyId = replyId.replace(/\+/g, '%2B');
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&range=" + range + "&replaceType=" + replaceType,
+            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&replaceType=" + replaceType,
             cache: false,
             timeout: 600000,
             success: function (data) {
@@ -473,12 +474,14 @@
                 cc.splice(index, 1)
             }
             document.getElementById(rdMailCCId).value = cc.join(", ");
-            document.getElementById(rdMailSubjectId).value = "Re: " + data.subject;
+            document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
+            data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
+                data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
                 updateMailEditorContent(data.replacedBody, true);
             }
@@ -521,8 +524,8 @@
     
     function showMailEditor(messageId, receiver, textRange, replaceType) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, textRange, replaceType, function (result) {
-            showMailContenttToEditor(result, receiver)
+        showMailWithReplacedRange(messageId, receiver.messageId, textRange, replaceType, function (result) {
+            showMailContenttToEditor(result, receiver.from)
         });
         $('#sendSuggestMail').off('click');
         $("#sendSuggestMail").click(function () {

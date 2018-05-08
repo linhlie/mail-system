@@ -11,6 +11,7 @@ import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
+import io.owslab.mailreceiver.utils.Utils;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -117,9 +118,11 @@ public class MailBoxService {
         return results;
     }
 
-    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String rangeStr, int replaceType){
+    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, int replaceType){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
+        List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
+        Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(rangeStr, rangeStr, false, false);
         FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
@@ -135,13 +138,30 @@ public class MailBoxService {
             List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
             EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
             DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount.getAccount());
-            String signature = emailAccount == null ? "" : "<br>--<br>" + emailAccount.getSignature();
+            String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
             if(rangeStr != null && firstRangeStr != null){
                 String rawBody = result.getOriginalBody();
                 String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
                 result.setReplacedBody(replacedBody);
             }
             result.setSignature(signature);
+            if(replyEmail != null) {
+                String replyText = "<div class=\"gmail_extra\"><br>";
+                replyText += "<div class=\"gmail_quote\">"
+                        + Utils.formatGMT(replyEmail.getSentAt())
+                        + " <span dir=\"ltr\">&lt;<a href=\"mailto:"
+                        + replyEmail.getFrom()
+                        + "\" target=\"_blank\" rel=\"noopener\">"
+                        + replyEmail.getFrom()
+                        + "</a>&gt;</span>:<br />";
+                replyText += "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">\n" +
+                        "<div dir=\"ltr\">"+ replyEmail.getOriginalBody() +"</div>\n" +
+                        "</blockquote>";
+                replyText += "</div>\n" +
+                        "</div>";
+                result.setReplyOrigin(replyText);
+                result.setSubject("Re: " + replyEmail.getSubject());
+            }
             List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
             for(AttachmentFile file : files){
                 result.addFile(file);
