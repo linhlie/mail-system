@@ -74,6 +74,18 @@
                     operator: "greater_or_equal",
                     type:  "string",
                     value: "-7"
+                },
+                {
+                    id: "2",
+                    operator: "not_contains",
+                    type:  "string",
+                    value: "Re:"
+                },
+                {
+                    id: "0",
+                    operator: "not_contains",
+                    type:  "string",
+                    value: "@world-link-system.com"
                 }
             ]
         };
@@ -92,6 +104,18 @@
                     operator: "greater_or_equal",
                     type:  "string",
                     value: "-7"
+                },
+                {
+                    id: "2",
+                    operator: "not_contains",
+                    type:  "string",
+                    value: "Re:"
+                },
+                {
+                    id: "0",
+                    operator: "not_contains",
+                    type:  "string",
+                    value: "@world-link-system.com"
                 }
             ]
         };
