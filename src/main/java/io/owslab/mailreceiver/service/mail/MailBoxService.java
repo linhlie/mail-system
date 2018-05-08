@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.exception.ErrorCodeException;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
@@ -118,6 +119,28 @@ public class MailBoxService {
         return results;
     }
 
+    public List<DetailMailDTO> getContentRelyEmail(String replyId) throws Exception {
+        List<DetailMailDTO> results = new ArrayList<>();
+        List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
+        Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
+        if(replyEmail == null) {
+            throw new Exception("This mail has been deleted or does not exist");
+        }
+        List<EmailAccount> listAccount = mailAccountsService.findById(replyEmail.getAccountId());
+        EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+        if(emailAccount == null) {
+            throw new Exception("Missing sender account info. Can't reply this email");
+        }
+        DetailMailDTO result = new DetailMailDTO(replyEmail, emailAccount.getAccount());
+        String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
+        result.setSignature(signature);
+        String replyText = getReplyContentFromEmail(replyEmail);
+        result.setReplyOrigin(replyText);
+        result.setSubject("Re: " + replyEmail.getSubject());
+        results.add(result);
+        return results;
+    }
+
     public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, int replaceType){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
@@ -146,19 +169,7 @@ public class MailBoxService {
             }
             result.setSignature(signature);
             if(replyEmail != null) {
-                String replyText = "<div class=\"gmail_extra\"><br>";
-                replyText += "<div class=\"gmail_quote\">"
-                        + Utils.formatGMT(replyEmail.getSentAt())
-                        + " <span dir=\"ltr\">&lt;<a href=\"mailto:"
-                        + replyEmail.getFrom()
-                        + "\" target=\"_blank\" rel=\"noopener\">"
-                        + replyEmail.getFrom()
-                        + "</a>&gt;</span>:<br />";
-                replyText += "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">\n" +
-                        "<div dir=\"ltr\">"+ replyEmail.getOriginalBody() +"</div>\n" +
-                        "</blockquote>";
-                replyText += "</div>\n" +
-                        "</div>";
+                String replyText = getReplyContentFromEmail(replyEmail);
                 result.setReplyOrigin(replyText);
                 result.setSubject("Re: " + replyEmail.getSubject());
             }
@@ -169,6 +180,23 @@ public class MailBoxService {
             results.add(result);
         }
         return results;
+    }
+
+    private String getReplyContentFromEmail(Email replyEmail) {
+        String replyText = "<div class=\"gmail_extra\"><br>";
+        replyText += "<div class=\"gmail_quote\">"
+                + Utils.formatGMT(replyEmail.getSentAt())
+                + " <span dir=\"ltr\">&lt;<a href=\"mailto:"
+                + replyEmail.getFrom()
+                + "\" target=\"_blank\" rel=\"noopener\">"
+                + replyEmail.getFrom()
+                + "</a>&gt;</span>:<br />";
+        replyText += "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">\n" +
+                "<div dir=\"ltr\">"+ replyEmail.getOriginalBody() +"</div>\n" +
+                "</blockquote>";
+        replyText += "</div>\n" +
+                "</div>";
+        return replyText;
     }
 
     private String replaceAllContent(String source, String regex, String replacement){

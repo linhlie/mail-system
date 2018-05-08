@@ -171,6 +171,24 @@ public class MatchingSettingsController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<DetailMailDTO> mailDetail = mailBoxService.getContentRelyEmail(messageId);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(mailDetail);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("replyEmail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
     @GetMapping("/download")
     public void downloadFile3(HttpServletResponse response,
                               @RequestParam(value = "fileName") String fileName, @RequestParam(value = "path") String path) throws IOException {

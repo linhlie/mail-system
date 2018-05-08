@@ -57,6 +57,48 @@
             </form>
         </div>
     </section>
+    <div id="sendMailModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">推薦状</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="rdMailSender" class="col-sm-1">送信者:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="rdMailReceiver" class="col-sm-1">受信者:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="rdMailCC" class="col-sm-1">CC:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailCC" class="form-control" placeholder=""/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="rdMailSubject" class="col-sm-1">件名:</label>
+                        <div class="col-sm-11">
+                            <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                        </div>
+                    </div>
+                    <textarea id="rdMailBody"></textarea>
+                    <div id="rdMailAttachment" class="rd-mail-part rd-mail-attachment"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">終了</button>
+                    <button type="button" id="sendSuggestMail" class="btn btn-primary" data-loading-text="送信中...">送信</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/matching/extract.js"></script>

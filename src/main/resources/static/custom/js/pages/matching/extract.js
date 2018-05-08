@@ -5,11 +5,20 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var rdMailSubjectId = 'rdMailSubject';
+    var rdMailBodyId = 'rdMailBody';
+    var rdMailAttachmentId = 'rdMailAttachment';
+    var rdMailSenderId = 'rdMailSender';
+    var rdMailReceiverId = 'rdMailReceiver';
+    var rdMailCCId = 'rdMailCC';
     var totalResultContainId = 'totalResultContain';
     var printBtnId = 'printBtn';
     var extractResult = null;
     var sourceMatchDataTable;
     var selectedRowData;
+
+    var isDebug = true;
+    var debugMailAddress = "ows-test@world-link-system.com";
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
@@ -22,9 +31,34 @@
         '</tr>';
 
     $(function () {
+        getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
     });
+
+    function getEnvSettings() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/matchingResult/envSettings",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                try {
+                    var result = data && data.msg ? JSON.parse(data.msg) : null;
+                    if(result){
+                        isDebug = result["debug_on"];
+                        debugMailAddress = result["debug_receive_mail_address"];
+                    }
+                } catch (error){
+                    console.error("getEnvSettings ERROR : ", error);
+                }
+            },
+            error: function (e) {
+                console.error("getEnvSettings FAILED : ", e);
+            }
+        });
+    }
 
     function enableResizeColums() {
         $("#" + sourceTableId).colResizable(
@@ -98,6 +132,15 @@
             }
             $("#"+ tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
+            setRowClickListener("reply", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = extractResult[index];
+                if(rowData && rowData.messageId){
+                    console.log("reply: ", rowData);
+                    showMailEditor(rowData.messageId, rowData.from)
+                }
+            });
         }
         updateTotalResult(data.length);
         initSortSource();
@@ -310,6 +353,114 @@
         $("#printElement").show();
         $("#printElement").print();
         $("#printElement").hide();
+    }
+
+    function showMailEditor(messageId, receiver) {
+        $('#sendMailModal').modal();
+        showMailWithReplacedRange(messageId, function (result) {
+            showMailContenttToEditor(result, receiver)
+        });
+        $('#sendSuggestMail').off('click');
+        $("#sendSuggestMail").click(function () {
+            //TODO: receiver and cc input value validation, split, match Email regex;
+            var btn = $(this);
+            btn.button('loading');
+            var form = {
+                messageId: messageId,
+                subject: $( "#" + rdMailSubjectId).val(),
+                receiver: $( "#" + rdMailReceiverId).val(),
+                cc: $( "#" + rdMailCCId).val(),
+                content: getMailEditorContent()
+            };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/user/sendRecommendationMail",
+                data: JSON.stringify(form),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+                    if(data && data.status){
+                        //TODO: noti send mail success
+                    } else {
+                        //TODO: noti send mail failed
+                    }
+
+                },
+                error: function (e) {
+                    btn.button('reset');
+                    console.log("ERROR : sendSuggestMail: ", e);
+                    $('#sendMailModal').modal('hide');
+                    //TODO: noti send mail error
+                }
+            });
+        })
+    }
+
+    function showMailWithReplacedRange(messageId, callback) {
+        messageId = messageId.replace(/\+/g, '%2B');
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/matchingResult/replyEmail?messageId=" + messageId,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                var result;
+                if(data.status){
+                    if(data.list && data.list.length > 0){
+                        result = data.list[0];
+                    }
+                }
+                if(typeof callback === "function"){
+                    callback(result);
+                }
+            },
+            error: function (e) {
+                console.error("showMailWithReplacedRange ERROR : ", e);
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    function showMailContenttToEditor(data, receiver) {
+        receiver = isDebug ? debugMailAddress : receiver;
+        document.getElementById(rdMailReceiverId).value = receiver;
+        var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
+        rdMailAttachmentDiv.innerHTML = "";
+        updateMailEditorContent("");
+        if(data){
+            document.getElementById(rdMailSenderId).value = data.account;
+            var cc = data.to.split(", ");
+            var index = cc.indexOf(data.account);
+            if(index > -1){
+                cc.splice(index, 1)
+            }
+            document.getElementById(rdMailCCId).value = cc.join(", ");
+            document.getElementById(rdMailSubjectId).value = data.subject;
+            data.originalBody = data.replyOrigin ? data.replyOrigin : "";
+            data.originalBody = data.originalBody + data.signature;
+            updateMailEditorContent(data.originalBody);
+        }
+    }
+
+    function updateMailEditorContent(content, preventClear){
+        var editor = tinymce.get(rdMailBodyId);
+        editor.setContent(content);
+        if(!preventClear){
+            editor.undoManager.clear();
+        }
+        editor.undoManager.add();
+    }
+
+    function getMailEditorContent() {
+        var editor = tinymce.get(rdMailBodyId);
+        return editor.getContent();
     }
 
 })(jQuery);
