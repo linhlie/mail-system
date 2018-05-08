@@ -528,3 +528,10 @@ span.error {
 }
 
 
+div.rule-value-container {
+    min-width: 270px;
+}
+
+div.rule-value-container input[type="text"] {
+    width: 100%;
+}
