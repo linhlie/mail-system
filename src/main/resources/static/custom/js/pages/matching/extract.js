@@ -16,6 +16,9 @@
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">返信</button>' +
+        '</td>' +
         '</tr>';
 
     $(function () {
@@ -117,6 +120,11 @@
         $("#sourceMatch").tablesorter(
             {
                 theme : 'default',
+                headers: {
+                    4: {
+                        sorter: false
+                    },
+                },
                 sortList: [[1,1], [2,0]]
             });
     }

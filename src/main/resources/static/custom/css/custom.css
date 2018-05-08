@@ -527,4 +527,8 @@ span.error {
     font-size: 14px;
 }
 
+.matching-result .table-container td.fit button {
+    margin: 0 5px;
+}
+
 

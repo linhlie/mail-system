@@ -22,6 +22,7 @@
                                     <th class="fit">受信日時</th>
                                     <th class="fit">送信者</th>
                                     <th>件名</th>
+                                    <th class="fit"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -30,6 +31,9 @@
                                     <td class="clickable fit" name="sourceRow" th:data="receivedAt"><span></span></td>
                                     <td class="clickable fit" name="sourceRow" th:data="from"><span></span></td>
                                     <td class="clickable" name="sourceRow" th:data="subject"><span></span></td>
+                                    <td class="clickable text-center fit" name="reply">
+                                        <button type="button" class="btn btn-xs btn-default">返信</button>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
