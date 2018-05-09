@@ -26,6 +26,9 @@
     var totalSourceMatchingContainId = "totalSourceMatching";
     var totalDestinationMatchingContainId = "totalDestinationMatching";
 
+    var attachmentDropzoneId = "#attachment-dropzone";
+    var attachmentDropzone;
+
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
@@ -45,14 +48,15 @@
         '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center fit" name="sendToMoto" rowspan="1" colspan="1">' +
-        '<button type="button" class="btn btn-xs btn-default">元に</button>' +
+        '<button type="button" class="btn btn-xs btn-default">元へ</button>' +
         '</td>' +
         '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
-        '<button type="button" class="btn btn-xs btn-default">先に</button>' +
+        '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
         '</td>' +
         '</tr>';
 
     $(function () {
+        initDropzone();
         initSortDestination();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         getEnvSettings();
@@ -98,6 +102,25 @@
             updateData();
         }
     });
+
+    function initDropzone() {
+        Dropzone.autoDiscover = false;
+        attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
+            url: "#",
+            addRemoveLinks: true,
+            thumbnailHeight: 120,
+            thumbnailWidth: 120,
+            maxFilesize: 3,
+            filesizeBase: 1000,
+            dictRemoveFile: "削除",
+            dictCancelUpload: "キャンセル",
+            dictDefaultMessage: "Drop files here or click to upload.",
+            init: function() {
+                // this.on("addedfile", function(file) { console.log("Added file: ", file); });
+            },
+            thumbnail: function(file, dataUrl) {}
+        })
+    }
     
     function enableResizeSourceColumns() {
         enableResizeColums(sourceTableId);
@@ -447,7 +470,7 @@
                     if(i > 0){
                         filesInnerHTML += "<br/>";
                     }
-                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
+                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + getFileSizeString(file.size) + "); </a>")
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
                 disableButton(openFileFolderButtonId, false);
@@ -463,8 +486,6 @@
     function showMailContenttToEditor(data, receiver) {
         receiver = isDebug ? debugMailAddress : receiver;
         document.getElementById(rdMailReceiverId).value = receiver;
-        var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
-        rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
@@ -486,18 +507,21 @@
                 updateMailEditorContent(data.replacedBody, true);
             }
             var files = data.files ? data.files : [];
-            if(files.length > 0){
-                var filesInnerHTML = "";
-                for(var i = 0; i < files.length; i++ ){
-                    var file = files[i];
-                    if(i > 0){
-                        filesInnerHTML += "<br/>";
-                    }
-                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
-                }
-                rdMailAttachmentDiv.innerHTML = filesInnerHTML;
-            } else {
-                rdMailAttachmentDiv.innerHTML = "添付ファイルなし";
+            updateDropzoneData(files);
+        }
+    }
+
+    function updateDropzoneData(files) {
+        attachmentDropzone.removeAllFiles(true);
+        if(files.length > 0){
+            for(var i = 0; i < files.length; i++ ){
+                var file = files[i];
+                var mockFile = { name: file.fileName, size: file.size, type: 'text/plain', storagePath: file.storagePath, };
+                attachmentDropzone.emit("addedfile", mockFile);
+                attachmentDropzone.emit("processing", mockFile);
+                attachmentDropzone.emit("success", mockFile);
+                attachmentDropzone.emit("complete", mockFile);
+                attachmentDropzone.files.push( mockFile );
             }
         }
     }
@@ -612,7 +636,7 @@
                 for(var i = 0; i < files.length; i++ ){
                     var file = files[i];
                     var fileName = file.fileName;
-                    var fileSize = (file.size/1024) + " KB ";
+                    var fileSize = getFileSizeString(file.size);
                     var fileInnerHTML = '<li> <span class="mailbox-attachment-icon">' +
                         '<i class="fa fa-file-o"></i>' +
                         '</span> ' +
@@ -630,6 +654,10 @@
             innerHtml = innerHtml + '</ul></div>';
             printElment.innerHTML = innerHtml;
         }
+    }
+
+    function getFileSizeString(fileSize) {
+        return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
     }
 
     function printPreviewEmail() {

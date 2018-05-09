@@ -539,3 +539,15 @@ div.rule-value-container {
 div.rule-value-container input[type="text"] {
     width: 100%;
 }
+
+.dz-error-message{
+    top: auto !important;
+    bottom: 136px !important;
+}
+
+.dz-error-message:after{
+    top: auto !important;
+    bottom: -6px !important;
+    border-top: 6px solid #be2626 !important;
+    border-bottom: none !important;
+}
