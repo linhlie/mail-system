@@ -56,4 +56,12 @@ public class UploadFileService {
             uploadFileDAO.delete(fileId);
         }
     }
+
+    public void delete(List<Long> idList) {
+        if(idList != null) {
+            for(Long fileId : idList) {
+                this.delete(fileId);
+            }
+        }
+    }
 }

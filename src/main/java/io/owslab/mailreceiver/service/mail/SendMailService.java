@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ public class SendMailService {
 
     @Autowired
     private EmailAccountSettingService emailAccountSettingService;
+
+    @Autowired
+    private UploadFileService uploadFileService;
 
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId(), false);
@@ -123,6 +127,7 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
+            uploadFileService.delete(uploadAttachment);
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
