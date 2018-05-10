@@ -603,6 +603,11 @@
             var btn = $('#cancelSendSuggestMail');
             btn.button('loading');
             var attachmentData = getAttachmentData();
+            if(attachmentData.upload.length == 0) {
+                btn.button('reset');
+                $('#sendMailModal').modal('hide');
+                return;
+            }
             var form = {
                 uploadAttachment: attachmentData.upload,
             };
