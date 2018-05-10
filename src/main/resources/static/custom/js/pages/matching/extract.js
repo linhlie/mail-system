@@ -523,10 +523,10 @@
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
             var cc = data.to.split(", ");
-            var index = cc.indexOf(data.account);
-            if(index > -1){
-                cc.splice(index, 1)
-            }
+            // var index = cc.indexOf(data.account);
+            // if(index > -1){
+            //     cc.splice(index, 1)
+            // }
             document.getElementById(rdMailCCId).value = cc.join(", ");
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
