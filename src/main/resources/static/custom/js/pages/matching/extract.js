@@ -410,6 +410,35 @@
         showMailWithReplacedRange(messageId, function (result) {
             showMailContenttToEditor(result, receiver)
         });
+        $("button[name='sendSuggestMailClose']").off('click');
+        $('#cancelSendSuggestMail').button('reset');
+        $("button[name='sendSuggestMailClose']").click(function() {
+            var btn = $('#cancelSendSuggestMail');
+            btn.button('loading');
+            var attachmentData = getAttachmentData();
+            var form = {
+                uploadAttachment: attachmentData.upload,
+            };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/removeUploadedFiles",
+                data: JSON.stringify(form),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+
+                },
+                error: function (e) {
+                    console.log("ERROR : sendSuggestMail: ", e);
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+                }
+            });
+        });
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
