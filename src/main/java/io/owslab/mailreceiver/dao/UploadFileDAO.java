@@ -8,4 +8,5 @@ import java.util.List;
 
 @Transactional
 public interface UploadFileDAO extends CrudRepository<UploadFile, Long> {
+    List<UploadFile> findByIdIn(List<Long> idList);
 }

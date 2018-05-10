@@ -110,7 +110,7 @@
             addRemoveLinks: true,
             thumbnailHeight: 120,
             thumbnailWidth: 120,
-            maxFilesize: 3,
+            maxFilesize: 2,
             filesizeBase: 1000,
             dictRemoveFile: "削除",
             dictCancelUpload: "キャンセル",
@@ -149,6 +149,24 @@
                 console.error("removeFile ERROR : ", e);
             }
         });
+    }
+    
+    function getAttachmentData() {
+        var result = {
+            origin: [],
+            upload: []
+        };
+        for(var i = 0; i < attachmentDropzone.files.length; i++){
+            var file = attachmentDropzone.files[i];
+            if(!!file.id){
+                if(!!file.upload){
+                    result.upload.push(file.id);
+                } else {
+                    result.origin.push(file.id);
+                }
+            }
+        }
+        return result;
     }
     
     function enableResizeSourceColumns() {
@@ -581,16 +599,20 @@
             showMailContenttToEditor(result, receiver.from)
         });
         $('#sendSuggestMail').off('click');
+        $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
             //TODO: receiver and cc input value validation, split, match Email regex;
             var btn = $(this);
             btn.button('loading');
+            var attachmentData = getAttachmentData();
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
                 cc: $( "#" + rdMailCCId).val(),
-                content: getMailEditorContent()
+                content: getMailEditorContent(),
+                originAttachment: attachmentData.origin,
+                uploadAttachment: attachmentData.upload,
             };
             $.ajax({
                 type: "POST",

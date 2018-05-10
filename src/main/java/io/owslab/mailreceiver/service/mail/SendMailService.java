@@ -1,11 +1,9 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
-import io.owslab.mailreceiver.model.AttachmentFile;
-import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.EmailAccount;
-import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,9 @@ public class SendMailService {
 
     @Autowired
     private FileDAO fileDAO;
+
+    @Autowired
+    private UploadFileDAO uploadFileDAO;
 
     @Autowired
     private EmailService emailService;
@@ -99,15 +100,22 @@ public class SendMailService {
             // Set text message part
             multipart.addBodyPart(messageBodyPart);
 
-            List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(form.getMessageId(), false);
-            for (AttachmentFile attachmentFile : files){
-                MimeBodyPart attachmentPart = new MimeBodyPart();
-                String fullFilename = attachmentFile.getStoragePath() + "/" + attachmentFile.getFileName();
-                DataSource source = new FileDataSource(fullFilename);
-                attachmentPart.setDataHandler(new DataHandler(source));
-                String filename = MimeUtility.encodeText(attachmentFile.getFileName(), "UTF-8", null);
-                attachmentPart.setFileName(filename);
-                multipart.addBodyPart(attachmentPart);
+            List<Long> originAttachment = form.getOriginAttachment();
+            List<Long> uploadAttachment = form.getUploadAttachment();
+            if(originAttachment != null && originAttachment.size() > 0) {
+                List<AttachmentFile> files = fileDAO.findByIdInAndDeleted(originAttachment, false);
+                for (AttachmentFile attachmentFile : files){
+                    MimeBodyPart attachmentPart = buildAttachmentPart(attachmentFile.getStoragePath(), attachmentFile.getFileName());
+                    multipart.addBodyPart(attachmentPart);
+                }
+            }
+
+            if(uploadAttachment != null && uploadAttachment.size() > 0) {
+                List<UploadFile> uploadFiles = uploadFileDAO.findByIdIn(uploadAttachment);
+                for (UploadFile uploadFile : uploadFiles){
+                    MimeBodyPart attachmentPart = buildAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
+                    multipart.addBodyPart(attachmentPart);
+                }
             }
 
             // Send the complete message parts
@@ -121,5 +129,15 @@ public class SendMailService {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, UnsupportedEncodingException {
+        MimeBodyPart attachmentPart = new MimeBodyPart();
+        String fullFilename = storagePath + "/" + fileName;
+        DataSource source = new FileDataSource(fullFilename);
+        attachmentPart.setDataHandler(new DataHandler(source));
+        String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
+        attachmentPart.setFileName(filename);
+        return attachmentPart;
     }
 }

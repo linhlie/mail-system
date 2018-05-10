@@ -1,5 +1,9 @@
 package io.owslab.mailreceiver.form;
 
+import io.owslab.mailreceiver.model.ReplaceNumber;
+
+import java.util.List;
+
 /**
  * Created by khanhlvb on 4/4/18.
  */
@@ -10,16 +14,20 @@ public class SendMailForm {
     private String receiver;
     private String cc;
     private String content;
+    private List<Long> originAttachment;
+    private List<Long> uploadAttachment;
 
     public SendMailForm() {
     }
 
-    public SendMailForm(String messageId, String subject, String receiver, String cc, String content) {
+    public SendMailForm(String messageId, String subject, String receiver, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment) {
         this.messageId = messageId;
         this.subject = subject;
         this.receiver = receiver;
         this.cc = cc;
         this.content = content;
+        this.originAttachment = originAttachment;
+        this.uploadAttachment = uploadAttachment;
     }
 
     public String getMessageId() {
@@ -60,5 +68,21 @@ public class SendMailForm {
 
     public void setCc(String cc) {
         this.cc = cc;
+    }
+
+    public List<Long> getOriginAttachment() {
+        return originAttachment;
+    }
+
+    public void setOriginAttachment(List<Long> originAttachment) {
+        this.originAttachment = originAttachment;
+    }
+
+    public List<Long> getUploadAttachment() {
+        return uploadAttachment;
+    }
+
+    public void setUploadAttachment(List<Long> uploadAttachment) {
+        this.uploadAttachment = uploadAttachment;
     }
 }

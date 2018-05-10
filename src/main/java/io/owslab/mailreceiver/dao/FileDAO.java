@@ -9,4 +9,5 @@ import java.util.List;
 @Transactional
 public interface FileDAO extends CrudRepository<AttachmentFile, Long> {
     List<AttachmentFile> findByMessageIdAndDeleted(String messageId, boolean deleted);
+    List<AttachmentFile> findByIdInAndDeleted(List<Long> idList, boolean deleted);
 }
