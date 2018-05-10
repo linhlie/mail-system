@@ -7,7 +7,6 @@
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
@@ -20,6 +19,9 @@
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
+    var attachmentDropzoneId = "#reply-dropzone";
+    var attachmentDropzone;
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -31,10 +33,58 @@
         '</tr>';
 
     $(function () {
+        initDropzone();
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
     });
+
+    function initDropzone() {
+        Dropzone.autoDiscover = false;
+        attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
+            url: "/upload",
+            addRemoveLinks: true,
+            thumbnailHeight: 120,
+            thumbnailWidth: 120,
+            maxFilesize: 2,
+            filesizeBase: 1000,
+            dictRemoveFile: "削除",
+            dictCancelUpload: "キャンセル",
+            dictDefaultMessage: "Drop files here or click to upload.",
+            init: function() {
+                this.on("success", function(file, response) {
+                    if(response && response.status){
+                        var data = response.list && response.list.length > 0 ? response.list[0] : null;
+                        if(data){
+                            file.id = data.id;
+                        }
+                    }
+                });
+                this.on("removedfile", function(file) {
+                    if(!!file && !!file.upload && !!file.id){
+                        removeFile(file.id)
+                    }
+                });
+            },
+            thumbnail: function(file, dataUrl) {}
+        })
+    }
+
+    function removeFile(fileId){
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/removeUploadedFile?fileId=" + fileId,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                console.log("removeFile SUCCESS : ", data);
+            },
+            error: function (e) {
+                console.error("removeFile ERROR : ", e);
+            }
+        });
+    }
 
     function getEnvSettings() {
         $.ajax({
@@ -361,16 +411,20 @@
             showMailContenttToEditor(result, receiver)
         });
         $('#sendSuggestMail').off('click');
+        $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
             //TODO: receiver and cc input value validation, split, match Email regex;
             var btn = $(this);
             btn.button('loading');
+            var attachmentData = getAttachmentData();
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
                 cc: $( "#" + rdMailCCId).val(),
-                content: getMailEditorContent()
+                content: getMailEditorContent(),
+                originAttachment: attachmentData.origin,
+                uploadAttachment: attachmentData.upload,
             };
             $.ajax({
                 type: "POST",
@@ -431,8 +485,6 @@
     function showMailContenttToEditor(data, receiver) {
         receiver = isDebug ? debugMailAddress : receiver;
         document.getElementById(rdMailReceiverId).value = receiver;
-        var rdMailAttachmentDiv = document.getElementById(rdMailAttachmentId);
-        rdMailAttachmentDiv.innerHTML = "";
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
@@ -447,6 +499,7 @@
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
         }
+        updateDropzoneData();
     }
 
     function updateMailEditorContent(content, preventClear){
@@ -461,6 +514,28 @@
     function getMailEditorContent() {
         var editor = tinymce.get(rdMailBodyId);
         return editor.getContent();
+    }
+
+    function updateDropzoneData() {
+        attachmentDropzone.removeAllFiles(true);
+    }
+
+    function getAttachmentData() {
+        var result = {
+            origin: [],
+            upload: []
+        };
+        for(var i = 0; i < attachmentDropzone.files.length; i++){
+            var file = attachmentDropzone.files[i];
+            if(!!file.id){
+                if(!!file.upload){
+                    result.upload.push(file.id);
+                } else {
+                    result.origin.push(file.id);
+                }
+            }
+        }
+        return result;
     }
 
 })(jQuery);

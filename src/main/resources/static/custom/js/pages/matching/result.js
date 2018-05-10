@@ -126,7 +126,6 @@
                 });
                 this.on("removedfile", function(file) {
                     if(!!file && !!file.upload && !!file.id){
-                        //TODO: call ajax remove uploaded file
                         removeFile(file.id)
                     }
                 });
