@@ -106,7 +106,7 @@
     function initDropzone() {
         Dropzone.autoDiscover = false;
         attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
-            url: "#",
+            url: "/upload",
             addRemoveLinks: true,
             thumbnailHeight: 120,
             thumbnailWidth: 120,
@@ -116,10 +116,39 @@
             dictCancelUpload: "キャンセル",
             dictDefaultMessage: "Drop files here or click to upload.",
             init: function() {
-                // this.on("addedfile", function(file) { console.log("Added file: ", file); });
+                this.on("success", function(file, response) {
+                    if(response && response.status){
+                        var data = response.list && response.list.length > 0 ? response.list[0] : null;
+                        if(data){
+                            file.id = data.id;
+                        }
+                    }
+                });
+                this.on("removedfile", function(file) {
+                    if(!!file && !!file.upload && !!file.id){
+                        //TODO: call ajax remove uploaded file
+                        removeFile(file.id)
+                    }
+                });
             },
             thumbnail: function(file, dataUrl) {}
         })
+    }
+
+    function removeFile(fileId){
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/removeUploadedFile?fileId=" + fileId,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                console.log("removeFile SUCCESS : ", data);
+            },
+            error: function (e) {
+                console.error("removeFile ERROR : ", e);
+            }
+        });
     }
     
     function enableResizeSourceColumns() {
@@ -516,7 +545,7 @@
         if(files.length > 0){
             for(var i = 0; i < files.length; i++ ){
                 var file = files[i];
-                var mockFile = { name: file.fileName, size: file.size, type: 'text/plain', storagePath: file.storagePath, };
+                var mockFile = { id: file.id, name: file.fileName, size: file.size, type: 'text/plain'};
                 attachmentDropzone.emit("addedfile", mockFile);
                 attachmentDropzone.emit("processing", mockFile);
                 attachmentDropzone.emit("success", mockFile);
