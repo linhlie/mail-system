@@ -56,6 +56,7 @@
         '</tr>';
 
     $(function () {
+        initReplaceSelector();
         initDropzone();
         initSortDestination();
         setButtonClickListenter(printBtnId, printPreviewEmail);
@@ -102,6 +103,23 @@
             updateData();
         }
     });
+
+    function initReplaceSelector() {
+        var motoSelectedValue = localStorage.getItem("motoSelectedValue");
+        var sakiSelectedValue = localStorage.getItem("sakiSelectedValue");
+        if(!!motoSelectedValue) {
+            $(motoReplaceSelectorId).val(motoSelectedValue);
+        }
+        if(!!sakiSelectedValue) {
+            $(sakiReplaceSelectorId).val(sakiSelectedValue);
+        }
+        $(motoReplaceSelectorId).change(function() {
+            localStorage.setItem("motoSelectedValue", $(motoReplaceSelectorId).val());
+        });
+        $(sakiReplaceSelectorId).change(function() {
+            localStorage.setItem("sakiSelectedValue", $(sakiReplaceSelectorId).val());
+        });
+    }
 
     function initDropzone() {
         Dropzone.autoDiscover = false;
