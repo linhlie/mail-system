@@ -58,41 +58,41 @@
         </div>
     </section>
     <div id="sendMailModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 90%;">
+        <div class="modal-dialog" role="document" style="width: 95%; margin-top: 5px; margin-bottom: 5px;">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="padding: 10px 15px;">
                     <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">推薦状</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="rdMailSender" class="col-sm-1">送信者:</label>
-                        <div class="col-sm-11">
-                            <input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
+                            <div class="col-md-5">
+                                <input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>
+                            </div>
+                            <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
+                            <div class="col-md-5">
+                                <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="rdMailReceiver" class="col-sm-1">受信者:</label>
-                        <div class="col-sm-11">
-                            <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                        <div class="form-group row">
+                            <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailCC" class="form-control" placeholder=""/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="rdMailCC" class="col-sm-1">CC:</label>
-                        <div class="col-sm-11">
-                            <input id="rdMailCC" class="form-control" placeholder=""/>
+                        <div class="form-group row">
+                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="rdMailSubject" class="col-sm-1">件名:</label>
-                        <div class="col-sm-11">
-                            <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
-                        </div>
-                    </div>
+                    </form>
                     <textarea id="rdMailBody"></textarea>
-                    <div style="margin-top: 15px;" class="dropzone" id="reply-dropzone"></div>
+                    <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="reply-dropzone"></div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="padding: 10px 15px;">
                     <button type="button" id="cancelSendSuggestMail" name="sendSuggestMailClose" class="btn btn-default" data-loading-text="終了中...">終了</button>
                     <button type="button" id="sendSuggestMail" class="btn btn-primary" data-loading-text="送信中...">送信</button>
                 </div>

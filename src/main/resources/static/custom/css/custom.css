@@ -540,9 +540,13 @@ div.rule-value-container input[type="text"] {
     width: 100%;
 }
 
+.dropzone {
+    min-height: 60px;
+}
+
 .dz-error-message{
     top: auto !important;
-    bottom: 136px !important;
+    bottom: 116px !important;
 }
 
 .dz-error-message:after{
@@ -550,4 +554,34 @@ div.rule-value-container input[type="text"] {
     bottom: -6px !important;
     border-top: 6px solid #be2626 !important;
     border-bottom: none !important;
+}
+
+.dropzone .dz-preview .dz-error-message {
+    left: -25px;
+}
+
+#sendMailModal .form-group {
+    margin-bottom: 10px;
+}
+
+.dropzone .dz-preview {
+    margin: 5px 10px;
+    margin-bottom: 0;
+}
+
+.dropzone .dz-preview.dz-file-preview .dz-image {
+    border-radius: 12px;
+}
+
+.dropzone .dz-preview .dz-image {
+    width:  90px;
+    height: 90px;
+}
+
+.dropzone .dz-preview .dz-details .dz-size {
+    margin-bottom: 1em;
+}
+
+.dropzone .dz-preview .dz-details {
+    padding: 1em;
 }

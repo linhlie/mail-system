@@ -108,8 +108,6 @@
         attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
             url: "/upload",
             addRemoveLinks: true,
-            thumbnailHeight: 120,
-            thumbnailWidth: 120,
             maxFilesize: 2,
             filesizeBase: 1000,
             dictRemoveFile: "削除",
