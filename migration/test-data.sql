@@ -1,21 +1,12 @@
+USE `mailsys`;
 SET NAMES utf8 COLLATE utf8_unicode_ci;
 SET FOREIGN_KEY_CHECKS=0;
 
-INSERT INTO `email_accounts` (`id`, `account`, `disabled`)
+INSERT INTO replace_numbers(`character`, replace_value)
 VALUES
-	(7, 'section-sales@world-link-system.com', 0);
-
-INSERT INTO `email_account_settings` (`id`, `account_id`, `user_name`, `password`, `mail_server_address`, `mail_server_port`, `mail_protocol`, `encryption_protocol`, `authentication_protocol`, `proxy_server`, `created_at`, `updated_at`, `type`)
-VALUES
-	(6, 7, 'section-sales@world-link-system.com', 'WlSecSa95953', 'af125.secure.ne.jp', 993, 0, 1, 0, '', NULL, '2018-04-18 08:43:36', 0),
-	(7, 7, 'section-sales@world-link-system.com', 'WlSecSa95953', 'af125.secure.ne.jp', 465, 2, 1, 0, '', NULL, '2018-04-18 08:43:36', 1);
-
-INSERT INTO replace_numbers(`character`, replace_value)
-VALUES ('K', 1000);
-INSERT INTO replace_numbers(`character`, replace_value)
-VALUES ('千', 1000);
-INSERT INTO replace_numbers(`character`, replace_value)
-VALUES ('万', 10000);
+  ('K', 1000),
+  ('千', 1000),
+  ('万', 10000);
 
 INSERT INTO replace_units(unit, replace_unit)
 VALUES ('円', '円');
