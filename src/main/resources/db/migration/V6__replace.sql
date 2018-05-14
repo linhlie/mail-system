@@ -18,10 +18,7 @@ CREATE TABLE `replace_letters` (
   `position` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、数値の前の 1. 数値の後の',
   `replace` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0、以上として認識する 1. 以下として認識する 2. 未満として認識する 3. 超として認識する 4. None',
   `hidden` BOOLEAN DEFAULT FALSE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ALTER TABLE replace_letters
-ADD CONSTRAINT uc_replace_letter UNIQUE (letter, position);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO replace_letters(letter, position, `replace`, hidden)
 VALUES ('以上', 0, 4, TRUE);
