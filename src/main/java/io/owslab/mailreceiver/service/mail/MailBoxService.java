@@ -141,15 +141,17 @@ public class MailBoxService {
         return results;
     }
 
-    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, int replaceType){
+    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
-        List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(rangeStr, rangeStr, false, false);
+        String forBuildRangeStr = replaceType >= 3 ? matchRangeStr : rangeStr;
+        List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(forBuildRangeStr, forBuildRangeStr, false, false);
         FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
         NumberTreatment numberTreatment = numberTreatmentService.getFirst();
         double ratio = 1;
+        replaceType = replaceType >= 3 ? replaceType - 3 : replaceType;
         if(replaceType > USE_RAW && numberTreatment != null){
             ratio = replaceType == USE_UPPER_LIMIT ? numberTreatment.getUpperLimitRate() : numberTreatment.getLowerLimitRate();
         }

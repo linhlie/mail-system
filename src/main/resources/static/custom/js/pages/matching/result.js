@@ -299,7 +299,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, replaceType)
+                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType)
                         }
                     });
                     setRowClickListener("sendToSaki", function () {
@@ -309,7 +309,7 @@
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, replaceType)
+                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType)
                             }
                         }
                     });
@@ -478,13 +478,13 @@
         });
     }
 
-    function showMailWithReplacedRange(messageId, replyId, range, replaceType, callback) {
+    function showMailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
         replyId = replyId.replace(/\+/g, '%2B');
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&replaceType=" + replaceType,
+            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType,
             cache: false,
             timeout: 600000,
             success: function (data) {
@@ -608,9 +608,9 @@
         }
     }
     
-    function showMailEditor(messageId, receiver, textRange, replaceType) {
+    function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, receiver.messageId, textRange, replaceType, function (result) {
+        showMailWithReplacedRange(messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (result) {
             showMailContenttToEditor(result, receiver.from)
         });
         $("button[name='sendSuggestMailClose']").off('click');

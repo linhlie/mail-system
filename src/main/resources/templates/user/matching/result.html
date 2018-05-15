@@ -13,15 +13,21 @@
             <div style="position: absolute; right: 25px; top: 15px; z-index: 1000;">
                 <span><b>元送信時置換:</b></span>
                 <select id="motoReplaceSelector" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true">
-                    <option value="0">元の数値</option>
-                    <option value="2">元の上代</option>
-                    <option value="1">元の下代</option>
-                </select>
-                <span><b>先送信時置換:</b></span>
-                <select id="sakiReplaceSelector" style="margin-left: 10px;" aria-hidden="true">
+                    <option value="3">元の数値</option>
+                    <option value="5">元の上代</option>
+                    <option value="4">元の下代</option>
                     <option value="0">先の数値</option>
                     <option value="2">先の上代</option>
                     <option value="1">先の下代</option>
+                </select>
+                <span><b>先送信時置換:</b></span>
+                <select id="sakiReplaceSelector" style="margin-left: 10px;" aria-hidden="true">
+                    <option value="0">元の数値</option>
+                    <option value="2">元の上代</option>
+                    <option value="1">元の下代</option>
+                    <option value="3">先の数値</option>
+                    <option value="5">先の上代</option>
+                    <option value="4">先の下代</option>
                 </select>
             </div>
             <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
