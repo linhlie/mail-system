@@ -551,10 +551,16 @@
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
-            var cc = data.to.split(", ");
-            var index = cc.indexOf(receiver);
-            if(index > -1){
-                cc.splice(index, 1)
+            var to = data.to ?data.to.split(", ") : [];
+            var cc = data.cc ? data.cc.split(", ") : [];
+            cc = cc.concat(to);
+            var indexOfSender = cc.indexOf(data.account);
+            if(indexOfSender > -1){
+                cc.splice(indexOfSender, 1);
+            }
+            var indexOfReceiver = cc.indexOf(receiver);
+            if(indexOfReceiver > -1){
+                cc.splice(indexOfReceiver, 1)
             }
             document.getElementById(rdMailCCId).value = cc.join(", ");
             document.getElementById(rdMailSubjectId).value = data.subject;
