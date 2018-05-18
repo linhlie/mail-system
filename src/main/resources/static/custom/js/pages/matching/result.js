@@ -683,6 +683,7 @@
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
+                activeCC: $('#activeCC').is(":checked"),
                 cc: $( "#" + rdMailCCId).val(),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,

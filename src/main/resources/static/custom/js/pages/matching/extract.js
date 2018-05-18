@@ -456,7 +456,6 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            //TODO: receiver and cc input value validation, split, match Email regex;
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData();
@@ -464,6 +463,7 @@
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val(),
+                activeCC: $('#activeCC').is(":checked"),
                 cc: $( "#" + rdMailCCId).val(),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
