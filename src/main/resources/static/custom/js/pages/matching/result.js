@@ -61,11 +61,11 @@
     $(function () {
         setInputChangeListener(rdMailReceiverId, function (valid) {
             receiverValidate = valid;
-            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+            disableButton("#sendSuggestMail", !(receiverValidate && ccValidate))
         });
         setInputChangeListener(rdMailCCId, function (valid) {
             ccValidate = valid;
-            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+            disableButton("#sendSuggestMail", !(receiverValidate && ccValidate))
         });
         initReplaceSelector();
         initDropzone();
