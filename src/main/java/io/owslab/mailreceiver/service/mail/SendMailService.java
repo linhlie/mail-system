@@ -57,7 +57,7 @@ public class SendMailService {
         // Sender's email ID needs to be mentioned
         String from = account.getAccount();
         String to = form.getReceiver();
-        String cc = form.getCc();
+        String cc = form.isActiveCC() ? form.getCc() : "";
         String replyTo = email.getReplyTo();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
