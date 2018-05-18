@@ -22,6 +22,8 @@ public class AccountForm {
 
     private int authenticationProtocol;
 
+    private String cc;
+
     private String proxyServer;
 
     private int type;
@@ -106,6 +108,14 @@ public class AccountForm {
         this.userName = userName;
     }
 
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
     public AccountForm() {
     }
 
@@ -118,6 +128,7 @@ public class AccountForm {
         this.mailProtocol = account.getMailProtocol();
         this.encryptionProtocol = account.getEncryptionProtocol();
         this.authenticationProtocol = account.getAuthenticationProtocol();
+        this.cc = account.getCc();
         this.proxyServer = account.getProxyServer();
         this.type = account.getType();
     }

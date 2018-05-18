@@ -182,6 +182,7 @@ public class SettingsController {
         MailAccountForm mailAccountForm = new MailAccountForm(account);
         ReceiveAccountForm receiveAccountForm = emailAccountSettingService.getReceiveAccountForm(account.getId());
         SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(account.getId());
+        System.out.println("sendAccountForm: cc: " + sendAccountForm.getCc());
         FullAccountForm fullAccountForm = new FullAccountForm(mailAccountForm, receiveAccountForm, sendAccountForm);
         fullAccountForm.setAccountId(id);
         model.addAttribute("fullAccountForm", fullAccountForm);
