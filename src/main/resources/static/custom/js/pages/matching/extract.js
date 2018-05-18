@@ -515,7 +515,6 @@
     }
 
     function showMailContenttToEditor(data, receiver) {
-        console.log("showMailContenttToEditor: ", data);
         // receiver = isDebug ? debugMailAddress : receiver;
         document.getElementById(rdMailReceiverId).value = receiver;
         updateMailEditorContent("");

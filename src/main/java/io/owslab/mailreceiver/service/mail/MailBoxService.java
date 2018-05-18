@@ -171,7 +171,6 @@ public class MailBoxService {
             SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
             DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount.getAccount());
             String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
-            System.out.println("sendAccountForm: cc: " + sendAccountForm.getCc());
             result.setExternalCC(sendAccountForm.getCc());
             if(rangeStr != null && firstRangeStr != null){
                 String rawBody = result.getOriginalBody();
