@@ -9,9 +9,48 @@
     $(function () {
         setFormsChangeListener();
         setMailProtocolChangeListener();
+        setCCChangeListener("senderCC");
         setGoBackListener('backBtn');
         setResetListener('resetFormBtn');
+        validateSenderCC();
     });
+
+    function setCCChangeListener() {
+        $('#senderCC').on('input', function() {
+            validateSenderCC();
+        });
+    }
+
+    function validateSenderCC() {
+        var rawCC = $('#senderCC').val();
+        rawCC = rawCC || "";
+        var ccText = rawCC.replace(/\s*,\s*/g, ",");
+        var cc = ccText.split(",");
+        var senderValid = true;
+        if(cc.length === 1 && cc[0] == "") {
+            senderValid = true;
+        } else {
+            for(var i = 0; i < cc.length; i++) {
+                var email = cc[i];
+                var valid = validateEmail(email);
+                if(!valid) {
+                    senderValid = false;
+                    break;
+                }
+            }
+        }
+        senderValid ? $('#cc-container').removeClass('has-error') : $('#cc-container').addClass('has-error');
+        disableSubmitBtn(!senderValid);
+    }
+    
+    function disableSubmitBtn(disabled) {
+        $('#submitBtn').prop("disabled", disabled);
+    }
+
+    function validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
 
     function setFormsChangeListener() {
         $('#fullAccountForm').change(function() {

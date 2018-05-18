@@ -43,6 +43,8 @@ public class FullAccountForm {
 
     private int sAuthenticationProtocol;
 
+    private String sCC;
+
     private String sProxyServer;
 
     private String signature;
@@ -70,6 +72,7 @@ public class FullAccountForm {
         this.sMailProtocol = sendAccountForm.getMailProtocol();
         this.sEncryptionProtocol = sendAccountForm.getEncryptionProtocol();
         this.sAuthenticationProtocol = sendAccountForm.getAuthenticationProtocol();
+        this.sCC = sendAccountForm.getCc();
         this.sProxyServer = sendAccountForm.getProxyServer();
     }
 
@@ -233,6 +236,14 @@ public class FullAccountForm {
         this.signature = signature;
     }
 
+    public String getsCC() {
+        return sCC;
+    }
+
+    public void setsCC(String sCC) {
+        this.sCC = sCC;
+    }
+
     public MailAccountForm getMailAccountForm(){
         return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature());
     }
@@ -262,6 +273,7 @@ public class FullAccountForm {
         form.setAuthenticationProtocol(this.getsAuthenticationProtocol());
         form.setProxyServer(this.getsProxyServer());
         form.setType(EmailAccountSetting.Type.SEND);
+        form.setCc(this.getsCC());
         return form;
     }
 

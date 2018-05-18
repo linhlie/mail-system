@@ -6,14 +6,15 @@ import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.groovy.runtime.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -55,7 +56,8 @@ public class SendMailService {
         // Sender's email ID needs to be mentioned
         String from = account.getAccount();
         String to = form.getReceiver();
-        String cc = form.getCc();
+        String cc = form.isActiveCC() ? form.getCc() : "";
+        String replyTo = email.getReplyTo();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
         final String password = accountSetting.getPassword();
@@ -66,6 +68,11 @@ public class SendMailService {
         props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.host", accountSetting.getMailServerAddress());
         props.put("mail.smtp.port", accountSetting.getMailServerPort());
+
+        to = selfEliminateDuplicates(to);
+        cc = selfEliminateDuplicates(cc);
+
+        cc = eliminateDuplicates(cc, to);
 
         // Get the Session object.
         Session session = Session.getInstance(props,
@@ -79,7 +86,6 @@ public class SendMailService {
             String encodingOptions = "text/html; charset=UTF-8";
             // Create a default MimeMessage object.
             MimeMessage message = new MimeMessage(session);
-
             message.setHeader("Content-Type", encodingOptions);
             // Set From: header field of the header.
             message.setFrom(new InternetAddress(from));
@@ -89,6 +95,18 @@ public class SendMailService {
                     InternetAddress.parse(to));
             message.setRecipients(Message.RecipientType.CC,
                     InternetAddress.parse(cc));
+
+            //TODO: handle reply to group, save group and References for make complete Reply/ReplyAll;
+//            a = this.getRecipients(MimeMessage.RecipientType.NEWSGROUPS);
+//            if(a != null && a.length > 0) {
+//                reply.setRecipients(MimeMessage.RecipientType.NEWSGROUPS, (Address[])a);
+//            }
+
+            String originMessageIdWrapped = email.getMessageId();
+            String[] originMessageIdWrappedArray = originMessageIdWrapped.split("\\+");
+            originMessageIdWrappedArray = (String[]) ArrayUtils.remove(originMessageIdWrappedArray, 0);
+            String originMessageId = String.join("",originMessageIdWrappedArray);
+            message.setHeader("In-Reply-To", originMessageId);
 
             // Set Subject: header field
             message.setSubject(form.getSubject(), "UTF-8");
@@ -145,5 +163,22 @@ public class SendMailService {
         String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
         attachmentPart.setFileName(filename);
         return attachmentPart;
+    }
+
+    private String selfEliminateDuplicates(String raw) {
+        String[] emails = raw.split(",");
+        return String.join(",", new HashSet<String>(Arrays.asList(emails)));
+    }
+
+    private String eliminateDuplicates(String origin, String reference) {
+        String[] emails = origin.split(",");
+        List<String> refList = Arrays.asList(reference.split(","));
+        List<String> result = new ArrayList<>();
+        for(String email : emails){
+            if(!refList.contains(email)){
+                result.add(email);
+            }
+        }
+        return String.join(",", result);
     }
 }

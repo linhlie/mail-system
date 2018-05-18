@@ -12,6 +12,7 @@ public class SendMailForm {
     private String messageId;
     private String subject;
     private String receiver;
+    private boolean activeCC;
     private String cc;
     private String content;
     private List<Long> originAttachment;
@@ -20,10 +21,11 @@ public class SendMailForm {
     public SendMailForm() {
     }
 
-    public SendMailForm(String messageId, String subject, String receiver, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment) {
+    public SendMailForm(String messageId, String subject, String receiver, boolean activeCC, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment) {
         this.messageId = messageId;
         this.subject = subject;
         this.receiver = receiver;
+        this.activeCC = activeCC;
         this.cc = cc;
         this.content = content;
         this.originAttachment = originAttachment;
@@ -84,5 +86,13 @@ public class SendMailForm {
 
     public void setUploadAttachment(List<Long> uploadAttachment) {
         this.uploadAttachment = uploadAttachment;
+    }
+
+    public boolean isActiveCC() {
+        return activeCC;
+    }
+
+    public void setActiveCC(boolean activeCC) {
+        this.activeCC = activeCC;
     }
 }

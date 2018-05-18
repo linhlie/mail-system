@@ -22,6 +22,9 @@
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
 
+    var receiverValidate = true;
+    var ccValidate = true;
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -37,6 +40,14 @@
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
+        setInputChangeListener(rdMailReceiverId, false,function (valid) {
+            receiverValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
+        setInputChangeListener(rdMailCCId, true, function (valid) {
+            ccValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
     });
 
     function initDropzone() {
@@ -445,15 +456,15 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            //TODO: receiver and cc input value validation, split, match Email regex;
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData();
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
-                receiver: $( "#" + rdMailReceiverId).val(),
-                cc: $( "#" + rdMailCCId).val(),
+                receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
+                activeCC: $('#activeCC').is(":checked"),
+                cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
@@ -516,12 +527,14 @@
 
     function showMailContenttToEditor(data, receiver) {
         // receiver = isDebug ? debugMailAddress : receiver;
+        resetValidation();
         document.getElementById(rdMailReceiverId).value = receiver;
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
-            var to = data.to ?data.to.split(", ") : [];
-            var cc = data.cc ? data.cc.split(", ") : [];
+            var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             cc = cc.concat(to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
@@ -530,6 +543,11 @@
             var indexOfReceiver = cc.indexOf(receiver);
             if(indexOfReceiver > -1){
                 cc.splice(indexOfReceiver, 1)
+            }
+            for(var i = 0; i < externalCC.length; i++){
+                if(cc.indexOf(externalCC[i]) == -1) {
+                    cc.push(externalCC[i]);
+                }
             }
             document.getElementById(rdMailCCId).value = cc.join(", ");
             document.getElementById(rdMailSubjectId).value = data.subject;
@@ -575,6 +593,57 @@
             }
         }
         return result;
+    }
+
+    function setInputChangeListener(id, acceptEmpty, callback) {
+        $('#' + id).on('input', function() {
+            var valid = validateEmailListInput(id);
+            if(!acceptEmpty) {
+                var value = $('#' + id).val();
+                valid = valid && (value.length > 0);
+            }
+            valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+            if(typeof callback === "function") {
+                callback(valid);
+            }
+        });
+    }
+
+    function validateEmailListInput(id) {
+        var rawCC = $('#' + id).val();
+        rawCC = rawCC || "";
+        var ccText = rawCC.replace(/\s*,\s*/g, ",");
+        var cc = ccText.split(",");
+        var senderValid = true;
+        if(cc.length === 1 && cc[0] == "") {
+            senderValid = true;
+        } else {
+            for(var i = 0; i < cc.length; i++) {
+                var email = cc[i];
+                var valid = validateEmail(email);
+                if(!valid) {
+                    senderValid = false;
+                    break;
+                }
+            }
+        }
+        return senderValid;
+    }
+
+    function validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function disableButton(btnId, disabled) {
+        $('#' + btnId).prop("disabled", disabled);
+    }
+
+    function resetValidation() {
+        receiverValidate = true;
+        ccValidate = true;
+        $('#' + rdMailCCId + '-container').removeClass('has-error')
+        $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
 })(jQuery);

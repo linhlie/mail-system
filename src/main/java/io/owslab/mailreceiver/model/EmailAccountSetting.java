@@ -39,6 +39,8 @@ public class EmailAccountSetting {
     @NotNull
     private int authenticationProtocol;
 
+    private String cc;
+
     private String proxyServer;
 
     private Date createdAt;
@@ -63,6 +65,7 @@ public class EmailAccountSetting {
         this.mailProtocol = form.getMailProtocol();
         this.encryptionProtocol = form.getEncryptionProtocol();
         this.authenticationProtocol = form.getAuthenticationProtocol();
+        this.cc = form.getCc();
         this.proxyServer = form.getProxyServer();
         this.type = form.getType();
         if(isUpdate){
@@ -72,7 +75,7 @@ public class EmailAccountSetting {
         }
     }
 
-    public EmailAccountSetting(long accountId, String userName, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String proxyServer, boolean disabled, Date createdAt, Date updatedAt, int type) {
+    public EmailAccountSetting(long accountId, String userName, String password, String mailServerAddress, int mailServerPort, int mailProtocol, int encryptionProtocol, int authenticationProtocol, String cc, String proxyServer, Date createdAt, Date updatedAt, int type) {
         this.accountId = accountId;
         this.userName = userName;
         this.password = password;
@@ -81,6 +84,7 @@ public class EmailAccountSetting {
         this.mailProtocol = mailProtocol;
         this.encryptionProtocol = encryptionProtocol;
         this.authenticationProtocol = authenticationProtocol;
+        this.cc = cc;
         this.proxyServer = proxyServer;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -189,6 +193,14 @@ public class EmailAccountSetting {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
     }
 
     public class Protocol {

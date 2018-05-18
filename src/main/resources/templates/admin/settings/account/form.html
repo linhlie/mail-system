@@ -176,6 +176,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <div id="cc-container" class="form-group">
+                                <label class="col-md-2 col-xs-3 control-label text-left">CC</label>
+
+                                <div class="col-md-6 col-xs-5">
+                                    <input id="senderCC" placeholder="user@example.com, user2@example.com" th:field="*{sCC}" type="text" class="form-control"/>
+                                </div>
+                                <div class="col-md-4 col-xs-4">
+                                    <span class="help-block">メールアドレス一覧の各メールはカンマで区切りします。</span>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">PROXYサーバー</label>
 
@@ -194,7 +204,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-xs-offset-1 col-md-2 col-xs-3 text-center">
-                                    <button th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
+                                    <button id="submitBtn" disabled="true" th:text="${isUpdate} ? '更新': '新規登録'" type="submit" class="btn btn-success">新規登録</button>
                                 </div>
                                 <div class="col-md-2 col-xs-3 text-center">
                                     <button th:data="${isUpdate}" name="resetFormBtn" type="button" class="btn btn-default">項目クリア</button>

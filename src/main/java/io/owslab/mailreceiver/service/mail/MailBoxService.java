@@ -4,10 +4,8 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.exception.ErrorCodeException;
-import io.owslab.mailreceiver.model.AttachmentFile;
-import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.EmailAccount;
-import io.owslab.mailreceiver.model.NumberTreatment;
+import io.owslab.mailreceiver.form.SendAccountForm;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
@@ -49,6 +47,9 @@ public class MailBoxService {
 
     @Autowired
     private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private EmailAccountSettingService emailAccountSettingService;
     
     private List<Email> cachedEmailList = null;
 
@@ -131,7 +132,12 @@ public class MailBoxService {
         if(emailAccount == null) {
             throw new Exception("Missing sender account info. Can't reply this email");
         }
+        SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
+        if(sendAccountForm == null) {
+            throw new Exception("Missing sender account info. Can't reply this email");
+        }
         DetailMailDTO result = new DetailMailDTO(replyEmail, emailAccount.getAccount());
+        result.setExternalCC(sendAccountForm.getCc());
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
         String replyText = getReplyContentFromEmail(replyEmail);
@@ -162,8 +168,10 @@ public class MailBoxService {
         for(Email email : emailList) {
             List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
             EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+            SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
             DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount.getAccount());
             String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
+            result.setExternalCC(sendAccountForm.getCc());
             if(rangeStr != null && firstRangeStr != null){
                 String rawBody = result.getOriginalBody();
                 String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
