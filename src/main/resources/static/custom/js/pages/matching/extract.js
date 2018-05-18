@@ -40,11 +40,11 @@
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
-        setInputChangeListener(rdMailReceiverId, function (valid) {
+        setInputChangeListener(rdMailReceiverId, false,function (valid) {
             receiverValidate = valid;
             disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
         });
-        setInputChangeListener(rdMailCCId, function (valid) {
+        setInputChangeListener(rdMailCCId, true, function (valid) {
             ccValidate = valid;
             disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
         });
@@ -595,9 +595,13 @@
         return result;
     }
 
-    function setInputChangeListener(id, callback) {
+    function setInputChangeListener(id, acceptEmpty, callback) {
         $('#' + id).on('input', function() {
             var valid = validateEmailListInput(id);
+            if(!acceptEmpty) {
+                var value = $('#' + id).val();
+                valid = valid && (value.length > 0);
+            }
             valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
             if(typeof callback === "function") {
                 callback(valid);
