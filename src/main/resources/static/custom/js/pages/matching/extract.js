@@ -22,6 +22,9 @@
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
 
+    var receiverValidate = true;
+    var ccValidate = true;
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -37,8 +40,14 @@
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
-        setInputChangeListener(rdMailReceiverId);
-        setInputChangeListener(rdMailCCId);
+        setInputChangeListener(rdMailReceiverId, function (valid) {
+            receiverValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
+        setInputChangeListener(rdMailCCId, function (valid) {
+            ccValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
     });
 
     function initDropzone() {
@@ -518,6 +527,7 @@
 
     function showMailContenttToEditor(data, receiver) {
         // receiver = isDebug ? debugMailAddress : receiver;
+        resetValidation();
         document.getElementById(rdMailReceiverId).value = receiver;
         updateMailEditorContent("");
         if(data){
@@ -585,10 +595,13 @@
         return result;
     }
 
-    function setInputChangeListener(id) {
+    function setInputChangeListener(id, callback) {
         $('#' + id).on('input', function() {
             var valid = validateEmailListInput(id);
             valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+            if(typeof callback === "function") {
+                callback(valid);
+            }
         });
     }
 
@@ -620,6 +633,13 @@
 
     function disableButton(btnId, disabled) {
         $('#' + btnId).prop("disabled", disabled);
+    }
+
+    function resetValidation() {
+        receiverValidate = true;
+        ccValidate = true;
+        $('#' + rdMailCCId + '-container').removeClass('has-error')
+        $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
 })(jQuery);

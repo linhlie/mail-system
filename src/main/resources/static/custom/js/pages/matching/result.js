@@ -32,6 +32,9 @@
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
+    var receiverValidate = true;
+    var ccValidate = true;
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
@@ -56,8 +59,14 @@
         '</tr>';
 
     $(function () {
-        setInputChangeListener(rdMailReceiverId);
-        setInputChangeListener(rdMailCCId);
+        setInputChangeListener(rdMailReceiverId, function (valid) {
+            receiverValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
+        setInputChangeListener(rdMailCCId, function (valid) {
+            ccValidate = valid;
+            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
+        });
         initReplaceSelector();
         initDropzone();
         initSortDestination();
@@ -549,6 +558,7 @@
 
     function showMailContenttToEditor(data, receiver) {
         // receiver = isDebug ? debugMailAddress : receiver;
+        resetValidation();
         document.getElementById(rdMailReceiverId).value = receiver;
         updateMailEditorContent("");
         if(data){
@@ -789,10 +799,13 @@
         $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
     }
 
-    function setInputChangeListener(id) {
+    function setInputChangeListener(id, callback) {
         $('#' + id).on('input', function() {
             var valid = validateEmailListInput(id);
             valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+            if(typeof callback === "function") {
+                callback(valid);
+            }
         });
     }
 
@@ -820,6 +833,13 @@
     function validateEmail(email) {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(email).toLowerCase());
+    }
+
+    function resetValidation() {
+        receiverValidate = true;
+        ccValidate = true;
+        $('#' + rdMailCCId + '-container').removeClass('has-error')
+        $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
 })(jQuery);
