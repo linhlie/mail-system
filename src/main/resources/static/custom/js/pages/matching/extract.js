@@ -462,9 +462,9 @@
             var form = {
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
-                receiver: $( "#" + rdMailReceiverId).val(),
+                receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
                 activeCC: $('#activeCC').is(":checked"),
-                cc: $( "#" + rdMailCCId).val(),
+                cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,

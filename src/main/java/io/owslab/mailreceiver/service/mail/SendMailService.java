@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -68,6 +67,11 @@ public class SendMailService {
         props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.host", accountSetting.getMailServerAddress());
         props.put("mail.smtp.port", accountSetting.getMailServerPort());
+
+        to = selfEliminateDuplicates(to);
+        cc = selfEliminateDuplicates(cc);
+
+        cc = eliminateDuplicates(cc, to);
 
         // Get the Session object.
         Session session = Session.getInstance(props,
@@ -158,5 +162,22 @@ public class SendMailService {
         String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
         attachmentPart.setFileName(filename);
         return attachmentPart;
+    }
+
+    private String selfEliminateDuplicates(String raw) {
+        String[] emails = raw.split(",");
+        return String.join(",", new HashSet<String>(Arrays.asList(emails)));
+    }
+
+    private String eliminateDuplicates(String origin, String reference) {
+        String[] emails = origin.split(",");
+        List<String> refList = Arrays.asList(reference.split(","));
+        List<String> result = new ArrayList<>();
+        for(String email : emails){
+            if(!refList.contains(email)){
+                result.add(email);
+            }
+        }
+        return String.join(",", result);
     }
 }
