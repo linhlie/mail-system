@@ -6,6 +6,8 @@ import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.groovy.runtime.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,13 +58,14 @@ public class SendMailService {
         String from = account.getAccount();
         String to = form.getReceiver();
         String cc = form.getCc();
+        String replyTo = email.getReplyTo();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
         final String password = accountSetting.getPassword();
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.host", accountSetting.getMailServerAddress());
         props.put("mail.smtp.port", accountSetting.getMailServerPort());
 
@@ -78,7 +81,6 @@ public class SendMailService {
             String encodingOptions = "text/html; charset=UTF-8";
             // Create a default MimeMessage object.
             MimeMessage message = new MimeMessage(session);
-
             message.setHeader("Content-Type", encodingOptions);
             // Set From: header field of the header.
             message.setFrom(new InternetAddress(from));
@@ -88,6 +90,18 @@ public class SendMailService {
                     InternetAddress.parse(to));
             message.setRecipients(Message.RecipientType.CC,
                     InternetAddress.parse(cc));
+
+            //TODO: handle reply to group, save group and References for make complete Reply/ReplyAll;
+//            a = this.getRecipients(MimeMessage.RecipientType.NEWSGROUPS);
+//            if(a != null && a.length > 0) {
+//                reply.setRecipients(MimeMessage.RecipientType.NEWSGROUPS, (Address[])a);
+//            }
+
+            String originMessageIdWrapped = email.getMessageId();
+            String[] originMessageIdWrappedArray = originMessageIdWrapped.split("\\+");
+            originMessageIdWrappedArray = (String[]) ArrayUtils.remove(originMessageIdWrappedArray, 0);
+            String originMessageId = String.join("",originMessageIdWrappedArray);
+            message.setHeader("In-Reply-To", originMessageId);
 
             // Set Subject: header field
             message.setSubject(form.getSubject(), "UTF-8");

@@ -551,8 +551,9 @@
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
-            var to = data.to ?data.to.split(", ") : [];
-            var cc = data.cc ? data.cc.split(", ") : [];
+            var to = data.to ?data.to.replace(/\s/g,'').split(",") : [];
+            var cc = data.cc ? data.cc.replace(/\s/g,'').split(",") : [];
+            var externalCC = data.externalCC ? data.externalCC.replace(/\s/g,'').split(",") : [];
             cc = cc.concat(to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
@@ -561,6 +562,11 @@
             var indexOfReceiver = cc.indexOf(receiver);
             if(indexOfReceiver > -1){
                 cc.splice(indexOfReceiver, 1)
+            }
+            for(var i = 0; i < externalCC.length; i++){
+                if(cc.indexOf(externalCC[i]) == -1) {
+                    cc.push(externalCC[i]);
+                }
             }
             document.getElementById(rdMailCCId).value = cc.join(", ");
             document.getElementById(rdMailSubjectId).value = data.subject;

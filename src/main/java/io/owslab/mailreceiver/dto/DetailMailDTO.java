@@ -46,6 +46,7 @@ public class DetailMailDTO {
     private String originalBody;
     private String replacedBody;
     private String signature;
+    private String externalCC;
 
     private List<FileDTO> files;
 
@@ -221,5 +222,13 @@ public class DetailMailDTO {
 
     public void setReplyOrigin(String replyOrigin) {
         this.replyOrigin = replyOrigin;
+    }
+
+    public String getExternalCC() {
+        return externalCC;
+    }
+
+    public void setExternalCC(String externalCC) {
+        this.externalCC = externalCC;
     }
 }
