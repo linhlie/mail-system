@@ -56,6 +56,8 @@
         '</tr>';
 
     $(function () {
+        setInputChangeListener(rdMailReceiverId);
+        setInputChangeListener(rdMailCCId);
         initReplaceSelector();
         initDropzone();
         initSortDestination();
@@ -551,9 +553,9 @@
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
-            var to = data.to ?data.to.replace(/\s/g,'').split(",") : [];
-            var cc = data.cc ? data.cc.replace(/\s/g,'').split(",") : [];
-            var externalCC = data.externalCC ? data.externalCC.replace(/\s/g,'').split(",") : [];
+            var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             cc = cc.concat(to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
@@ -785,6 +787,39 @@
 
     function updateTotalDestinationMatching(total) {
         $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
+    }
+
+    function setInputChangeListener(id) {
+        $('#' + id).on('input', function() {
+            var valid = validateEmailListInput(id);
+            valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+        });
+    }
+
+    function validateEmailListInput(id) {
+        var rawCC = $('#' + id).val();
+        rawCC = rawCC || "";
+        var ccText = rawCC.replace(/\s*,\s*/g, ",");
+        var cc = ccText.split(",");
+        var senderValid = true;
+        if(cc.length === 1 && cc[0] == "") {
+            senderValid = true;
+        } else {
+            for(var i = 0; i < cc.length; i++) {
+                var email = cc[i];
+                var valid = validateEmail(email);
+                if(!valid) {
+                    senderValid = false;
+                    break;
+                }
+            }
+        }
+        return senderValid;
+    }
+
+    function validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 
 })(jQuery);

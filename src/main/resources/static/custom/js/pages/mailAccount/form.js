@@ -24,7 +24,7 @@
     function validateSenderCC() {
         var rawCC = $('#senderCC').val();
         rawCC = rawCC || "";
-        var ccText = rawCC.replace(/\s/g,'');
+        var ccText = rawCC.replace(/\s*,\s*/g, ",");
         var cc = ccText.split(",");
         var senderValid = true;
         if(cc.length === 1 && cc[0] == "") {
