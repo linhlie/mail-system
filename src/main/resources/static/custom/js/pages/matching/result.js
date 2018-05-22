@@ -59,14 +59,6 @@
         '</tr>';
 
     $(function () {
-        setInputChangeListener(rdMailReceiverId, false, function (valid) {
-            receiverValidate = valid;
-            disableButton("#sendSuggestMail", !(receiverValidate && ccValidate))
-        });
-        setInputChangeListener(rdMailCCId, true,function (valid) {
-            ccValidate = valid;
-            disableButton("#sendSuggestMail", !(receiverValidate && ccValidate))
-        });
         initReplaceSelector();
         initDropzone();
         initSortDestination();
@@ -77,6 +69,22 @@
         setupDisplatNonZeroListener();
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
+        $('#' + rdMailCCId).tagsInput({
+            defaultText: '',
+            minInputWidth: 150,
+            maxInputWidth: 600,
+            width: 'auto',
+            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            validationMsg: 'メールアドレスを入力してください',
+            onChange: function (elem, elem_tags) {
+                $('.tag').each(function () {
+                    var tag = $(this).text();
+                    var email = tag.substring(0, tag.length - 3);
+                    if (email.endsWith("world-link-system.com"))
+                        $(this).css('background-color', 'yellow');
+                });
+            }
+        });
         if(matchingConditionStr){
             $('body').loadingModal({
                 position: 'auto',
@@ -580,7 +588,7 @@
                     cc.push(externalCC[i]);
                 }
             }
-            document.getElementById(rdMailCCId).value = cc.join(", ");
+            $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
@@ -675,7 +683,9 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            //TODO: receiver and cc input value validation, split, match Email regex;
+            receiverValidate = validateaNDsHOWEmailListInput(rdMailReceiverId, false);
+            ccValidate = validateaNDsHOWEmailListInput(rdMailCCId, true);
+            if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData();
@@ -683,7 +693,6 @@
                 messageId: messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
-                activeCC: $('#activeCC').is(":checked"),
                 cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
@@ -812,6 +821,16 @@
                 callback(valid);
             }
         });
+    }
+
+    function validateaNDsHOWEmailListInput(id, acceptEmpty) {
+        var valid = validateEmailListInput(id);
+        if (!acceptEmpty) {
+            var value = $('#' + id).val();
+            valid = valid && (value.length > 0);
+        }
+        valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+        return valid;
     }
 
     function validateEmailListInput(id) {

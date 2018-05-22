@@ -1,4 +1,3 @@
-
 (function () {
     "use strict";
     var sourceTableId = 'sourceMatch';
@@ -36,18 +35,26 @@
         '</tr>';
 
     $(function () {
+        $('#' + rdMailCCId).tagsInput({
+            defaultText: '',
+            minInputWidth: 150,
+            maxInputWidth: 600,
+            width: 'auto',
+            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            validationMsg: 'メールアドレスを入力してください',
+            onChange: function (elem, elem_tags) {
+                $('.tag').each(function () {
+                    var tag = $(this).text();
+                    var email = tag.substring(0, tag.length - 3);
+                    if (email.endsWith("world-link-system.com"))
+                        $(this).css('background-color', 'yellow');
+                });
+            }
+        });
         initDropzone();
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
-        setInputChangeListener(rdMailReceiverId, false,function (valid) {
-            receiverValidate = valid;
-            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
-        });
-        setInputChangeListener(rdMailCCId, true, function (valid) {
-            ccValidate = valid;
-            disableButton("sendSuggestMail", !(receiverValidate && ccValidate))
-        });
     });
 
     function initDropzone() {
@@ -60,26 +67,27 @@
             dictRemoveFile: "削除",
             dictCancelUpload: "キャンセル",
             dictDefaultMessage: "Drop files here or click to upload.",
-            init: function() {
-                this.on("success", function(file, response) {
-                    if(response && response.status){
+            init: function () {
+                this.on("success", function (file, response) {
+                    if (response && response.status) {
                         var data = response.list && response.list.length > 0 ? response.list[0] : null;
-                        if(data){
+                        if (data) {
                             file.id = data.id;
                         }
                     }
                 });
-                this.on("removedfile", function(file) {
-                    if(!!file && !!file.upload && !!file.id){
+                this.on("removedfile", function (file) {
+                    if (!!file && !!file.upload && !!file.id) {
                         removeFile(file.id)
                     }
                 });
             },
-            thumbnail: function(file, dataUrl) {}
+            thumbnail: function (file, dataUrl) {
+            }
         })
     }
 
-    function removeFile(fileId){
+    function removeFile(fileId) {
         $.ajax({
             type: "GET",
             contentType: "application/json",
@@ -105,11 +113,11 @@
             success: function (data) {
                 try {
                     var result = data && data.msg ? JSON.parse(data.msg) : null;
-                    if(result){
+                    if (result) {
                         isDebug = result["debug_on"];
                         debugMailAddress = result["debug_receive_mail_address"];
                     }
-                } catch (error){
+                } catch (error) {
                     console.error("getEnvSettings ERROR : ", error);
                 }
             },
@@ -122,16 +130,16 @@
     function enableResizeColums() {
         $("#" + sourceTableId).colResizable(
             {
-                resizeMode:'overflow',
+                resizeMode: 'overflow',
             }
         );
     }
 
     function loadExtractData() {
         var extractDataStr;
-        var key = window.location.href.indexOf("extractSource") >=0 ? "extractSourceData" : "extractDestinationData";
+        var key = window.location.href.indexOf("extractSource") >= 0 ? "extractSourceData" : "extractDestinationData";
         extractDataStr = sessionStorage.getItem(key);
-        if(extractDataStr){
+        if (extractDataStr) {
             $('body').loadingModal({
                 position: 'auto',
                 text: '抽出中...',
@@ -150,7 +158,7 @@
                 timeout: 600000,
                 success: function (data) {
                     $('body').loadingModal('hide');
-                    if(data && data.status){
+                    if (data && data.status) {
                         extractResult = data.list;
                     } else {
                         console.error("[ERROR] submit failed: ");
@@ -171,7 +179,7 @@
     function setButtonClickListenter(id, callback) {
         $('#' + id).off('click');
         $('#' + id).click(function () {
-            if(typeof callback === "function"){
+            if (typeof callback === "function") {
                 callback();
             }
         });
@@ -184,18 +192,18 @@
     function showSourceData(tableId, data) {
         destroySortSource();
         removeAllRow(tableId, replaceSourceHTML);
-        if(data.length > 0){
+        if (data.length > 0) {
             var html = replaceSourceHTML;
-            for(var i = 0; i < data.length; i ++){
+            for (var i = 0; i < data.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
-            $("#"+ tableId + "> tbody").html(html);
+            $("#" + tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", selectedRow);
             setRowClickListener("reply", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = extractResult[index];
-                if(rowData && rowData.messageId){
+                if (rowData && rowData.messageId) {
                     console.log("reply: ", rowData);
                     showMailEditor(rowData.messageId, rowData.from)
                 }
@@ -206,14 +214,14 @@
         selectFirstRow();
         enableResizeColums();
     }
-    
+
     function updateTotalResult(total) {
         var raw = $('#' + totalResultContainId).text();
         $('#' + totalResultContainId).text(raw + " " + total + "件")
     }
 
     function destroySortSource() {
-        if(!!sourceMatchDataTable){
+        if (!!sourceMatchDataTable) {
             sourceMatchDataTable.destroy();
         }
     }
@@ -221,34 +229,34 @@
     function initSortSource() {
         $("#sourceMatch").tablesorter(
             {
-                theme : 'default',
+                theme: 'default',
                 headers: {
                     4: {
                         sorter: false
                     },
                 },
-                sortList: [[1,1], [2,0]]
+                sortList: [[1, 1], [2, 0]]
             });
     }
 
     function addRowWithData(tableId, data, index) {
         var table = document.getElementById(tableId);
-        if(!table) return "";
+        if (!table) return "";
         var rowToClone = table.rows[1];
         var row = rowToClone.cloneNode(true);
         row.setAttribute("data", index);
         row.className = undefined;
         var cells = row.cells;
-        for(var i = 0; i < cells.length; i++){
+        for (var i = 0; i < cells.length; i++) {
             var cell = cells.item(i);
             var cellKeysData = cell.getAttribute("data");
-            if(!cellKeysData || cellKeysData.length == 0) continue;
+            if (!cellKeysData || cellKeysData.length == 0) continue;
             var cellKeys = cellKeysData.split(".");
             var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-            if(cellNode){
-                if(cellNode.nodeName == "SPAN") {
+            if (cellNode) {
+                if (cellNode.nodeName == "SPAN") {
                     var cellData = cellKeys.length == 2 ? (data[cellKeys[0]] ? data[cellKeys[0]][cellKeys[1]] : undefined) : data[cellKeys[0]];
-                    if(Array.isArray(cellData)){
+                    if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
                         cellNode.textContent = cellData;
@@ -260,9 +268,9 @@
     }
 
     function setRowClickListener(name, callback) {
-        $("td[name='"+name+"']").off('click');
-        $("td[name='"+name+"']").click(function () {
-            if(typeof callback == "function"){
+        $("td[name='" + name + "']").off('click');
+        $("td[name='" + name + "']").click(function () {
+            if (typeof callback == "function") {
                 callback.apply(this);
             }
         })
@@ -272,7 +280,7 @@
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
         var rowData = extractResult[index];
-        if(rowData && rowData && rowData.messageId){
+        if (rowData && rowData && rowData.messageId) {
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
                 updatePreviewMailToPrint(result);
@@ -281,12 +289,12 @@
     }
 
     function selectFirstRow() {
-        if(extractResult && extractResult.length > 0){
+        if (extractResult && extractResult.length > 0) {
             var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
             firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var index = firstTr[0].getAttribute("data");
             var rowData = extractResult[index];
-            if(rowData && rowData.messageId){
+            if (rowData && rowData.messageId) {
                 showMail(rowData.messageId, function (result) {
                     showMailContent(result);
                     updatePreviewMailToPrint(result);
@@ -306,7 +314,7 @@
     }
 
     function removeAllRow(tableId, replaceHtml) { //Except header row
-        $("#"+ tableId + "> tbody").html(replaceHtml);
+        $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
     function showMail(messageId, callback) {
@@ -319,18 +327,18 @@
             timeout: 600000,
             success: function (data) {
                 var result;
-                if(data.status){
-                    if(data.list && data.list.length > 0){
+                if (data.status) {
+                    if (data.list && data.list.length > 0) {
                         result = data.list[0];
                     }
                 }
-                if(typeof callback === "function"){
+                if (typeof callback === "function") {
                     callback(result);
                 }
             },
             error: function (e) {
                 console.error("getMail ERROR : ", e);
-                if(typeof callback === "function"){
+                if (typeof callback === "function") {
                     callback();
                 }
             }
@@ -344,7 +352,7 @@
         mailSubjectDiv.innerHTML = "";
         mailBodyDiv.innerHTML = "";
         mailAttachmentDiv.innerHTML = "";
-        if(data){
+        if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
                 '<h5><b>' + data.subject + '</b></h5>' +
                 '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
@@ -352,14 +360,14 @@
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             mailBodyDiv.innerHTML = data.originalBody;
             var files = data.files ? data.files : [];
-            if(files.length > 0){
+            if (files.length > 0) {
                 var filesInnerHTML = "";
-                for(var i = 0; i < files.length; i++ ){
+                for (var i = 0; i < files.length; i++) {
                     var file = files[i];
-                    if(i > 0){
+                    if (i > 0) {
                         filesInnerHTML += "<br/>";
                     }
-                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size/1024) + "KB); </a>")
+                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + (file.size / 1024) + "KB); </a>")
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
             } else {
@@ -367,11 +375,11 @@
             }
         }
     }
-    
+
     function updatePreviewMailToPrint(data) {
         var printElment = document.getElementById('printElement');
         printElment.innerHTML = "";
-        if(data){
+        if (data) {
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             var innerHtml = '<div class="box-body no-padding">' +
                 '<div class="mailbox-read-info">' +
@@ -383,12 +391,12 @@
                 '<div class="box-footer"> ' +
                 '<ul class="mailbox-attachments clearfix"> ';
             var files = data.files ? data.files : [];
-            if(files.length > 0){
+            if (files.length > 0) {
                 var filesInnerHTML = "";
-                for(var i = 0; i < files.length; i++ ){
+                for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     var fileName = file.fileName;
-                    var fileSize = (file.size/1024) + " KB ";
+                    var fileSize = (file.size / 1024) + " KB ";
                     var fileInnerHTML = '<li> <span class="mailbox-attachment-icon">' +
                         '<i class="fa fa-file-o"></i>' +
                         '</span> ' +
@@ -421,11 +429,11 @@
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
-        $("button[name='sendSuggestMailClose']").click(function() {
+        $("button[name='sendSuggestMailClose']").click(function () {
             var btn = $('#cancelSendSuggestMail');
             btn.button('loading');
             var attachmentData = getAttachmentData();
-            if(attachmentData.upload.length == 0) {
+            if (attachmentData.upload.length == 0) {
                 btn.button('reset');
                 $('#sendMailModal').modal('hide');
                 return;
@@ -456,15 +464,17 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
+            receiverValidate = validateaNDsHOWEmailListInput(rdMailReceiverId, false);
+            ccValidate = validateaNDsHOWEmailListInput(rdMailCCId, true);
+            if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData();
             var form = {
                 messageId: messageId,
-                subject: $( "#" + rdMailSubjectId).val(),
-                receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
-                activeCC: $('#activeCC').is(":checked"),
-                cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
+                subject: $("#" + rdMailSubjectId).val(),
+                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
+                cc: $("#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
@@ -480,7 +490,7 @@
                 success: function (data) {
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
-                    if(data && data.status){
+                    if (data && data.status) {
                         //TODO: noti send mail success
                     } else {
                         //TODO: noti send mail failed
@@ -507,18 +517,18 @@
             timeout: 600000,
             success: function (data) {
                 var result;
-                if(data.status){
-                    if(data.list && data.list.length > 0){
+                if (data.status) {
+                    if (data.list && data.list.length > 0) {
                         result = data.list[0];
                     }
                 }
-                if(typeof callback === "function"){
+                if (typeof callback === "function") {
                     callback(result);
                 }
             },
             error: function (e) {
                 console.error("showMailWithReplacedRange ERROR : ", e);
-                if(typeof callback === "function"){
+                if (typeof callback === "function") {
                     callback();
                 }
             }
@@ -530,26 +540,26 @@
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiver;
         updateMailEditorContent("");
-        if(data){
+        if (data) {
             document.getElementById(rdMailSenderId).value = data.account;
-            var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             cc = cc.concat(to);
             var indexOfSender = cc.indexOf(data.account);
-            if(indexOfSender > -1){
+            if (indexOfSender > -1) {
                 cc.splice(indexOfSender, 1);
             }
             var indexOfReceiver = cc.indexOf(receiver);
-            if(indexOfReceiver > -1){
+            if (indexOfReceiver > -1) {
                 cc.splice(indexOfReceiver, 1)
             }
-            for(var i = 0; i < externalCC.length; i++){
-                if(cc.indexOf(externalCC[i]) == -1) {
+            for (var i = 0; i < externalCC.length; i++) {
+                if (cc.indexOf(externalCC[i]) == -1) {
                     cc.push(externalCC[i]);
                 }
             }
-            document.getElementById(rdMailCCId).value = cc.join(", ");
+            $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
@@ -559,10 +569,10 @@
         updateDropzoneData();
     }
 
-    function updateMailEditorContent(content, preventClear){
+    function updateMailEditorContent(content, preventClear) {
         var editor = tinymce.get(rdMailBodyId);
         editor.setContent(content);
-        if(!preventClear){
+        if (!preventClear) {
             editor.undoManager.clear();
         }
         editor.undoManager.add();
@@ -582,10 +592,10 @@
             origin: [],
             upload: []
         };
-        for(var i = 0; i < attachmentDropzone.files.length; i++){
+        for (var i = 0; i < attachmentDropzone.files.length; i++) {
             var file = attachmentDropzone.files[i];
-            if(!!file.id){
-                if(!!file.upload){
+            if (!!file.id) {
+                if (!!file.upload) {
                     result.upload.push(file.id);
                 } else {
                     result.origin.push(file.id);
@@ -596,17 +606,27 @@
     }
 
     function setInputChangeListener(id, acceptEmpty, callback) {
-        $('#' + id).on('input', function() {
+        $('#' + id).on('input', function () {
             var valid = validateEmailListInput(id);
-            if(!acceptEmpty) {
+            if (!acceptEmpty) {
                 var value = $('#' + id).val();
                 valid = valid && (value.length > 0);
             }
             valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
-            if(typeof callback === "function") {
+            if (typeof callback === "function") {
                 callback(valid);
             }
         });
+    }
+    
+    function validateaNDsHOWEmailListInput(id, acceptEmpty) {
+        var valid = validateEmailListInput(id);
+        if (!acceptEmpty) {
+            var value = $('#' + id).val();
+            valid = valid && (value.length > 0);
+        }
+        valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
+        return valid;
     }
 
     function validateEmailListInput(id) {
@@ -615,13 +635,13 @@
         var ccText = rawCC.replace(/\s*,\s*/g, ",");
         var cc = ccText.split(",");
         var senderValid = true;
-        if(cc.length === 1 && cc[0] == "") {
+        if (cc.length === 1 && cc[0] == "") {
             senderValid = true;
         } else {
-            for(var i = 0; i < cc.length; i++) {
+            for (var i = 0; i < cc.length; i++) {
                 var email = cc[i];
                 var valid = validateEmail(email);
-                if(!valid) {
+                if (!valid) {
                     senderValid = false;
                     break;
                 }
@@ -631,8 +651,8 @@
     }
 
     function validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
+        var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(String(email).toLowerCase());
     }
 
     function disableButton(btnId, disabled) {
