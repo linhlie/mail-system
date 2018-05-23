@@ -3,7 +3,6 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
-import io.owslab.mailreceiver.exception.ErrorCodeException;
 import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
@@ -12,12 +11,16 @@ import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.Utils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Document.OutputSettings;
+import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,6 +30,7 @@ import java.util.regex.Pattern;
  * Created by khanhlvb on 1/26/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class MailBoxService {
     public static final String HIGHLIGHT_RANGE_COLOR = "#ff9900";
     public static final int USE_RAW = 0;
@@ -82,13 +86,15 @@ public class MailBoxService {
         return cachedEmailList;
     }
 
+    @Cacheable(key="\"EmailWordJobService:find:\"+#original")
     public static String optimizeText(String original){
-        String optimizedText = Jsoup.parse(original).text();
-//        int conv_op_flags = 0;
-//        conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
-//        conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
-//        String japaneseOptimizedText = KanaConverter.convertKana(optimizedText, conv_op_flags);
-//        return japaneseOptimizedText.toLowerCase();
+        Document jsoupDoc = Jsoup.parse(original);
+        jsoupDoc.outputSettings(new OutputSettings().prettyPrint(false));
+        jsoupDoc.select("br").after("\\n");
+        jsoupDoc.select("div").before("\\n");
+        jsoupDoc.select("p").before("\\n");
+        String str = jsoupDoc.html().replaceAll("\\\\n", "\n");
+        String optimizedText = Jsoup.clean(str, "", Whitelist.none(), new OutputSettings().prettyPrint(false));
         //TODO: maybe need remove url and change optimizeText usages
         return optimizedText.toLowerCase();
     }
@@ -140,6 +146,7 @@ public class MailBoxService {
         result.setExternalCC(sendAccountForm.getCc());
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
+        result.setExcerpt(getExcerpt(replyEmail));
         String replyText = getReplyContentFromEmail(replyEmail);
         result.setReplyOrigin(replyText);
         result.setSubject("Re: " + replyEmail.getSubject());
@@ -177,6 +184,7 @@ public class MailBoxService {
                 String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
                 result.setReplacedBody(replacedBody);
             }
+            result.setExcerpt(getExcerpt(replyEmail));
             result.setSignature(signature);
             if(replyEmail != null) {
                 String replyText = getReplyContentFromEmail(replyEmail);
@@ -190,6 +198,30 @@ public class MailBoxService {
             results.add(result);
         }
         return results;
+    }
+
+    private String getExcerpt(Email email){
+        String optimizedBody = email.getOptimizedBody();
+        String[] optimizedBodyLines = optimizedBody.split("\n");
+        String excerpt = "";
+        int i = 0;
+        for(String line: optimizedBodyLines) {
+            if(!line.isEmpty() && !line.equalsIgnoreCase("\r") && !line.equalsIgnoreCase("\n")) {
+                excerpt = excerpt + getExceprtLine(line);
+                i++;
+                if(i == 5) {
+                    break;
+                }
+            }
+        }
+        excerpt = excerpt + getExceprtLine("---------------------");
+        excerpt = excerpt + "<br/><br/><br/><br/><br/>";
+        return excerpt;
+    }
+
+    private String getExceprtLine(String line) {
+        String exceprtLine = "<div class=\"gmail_extra\"><span style=\"color: #ff0000;\">" + line + "</span></div>\n";
+        return exceprtLine;
     }
 
     private String getReplyContentFromEmail(Email replyEmail) {

@@ -563,6 +563,7 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
+            data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
         }
