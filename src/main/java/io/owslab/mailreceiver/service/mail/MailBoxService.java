@@ -15,6 +15,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
  * Created by khanhlvb on 1/26/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class MailBoxService {
     public static final String HIGHLIGHT_RANGE_COLOR = "#ff9900";
     public static final int USE_RAW = 0;
@@ -83,6 +86,7 @@ public class MailBoxService {
         return cachedEmailList;
     }
 
+    @Cacheable(key="\"EmailWordJobService:find:\"+#original")
     public static String optimizeText(String original){
         Document jsoupDoc = Jsoup.parse(original);
         jsoupDoc.outputSettings(new OutputSettings().prettyPrint(false));
