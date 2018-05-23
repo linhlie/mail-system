@@ -599,7 +599,7 @@
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
                 data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
-                data.replacedBody = data.excerpt + data.originalBody;
+                data.replacedBody = data.excerpt + data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
                 updateMailEditorContent(data.replacedBody, true);
             }

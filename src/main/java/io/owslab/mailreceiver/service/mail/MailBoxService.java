@@ -206,7 +206,7 @@ public class MailBoxService {
         String excerpt = "";
         int i = 0;
         for(String line: optimizedBodyLines) {
-            if(!line.isEmpty()) {
+            if(!line.isEmpty() && !line.equalsIgnoreCase("\r") && !line.equalsIgnoreCase("\n")) {
                 excerpt = excerpt + getExceprtLine(line);
                 i++;
                 if(i == 5) {
