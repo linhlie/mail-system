@@ -47,6 +47,7 @@ public class DetailMailDTO {
     private String replacedBody;
     private String signature;
     private String externalCC;
+    private String excerpt;
 
     private List<FileDTO> files;
 
@@ -230,5 +231,13 @@ public class DetailMailDTO {
 
     public void setExternalCC(String externalCC) {
         this.externalCC = externalCC;
+    }
+
+    public String getExcerpt() {
+        return excerpt;
+    }
+
+    public void setExcerpt(String excerpt) {
+        this.excerpt = excerpt;
     }
 }
