@@ -149,24 +149,30 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void fetchEmail(Message[] messages) {
+        logger.info("start fetchEmail");
         mailProgress.setTotal(messages.length);
         for (int i = 0, n = messages.length; i < n; i++) {
             try {
                 MimeMessage message = (MimeMessage) messages[i];
+                logger.info("try to save email: " + message.getSubject() + " send at: " + message.getSentDate());
                 if(isEmailExist(message, account)) {
                     mailProgress.decreaseTotal();
+                    logger.info("Mail exist");
                     continue;
                 }
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
                 saveFiles(message, email);
-                System.out.println(message.getSubject());
+                logger.info("save email: " + message.getSubject());
+                email = setMailContent(message, email);
+                emailDAO.save(email);
                 mailProgress.increase();
             } catch (Exception e) {
                 mailProgress.decreaseTotal();
-//                e.printStackTrace();
+                e.printStackTrace();
             }
         }
+        logger.info("stop fetchEmail");
     }
 
     private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
@@ -182,22 +188,33 @@ public class IMAPFetchMailJob implements Runnable {
             email.setMessageId(messageId);
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));
-            String subject = message.getSubject();
-            subject = EmojiParser.removeAllEmojis(subject);
-            email.setSubject(subject);
+            email.setSubject("");
             email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
             email.setSentAt(message.getSentDate());
-
             email.setReplyTo(getMailReplyTo(message));
             email.setReceivedAt(message.getReceivedDate());
             email.setCreatedAt(new Date());
             email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
+            email.setOriginalBody("");
+            email.setOptimizedBody("");
+            logger.info("email: " + email.toString() + ", sendDate: " + message.getSentDate());
+            return email;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private Email setMailContent(MimeMessage message, Email email) {
+        try {
+            String subject = message.getSubject();
+            subject = EmojiParser.removeAllEmojis(subject);
+            email.setSubject(subject);
             String originalContent = getContentText(message);
             originalContent = EmojiParser.removeAllEmojis(originalContent);
             email.setOriginalBody(originalContent);
-//            String beforeOptimizeContent = email.getSubject() + "\n" + originalContent;
             String beforeOptimizeContent = originalContent;
             String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
             email.setOptimizedBody(optimizedContent);
@@ -276,7 +293,7 @@ public class IMAPFetchMailJob implements Runnable {
     private String getRecipientsWithType(MimeMessage message, Message.RecipientType type) throws MessagingException {
         List<String> recipientAddresses = new ArrayList<>();
         Address[] recipients = message.getRecipients(type);
-        if (recipients == null || recipients.length == 0) return  null;
+        if (recipients == null || recipients.length == 0) return  "";
         for (Address address : recipients) {
             if (address instanceof InternetAddress) {
                 InternetAddress ia = (InternetAddress) address;
@@ -284,7 +301,7 @@ public class IMAPFetchMailJob implements Runnable {
             }
         }
         String recipientAddressesStr = String.join(", ", recipientAddresses);
-        return recipientAddressesStr;
+        return recipientAddressesStr == null ? "" : recipientAddressesStr;
     }
 
     private boolean hasAttachments(Message msg) throws MessagingException, IOException {
