@@ -17,7 +17,7 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findByMessageIdAndDeleted(String messageId, boolean deleted);
     List<Email> findBySentAtBeforeAndDeletedOrderBySentAtAsc(Date sentAt, boolean deleted);
     Page<Email> findByOptimizedBodyIgnoreCaseContainingAndDeleted(String content, boolean deleted, Pageable pageable);
-    Page<Email> findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(String subject, boolean deleted, Pageable pageable);
+    Page<Email> findByFromIgnoreCaseContainingAndErrorLogNotNullAndDeleted(String from, boolean deleted, Pageable pageable);
     Page<Email> findByOriginalBodyIgnoreCaseContainingAndDeleted(String content, boolean deleted, Pageable pageable);
     Page<Email> findByDeleted(boolean deleted, Pageable pageable);
     Page<Email> findByErrorLogNotNullAndDeleted(boolean deleted, Pageable pageable);
