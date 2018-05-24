@@ -146,7 +146,7 @@ public class MailBoxService {
         result.setExternalCC(sendAccountForm.getCc());
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
-        result.setExcerpt(getExcerpt(replyEmail));
+        result.setExcerpt("");
         String replyText = getReplyContentFromEmail(replyEmail);
         result.setReplyOrigin(replyText);
         result.setSubject("Re: " + replyEmail.getSubject());
