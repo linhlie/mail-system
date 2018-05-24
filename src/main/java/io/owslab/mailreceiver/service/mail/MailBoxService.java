@@ -66,12 +66,26 @@ public class MailBoxService {
         return list;
     }
 
+    public Page<Email> listError(PageRequest pageRequest) {
+        Page<Email> list = emailDAO.findByErrorLogNotNullAndDeleted(false, pageRequest);
+        return list;
+    }
+
     public Page<Email> searchContent(String search, PageRequest pageRequest) {
         if(search == null || search.length() == 0){
             return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
         Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndDeleted(optimizeSearchText, false, pageRequest);
+        return list;
+    }
+
+    public Page<Email> searchError(String search, PageRequest pageRequest) {
+        if(search == null || search.length() == 0){
+            return listError(pageRequest);
+        }
+        String optimizeSearchText = optimizeText(search);
+        Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(optimizeSearchText, false, pageRequest);
         return list;
     }
 

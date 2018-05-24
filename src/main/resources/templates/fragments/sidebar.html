@@ -39,6 +39,11 @@
                 <i class="fa fa-envelope"></i> <span>メールボックス</span>
             </a>
         </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailboxError'})?'active':''">
+            <a href="#" th:href="@{/admin/mailboxError}">
+                <i class="fa fa-bug"></i> <span>メールエラー</span>
+            </a>
+        </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview">
             <a href="#">
                 <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
