@@ -318,7 +318,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType)
+                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType, "moto")
                         }
                     });
                     setRowClickListener("sendToSaki", function () {
@@ -328,7 +328,7 @@
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType)
+                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType, "saki")
                             }
                         }
                     });
@@ -564,7 +564,7 @@
         }
     }
 
-    function showMailContenttToEditor(data, receiver) {
+    function showMailContenttToEditor(data, receiver, sendTo) {
         // receiver = isDebug ? debugMailAddress : receiver;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiver;
@@ -594,6 +594,10 @@
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
+            if(sendTo === "moto")
+                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ</span></div>' + data.excerpt;
+            else if (sendTo === "saki")
+                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ</span></div>' + data.excerpt;
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
@@ -643,10 +647,10 @@
         }
     }
     
-    function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType) {
+    function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
         showMailWithReplacedRange(messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (result) {
-            showMailContenttToEditor(result, receiver.from)
+            showMailContenttToEditor(result, receiver.from, sendTo)
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
