@@ -595,9 +595,9 @@
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
             if(sendTo === "moto")
-                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ</span></div>' + data.excerpt;
+                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + data.excerpt;
             else if (sendTo === "saki")
-                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ</span></div>' + data.excerpt;
+                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + data.excerpt;
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
