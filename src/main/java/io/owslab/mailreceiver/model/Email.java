@@ -30,7 +30,6 @@ public class Email {
     @NotNull
     private String subject;
 
-    @NotNull
     @Column(name="[to]")
     private String to;
 
@@ -40,7 +39,6 @@ public class Email {
 
     private String replyTo;
 
-    @NotNull
     private Date sentAt;
 
     private Date receivedAt;
@@ -63,6 +61,8 @@ public class Email {
     private boolean deleted;
 
     private Date deletedAt;
+
+    private String errorLog;
 
     @Transient
     private String optimizedText;
@@ -112,6 +112,34 @@ public class Email {
                  String cc, String bcc, String replyTo, Date sentAt, Date receivedAt,
                  boolean hasAttachment, int contentType, String originalBody,
                  String optimizedBody, String header, Date createdAt, String metaData,
+                 boolean deleted, Date deletedAt, String errorLog) {
+        this.messageId = messageId;
+        this.accountId = accountId;
+        this.from = from;
+        this.subject = subject;
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.replyTo = replyTo;
+        this.sentAt = sentAt;
+        this.receivedAt = receivedAt;
+        this.hasAttachment = hasAttachment;
+        this.contentType = contentType;
+        this.originalBody = originalBody;
+        this.optimizedBody = optimizedBody;
+        this.header = header;
+        this.createdAt = createdAt;
+        this.metaData = metaData;
+        this.deleted = deleted;
+        this.deletedAt = deletedAt;
+        this.errorLog = errorLog;
+        this.rangeList = new ArrayList<>();
+    }
+
+    public Email(String messageId, long accountId, String from, String subject, String to,
+                 String cc, String bcc, String replyTo, Date sentAt, Date receivedAt,
+                 boolean hasAttachment, int contentType, String originalBody,
+                 String optimizedBody, String header, Date createdAt, String metaData,
                  boolean deleted, Date deletedAt) {
         this.messageId = messageId;
         this.accountId = accountId;
@@ -134,6 +162,8 @@ public class Email {
         this.deletedAt = deletedAt;
         this.rangeList = new ArrayList<>();
     }
+
+
 
     public String getMessageId() {
         return messageId;
@@ -327,5 +357,13 @@ public class Email {
 
     public void setRangeList(List<FullNumberRange> rangeList) {
         this.rangeList = rangeList;
+    }
+
+    public String getErrorLog() {
+        return errorLog;
+    }
+
+    public void setErrorLog(String errorLog) {
+        this.errorLog = errorLog;
     }
 }

@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
 import io.owslab.mailreceiver.utils.Utils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.annotations.Fetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,18 +155,26 @@ public class IMAPFetchMailJob implements Runnable {
         for (int i = 0, n = messages.length; i < n; i++) {
             try {
                 MimeMessage message = (MimeMessage) messages[i];
-                logger.info("try to save email: " + message.getSubject() + " send at: " + message.getSentDate());
                 if(isEmailExist(message, account)) {
                     mailProgress.decreaseTotal();
-                    logger.info("Mail exist");
                     continue;
                 }
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
-                saveFiles(message, email);
+                try {
+                    saveFiles(message, email);
+                    email = setMailContent(message, email);
+                    emailDAO.save(email);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Email errorEmail = findOne(email.getMessageId());
+                    if(errorEmail != null) {
+                        String error = ExceptionUtils.getStackTrace(e);
+                        errorEmail.setErrorLog(error);
+                        emailDAO.save(errorEmail);
+                    }
+                }
                 logger.info("save email: " + message.getSubject());
-                email = setMailContent(message, email);
-                emailDAO.save(email);
                 mailProgress.increase();
             } catch (Exception e) {
                 mailProgress.decreaseTotal();
@@ -177,29 +186,36 @@ public class IMAPFetchMailJob implements Runnable {
 
     private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
         String messageId = buildMessageId(message, account);
+        Email email = findOne(messageId);
+        return email != null;
+    }
+
+    private Email findOne(String messageId) {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
-        return emailList.size() > 0;
+        return emailList.size() > 0 ? emailList.get(0) : null;
     }
 
     private Email buildReceivedMail(MimeMessage message, EmailAccount account) {
         try {
             Email email =  new Email();
             String messageId = buildMessageId(message, account);
+            Date sentAt = message.getSentDate();
+            Date receivedAt = message.getReceivedDate();
+            sentAt = sentAt != null ? sentAt : receivedAt;
             email.setMessageId(messageId);
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));
             email.setSubject("");
             email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
-            email.setSentAt(message.getSentDate());
+            email.setSentAt(sentAt);
             email.setReplyTo(getMailReplyTo(message));
-            email.setReceivedAt(message.getReceivedDate());
+            email.setReceivedAt(receivedAt);
             email.setCreatedAt(new Date());
             email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
             email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
             email.setHasAttachment(hasAttachments(message));
             email.setOriginalBody("");
             email.setOptimizedBody("");
-            logger.info("email: " + email.toString() + ", sendDate: " + message.getSentDate());
             return email;
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,22 +223,19 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
     
-    private Email setMailContent(MimeMessage message, Email email) {
-        try {
-            String subject = message.getSubject();
-            subject = EmojiParser.removeAllEmojis(subject);
-            email.setSubject(subject);
-            String originalContent = getContentText(message);
-            originalContent = EmojiParser.removeAllEmojis(originalContent);
-            email.setOriginalBody(originalContent);
-            String beforeOptimizeContent = originalContent;
-            String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
-            email.setOptimizedBody(optimizedContent);
-            return email;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
+        String subject = message.getSubject();
+        subject = subject != null ? subject : "null";
+        subject = EmojiParser.removeAllEmojis(subject);
+        email.setSubject(subject);
+        String originalContent = getContentText(message);
+        originalContent = originalContent != null ? originalContent : "";
+        originalContent = EmojiParser.removeAllEmojis(originalContent);
+        email.setOriginalBody(originalContent);
+        String beforeOptimizeContent = originalContent;
+        String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
+        email.setOptimizedBody(optimizedContent);
+        return email;
     }
 
     private String getContentText(Part p) throws MessagingException, IOException {
