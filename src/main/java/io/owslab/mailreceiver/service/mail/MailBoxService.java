@@ -85,7 +85,7 @@ public class MailBoxService {
             return listError(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByFromIgnoreCaseContainingAndErrorLogNotNullAndDeleted(optimizeSearchText, false, pageRequest);
+        Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(optimizeSearchText, false, pageRequest);
         return list;
     }
 
