@@ -23,9 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.search.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -241,7 +239,7 @@ public class IMAPFetchMailJob implements Runnable {
     private String getContentText(Part p) throws MessagingException, IOException {
 
         if (p.isMimeType("text/*")) {
-            String s = (String)p.getContent();
+            String s = getTextContent(p);
             return s;
         }
 
@@ -274,6 +272,26 @@ public class IMAPFetchMailJob implements Runnable {
         }
 
         return null;
+    }
+
+    private String getTextContent(Part p) throws IOException, MessagingException {
+        try {
+            return (String)p.getContent();
+        } catch (UnsupportedEncodingException e) {
+            OutputStream os = new ByteArrayOutputStream();
+            p.writeTo(os);
+            String raw = os.toString();
+            os.close();
+
+            //cp932 -> Windows-31J
+            raw = raw.replaceAll("cp932", "Windows-31J");
+
+            InputStream is = new ByteArrayInputStream(raw.getBytes());
+            Part newPart = new MimeBodyPart(is);
+            is.close();
+
+            return (String)newPart.getContent();
+        }
     }
 
     private String buildMessageId(MimeMessage message, EmailAccount account) throws MessagingException {
