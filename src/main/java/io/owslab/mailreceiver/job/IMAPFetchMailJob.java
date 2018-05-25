@@ -284,7 +284,7 @@ public class IMAPFetchMailJob implements Runnable {
             os.close();
 
             //cp932 -> Windows-31J
-            raw = raw.replaceAll("cp932", "Windows-31J");
+            raw = raw.replaceAll("cp932", "ms932");
 
             InputStream is = new ByteArrayInputStream(raw.getBytes());
             Part newPart = new MimeBodyPart(is);
