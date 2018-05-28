@@ -196,10 +196,12 @@ public class IMAPFetchMailJob implements Runnable {
     private Email buildReceivedMail(MimeMessage message, EmailAccount account) {
         try {
             Email email =  new Email();
+            int messageNumber = message.getMessageNumber();
             String messageId = buildMessageId(message, account);
             Date sentAt = message.getSentDate();
             Date receivedAt = message.getReceivedDate();
             sentAt = sentAt != null ? sentAt : receivedAt;
+            email.setMessageNumber(Integer.toString(messageNumber));
             email.setMessageId(messageId);
             email.setAccountId(account.getId());
             email.setFrom(getMailFrom(message));

@@ -64,6 +64,8 @@ public class Email {
 
     private String errorLog;
 
+    private String messageNumber;
+
     @Transient
     private String optimizedText;
 
@@ -88,7 +90,7 @@ public class Email {
     public Email(long accountId, String from, String subject, String to, String cc, String bcc,
                  String replyTo, Date sentAt, Date receivedAt, boolean hasAttachment,
                  int contentType, String originalBody, String optimizedBody, String header,
-                 Date createdAt, String metaData) {
+                 Date createdAt, String metaData, String messageNumber) {
         this.accountId = accountId;
         this.from = from;
         this.subject = subject;
@@ -106,13 +108,14 @@ public class Email {
         this.createdAt = createdAt;
         this.metaData = metaData;
         this.rangeList = new ArrayList<>();
+        this.messageNumber = messageNumber;
     }
 
     public Email(String messageId, long accountId, String from, String subject, String to,
                  String cc, String bcc, String replyTo, Date sentAt, Date receivedAt,
                  boolean hasAttachment, int contentType, String originalBody,
                  String optimizedBody, String header, Date createdAt, String metaData,
-                 boolean deleted, Date deletedAt, String errorLog) {
+                 boolean deleted, Date deletedAt, String errorLog, String messageNumber) {
         this.messageId = messageId;
         this.accountId = accountId;
         this.from = from;
@@ -134,13 +137,14 @@ public class Email {
         this.deletedAt = deletedAt;
         this.errorLog = errorLog;
         this.rangeList = new ArrayList<>();
+        this.messageNumber = messageNumber;
     }
 
     public Email(String messageId, long accountId, String from, String subject, String to,
                  String cc, String bcc, String replyTo, Date sentAt, Date receivedAt,
                  boolean hasAttachment, int contentType, String originalBody,
                  String optimizedBody, String header, Date createdAt, String metaData,
-                 boolean deleted, Date deletedAt) {
+                 boolean deleted, Date deletedAt, String messageNumber) {
         this.messageId = messageId;
         this.accountId = accountId;
         this.from = from;
@@ -161,6 +165,7 @@ public class Email {
         this.deleted = deleted;
         this.deletedAt = deletedAt;
         this.rangeList = new ArrayList<>();
+        this.messageNumber = messageNumber;
     }
 
 
@@ -365,5 +370,13 @@ public class Email {
 
     public void setErrorLog(String errorLog) {
         this.errorLog = errorLog;
+    }
+
+    public String getMessageNumber() {
+        return messageNumber;
+    }
+
+    public void setMessageNumber(String messageNumber) {
+        this.messageNumber = messageNumber;
     }
 }
