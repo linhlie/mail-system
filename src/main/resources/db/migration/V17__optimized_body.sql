@@ -1,0 +1,1 @@
+ALTER TABLE `emails` MODIFY `optimized_body` MEDIUMTEXT DEFAULT NULL;
