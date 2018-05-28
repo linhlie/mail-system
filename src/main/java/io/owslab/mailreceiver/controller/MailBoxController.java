@@ -2,17 +2,20 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
 
@@ -81,5 +84,15 @@ public class MailBoxController {
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
         return "admin/mailbox/listError";
+    }
+
+    @RequestMapping(value="/admin/retry", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getRetryEmail (@RequestParam(value = "messageId") String messageId){
+        AjaxResponseBody result = new AjaxResponseBody();
+        mailBoxService.retry(messageId);
+        result.setMsg("done");
+        result.setStatus(true);
+        return ResponseEntity.ok(result);
     }
 }

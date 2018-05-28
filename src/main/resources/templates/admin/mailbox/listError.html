@@ -32,6 +32,7 @@
                                         <th>Error log</th>
                                         <th>Attactment</th>
                                         <th>Since</th>
+                                        <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -44,6 +45,9 @@
                                             <i th:class="${item.original.hasAttachment} ? 'fa fa-paperclip' : ''"></i>
                                         </td>
                                         <td class="mailbox-date" th:text="${item.relativeDate}"></td>
+                                        <td>
+                                            <button th:data="${item.original.messageId}" name="retry" type="button" class="btn btn-xs btn-default">Retry</button>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -104,5 +108,8 @@
         </div>
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/mailbox/listError.js"></script>
+</th:block>
 </body>
 </html>

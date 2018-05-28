@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.mail;
 
+import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
@@ -10,10 +11,13 @@ import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.Utils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Whitelist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,8 +25,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.mail.*;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.MessageNumberTerm;
+import javax.mail.search.SearchTerm;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +44,8 @@ import java.util.regex.Pattern;
 @Service
 @CacheConfig(cacheNames = "short_term_data")
 public class MailBoxService {
+    private static final Logger logger = LoggerFactory.getLogger(MailBoxService.class);
+
     public static final String HIGHLIGHT_RANGE_COLOR = "#ff9900";
     public static final int USE_RAW = 0;
     public static final int USE_LOWER_LIMIT = 1;
@@ -261,5 +275,154 @@ public class MailBoxService {
 
         String replaced = source.replaceAll(regex, styleReplacement);
         return replaced;
+    }
+
+    public void retry(String messageId) {
+        Email email = findOne(messageId);
+        if(email == null) return;
+        long accountId = email.getAccountId();
+        List<EmailAccount> listAccount = mailAccountsService.findById(accountId);
+        EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+        if(emailAccount == null) return;
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(accountId);
+        if(accountSetting == null) return;
+        try {
+            Store store = createStore(accountSetting);
+            if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
+                store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
+            } else {
+                store.connect(accountSetting.getMailServerAddress(), emailAccount.getAccount(), accountSetting.getPassword());
+            }
+
+            //create the folder object and open it
+            Folder emailFolder = store.getFolder("INBOX");
+            int openFolderFlag = Folder.READ_ONLY ;
+            emailFolder.open(openFolderFlag);
+
+            SearchTerm searchTerm = buildRetryTerm(email.getMessageNumber());
+            Message messages[] = emailFolder.search(searchTerm);
+            if(messages.length > 0) {
+                try {
+                    MimeMessage message = (MimeMessage) messages[0];
+                    try {
+                        email = setMailContent(message, email);
+                        email.setErrorLog(null);
+                        emailDAO.save(email);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Email errorEmail = findOne(email.getMessageId());
+                        if(errorEmail != null) {
+                            String error = ExceptionUtils.getStackTrace(e);
+                            errorEmail.setErrorLog(error);
+                            emailDAO.save(errorEmail);
+                        }
+                    }
+                    logger.info("retry email: " + message.getSubject());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            emailFolder.close(true);
+            store.close();
+
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Email findOne(String messageId) {
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
+        return emailList.size() > 0 ? emailList.get(0) : null;
+    }
+
+    private SearchTerm buildRetryTerm(String messageNumber) {
+        return messageNumber != null ? new MessageNumberTerm(Integer.parseInt(messageNumber)) : null;
+    }
+
+    private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
+        Properties properties = new Properties();
+        properties.put("mail.imap.host", account.getMailServerAddress());
+        properties.put("mail.imap.port", account.getMailServerPort());
+        properties.put("mail.imap.starttls.enable", "true");
+        Session emailSession = Session.getDefaultInstance(properties);
+        Store store = emailSession.getStore("imaps");
+        return store;
+    }
+
+    private Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
+        String subject = message.getSubject();
+        subject = subject != null ? subject : "null";
+        subject = EmojiParser.removeAllEmojis(subject);
+        email.setSubject(subject);
+        String originalContent = getContentText(message);
+        originalContent = originalContent != null ? originalContent : "";
+        originalContent = EmojiParser.removeAllEmojis(originalContent);
+        email.setOriginalBody(originalContent);
+        String beforeOptimizeContent = originalContent;
+        String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
+        email.setOptimizedBody(optimizedContent);
+        return email;
+    }
+
+    private String getContentText(Part p) throws MessagingException, IOException {
+
+        if (p.isMimeType("text/*")) {
+            String s = getTextContent(p);
+            return s;
+        }
+
+        if (p.isMimeType("multipart/alternative")) {
+            // prefer html text over plain text
+            Multipart mp = (Multipart)p.getContent();
+            String text = null;
+            for (int i = 0; i < mp.getCount(); i++) {
+                Part bp = mp.getBodyPart(i);
+                if (bp.isMimeType("text/plain")) {
+                    if (text == null)
+                        text = getContentText(bp);
+                    continue;
+                } else if (bp.isMimeType("text/html")) {
+                    String s = getContentText(bp);
+                    if (s != null)
+                        return s;
+                } else {
+                    return getContentText(bp);
+                }
+            }
+            return text;
+        } else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart)p.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                String s = getContentText(mp.getBodyPart(i));
+                if (s != null)
+                    return s;
+            }
+        }
+
+        return null;
+    }
+
+    private String getTextContent(Part p) throws IOException, MessagingException {
+        try {
+            return (String)p.getContent();
+        } catch (UnsupportedEncodingException e) {
+            OutputStream os = new ByteArrayOutputStream();
+            p.writeTo(os);
+            String raw = os.toString();
+            os.close();
+
+            //cp932 -> Windows-31J
+            raw = raw.replaceAll("cp932", "ms932");
+
+            InputStream is = new ByteArrayInputStream(raw.getBytes());
+            Part newPart = new MimeBodyPart(is);
+            is.close();
+
+            return (String)newPart.getContent();
+        }
     }
 }
