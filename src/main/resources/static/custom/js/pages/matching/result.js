@@ -35,6 +35,9 @@
     var receiverValidate = true;
     var ccValidate = true;
 
+    var externalCCGlobal = [];
+    var senderGlobal = "";
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
@@ -80,8 +83,13 @@
                 $('.tag').each(function () {
                     var tag = $(this).text();
                     var email = tag.substring(0, tag.length - 3);
-                    if (email.endsWith("world-link-system.com"))
+                    var globalMailDoman = getEmailDomain(senderGlobal);
+                    var emailDomain = getEmailDomain(email);
+                    if (globalMailDoman == emailDomain) {
                         $(this).css('background-color', 'yellow');
+                    } else if(externalCCGlobal.indexOf(email) >= 0) {
+                        $(this).css('background-color', 'yellow');
+                    }
                 });
             }
         });
@@ -122,6 +130,13 @@
             updateData();
         }
     });
+
+    function getEmailDomain(email) {
+        if(typeof email === "string"  && email.indexOf("@") >= 0) {
+            return email.split("@")[1]
+        }
+        return "";
+    }
 
     function initReplaceSelector() {
         var motoSelectedValue = localStorage.getItem("motoSelectedValue");
@@ -571,9 +586,11 @@
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
+            senderGlobal = data.account;
             var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            externalCCGlobal = externalCC;
             cc = cc.concat(to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
