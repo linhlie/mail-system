@@ -280,6 +280,8 @@ public class MailBoxService {
     public void retry(String messageId) {
         Email email = findOne(messageId);
         if(email == null) return;
+        String messageNumber = email.getMessageNumber();
+        if(messageNumber == null) return;
         long accountId = email.getAccountId();
         List<EmailAccount> listAccount = mailAccountsService.findById(accountId);
         EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
