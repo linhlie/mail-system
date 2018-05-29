@@ -672,6 +672,7 @@
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
         var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
+        var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
@@ -680,6 +681,7 @@
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": spaceEffective
         };
+        sessionStorage.setItem("distinguish", distinguish);
         sessionStorage.setItem("spaceEffective", spaceEffective);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
         // window.location = '/user/matchingResult';

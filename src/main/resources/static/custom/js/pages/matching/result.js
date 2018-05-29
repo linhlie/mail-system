@@ -40,6 +40,7 @@
     var senderGlobal = "";
 
     var spaceEffective = false;
+    var distinguish = false;
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
@@ -77,7 +78,9 @@
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
         var spaceEffectiveStr = sessionStorage.getItem("spaceEffective");
+        var distinguishStr = sessionStorage.getItem("distinguish");
         spaceEffective = spaceEffectiveStr ? !!JSON.parse(spaceEffectiveStr) : false;
+        distinguish = distinguishStr ? !!JSON.parse(distinguishStr) : false;
         $('#' + rdMailCCId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
@@ -531,7 +534,9 @@
         var url = "/user/matchingResult/email?messageId=" + messageId;
         if(highlightWord && highlightWord.length > 0) {
             highlightWord = highlightWord.replace(/\+/g, '%2B');
-            url = url + "&highlightWord=" + highlightWord + "&spaceEffective=" + spaceEffective;
+            url = url + "&highlightWord=" + highlightWord
+                + "&spaceEffective=" + spaceEffective
+                + "&distinguish=" + distinguish;
         }
         $.ajax({
             type: "GET",
