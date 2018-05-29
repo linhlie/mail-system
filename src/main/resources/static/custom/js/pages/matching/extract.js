@@ -3,6 +3,7 @@
     var sourceTableId = 'sourceMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
+    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
@@ -38,6 +39,7 @@
         '</tr>';
 
     $(function () {
+        initPreviewArea();
         $('#' + rdMailCCId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
@@ -64,6 +66,20 @@
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
     });
+
+    function initPreviewArea() {
+        tinymce.init({
+            selector: '#previewBody',
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            plugins: "owssearch",
+            menubar: "",
+            height: 250,
+            toolbar: "owssearch",
+            readonly : 1,
+        });
+    }
 
     function getEmailDomain(email) {
         if(typeof email === "string"  && email.indexOf("@") >= 0) {
@@ -365,7 +381,7 @@
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        mailBodyDiv.innerHTML = "";
+        updateMailPreviewContent("");
         mailAttachmentDiv.innerHTML = "";
         if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
@@ -373,7 +389,7 @@
                 '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
                 '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            mailBodyDiv.innerHTML = data.originalBody;
+            updateMailPreviewContent(data.originalBody);
             var files = data.files ? data.files : [];
             if (files.length > 0) {
                 var filesInnerHTML = "";
@@ -585,6 +601,11 @@
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData();
+    }
+
+    function updateMailPreviewContent(content) {
+        var editor = tinymce.get(mailPreviewId);
+        editor.setContent(content);
     }
 
     function updateMailEditorContent(content, preventClear) {
