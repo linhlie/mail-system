@@ -5,6 +5,7 @@
     var destinationTableId = 'destinationMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
+    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
@@ -62,6 +63,7 @@
         '</tr>';
 
     $(function () {
+        initPreviewArea();
         initReplaceSelector();
         initDropzone();
         initSortDestination();
@@ -130,6 +132,20 @@
             updateData();
         }
     });
+
+    function initPreviewArea() {
+        tinymce.init({
+            selector: '#previewBody',
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            plugins: "owssearch",
+            menubar: "",
+            height: 250,
+            toolbar: "owssearch",
+            readonly : 1,
+        });
+    }
 
     function getEmailDomain(email) {
         if(typeof email === "string"  && email.indexOf("@") >= 0) {
@@ -544,10 +560,9 @@
     function showMailContent(data) {
         // console.log("showMailContent: ", data);
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
-        var mailBodyDiv = document.getElementById(mailBodyDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        mailBodyDiv.innerHTML = "";
+        updateMailPreviewContent("");
         // updateMailEditorContent("");
         mailAttachmentDiv.innerHTML = "";
         if(data){
@@ -556,7 +571,7 @@
             '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
             '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            mailBodyDiv.innerHTML = data.originalBody;
+            updateMailPreviewContent(data.originalBody);
             // updateMailEditorContent(data.originalBody);
             var files = data.files ? data.files : [];
             if(files.length > 0){
@@ -643,6 +658,12 @@
             }
         }
     }
+
+    function updateMailPreviewContent(content) {
+        var editor = tinymce.get(mailPreviewId);
+        editor.setContent(content);
+    }
+
 
     function updateMailEditorContent(content, preventClear){
         var editor = tinymce.get(rdMailBodyId);

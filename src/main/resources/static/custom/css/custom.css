@@ -585,3 +585,7 @@ div.rule-value-container input[type="text"] {
 .dropzone .dz-preview .dz-details {
     padding: 1em;
 }
+
+.mce-i-owssearch:before {
+    content: "\e009";
+}
