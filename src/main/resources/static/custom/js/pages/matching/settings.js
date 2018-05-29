@@ -671,14 +671,16 @@
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
+        var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
             "matchingConditionData" : matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
-            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true"
+            "spaceEffective": spaceEffective
         };
+        sessionStorage.setItem("spaceEffective", spaceEffective);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
         // window.location = '/user/matchingResult';
         var win = window.open('/user/matchingResult', '_blank');

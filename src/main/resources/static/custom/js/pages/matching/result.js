@@ -39,6 +39,8 @@
     var externalCCGlobal = [];
     var senderGlobal = "";
 
+    var spaceEffective = false;
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
@@ -74,6 +76,8 @@
         setupDisplatNonZeroListener();
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
+        var spaceEffectiveStr = sessionStorage.getItem("spaceEffective");
+        spaceEffective = spaceEffectiveStr ? !!JSON.parse(spaceEffectiveStr) : false;
         $('#' + rdMailCCId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
@@ -443,10 +447,11 @@
         var index = row.getAttribute("data");
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
-            showMail(rowData.source.messageId, function (result) {
-                var highlightResult = Object.assign({}, result);
-                highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                showMailContent(highlightResult);
+            showMail(rowData.source.messageId, rowData.word, function (result) {
+                // var highlightResult = Object.assign({}, result);
+                // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                // showMailContent(highlightResult);
+                showMailContent(result);
                 updatePreviewMailToPrint(result);
             });
         }
@@ -458,10 +463,11 @@
         var index = row.getAttribute("data");
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
-            showMail(rowData.messageId, function (result) {
-                var highlightResult = Object.assign({}, result);
-                highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                showMailContent(highlightResult);
+            showMail(rowData.messageId, rowData.word, function (result) {
+                // var highlightResult = Object.assign({}, result);
+                // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                // showMailContent(highlightResult);
+                showMailContent(result);
                 updatePreviewMailToPrint(result);
             });
         }
@@ -493,10 +499,11 @@
             firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
-                showMail(rowData.source.messageId, function (result) {
-                    var highlightResult = Object.assign({}, result);
-                    highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                    showMailContent(highlightResult);
+                showMail(rowData.source.messageId, rowData.word, function (result) {
+                    // var highlightResult = Object.assign({}, result);
+                    // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                    // showMailContent(highlightResult);
+                    showMailContent(result);
                     updatePreviewMailToPrint(result);
                 });
             }
@@ -519,12 +526,17 @@
         $("#"+ tableId + "> tbody").html(replaceHtml);
     }
     
-    function showMail(messageId, callback) {
+    function showMail(messageId, highlightWord, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
+        var url = "/user/matchingResult/email?messageId=" + messageId;
+        if(highlightWord && highlightWord.length > 0) {
+            highlightWord = highlightWord.replace(/\+/g, '%2B');
+            url = url + "&highlightWord=" + highlightWord + "&spaceEffective=" + spaceEffective;
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/email?messageId=" + messageId,
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {

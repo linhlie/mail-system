@@ -140,18 +140,25 @@ public class MailBoxService {
         return commentstr;
     }
 
-    public List<DetailMailDTO> getMailDetail(String messageId){
+    public List<DetailMailDTO> getMailDetail(String messageId, String highlightWord, boolean spaceEffective){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
-        for(Email email : emailList) {
-            DetailMailDTO result = new DetailMailDTO(email);
-            List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
-            for(AttachmentFile file : files){
-                result.addFile(file);
-            }
-            results.add(result);
+        if(emailList.size() == 0) return results;
+        Email email = emailList.get(0);
+        DetailMailDTO result = new DetailMailDTO(email);
+        String highlightedBody = buildHighLightBody(result.getOriginalBody(), highlightWord, spaceEffective);
+        result.setOriginalBody(highlightedBody);
+        List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+        for(AttachmentFile file : files){
+            result.addFile(file);
         }
+        results.add(result);
         return results;
+    }
+
+    private String buildHighLightBody(String raw, String highlightWord, boolean spaceEffective) {
+        if(highlightWord == null) return raw;
+        return raw;
     }
 
     public List<DetailMailDTO> getContentRelyEmail(String replyId) throws Exception {

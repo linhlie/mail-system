@@ -148,9 +148,14 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/email", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getEmailInJSON (@RequestParam(value = "messageId", required = true) String messageId){
+    ResponseEntity<?> getEmailInJSON (
+            @RequestParam(value = "messageId", required = true) String messageId,
+            @RequestParam(value = "highlightWord", required = false) String highlightWord,
+            @RequestParam(value = "spaceEffective", required = false) boolean spaceEffective
+    ){
+        System.out.println("highlightWord: " + highlightWord);
         AjaxResponseBody result = new AjaxResponseBody();
-        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId);
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId, highlightWord, spaceEffective);
         result.setMsg("done");
         result.setStatus(true);
         result.setList(mailDetail);
