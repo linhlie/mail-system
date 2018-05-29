@@ -444,7 +444,9 @@
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId, function (result) {
-                showMailContent(result)
+                var highlightResult = Object.assign({}, result);
+                highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                showMailContent(highlightResult);
                 updatePreviewMailToPrint(result);
             });
         }
@@ -457,10 +459,25 @@
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, function (result) {
-                showMailContent(result);
+                var highlightResult = Object.assign({}, result);
+                highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                showMailContent(highlightResult);
                 updatePreviewMailToPrint(result);
             });
         }
+    }
+
+    function getContentWithHighlightWords(result, word) {
+        if(!word || word.length == 0 ) return result;
+        var regEx = new RegExp(word, "ig");
+        var matches = result.originalBody.match(regEx);
+        for(var i = 0; i < matches.length; i++) {
+            var word = matches[i];
+            var regEx2 = new RegExp(word, "g");
+            var replaceMask = '<span style="color: #ff0000;">' + word + '</span>';
+            result.originalBody = result.originalBody.replace(regEx2, replaceMask);
+        }
+        return result;
     }
     
     function selectFirstRow() {
@@ -477,7 +494,9 @@
             var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, function (result) {
-                    showMailContent(result)
+                    var highlightResult = Object.assign({}, result);
+                    highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
+                    showMailContent(highlightResult);
                     updatePreviewMailToPrint(result);
                 });
             }
