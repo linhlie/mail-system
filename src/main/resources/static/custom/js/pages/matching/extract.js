@@ -39,6 +39,13 @@
         "separateWordSearch": false,
     };
 
+    var rangeMarkOptions = {
+        "element": "mark",
+        "className": "mark-range",
+        "separateWordSearch": false,
+        "acrossElements": true,
+    };
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -312,7 +319,7 @@
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
                 updatePreviewMailToPrint(result);
-            });
+            }, rowData.range);
         }
     }
 
@@ -326,7 +333,7 @@
                 showMail(rowData.messageId, function (result) {
                     showMailContent(result);
                     updatePreviewMailToPrint(result);
-                });
+                }, rowData.range);
             }
             selectedRowData = rowData;
         }
@@ -345,12 +352,16 @@
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
-    function showMail(messageId, callback) {
+    function showMail(messageId, callback, matchRange) {
         messageId = messageId.replace(/\+/g, '%2B');
+        var url = "/user/matchingResult/email?messageId=" + messageId;
+        if(matchRange && matchRange.length > 0) {
+            url = url + "&matchRange=" + matchRange
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/email?messageId=" + messageId,
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {
@@ -378,15 +389,14 @@
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        showMailBodyContent("");
+        showMailBodyContent({originalBody: ""});
         mailAttachmentDiv.innerHTML = "";
         if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
                 '<h5><b>' + data.subject + '</b></h5>' +
                 '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
                 '</div>';
-            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            showMailBodyContent(data.originalBody);
+            showMailBodyContent(data);
             var files = data.files ? data.files : [];
             if (files.length > 0) {
                 var filesInnerHTML = "";
@@ -563,10 +573,11 @@
         });
     }
 
-    function showMailBodyContent(content) {
+    function showMailBodyContent(data) {
+        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(mailBodyDivId);
-        mailBodyDiv.innerHTML = content;
-        highlight();
+        mailBodyDiv.innerHTML = data.originalBody;
+        highlight(data);
     }
 
     function showMailContenttToEditor(data, receiver) {
@@ -703,11 +714,13 @@
         $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
-    function highlight() {
+    function highlight(data) {
+        data = data || {};
+        var highLightRanges = data.highLightRanges || [];
         $("input[type='search']").val("");
         $("#" + mailBodyDivId).unmark({
             done: function() {
-                // $("#" + mailBodyDivId).mark("ワーク a", markOptions);
+                $("#" + mailBodyDivId).mark(highLightRanges, rangeMarkOptions);
             }
         });
     }

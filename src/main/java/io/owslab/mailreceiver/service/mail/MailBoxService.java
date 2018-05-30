@@ -148,7 +148,7 @@ public class MailBoxService {
         return commentstr;
     }
 
-    public List<DetailMailDTO> getMailDetail(String messageId, String highlightWord, boolean spaceEffective, boolean distinguish){
+    public List<DetailMailDTO> getMailDetail(String messageId, String highlightWord, String matchRange, boolean spaceEffective, boolean distinguish){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         if(emailList.size() == 0) return results;
@@ -173,6 +173,10 @@ public class MailBoxService {
             }
             result.setHighLightWords(highLightWords);
             result.setExcludeWords(excludeWords);
+        }
+        List<String> highLightRanges = result.getHighLightRanges();
+        if(matchRange != null) {
+            highLightRanges.add(matchRange);
         }
         List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
         for(AttachmentFile file : files){

@@ -625,6 +625,11 @@ mark.mark-invisible {
     color: black;
 }
 
+mark.mark-range {
+    background: #00EFC5;
+    color: black;
+}
+
 .mark-search-header {
     padding: 10px;
     width: 100%;

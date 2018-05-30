@@ -55,6 +55,13 @@
         "acrossElements": true,
     };
 
+    var rangeMarkOptions = {
+        "element": "mark",
+        "className": "mark-range",
+        "separateWordSearch": false,
+        "acrossElements": true,
+    };
+
     var markSearchOptions = {
         "element": "mark",
         "className": "mark-search",
@@ -472,7 +479,7 @@
             showMail(rowData.messageId, rowData.word, function (result) {
                 showMailContent(result);
                 updatePreviewMailToPrint(result);
-            });
+            }, rowData.matchRange);
         }
     }
     
@@ -513,7 +520,7 @@
         $("#"+ tableId + "> tbody").html(replaceHtml);
     }
     
-    function showMail(messageId, highlightWord, callback) {
+    function showMail(messageId, highlightWord, callback, matchRange) {
         messageId = messageId.replace(/\+/g, '%2B');
         var url = "/user/matchingResult/email?messageId=" + messageId;
         if(highlightWord && highlightWord.length > 0) {
@@ -521,6 +528,9 @@
             url = url + "&highlightWord=" + highlightWord
                 + "&spaceEffective=" + spaceEffective
                 + "&distinguish=" + distinguish;
+        }
+        if(matchRange && matchRange.length > 0) {
+            url = url + "&matchRange=" + matchRange
         }
         $.ajax({
             type: "GET",
@@ -582,7 +592,7 @@
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        showMailBodyContent("");
+        showMailBodyContent({originalBody: ""});
         // updateMailEditorContent("");
         mailAttachmentDiv.innerHTML = "";
         if(data){
@@ -590,9 +600,7 @@
                 '<h5><b>' + data.subject + '</b></h5>' +
             '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
             '</div>';
-            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            showMailBodyContent(data.originalBody, data.highLightWords, data.excludeWords);
-            // updateMailEditorContent(data.originalBody);
+            showMailBodyContent(data);
             var files = data.files ? data.files : [];
             if(files.length > 0){
                 var filesInnerHTML = "";
@@ -614,10 +622,11 @@
         }
     }
     
-    function showMailBodyContent(content, highlightWords, excludeWords) {
+    function showMailBodyContent(data) {
+        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(mailBodyDivId);
-        mailBodyDiv.innerHTML = content;
-        highlight(highlightWords, excludeWords);
+        mailBodyDiv.innerHTML = data.originalBody;
+        highlight(data);
     }
 
     function showMailContenttToEditor(data, receiver, sendTo) {
@@ -931,14 +940,17 @@
     }
 
     
-    function highlight(highlightWords, excludeWords) {
-        highlightWords = highlightWords || [];
-        excludeWords = excludeWords || [];
+    function highlight(data) {
+        data = data || {};
+        var highlightWords = data.highlightWords || [];
+        var excludeWords = data.excludeWords || [];
+        var highLightRanges = data.highLightRanges || [];
         $("input[type='search']").val("");
         $("#" + mailBodyDivId).unmark({
             done: function() {
                 $("#" + mailBodyDivId).mark(highlightWords, markOptions);
                 $("#" + mailBodyDivId).mark(excludeWords, invisibleMarkOptions);
+                $("#" + mailBodyDivId).mark(highLightRanges, rangeMarkOptions);
             }
         });
     }

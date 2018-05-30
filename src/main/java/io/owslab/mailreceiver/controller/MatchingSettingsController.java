@@ -151,11 +151,12 @@ public class MatchingSettingsController {
     ResponseEntity<?> getEmailInJSON (
             @RequestParam(value = "messageId", required = true) String messageId,
             @RequestParam(value = "highlightWord", required = false) String highlightWord,
+            @RequestParam(value = "matchRange", required = false) String matchRange,
             @RequestParam(value = "spaceEffective", required = false) boolean spaceEffective,
             @RequestParam(value = "distinguish", required = false) boolean distinguish
     ){
         AjaxResponseBody result = new AjaxResponseBody();
-        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId, highlightWord, spaceEffective, distinguish);
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId, highlightWord, matchRange, spaceEffective, distinguish);
         result.setMsg("done");
         result.setStatus(true);
         result.setList(mailDetail);
