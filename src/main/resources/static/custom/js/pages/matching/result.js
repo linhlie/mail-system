@@ -44,11 +44,13 @@
 
     var markOptions = {
         "element": "mark",
+        "separateWordSearch": false,
     };
 
     var markSearchOptions = {
         "element": "mark",
-        "className": "mark-search"
+        "className": "mark-search",
+        "separateWordSearch": false,
     };
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
@@ -999,7 +1001,6 @@
                             $content.mark(searchVal, Object.assign({},
                                 markSearchOptions,
                                 {
-                                    separateWordSearch: true,
                                     done: function() {
                                         $results = $content.find("mark.mark-search");
                                         currentIndex = 0;
