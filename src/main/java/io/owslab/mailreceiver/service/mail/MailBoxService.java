@@ -9,6 +9,8 @@ import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.word.FuzzyWordService;
+import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.Utils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -68,6 +70,12 @@ public class MailBoxService {
 
     @Autowired
     private EmailAccountSettingService emailAccountSettingService;
+
+    @Autowired
+    private WordService wordService;
+
+    @Autowired
+    private FuzzyWordService fuzzyWordService;
     
     private List<Email> cachedEmailList = null;
 
@@ -146,19 +154,32 @@ public class MailBoxService {
         if(emailList.size() == 0) return results;
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
-        String highlightedBody = buildHighLightBody(result.getOriginalBody(), highlightWord, spaceEffective);
-        result.setOriginalBody(highlightedBody);
+        if(highlightWord != null) {
+            List<String> highLightWords = new ArrayList<>();
+            List<String> excludeWords = new ArrayList<>();
+            highLightWords.add(highlightWord);
+            Word word = wordService.findOne(highlightWord);
+            if(word != null) {
+                List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
+                List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
+                for(Word sameWord : sameWords){
+                    highLightWords.add(sameWord.getWord());
+                }
+                for(Word exclusionWord : exclusionWords){
+                    String exclusionWordStr = exclusionWord.getWord();
+                    if(!highLightWords.contains(exclusionWordStr))
+                        excludeWords.add(exclusionWordStr);
+                }
+            }
+            result.setHighLightWords(highLightWords);
+            result.setExcludeWords(excludeWords);
+        }
         List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
         for(AttachmentFile file : files){
             result.addFile(file);
         }
         results.add(result);
         return results;
-    }
-
-    private String buildHighLightBody(String raw, String highlightWord, boolean spaceEffective) {
-        if(highlightWord == null) return raw;
-        return raw;
     }
 
     public List<DetailMailDTO> getContentRelyEmail(String replyId) throws Exception {

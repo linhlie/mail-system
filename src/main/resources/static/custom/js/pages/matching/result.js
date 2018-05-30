@@ -45,12 +45,21 @@
     var markOptions = {
         "element": "mark",
         "separateWordSearch": false,
+        "acrossElements": true,
+    };
+
+    var invisibleMarkOptions = {
+        "element": "mark",
+        "className": "mark-invisible",
+        "separateWordSearch": false,
+        "acrossElements": true,
     };
 
     var markSearchOptions = {
         "element": "mark",
         "className": "mark-search",
         "separateWordSearch": false,
+        "acrossElements": true,
     };
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
@@ -448,9 +457,6 @@
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId, rowData.word, function (result) {
-                // var highlightResult = Object.assign({}, result);
-                // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                // showMailContent(highlightResult);
                 showMailContent(result);
                 updatePreviewMailToPrint(result);
             });
@@ -464,26 +470,10 @@
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, rowData.word, function (result) {
-                // var highlightResult = Object.assign({}, result);
-                // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                // showMailContent(highlightResult);
                 showMailContent(result);
                 updatePreviewMailToPrint(result);
             });
         }
-    }
-
-    function getContentWithHighlightWords(result, word) {
-        if(!word || word.length == 0 ) return result;
-        var regEx = new RegExp(word, "ig");
-        var matches = result.originalBody.match(regEx);
-        for(var i = 0; i < matches.length; i++) {
-            var word = matches[i];
-            var regEx2 = new RegExp(word, "g");
-            var replaceMask = '<span style="color: #ff0000;">' + word + '</span>';
-            result.originalBody = result.originalBody.replace(regEx2, replaceMask);
-        }
-        return result;
     }
     
     function selectFirstRow() {
@@ -500,9 +490,6 @@
             var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, rowData.word, function (result) {
-                    // var highlightResult = Object.assign({}, result);
-                    // highlightResult = getContentWithHighlightWords(highlightResult, rowData.word);
-                    // showMailContent(highlightResult);
                     showMailContent(result);
                     updatePreviewMailToPrint(result);
                 });
@@ -604,7 +591,7 @@
             '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
             '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            showMailBodyContent(data.originalBody);
+            showMailBodyContent(data.originalBody, data.highLightWords, data.excludeWords);
             // updateMailEditorContent(data.originalBody);
             var files = data.files ? data.files : [];
             if(files.length > 0){
@@ -627,10 +614,10 @@
         }
     }
     
-    function showMailBodyContent(content) {
+    function showMailBodyContent(content, highlightWords, excludeWords) {
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         mailBodyDiv.innerHTML = content;
-        highlight();
+        highlight(highlightWords, excludeWords);
     }
 
     function showMailContenttToEditor(data, receiver, sendTo) {
@@ -944,11 +931,14 @@
     }
 
     
-    function highlight() {
+    function highlight(highlightWords, excludeWords) {
+        highlightWords = highlightWords || [];
+        excludeWords = excludeWords || [];
         $("input[type='search']").val("");
         $("#" + mailBodyDivId).unmark({
             done: function() {
-                // $("#" + mailBodyDivId).mark("ます", markOptions);
+                $("#" + mailBodyDivId).mark(highlightWords, markOptions);
+                $("#" + mailBodyDivId).mark(excludeWords, invisibleMarkOptions);
             }
         });
     }

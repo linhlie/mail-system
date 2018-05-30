@@ -51,6 +51,10 @@ public class DetailMailDTO {
 
     private List<FileDTO> files;
 
+    private List<String> highLightWords;
+
+    private List<String> excludeWords;
+
     public DetailMailDTO(Email email) {
         this.setMessageId(email.getMessageId());
         this.setAccountId(email.getAccountId());
@@ -66,6 +70,8 @@ public class DetailMailDTO {
         this.setContentType(email.getContentType());
         this.setOriginalBody(email.getOriginalBody());
         this.files = new ArrayList<>();
+        this.highLightWords = new ArrayList<>();
+        this.excludeWords = new ArrayList<>();
     }
 
     public DetailMailDTO(Email email, String account) {
@@ -239,5 +245,21 @@ public class DetailMailDTO {
 
     public void setExcerpt(String excerpt) {
         this.excerpt = excerpt;
+    }
+
+    public List<String> getHighLightWords() {
+        return highLightWords;
+    }
+
+    public void setHighLightWords(List<String> highLightWords) {
+        this.highLightWords = highLightWords;
+    }
+
+    public List<String> getExcludeWords() {
+        return excludeWords;
+    }
+
+    public void setExcludeWords(List<String> excludeWords) {
+        this.excludeWords = excludeWords;
     }
 }

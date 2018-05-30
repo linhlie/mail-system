@@ -605,17 +605,24 @@ div.rule-value-container input[type="text"] {
 }
 
 mark{
-    background: green;
-    color: black;
+    background: transparent;
+    color: red;
     padding: 0;
 }
 
 mark.mark-search{
     background: yellow;
+    color: black;
 }
 
 mark.mark-search.current {
     background: orange ;
+    color: black;
+}
+
+mark.mark-invisible {
+    background: transparent;
+    color: black;
 }
 
 .mark-search-header {
