@@ -177,6 +177,15 @@ public class MailBoxService {
         List<String> highLightRanges = result.getHighLightRanges();
         if(matchRange != null) {
             highLightRanges.add(matchRange);
+        } else {
+            String optimizedPart = email.getOptimizedText(false);
+            List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(email.getMessageId(), optimizedPart);
+            for(FullNumberRange range : fullNumberRanges){
+                String rangeStr = range.toString();
+                if(!highLightRanges.contains(rangeStr)) {
+                    highLightRanges.add(rangeStr);
+                }
+            }
         }
         List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
         for(AttachmentFile file : files){
