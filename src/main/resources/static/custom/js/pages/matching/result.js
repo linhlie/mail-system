@@ -942,13 +942,13 @@
     
     function highlight(data) {
         data = data || {};
-        var highlightWords = data.highlightWords || [];
+        var highLightWords = data.highLightWords || [];
         var excludeWords = data.excludeWords || [];
         var highLightRanges = data.highLightRanges || [];
         $("input[type='search']").val("");
         $("#" + mailBodyDivId).unmark({
             done: function() {
-                $("#" + mailBodyDivId).mark(highlightWords, markOptions);
+                $("#" + mailBodyDivId).mark(highLightWords, markOptions);
                 $("#" + mailBodyDivId).mark(excludeWords, invisibleMarkOptions);
                 $("#" + mailBodyDivId).mark(highLightRanges, rangeMarkOptions);
             }

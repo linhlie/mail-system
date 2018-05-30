@@ -155,8 +155,8 @@ public class MailBoxService {
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
         if(highlightWord != null) {
-            List<String> highLightWords = new ArrayList<>();
-            List<String> excludeWords = new ArrayList<>();
+            List<String> highLightWords = result.getHighLightWords();
+            List<String> excludeWords = result.getExcludeWords();
             highLightWords.add(highlightWord);
             Word word = wordService.findOne(highlightWord);
             if(word != null) {
@@ -171,8 +171,6 @@ public class MailBoxService {
                         excludeWords.add(exclusionWordStr);
                 }
             }
-            result.setHighLightWords(highLightWords);
-            result.setExcludeWords(excludeWords);
         }
         List<String> highLightRanges = result.getHighLightRanges();
         if(matchRange != null) {
