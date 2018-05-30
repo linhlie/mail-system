@@ -30,7 +30,7 @@
                     <option value="4">先の下代</option>
                 </select>
             </div>
-            <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+            <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
                 <div class="col-sm-12">
                     <h4 id="totalSourceMatching">絞り込み元</h4>
                 </div>
@@ -108,7 +108,18 @@
                     </span>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
-                        <textarea id="previewBody"></textarea>
+                        <div class="mail-body-container">
+                            <div class="mark-search-header">
+                                検索:
+                                <input type="search" placeholder="単語"/>
+                                <button type="button" data-search="next">&darr;</button>
+                                <button type="button" data-search="prev">&uarr;</button>
+                                <button type="button" data-search="clear">✖</button>
+                            </div>
+                            <div id="mailBody" class="mail-body">
+
+                            </div>
+                        </div>
                         <div id="mailAttachment" class="mail-attachment"></div>
                     </div>
                     <div style="display: none" id="printElement">

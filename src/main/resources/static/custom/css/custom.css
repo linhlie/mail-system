@@ -366,6 +366,16 @@ input.form-error {
     overflow: scroll;
 }
 
+.matching-result .mail-body {
+    width: 100%;
+    border-top: #a5a5a5 solid 1px;
+    overflow: scroll;
+}
+
+.matching-result .mail-body-container {
+    width: 100%;
+    border: #a5a5a5 solid 1px;
+}
 .matching-result .mail-subject {
     min-height: 40px;
     border: #a5a5a5 solid 1px;
@@ -374,9 +384,13 @@ input.form-error {
     padding-top: 5px;
 }
 
-.matching-result .mail-part.mail-body {
+.matching-result .mail-body-container {
     margin-top: 10px;
     height: 490px;
+}
+
+.matching-result .mail-body {
+    height: 444px;
 }
 
 .matching-result .mail-attachment {
@@ -434,7 +448,7 @@ input.form-error {
     padding: 0;
 }
 
-.matching-result .mail-part.mail-body, .matching-result .mail-part.mail-attachment {
+.matching-result .mail-body, .matching-result .mail-part.mail-attachment {
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -588,4 +602,25 @@ div.rule-value-container input[type="text"] {
 
 .mce-i-owssearch:before {
     content: "\e009";
+}
+
+mark{
+    background: green;
+    color: black;
+    padding: 0;
+}
+
+mark.mark-search{
+    background: yellow;
+}
+
+mark.mark-search.current {
+    background: orange ;
+}
+
+.mark-search-header {
+    padding: 10px;
+    width: 100%;
+    top: 0;
+    left: 0;
 }

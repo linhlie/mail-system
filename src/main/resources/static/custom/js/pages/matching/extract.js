@@ -28,6 +28,15 @@
     var externalCCGlobal = [];
     var senderGlobal = "";
 
+    var markOptions = {
+        "element": "mark",
+    };
+
+    var markSearchOptions = {
+        "element": "mark",
+        "className": "mark-search"
+    };
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -39,7 +48,7 @@
         '</tr>';
 
     $(function () {
-        initPreviewArea();
+        initSearch();
         $('#' + rdMailCCId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
@@ -66,20 +75,6 @@
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
     });
-
-    function initPreviewArea() {
-        tinymce.init({
-            selector: '#previewBody',
-            language: 'ja',
-            theme: 'modern',
-            statusbar: false,
-            plugins: "owssearch",
-            menubar: "",
-            height: 250,
-            toolbar: "owssearch",
-            readonly : 1,
-        });
-    }
 
     function getEmailDomain(email) {
         if(typeof email === "string"  && email.indexOf("@") >= 0) {
@@ -381,7 +376,7 @@
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        updateMailPreviewContent("");
+        showMailBodyContent("");
         mailAttachmentDiv.innerHTML = "";
         if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
@@ -389,7 +384,7 @@
                 '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
                 '</div>';
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            updateMailPreviewContent(data.originalBody);
+            showMailBodyContent(data.originalBody);
             var files = data.files ? data.files : [];
             if (files.length > 0) {
                 var filesInnerHTML = "";
@@ -566,6 +561,12 @@
         });
     }
 
+    function showMailBodyContent(content) {
+        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        mailBodyDiv.innerHTML = content;
+        highlight();
+    }
+
     function showMailContenttToEditor(data, receiver) {
         // receiver = isDebug ? debugMailAddress : receiver;
         resetValidation();
@@ -601,11 +602,6 @@
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData();
-    }
-
-    function updateMailPreviewContent(content) {
-        var editor = tinymce.get(mailPreviewId);
-        editor.setContent(content);
     }
 
     function updateMailEditorContent(content, preventClear) {
@@ -703,6 +699,102 @@
         ccValidate = true;
         $('#' + rdMailCCId + '-container').removeClass('has-error')
         $('#' + rdMailReceiverId + '-container').removeClass('has-error')
+    }
+
+    function highlight() {
+        $("input[type='search']").val("");
+        $("#" + mailBodyDivId).unmark({
+            done: function() {
+                // $("#" + mailBodyDivId).mark("ます", markOptions);
+            }
+        });
+    }
+
+    function initSearch() {
+        // the input field
+        var $input = $("input[type='search']"),
+            // clear button
+            $clearBtn = $("button[data-search='clear']"),
+            // prev button
+            $prevBtn = $("button[data-search='prev']"),
+            // next button
+            $nextBtn = $("button[data-search='next']"),
+            // the context where to search
+            $content = $("#" + mailBodyDivId),
+            // jQuery object to save <mark> elements
+            $results,
+            // the class that will be appended to the current
+            // focused element
+            currentClass = "current",
+            // the current index of the focused element
+            currentIndex = 0;
+
+        $input.keyup(function(event) {
+            if (event.keyCode === 10 || event.keyCode === 13)
+                event.preventDefault();
+        });
+
+        function jumpTo() {
+            if ($results.length) {
+                var position,
+                    $current = $results.eq(currentIndex);
+                $results.removeClass(currentClass);
+                if ($current.length) {
+                    $current.addClass(currentClass);
+                    $content.scrollTop($content.scrollTop() + $current.position().top
+                        - $content.height()/2 + $current.height()/2);
+                }
+            }
+        }
+
+        $input.on("input", function() {
+            var searchVal = this.value;
+            $content.unmark(
+                Object.assign(
+                    {},
+                    markSearchOptions,
+                    {
+                        done: function() {
+                            $content.mark(searchVal, Object.assign({},
+                                markSearchOptions,
+                                {
+                                    separateWordSearch: true,
+                                    done: function() {
+                                        $results = $content.find("mark.mark-search");
+                                        currentIndex = 0;
+                                        jumpTo();
+                                    }
+                                }
+                            ));
+                        }
+                    }
+                )
+            );
+        });
+
+        /**
+         * Clears the search
+         */
+        $clearBtn.on("click", function() {
+            $content.unmark(markSearchOptions);
+            $input.val("").focus();
+        });
+
+        /**
+         * Next and previous search jump to
+         */
+        $nextBtn.add($prevBtn).on("click", function() {
+            if ($results.length) {
+                currentIndex += $(this).is($prevBtn) ? -1 : 1;
+                if (currentIndex < 0) {
+                    currentIndex = $results.length - 1;
+                }
+                if (currentIndex > $results.length - 1) {
+                    currentIndex = 0;
+                }
+                jumpTo();
+            }
+        });
     }
 
 })(jQuery);
