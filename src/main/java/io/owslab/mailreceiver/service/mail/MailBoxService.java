@@ -226,6 +226,7 @@ public class MailBoxService {
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
+        //TODO: handle mail deleted error;
         String forBuildRangeStr = replaceType >= 3 ? matchRangeStr : rangeStr;
         List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(forBuildRangeStr, forBuildRangeStr, false, false);
         FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
@@ -257,6 +258,7 @@ public class MailBoxService {
                 String replyText = getReplyContentFromEmail(replyEmail);
                 result.setReplyOrigin(replyText);
                 result.setSubject("Re: " + replyEmail.getSubject());
+                result.setCc(replyEmail.getCc());
             }
             List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
             for(AttachmentFile file : files){
