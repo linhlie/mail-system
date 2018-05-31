@@ -258,6 +258,7 @@ public class MailBoxService {
                 String replyText = getReplyContentFromEmail(replyEmail);
                 result.setReplyOrigin(replyText);
                 result.setSubject("Re: " + replyEmail.getSubject());
+                result.setTo(replyEmail.getTo());
                 result.setCc(replyEmail.getCc());
             }
             List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
