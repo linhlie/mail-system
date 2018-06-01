@@ -62,10 +62,11 @@ public class DownloadController {
 //        inStream.close();
 //    }
 
-    @RequestMapping(value = "/download/{digest}", method = RequestMethod.GET)
+    @RequestMapping(value = "/download/{digest}/{fileName}", method = RequestMethod.GET)
     public void downloadFile3(
             HttpServletResponse response,
-            @PathVariable("digest") String digest
+            @PathVariable("digest") String digest,
+            @PathVariable("fileName") String fileName
     ) throws IOException {
 
         String decodedDigest = new String(Base64.getDecoder().decode(digest));
