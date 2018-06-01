@@ -643,32 +643,35 @@
         highlight(data);
     }
 
-    function showMailContenttToEditor(data, receiver, sendTo) {
-        // receiver = isDebug ? debugMailAddress : receiver;
+    function showMailContenttToEditor(data, receiverData, sendTo) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
-        document.getElementById(rdMailReceiverId).value = receiver;
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
             senderGlobal = data.account;
-            var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
-            cc = cc.concat(to);
+            cc = updateCCList(cc,to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
                 cc.splice(indexOfSender, 1);
             }
-            var indexOfReceiver = cc.indexOf(receiver);
-            if(indexOfReceiver > -1){
-                cc.splice(indexOfReceiver, 1)
+            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
+            if(receiverList.length > 0) {
+                cc = updateCCList(cc, [receiverData.from]);
             }
-            for(var i = 0; i < externalCC.length; i++){
-                if(cc.indexOf(externalCC[i]) == -1) {
-                    cc.push(externalCC[i]);
+            for(var i = 0; i < receiverList.length; i++) {
+                var receiver = receiverList[i];
+                var indexOfReceiver = cc.indexOf(receiver);
+                if (indexOfReceiver > -1) {
+                    cc.splice(indexOfReceiver, 1)
                 }
             }
+            cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -691,6 +694,15 @@
             var files = data.files ? data.files : [];
             updateDropzoneData(files);
         }
+    }
+
+    function updateCCList(currentCCs, newCCs) {
+        for (var i = 0; i < newCCs.length; i++) {
+            if (currentCCs.indexOf(newCCs[i]) == -1) {
+                currentCCs.push(newCCs[i]);
+            }
+        }
+        return currentCCs;
     }
 
     function updateDropzoneData(files) {
@@ -731,7 +743,7 @@
     function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
         showMailWithReplacedRange(messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (result) {
-            showMailContenttToEditor(result, receiver.from, sendTo)
+            showMailContenttToEditor(result, receiver, sendTo)
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
