@@ -249,7 +249,7 @@
                 var rowData = extractResult[index];
                 if (rowData && rowData.messageId) {
                     console.log("reply: ", rowData);
-                    showMailEditor(rowData.messageId, rowData.from)
+                    showMailEditor(rowData.messageId, rowData)
                 }
             });
         }
@@ -598,10 +598,10 @@
         highlight(data);
     }
 
-    function showMailContenttToEditor(data, receiver) {
-        // receiver = isDebug ? debugMailAddress : receiver;
+    function showMailContenttToEditor(data, receiverData) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
-        document.getElementById(rdMailReceiverId).value = receiver;
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if (data) {
             document.getElementById(rdMailSenderId).value = data.account;
@@ -610,20 +610,23 @@
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
-            cc = cc.concat(to);
+            cc = updateCCList(cc,to);
             var indexOfSender = cc.indexOf(data.account);
             if (indexOfSender > -1) {
                 cc.splice(indexOfSender, 1);
             }
-            var indexOfReceiver = cc.indexOf(receiver);
-            if (indexOfReceiver > -1) {
-                cc.splice(indexOfReceiver, 1)
+            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
+            if(receiverList.length > 0) {
+                cc = updateCCList(cc, [receiverData.from]);
             }
-            for (var i = 0; i < externalCC.length; i++) {
-                if (cc.indexOf(externalCC[i]) == -1) {
-                    cc.push(externalCC[i]);
+            for(var i = 0; i < receiverList.length; i++) {
+                var receiver = receiverList[i];
+                var indexOfReceiver = cc.indexOf(receiver);
+                if (indexOfReceiver > -1) {
+                    cc.splice(indexOfReceiver, 1)
                 }
             }
+            cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
@@ -633,6 +636,15 @@
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData();
+    }
+
+    function updateCCList(currentCCs, newCCs) {
+        for (var i = 0; i < newCCs.length; i++) {
+            if (currentCCs.indexOf(newCCs[i]) == -1) {
+                currentCCs.push(newCCs[i]);
+            }
+        }
+        return currentCCs;
     }
 
     function updateMailEditorContent(content, preventClear) {
