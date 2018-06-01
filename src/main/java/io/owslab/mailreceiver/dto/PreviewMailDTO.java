@@ -17,11 +17,14 @@ public class PreviewMailDTO {
 
     private String receivedAt;
 
+    private String replyTo;
+
     public PreviewMailDTO(Email email) {
         this.setAccountId(email.getAccountId());
         this.setFrom(email.getFrom());
         this.setSubject(email.getSubject());
         this.setTo(email.getTo());
+        this.setReplyTo(email.getReplyTo());
         this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
         this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
     }
@@ -72,5 +75,13 @@ public class PreviewMailDTO {
 
     public void setReceivedAt(String receivedAt) {
         this.receivedAt = receivedAt;
+    }
+
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
     }
 }

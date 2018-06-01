@@ -69,6 +69,15 @@
         "acrossElements": true,
     };
 
+    var extensionCommands = {
+        ".docx": "ms-word:ofv|u|",
+        ".doc": "ms-word:ofv|u|",
+        ".xls": "ms-excel:ofv|u|",
+        ".xlsx": "ms-excel:ofv|u|",
+        ".ppt": "ms-powerpoint:ofv|u|",
+        ".pptx": "ms-powerpoint:ofv|u|",
+    }
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
@@ -606,12 +615,17 @@
                 var filesInnerHTML = "";
                 for(var i = 0; i < files.length; i++ ){
                     var file = files[i];
+                    var fileExtension = getFileExtension(file.fileName);
+                    var command = extensionCommands[fileExtension];
+                    command = (isWindows() && !!command) ? command : "nope";
+                    var url = window.location.origin + "/download/" + file.digest;
                     if(i > 0){
                         filesInnerHTML += "<br/>";
                     }
-                    filesInnerHTML += ("<a href='/user/download?path=" + encodeURIComponent(file.storagePath) + "&fileName=" + file.fileName + "' download>" + file.fileName + "(" + getFileSizeString(file.size) + "); </a>")
+                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
+                setDownloadLinkClickListener();
                 disableButton(openFileFolderButtonId, false);
             } else {
                 mailAttachmentDiv.innerHTML = "添付ファイルなし";
@@ -629,32 +643,35 @@
         highlight(data);
     }
 
-    function showMailContenttToEditor(data, receiver, sendTo) {
-        // receiver = isDebug ? debugMailAddress : receiver;
+    function showMailContenttToEditor(data, receiverData, sendTo) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
-        document.getElementById(rdMailReceiverId).value = receiver;
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if(data){
             document.getElementById(rdMailSenderId).value = data.account;
             senderGlobal = data.account;
-            var to = data.to ?data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
-            cc = cc.concat(to);
+            cc = updateCCList(cc,to);
             var indexOfSender = cc.indexOf(data.account);
             if(indexOfSender > -1){
                 cc.splice(indexOfSender, 1);
             }
-            var indexOfReceiver = cc.indexOf(receiver);
-            if(indexOfReceiver > -1){
-                cc.splice(indexOfReceiver, 1)
+            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
+            if(receiverList.length > 0) {
+                cc = updateCCList(cc, [receiverData.from]);
             }
-            for(var i = 0; i < externalCC.length; i++){
-                if(cc.indexOf(externalCC[i]) == -1) {
-                    cc.push(externalCC[i]);
+            for(var i = 0; i < receiverList.length; i++) {
+                var receiver = receiverList[i];
+                var indexOfReceiver = cc.indexOf(receiver);
+                if (indexOfReceiver > -1) {
+                    cc.splice(indexOfReceiver, 1)
                 }
             }
+            cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -677,6 +694,15 @@
             var files = data.files ? data.files : [];
             updateDropzoneData(files);
         }
+    }
+
+    function updateCCList(currentCCs, newCCs) {
+        for (var i = 0; i < newCCs.length; i++) {
+            if (currentCCs.indexOf(newCCs[i]) == -1) {
+                currentCCs.push(newCCs[i]);
+            }
+        }
+        return currentCCs;
     }
 
     function updateDropzoneData(files) {
@@ -717,7 +743,7 @@
     function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
         showMailWithReplacedRange(messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (result) {
-            showMailContenttToEditor(result, receiver.from, sendTo)
+            showMailContenttToEditor(result, receiver, sendTo)
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -1040,5 +1066,82 @@
             }
         });
     }
+
+    function getFileExtension(fileName) {
+        var parts = fileName.split(".");
+        return "." + parts[(parts.length - 1)]
+    }
+
+    function getOS() {
+        var userAgent = window.navigator.userAgent,
+            platform = window.navigator.platform,
+            macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+            windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+            iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+            os = null;
+
+        if (macosPlatforms.indexOf(platform) !== -1) {
+            os = 'Mac OS';
+        } else if (iosPlatforms.indexOf(platform) !== -1) {
+            os = 'iOS';
+        } else if (windowsPlatforms.indexOf(platform) !== -1) {
+            os = 'Windows';
+        } else if (/Android/.test(userAgent)) {
+            os = 'Android';
+        } else if (!os && /Linux/.test(platform)) {
+            os = 'Linux';
+        }
+
+        return os;
+    }
+    
+    function isWindows() {
+        var os = getOS();
+        return (os === "Windows");
+    }
+    
+    function setDownloadLinkClickListener() {
+        $('button.download-link').off("click");
+        $('button.download-link').click(function(event) {
+            var command = $(this).attr("data-command");
+            var href = $(this).attr("data-download");
+            if(command.startsWith("nope")) {
+                alert("Not support features");
+            } else {
+                doDownload(command+href);
+            }
+        });
+
+        $.contextMenu({
+            selector: 'button.download-link',
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                var command = $(this).attr("data-command");
+                var href = $(this).attr("data-download");
+                if(key === "open") {
+                    if(command.startsWith("nope")) {
+                        alert("Not support features");
+                    } else {
+                        doDownload(command+href);
+                    }
+                } else if (key === "save_as") {
+                    doDownload(href);
+                }
+            },
+            items: {
+                "open": {"name": "Open"},
+                "save_as": {"name": "Save as"},
+            }
+        });
+    }
+
+    function doDownload(href){
+        var a = document.createElement('A');
+        a.href = href;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
 
 })(jQuery);
