@@ -2,6 +2,8 @@ package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.AttachmentFile;
 
+import java.util.Base64;
+
 /**
  * Created by khanhlvb on 3/13/18.
  */
@@ -10,6 +12,7 @@ public class FileDTO {
     private String messageId;
     private String fileName;
     private String storagePath;
+    private String digest;
     private long size;
 
     public FileDTO(AttachmentFile file) {
@@ -18,6 +21,9 @@ public class FileDTO {
         this.setFileName(file.getFileName());
         this.setStoragePath(file.getStoragePath());
         this.setSize(file.getSize());
+        String downloadDigest = file.getId() + "/" + file.getFileName() + "/" + file.getStoragePath();
+        String encodedDownloadDigest = new String(Base64.getEncoder().encodeToString(downloadDigest.getBytes()));
+        this.setDigest(encodedDownloadDigest);
     }
 
     public long getId() {
@@ -58,5 +64,13 @@ public class FileDTO {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public String getDigest() {
+        return digest;
+    }
+
+    public void setDigest(String digest) {
+        this.digest = digest;
     }
 }
