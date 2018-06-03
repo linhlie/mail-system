@@ -414,7 +414,7 @@
                     var fileExtension = getFileExtension(file.fileName);
                     var command = extensionCommands[fileExtension];
                     command = (isWindows() && !!command) ? command : "nope";
-                    var url = window.location.origin + "/download/" + file.digest + "/" + file.fileName;
+                    var url = window.location.origin + "/download/" + encodeURIComponent(file.digest) + "/" + file.fileName;
                     if (i > 0) {
                         filesInnerHTML += "<br/>";
                     }
