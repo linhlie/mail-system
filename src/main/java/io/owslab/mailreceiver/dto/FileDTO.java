@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.AttachmentFile;
 
+import javax.xml.bind.DatatypeConverter;
 import java.util.Base64;
 
 /**
@@ -21,8 +22,8 @@ public class FileDTO {
         this.setFileName(file.getFileName());
         this.setStoragePath(file.getStoragePath());
         this.setSize(file.getSize());
-        String downloadDigest = file.getId() + "/" + file.getFileName() + "/" + file.getStoragePath();
-        String encodedDownloadDigest = new String(Base64.getEncoder().encodeToString(downloadDigest.getBytes()));
+        String downloadDigest = file.getId() + "/" + file.getStoragePath();
+        String encodedDownloadDigest = DatatypeConverter.printHexBinary(downloadDigest.getBytes());
         this.setDigest(encodedDownloadDigest);
     }
 

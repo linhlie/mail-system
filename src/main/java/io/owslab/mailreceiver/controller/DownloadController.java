@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.util.Base64;
 
@@ -69,9 +70,8 @@ public class DownloadController {
             @PathVariable("fileName") String fileName
     ) throws IOException {
 
-        String decodedDigest = new String(Base64.getDecoder().decode(digest));
-
-        String[] digestParts = decodedDigest.split("/", 3);
+        String decodedDigest = new String(DatatypeConverter.parseHexBinary(digest));
+        String[] digestParts = decodedDigest.split("/", 2);
         if(digestParts.length == 0) return;
 
         long id = Long.parseLong(digestParts[0]);
