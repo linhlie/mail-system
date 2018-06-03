@@ -15,6 +15,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.Base64;
 
 /**
@@ -91,10 +92,11 @@ public class DownloadController {
         response.setContentType(mediaType.getType());
 
         // Content-Disposition
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
 
         // Content-Length
         response.setContentLength((int) file.length());
+        response.setCharacterEncoding("UTF-8");
 
         BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(file));
         BufferedOutputStream outStream = new BufferedOutputStream(response.getOutputStream());
