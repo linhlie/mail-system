@@ -622,7 +622,7 @@
                     if(i > 0){
                         filesInnerHTML += "<br/>";
                     }
-                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
+                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
                 setDownloadLinkClickListener();
@@ -1105,10 +1105,11 @@
         $('button.download-link').click(function(event) {
             var command = $(this).attr("data-command");
             var href = $(this).attr("data-download");
+            var fileName = $(this).attr('data-filename');
             if(command.startsWith("nope")) {
                 alert("Not support features");
             } else {
-                doDownload(command+href);
+                doDownload(command+href, fileName);
             }
         });
 
@@ -1118,14 +1119,15 @@
                 var m = "clicked: " + key;
                 var command = $(this).attr("data-command");
                 var href = $(this).attr("data-download");
+                var fileName = $(this).attr('data-filename');
                 if(key === "open") {
                     if(command.startsWith("nope")) {
                         alert("Not support features");
                     } else {
-                        doDownload(command+href);
+                        doDownload(command+href, fileName);
                     }
                 } else if (key === "save_as") {
-                    doDownload(href);
+                    doDownload(href, fileName);
                 }
             },
             items: {
@@ -1135,9 +1137,10 @@
         });
     }
 
-    function doDownload(href){
+    function doDownload(href, fileName){
         var a = document.createElement('A');
         a.href = href;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
