@@ -74,6 +74,7 @@
         ".doc": "ms-word:ofv|u|",
         ".xls": "ms-excel:ofv|u|",
         ".xlsx": "ms-excel:ofv|u|",
+        ".xlsm": "ms-excel:ofv|u|",
         ".ppt": "ms-powerpoint:ofv|u|",
         ".pptx": "ms-powerpoint:ofv|u|",
     }
