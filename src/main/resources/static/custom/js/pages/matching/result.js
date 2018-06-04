@@ -7,6 +7,7 @@
     var mailBodyDivId = 'mailBody';
     var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var sakiPreviewContainerId = 'saki-preview-container';
     var mailSakiSubjectDivId = 'mailSakiSubject';
     var mailSakiBodyDivId = 'mailSakiBody';
     var mailSakiAttachmentDivId = 'mailSakiAttachment';
@@ -483,6 +484,7 @@
         var index = row.getAttribute("data");
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
+            $('#' + sakiPreviewContainerId).hide();
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
                 updatePreviewMailToPrint(result, printElementId);
@@ -499,6 +501,7 @@
             showMail(rowData.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSakiSubjectDivId, mailSakiBodyDivId, mailSakiAttachmentDivId]);
                 updatePreviewMailToPrint(result, printSakiElementId);
+                $('#' + sakiPreviewContainerId).show();
             }, rowData.matchRange);
         }
     }
@@ -522,6 +525,7 @@
                 });
             }
             selectedRowData = rowData;
+            $('#' + sakiPreviewContainerId).hide();
             showDestinationData(destinationTableId, rowData);
         }
     }
