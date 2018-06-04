@@ -7,14 +7,19 @@
     var mailBodyDivId = 'mailBody';
     var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var mailSakiSubjectDivId = 'mailSakiSubject';
+    var mailSakiBodyDivId = 'mailSakiBody';
+    var mailSakiAttachmentDivId = 'mailSakiAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
     var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
-    var openFileFolderButtonId = '#openFileFolderBtn';
     var printBtnId = 'printBtn';
+    var printElementId = 'printElement';
+    var printSakiBtnId = 'printSakiBtn';
+    var printSakiElementId = 'printSakiElement';
     var matchingResult = null;
     var mailList = {};
     var currentDestinationResult = [];
@@ -103,11 +108,17 @@
         '</tr>';
 
     $(function () {
-        initSearch();
+        initSearch(mailBodyDivId, "moto");
+        initSearch(mailSakiBodyDivId, "saki");
         initReplaceSelector();
         initDropzone();
         initSortDestination();
-        setButtonClickListenter(printBtnId, printPreviewEmail);
+        setButtonClickListenter(printBtnId, function () {
+            printPreviewEmail(printElementId);
+        });
+        setButtonClickListenter(printSakiBtnId, function () {
+            printPreviewEmail(printSakiElementId);
+        });
         getEnvSettings();
         fixingForTinyMCEOnModal();
         onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
@@ -311,7 +322,6 @@
     
     function updateData() {
         showSourceData(sourceTableId, matchingResult);
-        disableButton(openFileFolderButtonId, true);
     }
 
     function showSourceData(tableId, data) {
@@ -474,8 +484,8 @@
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             showMail(rowData.source.messageId, rowData.word, function (result) {
-                showMailContent(result);
-                updatePreviewMailToPrint(result);
+                showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
+                updatePreviewMailToPrint(result, printElementId);
             });
         }
     }
@@ -487,8 +497,8 @@
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, rowData.word, function (result) {
-                showMailContent(result);
-                updatePreviewMailToPrint(result);
+                showMailContent(result, [mailSakiSubjectDivId, mailSakiBodyDivId, mailSakiAttachmentDivId]);
+                updatePreviewMailToPrint(result, printSakiElementId);
             }, rowData.matchRange);
         }
     }
@@ -507,8 +517,8 @@
             var rowData = matchingResult[index];
             if(rowData && rowData.source && rowData.source.messageId){
                 showMail(rowData.source.messageId, rowData.word, function (result) {
-                    showMailContent(result);
-                    updatePreviewMailToPrint(result);
+                    showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
+                    updatePreviewMailToPrint(result, printElementId);
                 });
             }
             selectedRowData = rowData;
@@ -597,20 +607,18 @@
         });
     }
 
-    function showMailContent(data) {
-        // console.log("showMailContent: ", data);
-        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
-        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
+    function showMailContent(data, elementIds) {
+        var mailSubjectDiv = document.getElementById(elementIds[0]);
+        var mailAttachmentDiv = document.getElementById(elementIds[2]);
         mailSubjectDiv.innerHTML = "";
-        showMailBodyContent({originalBody: ""});
-        // updateMailEditorContent("");
+        showMailBodyContent(elementIds[1], {originalBody: ""});
         mailAttachmentDiv.innerHTML = "";
         if(data){
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
                 '<h5><b>' + data.subject + '</b></h5>' +
             '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
             '</div>';
-            showMailBodyContent(data);
+            showMailBodyContent(elementIds[1], data);
             var files = data.files ? data.files : [];
             if(files.length > 0){
                 var filesInnerHTML = "";
@@ -627,19 +635,15 @@
                 }
                 mailAttachmentDiv.innerHTML = filesInnerHTML;
                 setDownloadLinkClickListener();
-                disableButton(openFileFolderButtonId, false);
             } else {
                 mailAttachmentDiv.innerHTML = "添付ファイルなし";
-                disableButton(openFileFolderButtonId, true);
             }
-        } else {
-            disableButton(openFileFolderButtonId, true);
         }
     }
     
-    function showMailBodyContent(data) {
+    function showMailBodyContent(id, data) {
         data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
-        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        var mailBodyDiv = document.getElementById(id);
         mailBodyDiv.innerHTML = data.originalBody;
         highlight(data);
     }
@@ -851,8 +855,8 @@
         });
     }
 
-    function updatePreviewMailToPrint(data) {
-        var printElment = document.getElementById('printElement');
+    function updatePreviewMailToPrint(data, printElmentId) {
+        var printElment = document.getElementById(printElmentId);
         printElment.innerHTML = "";
         if(data){
             data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -895,10 +899,10 @@
         return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
     }
 
-    function printPreviewEmail() {
-        $("#printElement").show();
-        $("#printElement").print();
-        $("#printElement").hide();
+    function printPreviewEmail(id) {
+        $("#" + id).show();
+        $("#" + id).print();
+        $("#" + id).hide();
     }
 
     function updateTotalSourceMatching(total) {
@@ -982,17 +986,17 @@
         });
     }
 
-    function initSearch() {
+    function initSearch(id, type) {
         // the input field
-        var $input = $("input[type='search']"),
+        var $input = $("input[data-search='"+ type +"']"),
             // clear button
-            $clearBtn = $("button[data-search='clear']"),
+            $clearBtn = $("button[data-search='" + type + "-clear']"),
             // prev button
-            $prevBtn = $("button[data-search='prev']"),
+            $prevBtn = $("button[data-search='" + type + "-prev']"),
             // next button
-            $nextBtn = $("button[data-search='next']"),
+            $nextBtn = $("button[data-search='" + type + "-next']"),
             // the context where to search
-            $content = $("#" + mailBodyDivId),
+            $content = $("#" + id),
             // jQuery object to save <mark> elements
             $results,
             // the class that will be appended to the current

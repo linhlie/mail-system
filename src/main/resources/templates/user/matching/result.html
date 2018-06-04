@@ -100,8 +100,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12" style="padding-top: 5px;">
-                    <span>プレビュー
+                <div class="col-sm-6" style="padding-top: 5px;">
+                    <span>プレビュー元
                         <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
                             <i class="fa fa-print"></i>
                         </button>
@@ -111,10 +111,10 @@
                         <div class="mail-body-container">
                             <div class="mark-search-header">
                                 検索:
-                                <input type="search" placeholder="単語"/>
-                                <button type="button" data-search="next">&darr;</button>
-                                <button type="button" data-search="prev">&uarr;</button>
-                                <button type="button" data-search="clear">✖</button>
+                                <input type="search" data-search="moto" placeholder="単語"/>
+                                <button type="button" data-search="moto-next">&darr;</button>
+                                <button type="button" data-search="moto-prev">&uarr;</button>
+                                <button type="button" data-search="moto-clear">✖</button>
                             </div>
                             <div id="mailBody" class="mail-body">
 
@@ -123,6 +123,31 @@
                         <div id="mailAttachment" class="mail-attachment"></div>
                     </div>
                     <div style="display: none" id="printElement">
+                    </div>
+                </div>
+                <div class="col-sm-6" style="padding-top: 5px;">
+                    <span>プレビュー先
+                        <button style="float: right" id="printSakiBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                            <i class="fa fa-print"></i>
+                        </button>
+                    </span>
+                    <div class="main-right">
+                        <div id="mailSakiSubject" class="mail-subject"></div>
+                        <div class="mail-body-container">
+                            <div class="mark-search-header">
+                                検索:
+                                <input type="search" data-search="saki" placeholder="単語"/>
+                                <button type="button" data-search="saki-next">&darr;</button>
+                                <button type="button" data-search="saki-rev">&uarr;</button>
+                                <button type="button" data-search="saki-clear">✖</button>
+                            </div>
+                            <div id="mailSakiBody" class="mail-body">
+
+                            </div>
+                        </div>
+                        <div id="mailSakiAttachment" class="mail-attachment"></div>
+                    </div>
+                    <div style="display: none" id="printSakiElement">
                     </div>
                 </div>
             </form>
