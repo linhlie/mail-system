@@ -70,6 +70,7 @@
     };
 
     var extensionCommands = {
+        ".pdf": "ms-word:ofv|u|",
         ".docx": "ms-word:ofv|u|",
         ".doc": "ms-word:ofv|u|",
         ".xls": "ms-excel:ofv|u|",
@@ -1070,7 +1071,8 @@
 
     function getFileExtension(fileName) {
         var parts = fileName.split(".");
-        return "." + parts[(parts.length - 1)]
+        var extension = "." + parts[(parts.length - 1)];
+        return extension.toLowerCase();
     }
 
     function getOS() {
