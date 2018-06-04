@@ -100,54 +100,67 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6" style="padding-top: 5px;">
-                    <span>プレビュー元
-                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                <div class="col-sm-12" style="padding-top: 5px;">
+                    <div class="clearfix" id="preview-section">
+                        <div id="moto-preview-wrapper" style="position: relative;">
+                            <div id="moto-preview-content-wrapper" style="width: 100%; padding-right: 8px">
+                                <span>プレビュー元
+                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                data-toggle="tooltip" title="" data-original-title="Print">
                             <i class="fa fa-print"></i>
                         </button>
                     </span>
-                    <div class="main-right">
-                        <div id="mailSubject" class="mail-subject"></div>
-                        <div class="mail-body-container">
-                            <div class="mark-search-header">
-                                検索:
-                                <input type="search" data-search="mailBody" placeholder="単語"/>
-                                <button type="button" data-search="moto-next">&darr;</button>
-                                <button type="button" data-search="moto-prev">&uarr;</button>
-                                <button type="button" data-search="moto-clear">✖</button>
-                            </div>
-                            <div id="mailBody" class="mail-body">
+                                <div class="main-right">
+                                    <div id="mailSubject" class="mail-subject"></div>
+                                    <div class="mail-body-container">
+                                        <div class="mark-search-header">
+                                            検索:
+                                            <input type="search" data-search="mailBody" placeholder="単語"/>
+                                            <button type="button" data-search="moto-next">&darr;</button>
+                                            <button type="button" data-search="moto-prev">&uarr;</button>
+                                            <button type="button" data-search="moto-clear">✖</button>
+                                        </div>
+                                        <div id="mailBody" class="mail-body">
 
+                                        </div>
+                                    </div>
+                                    <div id="mailAttachment" class="mail-attachment"></div>
+                                </div>
+                                <div style="display: none" id="printElement">
+                                </div>
                             </div>
+                            <div id="moto-preview-content-keeper" style="width: 3px; display: none"></div>
+                            <div id="dragbar"></div>
                         </div>
-                        <div id="mailAttachment" class="mail-attachment"></div>
-                    </div>
-                    <div style="display: none" id="printElement">
-                    </div>
-                </div>
-                <div class="col-sm-6" id="saki-preview-container" style="display: none;padding-top: 5px;">
+                        <div id="saki-preview-wrapper" style="padding-left: 5px">
+                            <div id="saki-preview-content-wrapper" style="width: 100%;">
+                                <div id="saki-preview-container" style="width: 100%; display: none;">
                     <span>プレビュー先
                         <button style="float: right" id="printSakiBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
                             <i class="fa fa-print"></i>
                         </button>
                     </span>
-                    <div class="main-right">
-                        <div id="mailSakiSubject" class="mail-subject"></div>
-                        <div class="mail-body-container">
-                            <div class="mark-search-header">
-                                検索:
-                                <input type="search" data-search="mailSakiBody" placeholder="単語"/>
-                                <button type="button" data-search="saki-next">&darr;</button>
-                                <button type="button" data-search="saki-rev">&uarr;</button>
-                                <button type="button" data-search="saki-clear">✖</button>
-                            </div>
-                            <div id="mailSakiBody" class="mail-body">
+                                    <div class="main-right">
+                                        <div id="mailSakiSubject" class="mail-subject"></div>
+                                        <div class="mail-body-container">
+                                            <div class="mark-search-header">
+                                                検索:
+                                                <input type="search" data-search="mailSakiBody" placeholder="単語"/>
+                                                <button type="button" data-search="saki-next">&darr;</button>
+                                                <button type="button" data-search="saki-rev">&uarr;</button>
+                                                <button type="button" data-search="saki-clear">✖</button>
+                                            </div>
+                                            <div id="mailSakiBody" class="mail-body">
 
+                                            </div>
+                                        </div>
+                                        <div id="mailSakiAttachment" class="mail-attachment"></div>
+                                    </div>
+                                    <div style="display: none" id="printSakiElement">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div id="mailSakiAttachment" class="mail-attachment"></div>
-                    </div>
-                    <div style="display: none" id="printSakiElement">
                     </div>
                 </div>
             </form>

@@ -110,6 +110,7 @@
         '</tr>';
 
     $(function () {
+        previewDraggingSetup();
         initSearch(mailBodyDivId, "moto");
         initSearch(mailSakiBodyDivId, "saki");
         initReplaceSelector();
@@ -1155,6 +1156,64 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    }
+    
+    function previewDraggingSetup() {
+        var i = 0;
+        var dragging = false;
+        $('#dragbar').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var main = $('#saki-preview-wrapper');
+            var dragbar = $('#dragbar');
+            var ghostbar = $('<div>',
+                {id:'ghostbar',
+                    css: {
+                        height: dragbar.outerHeight(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("left",e.pageX+2);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#preview-section');
+                var leftWidth = (e.pageX - container.offset().left);
+                leftWidth = leftWidth <= (container.width()/4) ? 3 : leftWidth;
+                if(leftWidth == 3) {
+                    var keeperHeight = $('#moto-preview-content-wrapper').outerHeight();
+                    $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
+                    $('#moto-preview-content-keeper').show();
+                    $('#moto-preview-content-wrapper').hide();
+                } else {
+                    $('#moto-preview-content-wrapper').show();
+                    $('#moto-preview-content-keeper').hide();
+                }
+                var percentage = (leftWidth / container.width()) * 100;
+                percentage = percentage > 75 ? 100 : percentage;
+                var mainPercentage = 100-percentage;
+                console.log("percentage: ", percentage, mainPercentage);
+                if(mainPercentage == 0) {
+                    $('#saki-preview-content-wrapper').hide();
+                } else {
+                    $('#saki-preview-content-wrapper').show();
+                }
+
+                $('#moto-preview-wrapper').css("width",percentage + "%");
+                $('#saki-preview-wrapper').css("width",mainPercentage + "%");
+                $('#ghostbar').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
     }
 
 

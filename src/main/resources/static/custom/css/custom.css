@@ -375,6 +375,7 @@ input.form-error {
 .matching-result .mail-body-container {
     width: 100%;
     border: #a5a5a5 solid 1px;
+    overflow: hidden;
 }
 .matching-result .mail-subject {
     min-height: 40px;
@@ -399,6 +400,7 @@ input.form-error {
     margin-top: 10px;
     border: #a5a5a5 solid 1px;
     width: 100%;
+    overflow-x: scroll;
 }
 
 .rd-mail-part.rd-mail-attachment {
@@ -636,3 +638,36 @@ mark.mark-range {
     top: 0;
     left: 0;
 }
+
+.clearfix:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+#saki-preview-wrapper{
+    float: right;
+    width: 50%;
+    height: auto;
+}
+#moto-preview-wrapper{
+    width:50%;
+    float: left;
+    height: auto;
+}
+
+#dragbar{
+    background-color:black;
+    width: 3px;
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+#ghostbar{
+    width:3px;
+    background-color:#000;
+    opacity:0.2;
+    position:absolute;
+    cursor: col-resize;
+    z-index:999}
