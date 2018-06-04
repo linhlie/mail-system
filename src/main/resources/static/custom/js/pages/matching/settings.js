@@ -6,6 +6,8 @@
     var getSourceBtnId = '#getSourceBtn';
     var saveDestinationBtnId = '#saveDestinationBtn';
     var getDestinationBtnId = '#getDestinationBtn';
+    var saveMatchingBtnId = '#saveMatchingBtn';
+    var getMatchingBtnId = '#getMatchingBtn';
     var submitFormBtnId = '#submitFormBtn';
     var extractSourceBtnId = '#extractSourceBtn';
     var extractDestinationBtnId = '#extractDestinationBtn';
@@ -21,6 +23,8 @@
     var sourcePrefixUrlKey = "/user/matchingSettings/source";
     var destinationListKey = "/user/matchingSettings/listDestinationKey";
     var destinationPrefixUrlKey = "/user/matchingSettings/destination";
+    var matchingListKey = "/user/matchingSettings/listMatchingKey";
+    var matchingPrefixUrlKey = "/user/matchingSettings/matching";
 
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
@@ -380,6 +384,8 @@
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
         setButtonClickListenter(getDestinationBtnId, getDestinationListData);
+        setButtonClickListenter(saveMatchingBtnId, saveMatchingListData);
+        setButtonClickListenter(getMatchingBtnId, getMatchingListData);
         setButtonClickListenter(submitFormBtnId, submit);
         setButtonClickListenter(extractSourceBtnId, extractSource);
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
@@ -501,6 +507,27 @@
         })
     }
 
+    function saveMatchingListData(){
+        var result = $(matchingBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(result)) return;
+        var datalistStr = localStorage.getItem(matchingListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                if(datalist.indexOf(name) < 0){
+                    datalist.push(name);
+                }
+                localStorage.setItem(matchingListKey, JSON.stringify(datalist));
+                saveListData(
+                    matchingPrefixUrlKey,
+                    name,
+                    result
+                )
+            }
+        })
+    }
+
     function saveListData(url, name,  data) {
         var key = url + "@" + name;
         localStorage.setItem(key, JSON.stringify(data));
@@ -551,14 +578,32 @@
         }
     }
 
-    function getListData(url, name, builderId) {
+    function getMatchingListData(skip) {
+        if(skip){
+            getListData(matchingPrefixUrlKey, null, matchingBuilderId);
+        } else {
+            var datalistStr = localStorage.getItem(matchingListKey);
+            var datalist = JSON.parse(datalistStr);
+            datalist = datalist || [];
+            showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, function (name) {
+                if (name != null && name.length > 0) {
+                    getListData(matchingPrefixUrlKey, name, matchingBuilderId, true);
+                }
+            })
+        }
+    }
+
+    function getListData(url, name, builderId, skipAddDefaultRow) {
         var data = null;
         if(name && name.length > 0){
             var key = url + "@" + name;
             data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
         }
         if(data != null){
-            data = addDefaultReceiveDateRow(data);
+            var enableAddDefaultRow = !skipAddDefaultRow;
+            if(enableAddDefaultRow) {
+                data = addDefaultReceiveDateRow(data);
+            }
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
