@@ -645,7 +645,7 @@
         data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(id);
         mailBodyDiv.innerHTML = data.originalBody;
-        highlight(data);
+        highlight(id, data);
     }
 
     function showMailContenttToEditor(data, receiverData, sendTo) {
@@ -971,24 +971,24 @@
     }
 
     
-    function highlight(data) {
+    function highlight(id, data) {
         data = data || {};
         var highLightWords = data.highLightWords || [];
         var excludeWords = data.excludeWords || [];
         var highLightRanges = data.highLightRanges || [];
-        $("input[type='search']").val("");
-        $("#" + mailBodyDivId).unmark({
+        $("input[data-search='"+ id +"']").val("");
+        $("#" + id).unmark({
             done: function() {
-                $("#" + mailBodyDivId).mark(highLightWords, markOptions);
-                $("#" + mailBodyDivId).mark(excludeWords, invisibleMarkOptions);
-                $("#" + mailBodyDivId).mark(highLightRanges, rangeMarkOptions);
+                $("#" + id).mark(highLightWords, markOptions);
+                $("#" + id).mark(excludeWords, invisibleMarkOptions);
+                $("#" + id).mark(highLightRanges, rangeMarkOptions);
             }
         });
     }
 
     function initSearch(id, type) {
         // the input field
-        var $input = $("input[data-search='"+ type +"']"),
+        var $input = $("input[data-search='"+ id +"']"),
             // clear button
             $clearBtn = $("button[data-search='" + type + "-clear']"),
             // prev button
