@@ -123,7 +123,21 @@ public class MailBoxService {
             }
             return withoutDuplicateSender;
         } else if (!filterSender && filterSubject) {
-            return allMails;
+            Collections.sort(allMails, new SubjectComparator());
+            List<Email> withoutDuplicateSubject = new ArrayList<>();
+            String previousSubject = null;
+            for(Email mail : allMails) {
+                boolean overlap = sameSubject(previousSubject, mail.getSubject());
+                if(overlap) {
+                    if(withoutDuplicateSubject.size() > 0){
+                        withoutDuplicateSubject.remove(withoutDuplicateSubject.size() -1);
+                    }
+                } else {
+                    previousSubject = mail.getSubject();
+                }
+                withoutDuplicateSubject.add(mail);
+            }
+            return withoutDuplicateSubject;
         } else {
             return allMails;
         }
@@ -139,6 +153,16 @@ public class MailBoxService {
         String prevSender = prev.getFrom();
         String nextSender = next.getFrom();
         return prevSender.equals(nextSender);
+    }
+
+    private boolean sameSubject(String prevSubject, String nextSubject) {
+        if(prevSubject == null || nextSubject == null) {
+            return false;
+        }
+        if(prevSubject.length() == 0 || nextSubject.length() == 0) {
+            return false;
+        }
+        return nextSubject.endsWith(prevSubject);
     }
 
     public List<Email> getAll(){
