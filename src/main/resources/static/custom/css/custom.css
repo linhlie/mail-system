@@ -690,3 +690,7 @@ mark.mark-range {
 .duplicate-control-container .duplicate-control.duplicate-control-option.option-padding {
     padding-left: 20px;
 }
+
+.duplicate-control.duplicate-control-option {
+    display: none;
+}

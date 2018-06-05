@@ -389,6 +389,7 @@
         setButtonClickListenter(submitFormBtnId, submit);
         setButtonClickListenter(extractSourceBtnId, extractSource);
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
+        initDuplicateHandle();
     });
     
     function setButtonClickListenter(id, callback) {
@@ -738,6 +739,35 @@
             //Browser has blocked it
             alert('Please allow popups for this website');
         }
+    }
+    
+    
+    function initDuplicateHandle() {
+        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
+        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
+        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
+        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
+        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
+        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
+        $('#enable-duplicate-handle').prop('checked', enableDuplicateHandle);
+        enableDuplicateHandle ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
+        $('#duplicate-sender').prop('checked', handleDuplicateSender);
+        $('#duplicate-subject').prop('checked', handleDuplicateSubject);
+        $('#enable-duplicate-handle').change(function() {
+            var enable = $(this).is(":checked");
+            enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
+            localStorage.setItem("enableDuplicateHandle", enable);
+        });
+
+        $('#duplicate-sender').change(function() {
+            var senderEnable = $(this).is(":checked");
+            localStorage.setItem("handleDuplicateSender", senderEnable);
+        });
+
+        $('#duplicate-subject').change(function() {
+            var subjectEnable = $(this).is(":checked");
+            localStorage.setItem("handleDuplicateSubject", subjectEnable);
+        });
     }
 
 })(jQuery);
