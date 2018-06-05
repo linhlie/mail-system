@@ -754,7 +754,7 @@
     function initDuplicateHandle() {
         const duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
-        enableDuplicateHandle ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
+        duplicateSettingData.enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
         $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
         $('#duplicate-subject').prop('checked', duplicateSettingData.subject);
         $('#enable-duplicate-handle').change(function() {
