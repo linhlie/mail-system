@@ -110,7 +110,30 @@ public class MailBoxService {
 
     public List<Email> filterDuplicate(List<Email> allMails, boolean filterSender, boolean filterSubject){
         if(filterSender && filterSubject) {
-            return allMails;
+            Collections.sort(allMails, new SenderSubjectComparator());
+            List<Email> withoutDuplicate = new ArrayList<>();
+            String previousSubject = null;
+            Email previous = null;
+            for(Email mail : allMails) {
+                boolean overlapSender = sameSender(previous, mail);
+                if(!overlapSender) {
+                    previous = mail;
+                    previousSubject = mail.getSubject();
+                    withoutDuplicate.add(mail);
+                } else {
+                    boolean overlapSubject = sameSubject(previousSubject, mail.getSubject());
+                    if(overlapSubject) {
+                        if(withoutDuplicate.size() > 0){
+                            withoutDuplicate.remove(withoutDuplicate.size() -1);
+                        }
+                    } else {
+                        previousSubject = mail.getSubject();
+                    }
+                    previous = mail;
+                    withoutDuplicate.add(mail);
+                }
+            }
+            return withoutDuplicate;
         } else if (filterSender && !filterSubject) {
             Collections.sort(allMails, new SenderComparator());
             List<Email> withoutDuplicateSender = new ArrayList<>();
