@@ -672,10 +672,13 @@
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
         if(!sourceConditionData) return;
         console.log("extractSource: ",sourceConditionData);
+        const duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : sourceConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
+            "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
         };
         sessionStorage.setItem("extractSourceData", JSON.stringify(data));
         var win = window.open('/user/extractSource', '_blank');
@@ -691,10 +694,13 @@
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
+        const duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : destinationConditionData,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
+            "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
         };
         sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
         var win = window.open('/user/extractDestination', '_blank');
@@ -719,13 +725,16 @@
         matchingWords = matchingWords.trim();
         var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
         var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        const duplicateSettingData = getCachedDuplicationSettingData();
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
             "matchingConditionData" : matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
-            "spaceEffective": spaceEffective
+            "spaceEffective": spaceEffective,
+            "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
+            "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
         };
         sessionStorage.setItem("distinguish", distinguish);
         sessionStorage.setItem("spaceEffective", spaceEffective);
@@ -743,16 +752,11 @@
     
     
     function initDuplicateHandle() {
-        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
-        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
-        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
-        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
-        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
-        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
-        $('#enable-duplicate-handle').prop('checked', enableDuplicateHandle);
+        const duplicateSettingData = getCachedDuplicationSettingData();
+        $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
         enableDuplicateHandle ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
-        $('#duplicate-sender').prop('checked', handleDuplicateSender);
-        $('#duplicate-subject').prop('checked', handleDuplicateSubject);
+        $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
+        $('#duplicate-subject').prop('checked', duplicateSettingData.subject);
         $('#enable-duplicate-handle').change(function() {
             var enable = $(this).is(":checked");
             enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
@@ -768,6 +772,22 @@
             var subjectEnable = $(this).is(":checked");
             localStorage.setItem("handleDuplicateSubject", subjectEnable);
         });
+    }
+
+    function getCachedDuplicationSettingData() {
+        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
+        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
+        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
+        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
+        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
+        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
+        return {
+            enable: enableDuplicateHandle,
+            sender: handleDuplicateSender,
+            handleDuplicateSender: enableDuplicateHandle && handleDuplicateSender,
+            subject: handleDuplicateSubject,
+            handleDuplicateSubject: enableDuplicateHandle && handleDuplicateSubject,
+        }
     }
 
 })(jQuery);

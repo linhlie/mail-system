@@ -7,6 +7,8 @@ public class ExtractForm {
     private FilterRule conditionData;
     private boolean distinguish;
     private boolean spaceEffective;
+    private boolean handleDuplicateSender;
+    private boolean handleDuplicateSubject;
 
     public ExtractForm() {
     }
@@ -33,5 +35,21 @@ public class ExtractForm {
 
     public void setSpaceEffective(boolean spaceEffective) {
         this.spaceEffective = spaceEffective;
+    }
+
+    public boolean isHandleDuplicateSender() {
+        return handleDuplicateSender;
+    }
+
+    public void setHandleDuplicateSender(boolean handleDuplicateSender) {
+        this.handleDuplicateSender = handleDuplicateSender;
+    }
+
+    public boolean isHandleDuplicateSubject() {
+        return handleDuplicateSubject;
+    }
+
+    public void setHandleDuplicateSubject(boolean handleDuplicateSubject) {
+        this.handleDuplicateSubject = handleDuplicateSubject;
     }
 }

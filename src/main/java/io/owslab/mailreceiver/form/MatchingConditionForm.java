@@ -19,6 +19,8 @@ public class MatchingConditionForm {
     private FilterRule sourceConditionData;
     private FilterRule destinationConditionData;
     private FilterRule matchingConditionData;
+    private boolean handleDuplicateSender;
+    private boolean handleDuplicateSubject;
 
     public MatchingConditionForm() {
     }
@@ -69,5 +71,21 @@ public class MatchingConditionForm {
 
     public void setSpaceEffective(boolean spaceEffective) {
         this.spaceEffective = spaceEffective;
+    }
+
+    public boolean isHandleDuplicateSender() {
+        return handleDuplicateSender;
+    }
+
+    public void setHandleDuplicateSender(boolean handleDuplicateSender) {
+        this.handleDuplicateSender = handleDuplicateSender;
+    }
+
+    public boolean isHandleDuplicateSubject() {
+        return handleDuplicateSubject;
+    }
+
+    public void setHandleDuplicateSubject(boolean handleDuplicateSubject) {
+        this.handleDuplicateSubject = handleDuplicateSubject;
     }
 }
