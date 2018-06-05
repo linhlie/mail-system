@@ -138,7 +138,9 @@ public class MatchingConditionService {
         List<ExtractMailDTO> extractResult = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();
         FilterRule rootRule = extractForm.getConditionData();
-        List<Email> emailList = mailBoxService.getAll();
+        boolean filterSender = extractForm.isHandleDuplicateSender();
+        boolean filterSubject = extractForm.isHandleDuplicateSubject();
+        List<Email> emailList = mailBoxService.filterDuplicate(filterSender, filterSubject);
         List<Email> matchList;
 //        boolean distinguish = extractForm.isDistinguish();
         boolean distinguish = false;
@@ -182,7 +184,9 @@ public class MatchingConditionService {
         matchingWrapperRule
                 .addRule(matchingRule)
                 .addRule(allRangeMatchRule);
-        List<Email> emailList = mailBoxService.getAll();
+        boolean filterSender = matchingConditionForm.isHandleDuplicateSender();
+        boolean filterSubject = matchingConditionForm.isHandleDuplicateSubject();
+        List<Email> emailList = mailBoxService.filterDuplicate(filterSender, filterSubject);
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
         boolean spaceEffective = matchingConditionForm.isSpaceEffective();

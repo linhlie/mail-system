@@ -33,10 +33,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageNumberTerm;
 import javax.mail.search.SearchTerm;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,6 +106,40 @@ public class MailBoxService {
         String optimizeSearchText = optimizeText(search);
         Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(optimizeSearchText, false, pageRequest);
         return list;
+    }
+
+    public List<Email> filterDuplicate(boolean filterSender, boolean filterSubject){
+        List<Email> allMails = getAll();
+        if(filterSender && filterSubject) {
+            return allMails;
+        } else if (filterSender && !filterSubject) {
+            Collections.sort(allMails, new SenderComparator());
+            List<Email> withoutDuplicateSender = new ArrayList<>();
+            Email previous = null;
+            for(Email mail : allMails) {
+                if(!sameSender(previous, mail)) {
+                    withoutDuplicateSender.add(mail);
+                    previous = mail;
+                }
+            }
+            return withoutDuplicateSender;
+        } else if (!filterSender && filterSubject) {
+            return allMails;
+        } else {
+            return allMails;
+        }
+    }
+
+    private boolean sameSender(Email prev, Email next) {
+        if(prev == null) {
+            return next == null;
+        }
+        if(next == null) {
+            return prev == null;
+        }
+        String prevSender = prev.getFrom();
+        String nextSender = next.getFrom();
+        return prevSender.equals(nextSender);
     }
 
     public List<Email> getAll(){
@@ -468,5 +499,47 @@ public class MailBoxService {
 
             return (String)newPart.getContent();
         }
+    }
+
+    public class SenderComparator implements Comparator<Email> {
+        public int compare(Email o1, Email o2) {
+            int value1 = o1.getFrom().compareTo(o2.getFrom());
+            if (value1 == 0) {
+                return o2.getReceivedAt().compareTo(o1.getReceivedAt());
+            }
+            return value1;
+        }
+    }
+
+    public class SubjectComparator implements Comparator<Email> {
+        public int compare(Email o1, Email o2) {
+            String reversedSubject1 = reverseStringWithCache(o1.getSubject());
+            String reversedSubject2 = reverseStringWithCache(o2.getSubject());
+            int value1 = reversedSubject1.compareTo(reversedSubject2);
+            if (value1 == 0) {
+                return o2.getReceivedAt().compareTo(o1.getReceivedAt());
+            }
+            return value1;
+        }
+    }
+
+    public class SenderSubjectComparator implements Comparator<Email> {
+        public int compare(Email o1, Email o2) {
+            int value1 = o1.getFrom().compareTo(o2.getFrom());
+            if (value1 == 0) {
+                String reversedSubject1 = reverseStringWithCache(o1.getSubject());
+                String reversedSubject2 = reverseStringWithCache(o2.getSubject());
+                int value2 = reversedSubject1.compareTo(reversedSubject2);
+                if (value2 == 0) {
+                    return o2.getReceivedAt().compareTo(o1.getReceivedAt());
+                }
+                return value2;
+            }
+            return value1;
+        }
+    }
+    @Cacheable(key="\"EmailWordJobService:reverseStringWithCache:\"+#raw")
+    public static String reverseStringWithCache(String raw) {
+        return new StringBuilder(raw).reverse().toString();
     }
 }
