@@ -670,4 +670,23 @@ mark.mark-range {
     opacity:0.2;
     position:absolute;
     cursor: col-resize;
-    z-index:999}
+    z-index:999
+}
+
+.duplicate-control-container {
+    font-size: 16px;
+    position: absolute;
+    z-index: 1;
+    top: 15px;
+    left: 400px;
+    right: 15px;
+    bottom: 0px;
+}
+
+.duplicate-control-container .duplicate-control {
+    font-weight: normal;
+}
+
+.duplicate-control-container .duplicate-control.duplicate-control-option.option-padding {
+    padding-left: 20px;
+}
