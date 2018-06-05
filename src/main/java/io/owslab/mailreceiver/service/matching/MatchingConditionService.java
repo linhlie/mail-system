@@ -140,7 +140,7 @@ public class MatchingConditionService {
         FilterRule rootRule = extractForm.getConditionData();
         boolean filterSender = extractForm.isHandleDuplicateSender();
         boolean filterSubject = extractForm.isHandleDuplicateSubject();
-        List<Email> emailList = mailBoxService.filterDuplicate(filterSender, filterSubject);
+        List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
 //        boolean distinguish = extractForm.isDistinguish();
         boolean distinguish = false;
@@ -151,6 +151,7 @@ public class MatchingConditionService {
         } else {
             matchList = emailList;
         }
+        matchList = mailBoxService.filterDuplicate(matchList, filterSender, filterSubject);
         for(Email email : matchList){
             if(email.getRangeList().size() == 0){
                 String optimizedPart = email.getOptimizedText(false);
@@ -186,7 +187,7 @@ public class MatchingConditionService {
                 .addRule(allRangeMatchRule);
         boolean filterSender = matchingConditionForm.isHandleDuplicateSender();
         boolean filterSubject = matchingConditionForm.isHandleDuplicateSubject();
-        List<Email> emailList = mailBoxService.filterDuplicate(filterSender, filterSubject);
+        List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
         boolean spaceEffective = matchingConditionForm.isSpaceEffective();
@@ -197,6 +198,7 @@ public class MatchingConditionService {
         } else {
             matchSourceList = emailList;
         }
+        matchSourceList = mailBoxService.filterDuplicate(matchSourceList, filterSender, filterSubject);
         List<Email> matchDestinationList;
         if(destinationRule.getRules().size() > 0) {
             findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
@@ -204,6 +206,7 @@ public class MatchingConditionService {
         } else {
             matchDestinationList = emailList;
         }
+        matchDestinationList = mailBoxService.filterDuplicate(matchDestinationList, filterSender, filterSubject);
         logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
         List<String> matchingWords = getWordList(matchingConditionForm);
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective);

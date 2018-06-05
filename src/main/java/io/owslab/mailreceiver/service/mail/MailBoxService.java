@@ -108,8 +108,7 @@ public class MailBoxService {
         return list;
     }
 
-    public List<Email> filterDuplicate(boolean filterSender, boolean filterSubject){
-        List<Email> allMails = getAll();
+    public List<Email> filterDuplicate(List<Email> allMails, boolean filterSender, boolean filterSubject){
         if(filterSender && filterSubject) {
             return allMails;
         } else if (filterSender && !filterSubject) {
@@ -517,7 +516,7 @@ public class MailBoxService {
             String reversedSubject2 = reverseStringWithCache(o2.getSubject());
             int value1 = reversedSubject1.compareTo(reversedSubject2);
             if (value1 == 0) {
-                return o2.getReceivedAt().compareTo(o1.getReceivedAt());
+                return o1.getReceivedAt().compareTo(o2.getReceivedAt());
             }
             return value1;
         }
@@ -531,7 +530,7 @@ public class MailBoxService {
                 String reversedSubject2 = reverseStringWithCache(o2.getSubject());
                 int value2 = reversedSubject1.compareTo(reversedSubject2);
                 if (value2 == 0) {
-                    return o2.getReceivedAt().compareTo(o1.getReceivedAt());
+                    return o1.getReceivedAt().compareTo(o2.getReceivedAt());
                 }
                 return value2;
             }
