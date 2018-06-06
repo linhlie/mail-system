@@ -205,7 +205,9 @@ public class NumberRangeService {
         if(range.getNumberCompare().equals(NumberCompare.AUTOMATCH)){
             return true;
         } else {
-            return isValidNumber(numberTreatment, range.getValue());
+            Double number = range.getValue();
+            boolean valid = isValidNumber(numberTreatment, number);
+            return valid && ((number%1000) == 0);
         }
     }
 
