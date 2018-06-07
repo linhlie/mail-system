@@ -1,0 +1,1 @@
+java -Dprofile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -DLC_CTYPE=UTF-8 -Dfile.encoding=UTF8 -jar target/MailReceiver-0.0.1-SNAPSHOT.jar
