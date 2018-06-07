@@ -40,6 +40,8 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailAccountSetting accountSetting;
     private final EmailAccount account;
     private final FetchMailsService.FetchMailProgress mailProgress;
+    private Folder emailFolder;
+    private int openFolderFlag;
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
 
@@ -88,7 +90,9 @@ public class IMAPFetchMailJob implements Runnable {
         properties.put("mail.imap.host", account.getMailServerAddress());
         properties.put("mail.imap.port", account.getMailServerPort());
         properties.put("mail.imap.starttls.enable", "true");
+//        properties.put("mail.debug", "true");
         Session emailSession = Session.getDefaultInstance(properties);
+//        emailSession.setDebug(true);
         Store store = emailSession.getStore("imaps");
         return store;
     }
@@ -105,7 +109,7 @@ public class IMAPFetchMailJob implements Runnable {
             }
 
             //create the folder object and open it
-            Folder emailFolder = store.getFolder("INBOX");
+            emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
             if(isDeleteOldMail){
@@ -120,13 +124,18 @@ public class IMAPFetchMailJob implements Runnable {
                     fromDate = beforeDate;
                 }
             }
-            int openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
+            openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
             SearchTerm searchTerm = buildSearchTerm(fromDate);
             Message messages[] = searchTerm == null ? emailFolder.getMessages() : emailFolder.search(searchTerm);
-
-            fetchEmail(messages);
+            logger.info("Must start fetch mail: " + messages.length + " mails");
+            logger.info("start fetchEmail");
+            mailProgress.setTotal(messages.length);
+            for (int i = 0; i < messages.length; i++) {
+                MimeMessage message = (MimeMessage) messages[i];
+                fetchEmail(message, i);
+            }
 
             if(!keepMailOnMailServer){
                 for (int i = 0; i < messages.length; i++) {
@@ -135,6 +144,7 @@ public class IMAPFetchMailJob implements Runnable {
                 }
             }
             //close the store and folder objects
+            logger.info("start close mail folder");
             emailFolder.close(true);
             store.close();
 
@@ -147,15 +157,13 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private void fetchEmail(Message[] messages) {
-        logger.info("start fetchEmail");
-        mailProgress.setTotal(messages.length);
-        for (int i = 0, n = messages.length; i < n; i++) {
+    private void fetchEmail(MimeMessage message, int index) {
+        try{
             try {
-                MimeMessage message = (MimeMessage) messages[i];
                 if(isEmailExist(message, account)) {
                     mailProgress.decreaseTotal();
-                    continue;
+                    logger.info("[" + index + "] mail exist: " + message.getSubject() + " | " + message.getReceivedDate());
+                    return;
                 }
                 Email email = buildReceivedMail(message, account);
                 emailDAO.save(email);
@@ -172,14 +180,20 @@ public class IMAPFetchMailJob implements Runnable {
                         emailDAO.save(errorEmail);
                     }
                 }
-                logger.info("save email: " + message.getSubject());
+                logger.info("[" + index + "] save email: " + message.getSubject());
                 mailProgress.increase();
-            } catch (Exception e) {
-                mailProgress.decreaseTotal();
-                e.printStackTrace();
+            } catch (FolderClosedException ex) {
+                logger.info("[" + index + "] FolderClosedException");
+                ex.printStackTrace();
+                if (!emailFolder.isOpen()) {
+                    emailFolder.open(openFolderFlag);
+                    this.fetchEmail(message, index);
+                }
             }
+        } catch (MessagingException e) {
+            mailProgress.decreaseTotal();
+            e.printStackTrace();
         }
-        logger.info("stop fetchEmail");
     }
 
     private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
