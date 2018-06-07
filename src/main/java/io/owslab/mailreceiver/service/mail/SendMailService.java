@@ -142,7 +142,7 @@ public class SendMailService {
             if(uploadAttachment != null && uploadAttachment.size() > 0) {
                 List<UploadFile> uploadFiles = uploadFileDAO.findByIdIn(uploadAttachment);
                 for (UploadFile uploadFile : uploadFiles){
-                    MimeBodyPart attachmentPart = buildAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
+                    MimeBodyPart attachmentPart = buildUploadAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
                 }
             }
@@ -156,15 +156,26 @@ public class SendMailService {
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, IOException {
+    private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, UnsupportedEncodingException {
         MimeBodyPart attachmentPart = new MimeBodyPart();
         String fullFilename = normalizeDirectoryPath(storagePath) + File.separator + fileName;
-        System.out.println("buildAttachmentPart: " + fullFilename + " | " + fileName);
+        DataSource source = new FileDataSource(fullFilename);
+        attachmentPart.setDataHandler(new DataHandler(source));
+        String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
+        attachmentPart.setFileName(filename);
+        return attachmentPart;
+    }
+
+    private MimeBodyPart buildUploadAttachmentPart(String storagePath, String fileName) throws MessagingException, IOException {
+        MimeBodyPart attachmentPart = new MimeBodyPart();
+        String fullFilename = normalizeDirectoryPath(storagePath) + File.separator + fileName;
         Path path = Paths.get(fullFilename);
         InputStream in = Files.newInputStream(path);
         DataSource source = new ByteArrayDataSource(in, Files.probeContentType(path));
