@@ -1,1 +1,1 @@
-mvn spring-boot:run -Drun.jvmArguments="-Dprofile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -DLC_CTYPE=UTF-8 -Dfile.encoding=UTF8"
+mvn spring-boot:run -Drun.jvmArguments="-Dprofile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -DLC_CTYPE=UTF-8 -Dfile.encoding=UTF-8"

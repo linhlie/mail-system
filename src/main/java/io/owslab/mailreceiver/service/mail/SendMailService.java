@@ -13,12 +13,18 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-
+import javax.mail.util.ByteArrayDataSource;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 /**
  * Created by khanhlvb on 4/4/18.
  */
@@ -150,19 +156,29 @@ public class SendMailService {
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, UnsupportedEncodingException {
+    private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, IOException {
         MimeBodyPart attachmentPart = new MimeBodyPart();
-        String fullFilename = storagePath + "/" + fileName;
-        DataSource source = new FileDataSource(fullFilename);
+        String fullFilename = normalizeDirectoryPath(storagePath) + File.separator + fileName;
+        System.out.println("buildAttachmentPart: " + fullFilename + " | " + fileName);
+        Path path = Paths.get(fullFilename);
+        InputStream in = Files.newInputStream(path);
+        DataSource source = new ByteArrayDataSource(in, Files.probeContentType(path));
         attachmentPart.setDataHandler(new DataHandler(source));
         String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
         attachmentPart.setFileName(filename);
         return attachmentPart;
+    }
+    
+    private String normalizeDirectoryPath(String path){
+        if (path != null && path.length() > 0 && path.charAt(path.length() - 1) == '/') {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
     private String selfEliminateDuplicates(String raw) {

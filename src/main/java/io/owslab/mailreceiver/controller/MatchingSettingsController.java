@@ -207,6 +207,7 @@ public class MatchingSettingsController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("sendRecommendationMail: " + e.getMessage());
+            e.printStackTrace();
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);

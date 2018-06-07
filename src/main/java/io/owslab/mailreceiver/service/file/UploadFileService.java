@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +34,7 @@ public class UploadFileService {
         // Get the file and save it somewhere
         byte[] bytes = file.getBytes();
         String storagePath = enviromentSettingService.getStoragePath();
+        storagePath = normalizeDirectoryPath(storagePath) + File.separator + "upload";
         String fileName = file.getOriginalFilename();
         Path path = Paths.get(storagePath + File.separator + fileName);
         Files.write(path, bytes);
@@ -47,12 +49,24 @@ public class UploadFileService {
         uploadFiles.add(uploadFile);
         return uploadFiles;
     }
+    
+    private String normalizeDirectoryPath(String path){
+        if (path != null && path.length() > 0 && path.charAt(path.length() - 1) == '/') {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
+    }
 
     public void delete(long fileId) {
         UploadFile uploadFile = uploadFileDAO.findOne(fileId);
         if (uploadFile != null) {
-            File file = new File(uploadFile.getStoragePath() + File.separator + uploadFile.getFileName());
-            file.delete();
+            String fileFullName = uploadFile.getStoragePath() + File.separator + uploadFile.getFileName();
+            Path path = Paths.get(fileFullName);
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             uploadFileDAO.delete(fileId);
         }
     }
