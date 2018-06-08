@@ -207,7 +207,12 @@ public class NumberRangeService {
         } else {
             Double number = range.getValue();
             boolean valid = isValidNumber(numberTreatment, number);
-            return valid && ((number%1000) == 0);
+            boolean enablePrettyNumber = numberTreatment.isEnablePrettyNumber();
+            int prettyNumberStep = numberTreatment.getPrettyNumberStep();
+            if(enablePrettyNumber && prettyNumberStep > 0) {
+                return valid && ((number%prettyNumberStep) == 0);
+            }
+            return valid;
         }
     }
 
