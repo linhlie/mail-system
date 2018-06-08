@@ -717,8 +717,10 @@
     }
 
     function updateDropzoneData(files) {
+        var cachedIncludeAttachmentStr = localStorage.getItem("includeAttachment");
+        var cachedIncludeAttachment = typeof cachedIncludeAttachmentStr !== "string" ? false : !!JSON.parse(cachedIncludeAttachmentStr);
         attachmentDropzone.removeAllFiles(true);
-        if(files.length > 0){
+        if(cachedIncludeAttachment && files.length > 0){
             for(var i = 0; i < files.length; i++ ){
                 var file = files[i];
                 var mockFile = { id: file.id, name: file.fileName, size: file.size, type: 'text/plain'};
