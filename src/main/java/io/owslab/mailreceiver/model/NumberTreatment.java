@@ -47,6 +47,10 @@ public class NumberTreatment {
 
     private boolean enableReplaceLetter;
 
+    private boolean enablePrettyNumber;
+
+    private int prettyNumberStep;
+
     public NumberTreatment() {}
 
     public NumberTreatment(long id) {
@@ -56,7 +60,7 @@ public class NumberTreatment {
     public NumberTreatment(String name, String upperLimitName, int upperLimitSign, Double upperLimitRate,
                            String lowerLimitName, int lowerLimitSign, Double lowerLimitRate, Double leftBoundaryValue,
                            int leftBoundaryOperator, int combineOperator, Double rightBoundaryValue,
-                           int rightBoundaryOperator, boolean enableReplaceLetter) {
+                           int rightBoundaryOperator, boolean enableReplaceLetter, boolean enablePrettyNumber, int prettyNumberStep) {
         this.name = name;
         this.upperLimitName = upperLimitName;
         this.upperLimitSign = upperLimitSign;
@@ -70,6 +74,8 @@ public class NumberTreatment {
         this.rightBoundaryValue = rightBoundaryValue;
         this.rightBoundaryOperator = rightBoundaryOperator;
         this.enableReplaceLetter = enableReplaceLetter;
+        this.enablePrettyNumber = enablePrettyNumber;
+        this.prettyNumberStep = prettyNumberStep;
     }
 
     public NumberTreatment(NumberTreatmentForm form) {
@@ -86,6 +92,8 @@ public class NumberTreatment {
         this.rightBoundaryValue = form.getRightBoundaryValue();
         this.rightBoundaryOperator = form.getRightBoundaryOperator();
         this.enableReplaceLetter = form.isEnableReplaceLetter();
+        this.enablePrettyNumber = form.isEnablePrettyNumber();
+        this.prettyNumberStep = form.getPrettyNumberStep();
     }
 
     public long getId() {
@@ -198,6 +206,22 @@ public class NumberTreatment {
 
     public void setEnableReplaceLetter(boolean enableReplaceLetter) {
         this.enableReplaceLetter = enableReplaceLetter;
+    }
+
+    public boolean isEnablePrettyNumber() {
+        return enablePrettyNumber;
+    }
+
+    public void setEnablePrettyNumber(boolean enablePrettyNumber) {
+        this.enablePrettyNumber = enablePrettyNumber;
+    }
+
+    public int getPrettyNumberStep() {
+        return prettyNumberStep;
+    }
+
+    public void setPrettyNumberStep(int prettyNumberStep) {
+        this.prettyNumberStep = prettyNumberStep;
     }
 
     public class CombineOperators {

@@ -24,6 +24,8 @@
             {type: "input", name: "rightBoundaryValue"},
             {type: "select", name: "rightBoundaryOperator"},
             {type: "checkbox", name: "enableReplaceLetter"},
+            {type: "checkbox", name: "enablePrettyNumber"},
+            {type: "input", name: "prettyNumberStep"},
         ];
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];

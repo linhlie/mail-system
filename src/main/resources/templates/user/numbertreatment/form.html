@@ -223,6 +223,21 @@
                             <div class="treatment-container">
                                 <div class="row">
                                     <div class="col-xs-12">
+                                        <input name="enablePrettyNumber" type="checkbox"
+                                               th:field="*{enablePrettyNumber}"
+                                        />
+                                        <span>&nbsp;端数があるものは、数値として扱わない</span>
+                                        <span>&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;&nbsp;
+                                            <input name="prettyNumberStep" th:field="*{prettyNumberStep}" style="text-align: right;" type="number" step="100" min="100" placeholder="1000"/>
+                                            &nbsp;&nbsp;&nbsp;未満のゼロ以外の数字を端数とみなす)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="treatment-container">
+                                <div class="row">
+                                    <div class="col-xs-12">
                                         <input name="enableReplaceLetter" th:field="*{enableReplaceLetter}"
                                                 type="checkbox"
                                         />

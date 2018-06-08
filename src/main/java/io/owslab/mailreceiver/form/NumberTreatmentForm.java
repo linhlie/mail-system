@@ -37,6 +37,10 @@ public class NumberTreatmentForm {
 
     private boolean enableReplaceLetter;
 
+    private boolean enablePrettyNumber;
+
+    private int prettyNumberStep;
+
     private List<ReplaceNumber> replaceNumberList;
     private List<ReplaceUnit> replaceUnitList;
     private List<ReplaceLetter> replaceLetterList;
@@ -64,6 +68,8 @@ public class NumberTreatmentForm {
         this.rightBoundaryValue = numberTreatment.getRightBoundaryValue();
         this.rightBoundaryOperator = numberTreatment.getRightBoundaryOperator();
         this.enableReplaceLetter = numberTreatment.isEnableReplaceLetter();
+        this.enablePrettyNumber = numberTreatment.isEnablePrettyNumber();
+        this.prettyNumberStep = numberTreatment.getPrettyNumberStep();
     }
 
     public String getName() {
@@ -192,5 +198,21 @@ public class NumberTreatmentForm {
 
     public void setEnableReplaceLetter(boolean enableReplaceLetter) {
         this.enableReplaceLetter = enableReplaceLetter;
+    }
+
+    public boolean isEnablePrettyNumber() {
+        return enablePrettyNumber;
+    }
+
+    public void setEnablePrettyNumber(boolean enablePrettyNumber) {
+        this.enablePrettyNumber = enablePrettyNumber;
+    }
+
+    public int getPrettyNumberStep() {
+        return prettyNumberStep;
+    }
+
+    public void setPrettyNumberStep(int prettyNumberStep) {
+        this.prettyNumberStep = prettyNumberStep;
     }
 }
