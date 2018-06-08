@@ -28,6 +28,11 @@
                 <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
             </a>
         </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
+            <a href="#" th:href="@{/user/sendMailSettings}">
+                <i class="fa fa-sort-numeric-asc"></i> <span>送信設定</span>
+            </a>
+        </li>
         <li class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
             <a href="#" th:href="@{/admin/administratorSetting}">
