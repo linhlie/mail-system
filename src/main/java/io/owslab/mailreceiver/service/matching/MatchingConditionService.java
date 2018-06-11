@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +31,7 @@ import java.util.concurrent.*;
  * Created by khanhlvb on 3/6/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class MatchingConditionService {
 
     private static final Logger logger = LoggerFactory.getLogger(MatchingConditionService.class);
@@ -270,12 +273,14 @@ public class MatchingConditionService {
         return isSameDomain(sourceEmailAddress, destinationEmailAddress);
     }
 
+    @Cacheable(key="\"MatchingConditionService:isSameDomain:\"++#a+'-'+#b")
     private boolean isSameDomain(String a, String b) {
         String aDomain = getEmailDomain(a);
         String bDomain = getEmailDomain(b);
         return aDomain.equalsIgnoreCase(bDomain);
     }
 
+    @Cacheable(key="\"MatchingConditionService:getEmailDomain:\"++#someEmail")
     public String getEmailDomain(String someEmail)
     {
         someEmail = someEmail != null ? someEmail : "";
