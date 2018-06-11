@@ -5,9 +5,11 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.SendAccountForm;
+import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.mail.search.MessageNumberTerm;
 import javax.mail.search.SearchTerm;
 import java.io.*;
@@ -73,6 +76,9 @@ public class MailBoxService {
 
     @Autowired
     private FuzzyWordService fuzzyWordService;
+
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
     
     private List<Email> cachedEmailList = null;
 
@@ -426,7 +432,10 @@ public class MailBoxService {
                 try {
                     MimeMessage message = (MimeMessage) messages[0];
                     try {
-                        email = setMailContent(message, email);
+                        email = IMAPFetchMailJob.buildReceivedMail(message, email);
+                        boolean hasAttachments = saveFiles(message, email);
+                        email.setHasAttachment(hasAttachments);
+                        email = IMAPFetchMailJob.setMailContent(message, email);
                         email.setErrorLog(null);
                         emailDAO.save(email);
                     } catch (Exception e) {
@@ -455,6 +464,52 @@ public class MailBoxService {
         }
     }
 
+    private boolean saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+        boolean hasAttachments = false;
+        String contentType = message.getContentType();
+        if (contentType.contains("multipart")) {
+            // content may contain attachments
+            Multipart multiPart = (Multipart) message.getContent();
+            int numberOfParts = multiPart.getCount();
+            for (int partCount = 0; partCount < numberOfParts; partCount++) {
+                //TODO: try catch if fails or transaction
+                MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
+                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                    // this part is attachment
+                    String fileName = MimeUtility.decodeText(part.getFileName());
+                    String saveDirectoryPath = enviromentSettingService.getStoragePath();
+                    String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
+                    File saveDirectory = new File(saveDirectoryPath);
+                    if (!saveDirectory.exists()){
+                        saveDirectory.mkdir();
+                    }
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectory = new File(saveDirectoryPath);
+                    if (!saveDirectory.exists()){
+                        saveDirectory.mkdir();
+                    }
+                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    logger.info("Start Save file: " + fileName + " " + file.length());
+                    part.saveFile(file);
+                    AttachmentFile attachmentFile = new AttachmentFile(
+                            email.getMessageId(),
+                            fileName,
+                            saveDirectoryPath,
+                            new Date(),
+                            null,
+                            file.length()
+                    );
+                    logger.info("Save file: " + attachmentFile.toString());
+                    fileDAO.save(attachmentFile);
+                    hasAttachments = true;
+                }
+            }
+        }
+
+        return hasAttachments;
+    }
+
     private Email findOne(String messageId) {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
@@ -472,79 +527,6 @@ public class MailBoxService {
         Session emailSession = Session.getDefaultInstance(properties);
         Store store = emailSession.getStore("imaps");
         return store;
-    }
-
-    private Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
-        String subject = message.getSubject();
-        subject = subject != null ? subject : "null";
-        subject = EmojiParser.removeAllEmojis(subject);
-        email.setSubject(subject);
-        String originalContent = getContentText(message);
-        originalContent = originalContent != null ? originalContent : "";
-        originalContent = EmojiParser.removeAllEmojis(originalContent);
-        email.setOriginalBody(originalContent);
-        String beforeOptimizeContent = originalContent;
-        String optimizedContent = MailBoxService.optimizeText(beforeOptimizeContent);
-        email.setOptimizedBody(optimizedContent);
-        return email;
-    }
-
-    private String getContentText(Part p) throws MessagingException, IOException {
-
-        if (p.isMimeType("text/*")) {
-            String s = getTextContent(p);
-            return s;
-        }
-
-        if (p.isMimeType("multipart/alternative")) {
-            // prefer html text over plain text
-            Multipart mp = (Multipart)p.getContent();
-            String text = null;
-            for (int i = 0; i < mp.getCount(); i++) {
-                Part bp = mp.getBodyPart(i);
-                if (bp.isMimeType("text/plain")) {
-                    if (text == null)
-                        text = getContentText(bp);
-                    continue;
-                } else if (bp.isMimeType("text/html")) {
-                    String s = getContentText(bp);
-                    if (s != null)
-                        return s;
-                } else {
-                    return getContentText(bp);
-                }
-            }
-            return text;
-        } else if (p.isMimeType("multipart/*")) {
-            Multipart mp = (Multipart)p.getContent();
-            for (int i = 0; i < mp.getCount(); i++) {
-                String s = getContentText(mp.getBodyPart(i));
-                if (s != null)
-                    return s;
-            }
-        }
-
-        return null;
-    }
-
-    private String getTextContent(Part p) throws IOException, MessagingException {
-        try {
-            return (String)p.getContent();
-        } catch (UnsupportedEncodingException e) {
-            OutputStream os = new ByteArrayOutputStream();
-            p.writeTo(os);
-            String raw = os.toString();
-            os.close();
-
-            //cp932 -> Windows-31J
-            raw = raw.replaceAll("cp932", "ms932");
-
-            InputStream is = new ByteArrayInputStream(raw.getBytes());
-            Part newPart = new MimeBodyPart(is);
-            is.close();
-
-            return (String)newPart.getContent();
-        }
     }
 
     public class SenderComparator implements Comparator<Email> {

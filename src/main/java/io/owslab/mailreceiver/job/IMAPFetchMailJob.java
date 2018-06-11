@@ -78,6 +78,7 @@ public class IMAPFetchMailJob implements Runnable {
     private SearchTerm buildSearchTerm(Date fromDate){
 //        Flags seen = new Flags(Flags.Flag.SEEN);
 //        SearchTerm searchTerm = new FlagTerm(seen, false);
+//        return new MessageNumberTerm(200767);
         if(fromDate != null) {
             ReceivedDateTerm minDateTerm = new ReceivedDateTerm(ComparisonTerm.GE, fromDate);
             return minDateTerm;
@@ -165,10 +166,12 @@ public class IMAPFetchMailJob implements Runnable {
                     logger.info("[" + index + "] mail exist: " + message.getSubject() + " | " + message.getReceivedDate());
                     return;
                 }
-                Email email = buildReceivedMail(message, account);
+                Email email = buildInitReceivedMail(message, account);
                 emailDAO.save(email);
                 try {
-                    saveFiles(message, email);
+                    email = buildReceivedMail(message, email);
+                    boolean hasAttachments = saveFiles(message, email);
+                    email.setHasAttachment(hasAttachments);
                     email = setMailContent(message, email);
                     emailDAO.save(email);
                 } catch (Exception e) {
@@ -192,6 +195,7 @@ public class IMAPFetchMailJob implements Runnable {
             }
         } catch (MessagingException e) {
             mailProgress.decreaseTotal();
+            //TODO: log email fail can't manually retry
             e.printStackTrace();
         }
     }
@@ -207,37 +211,35 @@ public class IMAPFetchMailJob implements Runnable {
         return emailList.size() > 0 ? emailList.get(0) : null;
     }
 
-    private Email buildReceivedMail(MimeMessage message, EmailAccount account) {
-        try {
-            Email email =  new Email();
-            int messageNumber = message.getMessageNumber();
-            String messageId = buildMessageId(message, account);
-            Date sentAt = message.getSentDate();
-            Date receivedAt = message.getReceivedDate();
-            sentAt = sentAt != null ? sentAt : receivedAt;
-            email.setMessageNumber(Integer.toString(messageNumber));
-            email.setMessageId(messageId);
-            email.setAccountId(account.getId());
-            email.setFrom(getMailFrom(message));
-            email.setSubject("");
-            email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
-            email.setSentAt(sentAt);
-            email.setReplyTo(getMailReplyTo(message));
-            email.setReceivedAt(receivedAt);
-            email.setCreatedAt(new Date());
-            email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
-            email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
-            email.setHasAttachment(hasAttachments(message));
-            email.setOriginalBody("");
-            email.setOptimizedBody("");
-            return email;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Email buildInitReceivedMail(MimeMessage message, EmailAccount account) throws MessagingException {
+        Email email =  new Email();
+        int messageNumber = message.getMessageNumber();
+        String messageId = buildMessageId(message, account);
+        Date sentAt = message.getSentDate();
+        Date receivedAt = message.getReceivedDate();
+        sentAt = sentAt != null ? sentAt : receivedAt;
+        email.setMessageNumber(Integer.toString(messageNumber));
+        email.setMessageId(messageId);
+        email.setAccountId(account.getId());
+        email.setFrom(getMailFrom(message));
+        email.setSubject("");
+        email.setOriginalBody("");
+        email.setOptimizedBody("");
+        email.setSentAt(sentAt);
+        email.setReceivedAt(receivedAt);
+        return email;
+    }
+
+
+    public static Email buildReceivedMail(MimeMessage message, Email email) throws MessagingException {
+        email.setTo(getRecipientsWithType(message, Message.RecipientType.TO));
+        email.setReplyTo(getMailReplyTo(message));
+        email.setBcc(getRecipientsWithType(message, Message.RecipientType.BCC));
+        email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
+        return email;
     }
     
-    private Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
+    public static Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
         String subject = message.getSubject();
         subject = subject != null ? subject : "null";
         subject = EmojiParser.removeAllEmojis(subject);
@@ -252,7 +254,7 @@ public class IMAPFetchMailJob implements Runnable {
         return email;
     }
 
-    private String getContentText(Part p) throws MessagingException, IOException {
+    private static String getContentText(Part p) throws MessagingException, IOException {
 
         if (p.isMimeType("text/*")) {
             String s = getTextContent(p);
@@ -290,7 +292,7 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private String getTextContent(Part p) throws IOException, MessagingException {
+    private static String getTextContent(Part p) throws IOException, MessagingException {
         try {
             return (String)p.getContent();
         } catch (UnsupportedEncodingException e) {
@@ -314,13 +316,13 @@ public class IMAPFetchMailJob implements Runnable {
         return account.getAccount() + "+" + message.getMessageID();
     }
 
-    private String getMailFrom(MimeMessage message) throws MessagingException {
+    private static String getMailFrom(MimeMessage message) throws MessagingException {
         Address[] froms = message.getFrom();
         String fromEmail = froms == null ? "unknown" : ((InternetAddress) froms[0]).getAddress();
         return fromEmail;
     }
 
-    private String getMailReplyTo(MimeMessage message) throws MessagingException {
+    private static String getMailReplyTo(MimeMessage message) throws MessagingException {
         Address[] replyTos = message.getReplyTo();
         String replyTo;
         if(replyTos != null && replyTos.length > 0) {
@@ -337,7 +339,7 @@ public class IMAPFetchMailJob implements Runnable {
         return replyTo;
     }
 
-    private String getRecipientsWithType(MimeMessage message, Message.RecipientType type) throws MessagingException {
+    private static String getRecipientsWithType(MimeMessage message, Message.RecipientType type) throws MessagingException {
         List<String> recipientAddresses = new ArrayList<>();
         Address[] recipients = message.getRecipients(type);
         if (recipients == null || recipients.length == 0) return  "";
@@ -360,7 +362,8 @@ public class IMAPFetchMailJob implements Runnable {
         return false;
     }
 
-    private void saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+    private boolean saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+        boolean hasAttachments = false;
         String contentType = message.getContentType();
         if (contentType.contains("multipart")) {
             // content may contain attachments
@@ -397,12 +400,15 @@ public class IMAPFetchMailJob implements Runnable {
                     );
                     logger.info("Save file: " + attachmentFile.toString());
                     fileDAO.save(attachmentFile);
+                    hasAttachments = true;
                 }
             }
         }
+
+        return hasAttachments;
     }
 
-    private String normalizeDirectoryPath(String path){
+    public static String normalizeDirectoryPath(String path){
         if (path != null && path.length() > 0 && path.charAt(path.length() - 1) == '/') {
             path = path.substring(0, path.length() - 1);
         }
@@ -439,7 +445,7 @@ public class IMAPFetchMailJob implements Runnable {
         return result;
     }
 
-    private String getCurrentDateStr(){
+    public static String getCurrentDateStr(){
         String currentDateStr = "";
         LocalDateTime now = LocalDateTime.now();
         String year = Integer.toString(now.getYear());
