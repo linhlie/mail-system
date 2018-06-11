@@ -736,6 +736,7 @@
             "spaceEffective": spaceEffective,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
+            "handleSameDomain": getCachedSameDomainSettingData(),
         };
         sessionStorage.setItem("distinguish", distinguish);
         sessionStorage.setItem("spaceEffective", spaceEffective);
@@ -792,13 +793,18 @@
     }
     
     function initSameDomainHandle() {
-        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
-        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        let enableSameDomainHandle = getCachedSameDomainSettingData();
         $('#enable-same-domain-handle').prop('checked', enableSameDomainHandle);
         $('#enable-same-domain-handle').change(function() {
             var enable = $(this).is(":checked");
             localStorage.setItem("enableSameDomainHandle", enable);
         });
+    }
+
+    function getCachedSameDomainSettingData() {
+        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
+        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        return enableSameDomainHandle;
     }
 
 })(jQuery);
