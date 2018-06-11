@@ -4,11 +4,9 @@ import antlr.StringUtils;
 import com.mariten.kanatools.KanaConverter;
 import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
+import io.owslab.mailreceiver.dao.FetchMailErroDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
-import io.owslab.mailreceiver.model.AttachmentFile;
-import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.EmailAccount;
-import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.BeanUtil;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -40,6 +38,7 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailAccountSetting accountSetting;
     private final EmailAccount account;
     private final FetchMailsService.FetchMailProgress mailProgress;
+    private final FetchMailErroDAO fetchMailErroDAO;
     private Folder emailFolder;
     private int openFolderFlag;
 
@@ -48,6 +47,7 @@ public class IMAPFetchMailJob implements Runnable {
     public IMAPFetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
         this.emailDAO = BeanUtil.getBean(EmailDAO.class);
         this.fileDAO = BeanUtil.getBean(FileDAO.class);
+        this.fetchMailErroDAO = BeanUtil.getBean(FetchMailErroDAO.class);
         this.enviromentSettingService = BeanUtil.getBean(EnviromentSettingService.class);
         this.fetchMailsService = BeanUtil.getBean(FetchMailsService.class);
         this.accountSetting = accountSetting;
@@ -193,10 +193,12 @@ public class IMAPFetchMailJob implements Runnable {
                     this.fetchEmail(message, index);
                 }
             }
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             mailProgress.decreaseTotal();
-            //TODO: log email fail can't manually retry
             e.printStackTrace();
+            String error = ExceptionUtils.getStackTrace(e);
+            FetchMailError fetchMailError = new FetchMailError(new Date(), error);
+            fetchMailErroDAO.save(fetchMailError);
         }
     }
 
