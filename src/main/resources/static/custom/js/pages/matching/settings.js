@@ -390,6 +390,7 @@
         setButtonClickListenter(extractSourceBtnId, extractSource);
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
         initDuplicateHandle();
+        initSameDomainHandle();
     });
     
     function setButtonClickListenter(id, callback) {
@@ -788,6 +789,16 @@
             subject: handleDuplicateSubject,
             handleDuplicateSubject: enableDuplicateHandle && handleDuplicateSubject,
         }
+    }
+    
+    function initSameDomainHandle() {
+        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
+        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        $('#enable-same-domain-handle').prop('checked', enableSameDomainHandle);
+        $('#enable-same-domain-handle').change(function() {
+            var enable = $(this).is(":checked");
+            localStorage.setItem("enableSameDomainHandle", enable);
+        });
     }
 
 })(jQuery);
