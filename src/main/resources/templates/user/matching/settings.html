@@ -7,19 +7,6 @@
 <div layout:fragment="content">
     <section class="content-header" style="position: relative;">
         <h1>メールマッチング条件設定</h1>
-        <div class="duplicate-control-container">
-            <label class="duplicate-control">
-                <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
-            </label>
-            <label class="duplicate-control duplicate-control-option option-padding">重複の判定（&nbsp;</label>
-            <label class="duplicate-control duplicate-control-option">
-                <input id="duplicate-sender" type="checkbox"/> 送信者
-            </label>
-            <label class="duplicate-control duplicate-control-option option-padding">
-                <input id="duplicate-subject" type="checkbox"/> 件名
-            </label>
-            <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
-        </div>
     </section>
     <section class="content mail-analysis">
         <div class="row">
@@ -110,6 +97,21 @@
                             <div class="col-xs-12">
                                 <span>マッチングワード</span>
                                 <textarea id="matchingWordsArea" style="width: 100%" rows="4"></textarea>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="row duplicate-control-container">
+                                    <label class="duplicate-control">
+                                        <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
+                                    </label>
+                                    <label class="duplicate-control duplicate-control-option option-padding">重複の判定（&nbsp;</label>
+                                    <label class="duplicate-control duplicate-control-option">
+                                        <input id="duplicate-sender" type="checkbox"/> 送信者
+                                    </label>
+                                    <label class="duplicate-control duplicate-control-option option-padding">
+                                        <input id="duplicate-subject" type="checkbox"/> 件名
+                                    </label>
+                                    <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
+                                </div>
                             </div>
                             <div class="col-md-offset-8 col-sm-offset-7 col-xs-offset-6 col-md-4 col-sm-5 col-xs-6">
                                 <button id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block">マッチング</button>

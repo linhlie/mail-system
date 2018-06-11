@@ -21,6 +21,7 @@ public class MatchingConditionForm {
     private FilterRule matchingConditionData;
     private boolean handleDuplicateSender;
     private boolean handleDuplicateSubject;
+    private boolean handleSameDomain;
 
     public MatchingConditionForm() {
     }
@@ -87,5 +88,13 @@ public class MatchingConditionForm {
 
     public void setHandleDuplicateSubject(boolean handleDuplicateSubject) {
         this.handleDuplicateSubject = handleDuplicateSubject;
+    }
+
+    public boolean isHandleSameDomain() {
+        return handleSameDomain;
+    }
+
+    public void setHandleSameDomain(boolean handleSameDomain) {
+        this.handleSameDomain = handleSameDomain;
     }
 }

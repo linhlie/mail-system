@@ -187,6 +187,7 @@ public class MatchingConditionService {
                 .addRule(allRangeMatchRule);
         boolean filterSender = matchingConditionForm.isHandleDuplicateSender();
         boolean filterSubject = matchingConditionForm.isHandleDuplicateSubject();
+        boolean filterSameDomain = matchingConditionForm.isHandleSameDomain();
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
         boolean distinguish = matchingConditionForm.isDistinguish();
@@ -220,6 +221,12 @@ public class MatchingConditionService {
                 addToList(matchingResultMap, word, sourceMail, null);
             }
             for(MatchingWordResult destinationResult : matchWordDestination) {
+                if(filterSameDomain) {
+                    boolean isSameDomain = matchingMailDomain(sourceResult, destinationResult);
+                    if(isSameDomain) {
+                        continue;
+                    }
+                }
                 List<String> realIntersectWords;
                 if(matchingWords.size() == 0){
                     realIntersectWords = matchingWords;
@@ -253,6 +260,26 @@ public class MatchingConditionService {
         logger.info("Matching done: " + matchingResults.size());
         FinalMatchingResult result = new FinalMatchingResult(matchingResults, previewMailDTOList);
         return result;
+    }
+
+    private boolean matchingMailDomain(MatchingWordResult sourceResult, MatchingWordResult destinationResult){
+        Email sourceEmail = sourceResult.getEmail();
+        String sourceEmailAddress = sourceEmail.getFrom();
+        Email destinationEmail = destinationResult.getEmail();
+        String destinationEmailAddress = destinationEmail.getFrom();
+        return isSameDomain(sourceEmailAddress, destinationEmailAddress);
+    }
+
+    private boolean isSameDomain(String a, String b) {
+        String aDomain = getEmailDomain(a);
+        String bDomain = getEmailDomain(b);
+        return aDomain.equalsIgnoreCase(bDomain);
+    }
+
+    public String getEmailDomain(String someEmail)
+    {
+        someEmail = someEmail != null ? someEmail : "";
+        return  someEmail.substring(someEmail.indexOf("@") + 1);
     }
 
     private void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
