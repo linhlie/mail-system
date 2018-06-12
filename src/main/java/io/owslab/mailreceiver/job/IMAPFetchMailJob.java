@@ -85,9 +85,9 @@ public class IMAPFetchMailJob implements Runnable {
         properties.put("mail.imap.host", account.getMailServerAddress());
         properties.put("mail.imap.port", account.getMailServerPort());
         properties.put("mail.imap.starttls.enable", "true");
-        properties.put("mail.debug", "true");
+//        properties.put("mail.debug", "true");
         Session emailSession = Session.getDefaultInstance(properties);
-        emailSession.setDebug(true);
+//        emailSession.setDebug(true);
         Store store = emailSession.getStore("imaps");
         return store;
     }
