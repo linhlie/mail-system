@@ -61,27 +61,21 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void start(){
-        List<Email> listEmail = emailDAO.findByAccountIdOrderBySentAtDesc(account.getId());
+        List<Email> listEmail = emailDAO.findByAccountIdOrderByMessageNumberDesc(account.getId());
         int n = listEmail.size();
         if(n > 0){
             Email lastEmail = listEmail.get(0);
-            Date lastEmailReceivedAtAt = lastEmail.getReceivedAt();
-            if(lastEmailReceivedAtAt == null){
-                lastEmailReceivedAtAt = lastEmail.getSentAt();
-            }
-            check(account, accountSetting, lastEmailReceivedAtAt);
+            String msgnum = lastEmail.getMessageNumber();
+            check(account, accountSetting, Integer.parseInt(msgnum) + 1);
         } else {
-            check(account, accountSetting, null);
+            check(account, accountSetting, 1);
         }
     }
 
     private SearchTerm buildSearchTerm(Date fromDate){
-//        Flags seen = new Flags(Flags.Flag.SEEN);
-//        SearchTerm searchTerm = new FlagTerm(seen, false);
-//        return new MessageNumberTerm(200767);
         if(fromDate != null) {
             ReceivedDateTerm minDateTerm = new ReceivedDateTerm(ComparisonTerm.GE, fromDate);
-            return minDateTerm;
+            return new AndTerm(minDateTerm, minDateTerm);
         }
         return null;
     }
@@ -91,14 +85,14 @@ public class IMAPFetchMailJob implements Runnable {
         properties.put("mail.imap.host", account.getMailServerAddress());
         properties.put("mail.imap.port", account.getMailServerPort());
         properties.put("mail.imap.starttls.enable", "true");
-//        properties.put("mail.debug", "true");
+        properties.put("mail.debug", "true");
         Session emailSession = Session.getDefaultInstance(properties);
-//        emailSession.setDebug(true);
+        emailSession.setDebug(true);
         Store store = emailSession.getStore("imaps");
         return store;
     }
 
-    public void check(EmailAccount account, EmailAccountSetting accountSetting, Date fromDate)
+    public void check(EmailAccount account, EmailAccountSetting accountSetting, int msgnum)
     {
         try {
 
@@ -113,23 +107,16 @@ public class IMAPFetchMailJob implements Runnable {
             emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
+            Date beforeDate = null;
             if(isDeleteOldMail){
                 Date now = new Date();
                 int beforeDayRange = enviromentSettingService.getDeleteAfter();
-                Date beforeDate = Utils.addDayToDate(now, -beforeDayRange);
-                if(fromDate != null) {
-                    if(fromDate.compareTo(beforeDate) < 0){
-                        fromDate = beforeDate;
-                    }
-                } else {
-                    fromDate = beforeDate;
-                }
+                beforeDate = Utils.addDayToDate(now, -beforeDayRange);
             }
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
-            SearchTerm searchTerm = buildSearchTerm(fromDate);
-            Message messages[] = searchTerm == null ? emailFolder.getMessages() : emailFolder.search(searchTerm);
+            Message messages[] = getMessages(emailFolder, msgnum, beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
             mailProgress.setTotal(messages.length);
@@ -460,5 +447,24 @@ public class IMAPFetchMailJob implements Runnable {
         currentDateStr = currentDateStr + "-" + month;
         currentDateStr = currentDateStr + "-" + day;
         return currentDateStr;
+    }
+
+    private Message[] getMessages(Folder emailFolder, int start, Date beforeDate) throws MessagingException {
+        int end = emailFolder.getMessageCount();
+        if(end == -1 && !emailFolder.isOpen()) {
+            emailFolder.open(openFolderFlag);
+            end = emailFolder.getMessageCount();
+        }
+        if(end == -1 || start == 1) {
+            SearchTerm searchTerm = buildSearchTerm(beforeDate);
+            if(searchTerm == null) {
+                return emailFolder.getMessages();
+            }
+            return emailFolder.search(searchTerm);
+        } else if (start <= end) {
+            return emailFolder.getMessages(start, end);
+        } else {
+            return new Message[0];
+        }
     }
 }

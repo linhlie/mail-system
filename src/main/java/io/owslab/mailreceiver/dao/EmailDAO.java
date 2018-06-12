@@ -13,6 +13,7 @@ import java.util.List;
 @Transactional
 public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findByAccountIdOrderBySentAtDesc(long accountId);
+    List<Email> findByAccountIdOrderByMessageNumberDesc(long accountId);
     List<Email> findByMessageId(String messageId);
     List<Email> findByMessageIdAndDeleted(String messageId, boolean deleted);
     List<Email> findBySentAtBeforeAndDeletedOrderBySentAtAsc(Date sentAt, boolean deleted);
