@@ -7,6 +7,19 @@
 <div layout:fragment="content">
     <section class="content-header" style="position: relative;">
         <h1>メールマッチング条件設定</h1>
+        <div class="duplicate-control-container">
+            <label class="duplicate-control">
+                <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
+            </label>
+            <label class="duplicate-control duplicate-control-option option-padding">重複の判定（&nbsp;</label>
+            <label class="duplicate-control duplicate-control-option">
+                <input id="duplicate-sender" type="checkbox"/> 送信者
+            </label>
+            <label class="duplicate-control duplicate-control-option option-padding">
+                <input id="duplicate-subject" type="checkbox"/> 件名
+            </label>
+            <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
+        </div>
     </section>
     <section class="content mail-analysis">
         <div class="row">
@@ -30,89 +43,92 @@
                                 <option data-value="数値(上代)" value="数値(上代)"></option>
                                 <option data-value="数値(下代)" value="数値(下代)"></option>
                             </datalist>
-                            <div class="form-group"></div>
-                            <div class="col-xs-12">
-                                <span>比較メール元抽出条件</span>
-                                <div id="source-builder"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う</button>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
-                            </div>
-                            <div class="form-group"></div>
-                            <div class="col-xs-12">
-                                <span>比較メール先抽出条件</span>
-                                <div id="destination-builder"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う</button>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
-                            </div>
-                            <div class="form-group"></div>
-                            <div class="matching-container">
-                                <div class="row">
-                                    <div class="radio">
-                                        <label><input type="radio" name="distinguish" value="false" checked="checked"/>全角/半角を区別しない</label>
-                                    </div>
-                                    <div class="radio">
-                                        <label><input type="radio" name="distinguish" value="true"/>全角/半角を区別する</label>
-                                    </div>
+                            <div class="msw-header">
+                                <div class="msw-header-label">
+                                    <h4><b>マッチング 元メール・先メール 抽出条件</b></h4>
                                 </div>
                             </div>
-                            <div class="form-group"></div>
-                            <div class="col-xs-12">
-                                <span>マッチング条件</span>
-                                <div id="matching-builder"></div>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <span>比較メール元抽出条件</span>
+                                    <div id="source-builder"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <span>比較メール先抽出条件</span>
+                                    <div id="destination-builder"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="msw-header">
+                                <div class="msw-header-label">
+                                    <h4><b>マッチング条件</b></h4>
+                                </div>
+                                <div class="msw-header-arrow-down"></div>
                             </div>
-                            <div class="col-md-4">
-                                <button id="saveMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                            </div>
-                            <div class="col-md-4">
-                                <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
-                            </div>
-                            <div class="form-group"></div>
-                            <div class="matching-container">
-                                <div class="row">
-                                    <div class="radio">
-                                        <label><input type="radio" name="spaceEffective" value="false" checked="checked"/>Spaceを区別しない</label>
-                                    </div>
-                                    <div class="radio">
-                                        <label><input type="radio" name="spaceEffective" value="true"/>Spaceを区別する</label>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="matching-container">
+                                    <div class="row">
+                                        <div class="radio">
+                                            <label><input type="radio" name="distinguish" value="false" checked="checked"/>全角/半角を区別しない</label>
+                                        </div>
+                                        <div class="radio">
+                                            <label><input type="radio" name="distinguish" value="true"/>全角/半角を区別する</label>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <span>マッチング条件</span>
+                                    <div id="matching-builder"></div>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                                <div class="matching-container">
+                                    <div class="row">
+                                        <div class="radio">
+                                            <label><input type="radio" name="spaceEffective" value="false" checked="checked"/>Spaceを区別しない</label>
+                                        </div>
+                                        <div class="radio">
+                                            <label><input type="radio" name="spaceEffective" value="true"/>Spaceを区別する</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <span>マッチングワード</span>
+                                    <textarea id="matchingWordsArea" style="width: 100%" rows="4"></textarea>
+                                </div>
+                                <div class="form-group"></div>
                             </div>
                             <div class="form-group"></div>
-                            <div class="col-xs-12">
-                                <span>マッチングワード</span>
-                                <textarea id="matchingWordsArea" style="width: 100%" rows="4"></textarea>
-                            </div>
-                            <div class="col-xs-12">
-                                <div class="row duplicate-control-container">
-                                    <label class="duplicate-control">
-                                        <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
-                                    </label>
-                                    <label class="duplicate-control duplicate-control-option option-padding">重複の判定（&nbsp;</label>
-                                    <label class="duplicate-control duplicate-control-option">
-                                        <input id="duplicate-sender" type="checkbox"/> 送信者
-                                    </label>
-                                    <label class="duplicate-control duplicate-control-option option-padding">
-                                        <input id="duplicate-subject" type="checkbox"/> 件名
-                                    </label>
-                                    <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
-                                </div>
-                            </div>
                             <div class="col-md-8 col-sm-7 col-xs-6" style="font-size: 16px;">
                                 <input id="enable-same-domain-handle" type="checkbox"/>&nbsp;同一ドメインはマッチングしない
                             </div>
