@@ -227,6 +227,7 @@ public class IMAPFetchMailJob implements Runnable {
         email.setSubject("");
         email.setOriginalBody("");
         email.setOptimizedBody("");
+        email.setCreatedAt(new Date());
         email.setSentAt(sentAt);
         email.setReceivedAt(receivedAt);
         return email;

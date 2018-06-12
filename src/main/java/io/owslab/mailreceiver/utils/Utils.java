@@ -43,7 +43,8 @@ public class Utils {
     @Cacheable(key="\"Utils:parseDateStr:\"+#str")
     public synchronized static Date parseDateStr(final String str)
             throws ParseException {
-        return DATE_FORMAT.parse(str);
+        String replacedStr = str.replaceAll("/", "-");
+        return DATE_FORMAT.parse(replacedStr);
     }
 
     public synchronized static String formatNumber(double number){
