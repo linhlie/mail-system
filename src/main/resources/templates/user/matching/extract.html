@@ -14,11 +14,11 @@
                 <div class="col-sm-12">
                     <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元:': '絞り込み先:'"></h4>
                     <div class="main-left">
-                        <div class="table-container" style="height: 450px;">
-                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter">
-                                <thead>
+                        <div class="table-container table-container-wrapper" style="height: 450px;">
+                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                                <thead class="sticky-header">
                                 <tr>
-                                    <th class="fit">金額</th>
+                                    <th class=" fit">金額</th>
                                     <th class="fit">受信日時</th>
                                     <th class="fit">送信者</th>
                                     <th>件名</th>
