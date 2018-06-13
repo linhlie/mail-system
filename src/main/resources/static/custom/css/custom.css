@@ -676,7 +676,6 @@ mark.mark-range {
 .duplicate-control-container {
     font-size: 13px;
     position: absolute;
-    z-index: 1;
     top: 5px;
     left: 14px;
     right: 15px;
