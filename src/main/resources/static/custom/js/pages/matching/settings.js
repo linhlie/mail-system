@@ -726,6 +726,7 @@
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
         };
         sessionStorage.setItem("extractSourceData", JSON.stringify(data));
+        saveDefaultSettings();
         var win = window.open('/user/extractSource', '_blank');
         if (win) {
             //Browser has allowed it to be opened
@@ -748,6 +749,7 @@
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
         };
         sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
+        saveDefaultSettings();
         var win = window.open('/user/extractDestination', '_blank');
         if (win) {
             //Browser has allowed it to be opened
@@ -786,6 +788,7 @@
         sessionStorage.setItem("spaceEffective", spaceEffective);
         sessionStorage.setItem("matchingConditionData", JSON.stringify(form));
         // window.location = '/user/matchingResult';
+        saveDefaultSettings();
         var win = window.open('/user/matchingResult', '_blank');
         if (win) {
             //Browser has allowed it to be opened
