@@ -26,6 +26,66 @@
     var matchingListKey = "/user/matchingSettings/listMatchingKey";
     var matchingPrefixUrlKey = "/user/matchingSettings/matching";
 
+    var default_source_rules = {
+        condition: "AND",
+        rules: [
+            {
+                id: "7",
+                input: "ratio",
+                type: "integer",
+                value: 1
+            },
+            {
+                id: "8",
+                operator: "greater_or_equal",
+                type:  "string",
+                value: "-7"
+            },
+            {
+                id: "2",
+                operator: "not_contains",
+                type:  "string",
+                value: "Re:"
+            },
+            {
+                id: "0",
+                operator: "not_contains",
+                type:  "string",
+                value: "@world-link-system.com"
+            }
+        ]
+    };
+
+    var default_destination_rules = {
+        condition: "AND",
+        rules: [
+            {
+                id: "7",
+                input: "ratio",
+                type: "integer",
+                value: 0
+            },
+            {
+                id: "8",
+                operator: "greater_or_equal",
+                type:  "string",
+                value: "-7"
+            },
+            {
+                id: "2",
+                operator: "not_contains",
+                type:  "string",
+                value: "Re:"
+            },
+            {
+                id: "0",
+                operator: "not_contains",
+                type:  "string",
+                value: "@world-link-system.com"
+            }
+        ]
+    };
+
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
             return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
@@ -64,66 +124,6 @@
     }
 
     $(function () {
-        var default_source_rules = {
-            condition: "AND",
-            rules: [
-                {
-                    id: "7",
-                    input: "ratio",
-                    type: "integer",
-                    value: 1
-                },
-                {
-                    id: "8",
-                    operator: "greater_or_equal",
-                    type:  "string",
-                    value: "-7"
-                },
-                {
-                    id: "2",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "Re:"
-                },
-                {
-                    id: "0",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "@world-link-system.com"
-                }
-            ]
-        };
-
-        var default_destination_rules = {
-            condition: "AND",
-            rules: [
-                {
-                    id: "7",
-                    input: "ratio",
-                    type: "integer",
-                    value: 0
-                },
-                {
-                    id: "8",
-                    operator: "greater_or_equal",
-                    type:  "string",
-                    value: "-7"
-                },
-                {
-                    id: "2",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "Re:"
-                },
-                {
-                    id: "0",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "@world-link-system.com"
-                }
-            ]
-        };
-
         var default_plugins = [
             'sortable',
             'filter-description',
@@ -269,7 +269,7 @@
             plugins: default_plugins,
             allow_empty: true,
             filters: default_filters,
-            rules: default_source_rules,
+            rules: null,
             lang: default_lang,
         };
 
@@ -277,7 +277,7 @@
             plugins: default_plugins,
             allow_empty: true,
             filters: default_filters,
-            rules: default_destination_rules,
+            rules: null,
             lang: default_lang,
         };
 
@@ -391,8 +391,51 @@
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
         initDuplicateHandle();
         initSameDomainHandle();
+        loadDefaultSettings();
+        $(window).on('beforeunload', saveDefaultSettings);
     });
     
+    function saveDefaultSettings() {
+        var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
+        localStorage.setItem("sourceConditions", JSON.stringify(sourceConditions));
+        var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
+        localStorage.setItem("destinationConditions", JSON.stringify(destinationConditions));
+        var matchingConditions = $(matchingBuilderId).queryBuilder('getRules');
+        localStorage.setItem("matchingConditions", JSON.stringify(matchingConditions));
+        var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
+        var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        localStorage.setItem("spaceEffective", spaceEffective);
+        localStorage.setItem("distinguish", distinguish);
+        var matchingWords = $(matchingWordsAreaId).val();
+        matchingWords = matchingWords.toLocaleLowerCase();
+        matchingWords = matchingWords.trim();
+        localStorage.setItem("matchingWords", matchingWords);
+    }
+
+    function loadDefaultSettings() {
+        var sourceConditionsStr = localStorage.getItem("sourceConditions");
+        var sourceConditions = sourceConditionsStr == null || JSON.parse(sourceConditionsStr) == null ? default_source_rules : JSON.parse(sourceConditionsStr);
+        $(sourceBuilderId).queryBuilder('setRules', sourceConditions);
+        var destinationConditionsStr = localStorage.getItem("destinationConditions");
+        var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
+        $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
+        console.log("sourceConditions: ", sourceConditions);
+        console.log("destinationConditions: ", destinationConditions);
+        var matchingConditionsStr = localStorage.getItem("matchingConditions");
+        var matchingConditions = matchingConditionsStr == null || JSON.parse(matchingConditionsStr) == null ? {condition: "AND", rules: []} : JSON.parse(matchingConditionsStr);
+        $(matchingBuilderId).queryBuilder('setRules', matchingConditions);
+        var spaceEffective = localStorage.getItem("spaceEffective");
+        spaceEffective = spaceEffective == "true" ? true : false;
+        $("#spaceEffective1").prop("checked", !spaceEffective);
+        $("#spaceEffective2").prop("checked", spaceEffective);
+        var distinguish = localStorage.getItem("distinguish");
+        distinguish = distinguish == "true" ? true : false;
+        $("#distinguish1").prop("checked", !distinguish);
+        $("#distinguish2").prop("checked", distinguish);
+        var matchingWords = localStorage.getItem("matchingWords");
+        $(matchingWordsAreaId).val(matchingWords);
+    }
+
     function setButtonClickListenter(id, callback) {
         $(id).off('click');
         $(id).click(function () {
@@ -511,6 +554,7 @@
 
     function saveMatchingListData(){
         var result = $(matchingBuilderId).queryBuilder('getRules');
+        console.log("saveMatchingListData: ", result);
         if ($.isEmptyObject(result)) return;
         var datalistStr = localStorage.getItem(matchingListKey);
         var datalist = JSON.parse(datalistStr);
