@@ -679,7 +679,7 @@ mark.mark-range {
     top: 5px;
     left: 14px;
     right: 15px;
-    bottom: 0px;
+    height: 18px;
 }
 
 .duplicate-control-container .duplicate-control {
