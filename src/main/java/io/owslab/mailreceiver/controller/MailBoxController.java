@@ -77,7 +77,7 @@ public class MailBoxController {
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
         }
-        int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
+        int fromEntry = rowsInPage == 0 ? 0 : page * ERROR_PAGE_SIZE + 1;
         int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
         model.addAttribute("list", relativeSentAtEmailList);
         model.addAttribute("page", pageWrapper);
