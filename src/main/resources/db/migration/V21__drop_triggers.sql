@@ -1,0 +1,2 @@
+DROP TRIGGER IF EXISTS ins_email;
+DROP TRIGGER IF EXISTS ins_word;

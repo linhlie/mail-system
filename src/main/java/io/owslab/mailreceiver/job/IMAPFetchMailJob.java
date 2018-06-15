@@ -61,15 +61,15 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void start(){
-//        List<Email> listEmail = emailDAO.findByAccountIdOrderByReceivedAt(account.getId());
-//        int n = listEmail.size();
-//        if(n > 0){
-//            Email lastEmail = listEmail.get(0);
-//            check(account, accountSetting, lastEmail.getMessageId());
-//        } else {
-//            check(account, accountSetting, null);
-//        }
-        check(account, accountSetting, null);
+        List<Email> listEmail = emailDAO.findByAccountIdOrderBySentAtDesc(account.getId());
+        int n = listEmail.size();
+        if(n > 0){
+            Email lastEmail = listEmail.get(0);
+            String msgnum = lastEmail.getMessageNumber();
+            check(account, accountSetting, Integer.parseInt(msgnum) + 1);
+        } else {
+            check(account, accountSetting, 1);
+        }
     }
 
     private SearchTerm buildSearchTerm(Date fromDate){
@@ -92,7 +92,7 @@ public class IMAPFetchMailJob implements Runnable {
         return store;
     }
 
-    public void check(EmailAccount account, EmailAccountSetting accountSetting, String lastMsgId)
+    public void check(EmailAccount account, EmailAccountSetting accountSetting, int msgnum)
     {
         try {
 
@@ -116,7 +116,7 @@ public class IMAPFetchMailJob implements Runnable {
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
-            Message messages[] = getMessages(emailFolder, beforeDate);
+            Message messages[] = getMessages(emailFolder, msgnum,beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
             mailProgress.setTotal(messages.length);
@@ -314,7 +314,12 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private String buildMessageId(MimeMessage message, EmailAccount account) throws MessagingException {
-        return account.getAccount() + "+" + message.getMessageID();
+        String msgId = message.getMessageID();
+        if(msgId == null) {
+            msgId = message.getMessageNumber() + "-" + message.getReceivedDate().toString() + "+" + msgId;
+            return account.getAccount() + "-" + msgId;
+        }
+        return account.getAccount() + "+" + msgId;
     }
 
     private static String getMailFrom(MimeMessage message) throws MessagingException {
@@ -460,32 +465,20 @@ public class IMAPFetchMailJob implements Runnable {
         return currentDateStr;
     }
 
-    private Message[] getMessages(Folder emailFolder, Date beforeDate) throws MessagingException {
-        int total = emailFolder.getMessageCount();
-        if(total == -1 && !emailFolder.isOpen()) {
+    private Message[] getMessages(Folder emailFolder, int start, Date beforeDate) throws MessagingException {
+        int end = emailFolder.getMessageCount();
+        if(end == -1 && !emailFolder.isOpen()) {
             emailFolder.open(openFolderFlag);
-            total = emailFolder.getMessageCount();
+            end = emailFolder.getMessageCount();
         }
-        if(total == -1) {
+        if(end == -1 || start == 1) {
             SearchTerm searchTerm = buildSearchTerm(beforeDate);
             if(searchTerm == null) {
                 return emailFolder.getMessages();
             }
             return emailFolder.search(searchTerm);
-        } else if (total >= 1) {
-            List<Message> messages = new ArrayList<>();
-            int msgnum = total;
-            while (true) {
-                if (msgnum == 0) break;
-                Message message = emailFolder.getMessage(msgnum);
-                boolean exist = isEmailExist((MimeMessage) message, account);
-                if(exist) {
-                    break;
-                }
-                messages.add(0, message);
-                msgnum = msgnum - 1;
-            }
-            return messages.toArray(new Message[messages.size()]);
+        } else if (start <= end) {
+            return emailFolder.getMessages(start, end);
         } else {
             return new Message[0];
         }
