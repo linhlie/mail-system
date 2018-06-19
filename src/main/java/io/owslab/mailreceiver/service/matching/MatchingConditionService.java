@@ -548,6 +548,9 @@ public class MatchingConditionService {
     }
 
     private String getOptimizedText(String text, boolean distinguish){
+        if(text == null) {
+            text = "";
+        }
         if(distinguish){
             return text.toLowerCase();
         } else {

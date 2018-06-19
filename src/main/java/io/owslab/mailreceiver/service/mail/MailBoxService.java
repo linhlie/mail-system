@@ -200,7 +200,7 @@ public class MailBoxService {
 
     public List<Email> getAll(boolean forceUpdate){
         if(forceUpdate || cachedEmailList == null){
-            cachedEmailList = emailDAO.findAllByOrderByReceivedAtDesc();
+            cachedEmailList = emailDAO.findByErrorLogIsNullOrderByReceivedAtDesc();
         }
         return cachedEmailList;
     }
