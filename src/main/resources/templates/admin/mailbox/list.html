@@ -27,6 +27,7 @@
                                 <table class="table table-hover table-striped">
                                     <tbody>
                                     <tr role="row" class="odd" th:each="item:${list}">
+                                        <td class="mailbox-receiver" th:text="${item.account}"></td>
                                         <td class="mailbox-name" th:text="${item.original.from}"></td>
                                         <td class="mailbox-subject"><b th:text="${item.original.subject}"></b>
                                         </td>

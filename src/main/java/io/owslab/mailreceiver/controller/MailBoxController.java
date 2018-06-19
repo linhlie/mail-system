@@ -1,9 +1,11 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,9 @@ public class MailBoxController {
     @Autowired
     private MailBoxService mailBoxService;
 
+    @Autowired
+    private MailAccountsService mailAccountsService;
+
     @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
             @RequestParam(value = "search", required = false) String search,
@@ -44,7 +49,12 @@ public class MailBoxController {
         PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/admin/mailbox");
         for(int i = 0; i < rowsInPage; i++){
             Email email = list.get(i);
-            relativeSentAtEmailList.add(new RelativeSentAtEmail(email));
+            RelativeSentAtEmail relativeSentAtEmail = new RelativeSentAtEmail(email);
+            List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
+            EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+            String emailAccountAddress = emailAccount != null ? emailAccount.getAccount() : "Unknown";
+            relativeSentAtEmail.setAccount(emailAccountAddress);
+            relativeSentAtEmailList.add(relativeSentAtEmail);
         }
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);

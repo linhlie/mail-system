@@ -7,6 +7,7 @@ public class RelativeSentAtEmail {
     private Email original;
     private String relativeDate;
     private PrettyTime p = new PrettyTime();
+    private String account;
 
     public RelativeSentAtEmail(Email original) {
         this.original = original;
@@ -27,5 +28,13 @@ public class RelativeSentAtEmail {
 
     public void setRelativeDate(String relativeDate) {
         this.relativeDate = relativeDate;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
