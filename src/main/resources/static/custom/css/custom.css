@@ -741,3 +741,82 @@ mark.mark-range {
 .sticky-header-table {
     border-collapse: separate !important;
 }
+
+.greeting .greeting-radio {
+    position: relative;
+    display: inline-block;
+    margin: 12px 0;
+    padding-left: 15px;
+    width: 33%;
+}
+
+.greeting .greeting-radio label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.greeting .greeting-radio input[type=radio] {
+    position: absolute;
+    margin-left: -20px;
+}
+
+.greeting .box-body {
+    padding: 20px;
+    padding-top: 10px;
+}
+
+.greeting .greeting-part {
+    width: 100%;
+    border: 1px solid black;
+    margin-bottom: 20px;
+}
+
+#greetingTable td.fit,
+#greetingTable th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#greetingTable {
+    border: none;
+    background-color: white;
+}
+
+#greetingTable th,
+#greetingTable td {
+    border: 1px solid black;
+    border-left: none;
+    padding: 1px 6px;
+}
+
+#greetingTable td {
+    border-top: none;
+}
+
+#greetingTable td.action {
+    padding: 0;
+}
+
+#greetingTable td.action button {
+    padding: 1px 15px;
+}
+
+#greetingTable th {
+    background-color: white;
+}
+
+#greetingTable th.dark {
+    background-color: #dee3ea;
+}
+
+div.table-container-section {
+    border-right: none !important;
+    border-top: none !important;
+}
+
+div.greeting-part .table-container-wrapper {
+    background-color: whitesmoke;
+}

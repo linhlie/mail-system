@@ -1,0 +1,141 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>挨拶文登録</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content greeting">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <h4>挨拶文登録</h4>
+                        <div class="greeting-part table-container-section" style="height: 150px; position: relative">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="greetingTable" class="table table-bordered table-hover sticky-header-table">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th class="dark">タイトル</th>
+                                        <th class="fit dark">元</th>
+                                        <th class="fit dark">先</th>
+                                        <th class="fit dark">返</th>
+                                        <th th:colspan="2"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    <tr role="row">
+                                        <td>人材提案</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="fit action"><button type="button">修正</button></td>
+                                        <td class="fit action"><button type="button">削除</button></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <h4>タイトル</h4>
+                        <div class="greeting-part" style="height: 25px;">
+                            <input placeholder="挨拶文タイトル" type="text" style="width: 100%; height: 100%; border: none"/>
+                        </div>
+                        <h4>挨拶文</h4>
+                        <textarea id="greetingSetting"></textarea>
+                        <div class="greeting-part" style="height: 50px; margin-top: 20px;">
+                            <div class="greeting-radio">
+                                <label><input type="radio" id="greetingType1" name="greetingType" value="matchingSource"/>マッチング元 送信時挨拶文</label>
+                            </div>
+                            <div class="greeting-radio">
+                                <label><input type="radio" id="greetingType2" name="greetingType" value="matchingDestination"/>マッチング先 送信時挨拶文</label>
+                            </div>
+                            <div class="greeting-radio">
+                                <label><input type="radio" id="greetingType3" name="greetingType" value="extractReply"/>返信時挨拶文</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div style="width: 90%;">
+                                    <button type="button" class="btn btn-success btn-block">新規登録</button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="width: 90%;">
+                                    <button type="button" class="btn btn-primary btn-block">更新</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="width: 45%; margin: auto;">
+                                    <button type="button" class="btn btn-default btn-block">クリア</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/greetingRegistration/index.js"></script>
+</th:block>
+</body>
+</html>
