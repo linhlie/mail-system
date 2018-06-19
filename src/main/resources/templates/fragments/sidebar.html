@@ -1,54 +1,7 @@
 <!-- sidebar: style can be found in sidebar.less -->
 <section class="sidebar">
     <ul class="sidebar-menu">
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">コントロールパネル</li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'enviromentSettings'})?'active':''">
-            <a href="#" th:href="@{/admin/enviromentSettings}">
-                <i class="fa fa-cog"></i> <span>環境設定</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAccountSettings'})?'active':''">
-            <a href="#" th:href="@{/admin/mailAccountSettings}">
-                <i class="fa fa-envelope"></i> <span>メール アカウント設定</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveRuleSettings'})?'active':''">
-            <a href="#" th:href="@{/admin/receiveRuleSettings}">
-                <i class="fa fa-filter"></i> <span>受信ルール設定</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="header">設定</li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
-            <a href="#" th:href="@{/user/fuzzyWord}">
-                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
-            <a href="#" th:href="@{/user/numberTreatment}">
-                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
-            <a href="#" th:href="@{/user/sendMailSettings}">
-                <i class="fa fa-sort-numeric-asc"></i> <span>送信設定</span>
-            </a>
-        </li>
-        <li class="header">操作</li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
-            <a href="#" th:href="@{/admin/administratorSetting}">
-                <i class="fa fa-envelope"></i> <span>管理者設定</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
-            <a href="#" th:href="@{/admin/mailbox}">
-                <i class="fa fa-envelope"></i> <span>メールボックス</span>
-            </a>
-        </li>
-        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailboxError'})?'active':''">
-            <a href="#" th:href="@{/admin/mailboxError}">
-                <i class="fa fa-bug"></i> <span>メールエラー</span>
-            </a>
-        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="header">受信メール操作</li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview">
             <a href="#">
                 <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
@@ -70,10 +23,64 @@
                 </li>
             </ul>
         </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">コントロールパネル</li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'enviromentSettings'})?'active':''">
+            <a href="#" th:href="@{/admin/enviromentSettings}">
+                <i class="fa fa-cog"></i> <span>環境設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailAccountSettings'})?'active':''">
+            <a href="#" th:href="@{/admin/mailAccountSettings}">
+                <i class="fa fa-envelope"></i> <span>メール アカウント設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'receiveRuleSettings'})?'active':''">
+            <a href="#" th:href="@{/admin/receiveRuleSettings}">
+                <i class="fa fa-filter"></i> <span>受信ルール設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="header">システム共通設定</li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+            <a href="#" th:href="@{/user/fuzzyWord}">
+                <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+            <a href="#" th:href="@{/user/numberTreatment}">
+                <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">操作</li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
+            <a href="#" th:href="@{/admin/administratorSetting}">
+                <i class="fa fa-envelope"></i> <span>管理者設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
+            <a href="#" th:href="@{/admin/mailbox}">
+                <i class="fa fa-envelope"></i> <span>メールボックス</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailboxError'})?'active':''">
+            <a href="#" th:href="@{/admin/mailboxError}">
+                <i class="fa fa-bug"></i> <span>メールエラー</span>
+            </a>
+        </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">ヘルプ</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')">
             <a href="#" th:href="@{/admin/help}">
                 <i class="fa fa-info-circle"></i> <span>ヘルプ</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="header">PC個別設定</li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
+            <a href="#" th:href="@{/user/sendMailSettings}">
+                <i class="fa fa-send"></i> <span>送信設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
+            <a href="#" th:href="@{/user/greetingRegistration}">
+                <i class="fa fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
             </a>
         </li>
     </ul>
