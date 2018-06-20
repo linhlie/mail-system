@@ -19,112 +19,48 @@
                                     <thead class="sticky-header">
                                     <tr>
                                         <th class="dark">タイトル</th>
-                                        <th class="fit dark">元</th>
-                                        <th class="fit dark">先</th>
-                                        <th class="fit dark">返</th>
+                                        <th class="fit dark" style="text-align: center">元</th>
+                                        <th class="fit dark" style="text-align: center">先</th>
+                                        <th class="fit dark" style="text-align: center">返</th>
                                         <th th:colspan="2"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
-                                    <tr role="row">
-                                        <td>人材提案</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="fit action"><button type="button">修正</button></td>
-                                        <td class="fit action"><button type="button">削除</button></td>
-                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <h4>タイトル</h4>
                         <div class="greeting-part" style="height: 25px;">
-                            <input placeholder="挨拶文タイトル" type="text" style="width: 100%; height: 100%; border: none"/>
+                            <input id="greetingTittle" placeholder="挨拶文タイトル" type="text" style="width: 100%; height: 100%; border: none"/>
                         </div>
                         <h4>挨拶文</h4>
                         <textarea id="greetingSetting"></textarea>
                         <div class="greeting-part" style="height: 50px; margin-top: 20px;">
                             <div class="greeting-radio">
-                                <label><input type="radio" id="greetingType1" name="greetingType" value="matchingSource"/>マッチング元 送信時挨拶文</label>
+                                <label><input type="radio" id="greetingType1" name="greetingType" value="元"/>マッチング元 送信時挨拶文</label>
                             </div>
                             <div class="greeting-radio">
-                                <label><input type="radio" id="greetingType2" name="greetingType" value="matchingDestination"/>マッチング先 送信時挨拶文</label>
+                                <label><input type="radio" id="greetingType2" name="greetingType" value="先"/>マッチング先 送信時挨拶文</label>
                             </div>
                             <div class="greeting-radio">
-                                <label><input type="radio" id="greetingType3" name="greetingType" value="extractReply"/>返信時挨拶文</label>
+                                <label><input type="radio" id="greetingType3" name="greetingType" value="返"/>返信時挨拶文</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div style="width: 90%;">
-                                    <button type="button" class="btn btn-success btn-block">新規登録</button>
+                                    <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div style="width: 90%;">
-                                    <button type="button" class="btn btn-primary btn-block">更新</button>
+                                    <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div style="width: 45%; margin: auto;">
-                                    <button type="button" class="btn btn-default btn-block">クリア</button>
+                                    <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
                                 </div>
                             </div>
                         </div>

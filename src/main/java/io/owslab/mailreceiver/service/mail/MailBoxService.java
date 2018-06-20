@@ -296,7 +296,7 @@ public class MailBoxService {
         result.setExternalCC(sendAccountForm.getCc());
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
-        result.setExcerpt("");
+        result.setExcerpt(getExcerpt(replyEmail));
         String replyText = getReplyContentFromEmail(replyEmail);
         result.setReplyOrigin(replyText);
         result.setSubject("Re: " + replyEmail.getSubject());
@@ -368,8 +368,8 @@ public class MailBoxService {
                 }
             }
         }
-        excerpt = excerpt + getExceprtLine("---------------------");
-        excerpt = excerpt + "<br/><br/><br/><br/><br/>";
+//        excerpt = excerpt + getExceprtLine("---------------------");
+//        excerpt = excerpt + "<br/><br/><br/><br/><br/>";
         return excerpt;
     }
 

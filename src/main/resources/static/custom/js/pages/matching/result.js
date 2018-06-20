@@ -690,10 +690,7 @@
             data.replacedBody = data.replacedBody ? data.replacedBody.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replacedBody;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
-            if(sendTo === "moto")
-                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + data.excerpt;
-            else if (sendTo === "saki")
-                data.excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + data.excerpt;
+            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo);
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
@@ -1229,6 +1226,59 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+    
+    function getDecorateExcerpt(excerpt, sendTo) {
+        if(sendTo === "moto") {
+            excerpt = getExcerptWithGreeting(excerpt, "元");
+            excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + excerpt;
+        } else if (sendTo === "saki") {
+            excerpt = getExcerptWithGreeting(excerpt, "先");
+            excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + excerpt;
+        }
+        return excerpt;
+    }
+
+    function getExcerptWithGreeting(excerpt, type) {
+        var greeting = loadGreeting(type);
+        if(greeting == null) {
+            greeting = getExceprtLine("---------------------");
+            greeting = greeting + '<br /><br /><br /><br /><br />';
+        } else {
+            greeting = wrapperWithRed(greeting);
+            greeting = '<br /><br />' + greeting + '<br /><br />';
+        }
+        excerpt = excerpt + greeting;
+        return excerpt;
+    }
+
+    function wrapperWithRed(text) {
+        return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
+    }
+
+    function getExceprtLine(line) {
+        var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
+        return exceprtLine;
+    }
+
+    function loadGreeting(type) {
+        var greeting = null;
+        var greetingData = loadGreetingData();
+        for(var i = 0; i < greetingData.length; i++){
+            var item = greetingData[i];
+            if(item && item.type === type) {
+                greeting = item.greeting;
+                break;
+            }
+        }
+        return greeting
+    }
+
+    function loadGreetingData() {
+        var greetingDataInStr = localStorage.getItem("greetingData");
+        var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
+        greetingData = Array.isArray(greetingData) ? greetingData : [];
+        return greetingData;
     }
 
 })(jQuery);
