@@ -634,7 +634,7 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            data.originalBody = data.excerpt + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
         }
@@ -934,6 +934,48 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+
+    function getExcerptWithGreeting(excerpt) {
+        var greeting = loadGreeting("返");
+        if(greeting == null) {
+            greeting = getExceprtLine("---------------------");
+            greeting = greeting + '<br /><br /><br /><br /><br />';
+        } else {
+            greeting = wrapperWithRed(greeting);
+            greeting = '<br /><br />' + greeting + '<br /><br />';
+        }
+        excerpt = excerpt + greeting;
+        return excerpt;
+    }
+    
+    function wrapperWithRed(text) {
+        return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
+    }
+
+    function getExceprtLine(line) {
+        var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
+        return exceprtLine;
+    }
+
+    function loadGreeting(type) {
+        var greeting = null;
+        var greetingData = loadGreetingData();
+        for(var i = 0; i < greetingData.length; i++){
+            var item = greetingData[i];
+            if(item && item.type === type) {
+                greeting = item.greeting;
+                break;
+            }
+        }
+        return greeting
+    }
+
+    function loadGreetingData() {
+        var greetingDataInStr = localStorage.getItem("greetingData");
+        var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
+        greetingData = Array.isArray(greetingData) ? greetingData : [];
+        return greetingData;
     }
 
 })(jQuery);
