@@ -4,9 +4,10 @@
 
     var greetingDataCacheKey = "greetingData";
     var greetingTableId = "greetingTable";
+    var greetingSettingId = "greetingSetting";
     var greetingTittleId = "greetingTittle";
 
-    var editingGreetingId = null;
+    var editingGreetingIndex = null;
 
     var firstRowHTML = '<tr class="hidden" role="row">' +
         '<td rowspan="1" colspan="1" data="title"><span></span></td>' +
@@ -16,42 +17,12 @@
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="editGreetimg" type="button">修正</button></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="removeGreeting" type="button">削除</button></td>' +
         '</tr>';
-
-    var defaultGreetingData = [
-        {
-            id: 1,
-            title: "人材提案",
-            greeting: "お世話になっております。<br/> ワールドリンク　システム営業部　〇〇です。<br/><br/> 頂いた案件に、人材をご提案させていただきます。",
-            type: "元",
-            created_at: new Date().getTime(),
-        },
-        {
-            id: 2,
-            title: "お世話にな",
-            greeting: "ワールドリンク　システム営業部　〇〇です。<br/><br/>",
-            type: "先",
-            created_at: new Date().getTime(),
-        },
-        {
-            id: 3,
-            title: "ワールドリンク",
-            greeting: "お世話になっております。<br/> ワールドリンク　システム営業部　〇〇です。<br/><br/>",
-            type: "返",
-            created_at: new Date().getTime(),
-        },
-        {
-            id: 4,
-            title: "ワールドリンク",
-            greeting: "お世話になっております。<br/> ワールドリンク　システム営業部　〇〇です。<br/><br/>",
-            type: "",
-            created_at: new Date().getTime(),
-        },
-    ];
+    
     var greetingData = [];
 
     $(function () {
         tinymce.init({
-            selector: '#greetingSetting',
+            selector: '#' + greetingSettingId,
             language: 'ja',
             theme: 'modern',
             statusbar: false,
@@ -65,13 +36,21 @@
             toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
             init_instance_callback: function (editor) {
                 editor.on('Change', function (e) {
-                    formChange = true;
+
                 });
             }
         });
-        localStorage.setItem(greetingDataCacheKey, JSON.stringify(defaultGreetingData));
         initStickyHeader();
         initGreetingTable();
+        updateEnableAddGreetingBtn();
+        updateEnableUpdateGreetingBtn();
+        setButtonClickListener("greetingAdd", addGreeting);
+        setButtonClickListener("greetingUpdate", updateGreeting);
+        setButtonClickListener("greetingClear", clearEditingGreeting);
+        $( "#" + greetingTittleId ).on('input', function() {
+            updateEnableAddGreetingBtn();
+            updateEnableUpdateGreetingBtn();
+        });
     });
 
     function initStickyHeader() {
@@ -95,6 +74,7 @@
         var greetingDataInStr = localStorage.getItem(greetingDataCacheKey);
         greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
         greetingData = Array.isArray(greetingData) ? greetingData : [];
+        return greetingData;
     }
     
     function pushGreetingData(tableId) {
@@ -108,7 +88,7 @@
             setButtonClickListener("editGreetimg", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
                 var rowData = greetingData[index];
-                selectGreeting(rowData);
+                selectGreeting(rowData, index);
             });
             setButtonClickListener("removeGreeting", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
@@ -161,8 +141,8 @@
         })
     }
 
-    function selectGreeting(greeting) {
-        editingGreetingId = greeting.id;
+    function selectGreeting(greeting, index) {
+        editingGreetingIndex = index;
         setGreetingTitle(greeting.title);
         setGreeting(greeting.greeting);
         setGreetingType(greeting.type);
@@ -170,13 +150,17 @@
     
     function removeGreeting(index) {
         var greeting = greetingData[index];
-        if(greeting.id === editingGreetingId) {
-            clearGreetingInput();
-            editingGreetingId = null;
+        if(index === editingGreetingIndex) {
+            clearEditingGreeting();
         }
         greetingData.splice(index, 1);
         saveGreetingData();
         pushGreetingData(greetingTableId);
+    }
+
+    function clearEditingGreeting() {
+        clearGreetingInput();
+        editingGreetingIndex = null;
     }
 
     function clearGreetingInput() {
@@ -188,6 +172,8 @@
     function setGreetingTitle(title) {
         title = title || "";
         $('#' + greetingTittleId).val(title);
+        updateEnableAddGreetingBtn();
+        updateEnableUpdateGreetingBtn();
     }
     
     function getGreetingTittle() {
@@ -198,10 +184,15 @@
     
     function setGreeting(greeting) {
         greeting = greeting || "";
+        var editor = tinymce.get(greetingSettingId);
+        editor.setContent(greeting);
+        editor.undoManager.clear();
+        editor.undoManager.add();
     }
     
     function getGreeting() {
-        
+        var editor = tinymce.get(greetingSettingId);
+        return editor.getContent();
     }
     
     function setGreetingType(type) {
@@ -215,6 +206,67 @@
         var type = $('input[name=greetingType]:checked').val();
         type = type || "";
         return type;
+    }
+    
+    function addGreeting() {
+        var type = getGreetingType();
+        clearGreetingType(type);
+        var greeting = {
+            title: getGreetingTittle(),
+            greeting: getGreeting(),
+            type: type,
+            last_touch: new Date().getTime(),
+        };
+        greetingData.push(greeting);
+        clearEditingGreeting();
+        saveGreetingData();
+        pushGreetingData(greetingTableId);
+    }
+    
+    function updateGreeting() {
+        var type = getGreetingType();
+        clearGreetingType(type);
+        var greeting = {
+            title: getGreetingTittle(),
+            greeting: getGreeting(),
+            type: type,
+            last_touch: new Date().getTime(),
+        };
+        greetingData[editingGreetingIndex] = greeting;
+        clearEditingGreeting();
+        saveGreetingData();
+        pushGreetingData(greetingTableId);
+    }
+
+    function clearGreetingType(type) {
+        if(type.length > 0) {
+            for(var i = 0; i < greetingData.length; i++) {
+                var item = greetingData[i];
+                if(item.type === type){
+                    item.type = "";
+                    greetingData[i] = item;
+                }
+            }
+        }
+    }
+    
+    function updateEnableAddGreetingBtn() {
+        var disabled = isInvalidGreetingTitle();
+        $("button[name='greetingAdd']").prop("disabled", disabled);
+    }
+
+    function updateEnableUpdateGreetingBtn() {
+        var disabled = !isUpdate() || isInvalidGreetingTitle();
+        $("button[name='greetingUpdate']").prop("disabled", disabled);
+    }
+    
+    function isInvalidGreetingTitle() {
+        var greetingTitle = getGreetingTittle();
+        return !greetingTitle || greetingTitle.length == 0;
+    }
+    
+    function isUpdate() {
+        return !!editingGreetingIndex;
     }
 
 })(jQuery);
