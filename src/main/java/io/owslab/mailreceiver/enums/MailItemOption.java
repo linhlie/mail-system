@@ -13,7 +13,10 @@ public enum MailItemOption {
     NUMBER_UPPER(5, "数値(上代)"),
     NUMBER_LOWER(6, "数値(下代)"),
     ATTACHMENT(7, "添付ファイル"),
-    RECEIVED_DATE(8, "受信日");
+    RECEIVED_DATE(8, "受信日"),
+    CC(9, "CC"),
+    BCC(10, "BCC"),
+    RECEIVER_CC_BCC(11, "受信者・CC・BCC");
 
     private final int value;
     private final String text;
@@ -53,6 +56,12 @@ public enum MailItemOption {
                 return ATTACHMENT;
             case 8:
                 return RECEIVED_DATE;
+            case 9:
+                return CC;
+            case 10:
+                return BCC;
+            case 11:
+                return RECEIVER_CC_BCC;
         }
         return null;
     }

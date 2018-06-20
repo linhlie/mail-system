@@ -273,14 +273,14 @@ public class MatchingConditionService {
         return isSameDomain(sourceEmailAddress, destinationEmailAddress);
     }
 
-    @Cacheable(key="\"MatchingConditionService:isSameDomain:\"++#a+'-'+#b")
+    @Cacheable(key="\"MatchingConditionService:isSameDomain:\"+#a+'-'+#b")
     private boolean isSameDomain(String a, String b) {
         String aDomain = getEmailDomain(a);
         String bDomain = getEmailDomain(b);
         return aDomain.equalsIgnoreCase(bDomain);
     }
 
-    @Cacheable(key="\"MatchingConditionService:getEmailDomain:\"++#someEmail")
+    @Cacheable(key="\"MatchingConditionService:getEmailDomain:\"+#someEmail")
     public String getEmailDomain(String someEmail)
     {
         someEmail = someEmail != null ? someEmail : "";
@@ -381,6 +381,29 @@ public class MatchingConditionService {
                 break;
             case RECEIVER:
                 match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective);
+                break;
+            case CC:
+                match = isMatchPart(email.getCc(), condition, distinguish, spaceEffective);
+                break;
+            case BCC:
+                match = isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
+                break;
+            case RECEIVER_CC_BCC:
+                ConditionOption conditionOption = condition.getConditionOption();
+                switch (conditionOption){
+                    case INC:
+                        match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
+                                || isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
+                                || isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
+                        break;
+                    case NINC:
+                        match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
+                                && isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
+                                && isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case SUBJECT:
                 match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective);
