@@ -379,6 +379,7 @@ public class MatchingConditionService {
     private boolean isMatch(Email email, FilterRule condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
         MailItemOption option = condition.getMailItemOption();
+        ConditionOption conditionOption;
         switch (option){
             case SENDER:
                 match = isMatchPart(email.getFrom(), condition, distinguish, spaceEffective);
@@ -392,20 +393,33 @@ public class MatchingConditionService {
             case BCC:
                 match = isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
                 break;
-            case RECEIVER_CC_BCC:
-                ConditionOption conditionOption = condition.getConditionOption();
+            case AND_RECEIVER_CC_BCC:
+                conditionOption = condition.getConditionOption();
                 switch (conditionOption){
                     case INC:
-                        match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
-                                || isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
-                                || isMatchPart(email.getBcc(), condition, distinguish, spaceEffective)
-                                || isMatchPart(mailAccountsService.findAccountAddress(email.getAccountId()), condition, distinguish, spaceEffective);
-                        break;
                     case NINC:
+                    case EQ:
+                    case NE:
                         match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
                                 && isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
                                 && isMatchPart(email.getBcc(), condition, distinguish, spaceEffective)
                                 && isMatchPart(mailAccountsService.findAccountAddress(email.getAccountId()), condition, distinguish, spaceEffective);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case OR_RECEIVER_CC_BCC:
+                conditionOption = condition.getConditionOption();
+                switch (conditionOption){
+                    case INC:
+                    case NINC:
+                    case EQ:
+                    case NE:
+                        match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
+                                || isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
+                                || isMatchPart(email.getBcc(), condition, distinguish, spaceEffective)
+                                || isMatchPart(mailAccountsService.findAccountAddress(email.getAccountId()), condition, distinguish, spaceEffective);
                         break;
                     default:
                         break;

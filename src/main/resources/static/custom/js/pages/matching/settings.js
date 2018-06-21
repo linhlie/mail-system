@@ -156,9 +156,14 @@
             operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
             id: '11',
-            label: '受信者・CC・BCC',
+            label: '全て(受信者・CC・BCC)',
             type: 'string',
-            operators: ['contains', 'not_contains']
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '12',
+            label: 'いずれか(受信者・CC・BCC)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
             id: '2',
             label: '件名',
