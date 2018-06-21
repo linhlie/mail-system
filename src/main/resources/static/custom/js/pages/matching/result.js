@@ -1245,7 +1245,6 @@
             greeting = getExceprtLine("---------------------");
             greeting = greeting + '<br /><br /><br /><br /><br />';
         } else {
-            greeting = wrapperWithRed(greeting);
             greeting = '<br /><br />' + greeting + '<br /><br />';
         }
         excerpt = excerpt + greeting;
