@@ -13,6 +13,7 @@ import io.owslab.mailreceiver.model.NumberTreatment;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.*;
 import org.slf4j.Logger;
@@ -52,6 +53,9 @@ public class MatchingConditionService {
 
     @Autowired
     private NumberTreatmentService numberTreatmentService;
+
+    @Autowired
+    private MailAccountsService mailAccountsService;
 
     private NumberTreatment numberTreatment;
 
@@ -394,12 +398,14 @@ public class MatchingConditionService {
                     case INC:
                         match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
                                 || isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
-                                || isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
+                                || isMatchPart(email.getBcc(), condition, distinguish, spaceEffective)
+                                || isMatchPart(mailAccountsService.findAccountAddress(email.getAccountId()), condition, distinguish, spaceEffective);
                         break;
                     case NINC:
                         match = isMatchPart(email.getTo(), condition, distinguish, spaceEffective)
                                 && isMatchPart(email.getCc(), condition, distinguish, spaceEffective)
-                                && isMatchPart(email.getBcc(), condition, distinguish, spaceEffective);
+                                && isMatchPart(email.getBcc(), condition, distinguish, spaceEffective)
+                                && isMatchPart(mailAccountsService.findAccountAddress(email.getAccountId()), condition, distinguish, spaceEffective);
                         break;
                     default:
                         break;
