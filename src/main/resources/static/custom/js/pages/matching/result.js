@@ -412,6 +412,7 @@
                 $('body').loadingModal('hide');
                 enableResizeDestinationColumns();
                 updateTotalDestinationMatching(currentDestinationResult.length);
+                $("#"+ tableId).closest('.table-container-wrapper').scrollTop(0);
             }, 10)
         }, 10)
     }
