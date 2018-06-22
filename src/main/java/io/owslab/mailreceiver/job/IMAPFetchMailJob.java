@@ -2,6 +2,11 @@ package io.owslab.mailreceiver.job;
 
 import antlr.StringUtils;
 import com.mariten.kanatools.KanaConverter;
+import com.sun.mail.iap.Argument;
+import com.sun.mail.iap.ProtocolException;
+import com.sun.mail.iap.Response;
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.protocol.*;
 import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FetchMailErroDAO;
@@ -39,7 +44,7 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailAccount account;
     private final FetchMailsService.FetchMailProgress mailProgress;
     private final FetchMailErroDAO fetchMailErroDAO;
-    private Folder emailFolder;
+    private IMAPFolder emailFolder;
     private int openFolderFlag;
 
     private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
@@ -104,7 +109,7 @@ public class IMAPFetchMailJob implements Runnable {
             }
 
             //create the folder object and open it
-            emailFolder = store.getFolder("INBOX");
+            emailFolder = (IMAPFolder) store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
             Date beforeDate = null;
@@ -116,12 +121,12 @@ public class IMAPFetchMailJob implements Runnable {
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
-            Message messages[] = getMessages(emailFolder, msgnum,beforeDate);
+            OwsMimeMessage messages[] = getMessages(emailFolder, msgnum,beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
             mailProgress.setTotal(messages.length);
             for (int i = 0; i < messages.length; i++) {
-                MimeMessage message = (MimeMessage) messages[i];
+                OwsMimeMessage message = (OwsMimeMessage) messages[i];
                 fetchEmail(message, i);
             }
 
@@ -145,7 +150,7 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private void fetchEmail(MimeMessage message, int index) {
+    private void fetchEmail(OwsMimeMessage message, int index) {
         try{
             try {
                 if(isEmailExist(message, account)) {
@@ -200,7 +205,7 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private boolean isEmailExist(MimeMessage message, EmailAccount account) throws MessagingException {
+    private boolean isEmailExist(OwsMimeMessage message, EmailAccount account) throws MessagingException {
         String messageId = buildMessageId(message, account);
         Email email = findOne(messageId);
         return email != null;
@@ -211,7 +216,7 @@ public class IMAPFetchMailJob implements Runnable {
         return emailList.size() > 0 ? emailList.get(0) : null;
     }
 
-    private Email buildInitReceivedMail(MimeMessage message, EmailAccount account) throws MessagingException {
+    private Email buildInitReceivedMail(OwsMimeMessage message, EmailAccount account) throws MessagingException {
         Email email =  new Email();
         int messageNumber = message.getMessageNumber();
         String messageId = buildMessageId(message, account);
@@ -313,7 +318,7 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    private String buildMessageId(MimeMessage message, EmailAccount account) throws MessagingException {
+    private String buildMessageId(OwsMimeMessage message, EmailAccount account) throws MessagingException {
         String msgId = message.getMessageID();
         if(msgId == null) {
             msgId = message.getMessageNumber() + "-" + message.getReceivedDate().toString() + "+" + msgId;
@@ -380,7 +385,12 @@ public class IMAPFetchMailJob implements Runnable {
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
-                    String fileName = MimeUtility.decodeText(part.getFileName());
+                    String fileName = part.getFileName();
+                    if(fileName.indexOf("=?") == -1) {
+                        fileName = new String(fileName.getBytes("ISO-8859-1"));
+                    } else {
+                        fileName = MimeUtility.decodeText(part.getFileName());
+                    }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = getCurrentDateStr();
                     saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
@@ -465,22 +475,87 @@ public class IMAPFetchMailJob implements Runnable {
         return currentDateStr;
     }
 
-    private Message[] getMessages(Folder emailFolder, int start, Date beforeDate) throws MessagingException {
+    private OwsMimeMessage[] getMessages(IMAPFolder emailFolder, int start, Date beforeDate) throws MessagingException {
+//            int[] a = {200767, 201348, 202663,199465,197229,197318,198716,198722,197225,197322};
+//            int[] a = {202663,197229,197318,198716,201348,198722,197225,197322};
+//            int[] a = {197225, 197229,197318,197322};
+//            int[] a = {197322};
+//            int[] a = {203489};
+//            int[] a = {200766, 201347, 202662};
         int end = emailFolder.getMessageCount();
         if(end == -1 && !emailFolder.isOpen()) {
             emailFolder.open(openFolderFlag);
             end = emailFolder.getMessageCount();
         }
-        if(end == -1 || start == 1) {
-            SearchTerm searchTerm = buildSearchTerm(beforeDate);
-            if(searchTerm == null) {
-                return emailFolder.getMessages();
+        if (start <= end) {
+            OwsMimeMessage[] msgs = new OwsMimeMessage[end - start + 1];
+            for(int i = start; i <= end; ++i) {
+                msgs[i - start] = getMessage(emailFolder, i);
             }
-            return emailFolder.search(searchTerm);
-        } else if (start <= end) {
-            return emailFolder.getMessages(start, end);
+            return msgs;
         } else {
-            return new Message[0];
+            return new OwsMimeMessage[0];
+        }
+    }
+
+    public static OwsMimeMessage getMessage(IMAPFolder folder, final int msgnum) throws MessagingException
+    {
+        return (OwsMimeMessage) folder.doCommand(new IMAPFolder.ProtocolCommand()
+        {
+            public Object doCommand(IMAPProtocol protocol) throws ProtocolException
+            {
+                OwsMimeMessage mm = null;
+                Response[] r = protocol.command("FETCH "  + Integer.toString(msgnum) + " (INTERNALDATE BODY.PEEK[])", null);
+                Response response = r[r.length - 1];
+                if (!response.isOK()) {
+                    throw new ProtocolException("Unable to retrieve message " + msgnum);
+                }
+                Properties props = new Properties();
+                props.setProperty("mail.store.protocol", "imap");
+                props.setProperty("mail.mime.base64.ignoreerrors", "true");
+                props.setProperty("mail.imap.partialfetch", "false");
+                props.setProperty("mail.imaps.partialfetch", "false");
+                Session session = Session.getInstance(props, null);
+
+                FetchResponse fetchResponse = (FetchResponse) r[0];
+                BODY body = (BODY) fetchResponse.getItem(com.sun.mail.imap.protocol.BODY.class);
+                INTERNALDATE internaldate = (INTERNALDATE) fetchResponse.getItem(INTERNALDATE.class);
+                ByteArrayInputStream is = body.getByteArrayInputStream();
+                try {
+                    mm = new OwsMimeMessage(new MimeMessage(session, is), msgnum, internaldate.getDate());
+                    String subject = mm.getSubject();
+                    if(subject != null) {
+                        int index = subject.indexOf("=?UTF-8?B?");
+                        if(index > -1) {
+                            try {
+                                subject = new String(subject.substring(0,index).getBytes("ISO-8859-1"))
+                                        + MimeUtility.decodeText(subject.substring(index));
+                                mm.setSubject(subject);
+                            } catch (Exception e) {
+                                ;
+                            }
+                        }
+                    }
+                } catch (MessagingException e) {
+                    throw new ProtocolException("doCommand error", e);
+                }
+                return mm;
+            }
+        });
+    }
+
+    public static class OwsMimeMessage extends MimeMessage {
+        private Date receivedDate;
+
+        public OwsMimeMessage(MimeMessage source, int msgnum, Date receivedDate) throws MessagingException {
+            super(source);
+            this.msgnum = msgnum;
+            this.receivedDate = receivedDate;
+        }
+
+        @Override
+        public Date getReceivedDate() {
+            return receivedDate;
         }
     }
 }
