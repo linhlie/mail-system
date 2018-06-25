@@ -351,17 +351,21 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private static String getRecipientsWithType(MimeMessage message, Message.RecipientType type) throws MessagingException {
-        List<String> recipientAddresses = new ArrayList<>();
-        Address[] recipients = message.getRecipients(type);
-        if (recipients == null || recipients.length == 0) return  "";
-        for (Address address : recipients) {
-            if (address instanceof InternetAddress) {
-                InternetAddress ia = (InternetAddress) address;
-                recipientAddresses.add(ia.getAddress());
+        try {
+            List<String> recipientAddresses = new ArrayList<>();
+            Address[] recipients = message.getRecipients(type);
+            if (recipients == null || recipients.length == 0) return  "";
+            for (Address address : recipients) {
+                if (address instanceof InternetAddress) {
+                    InternetAddress ia = (InternetAddress) address;
+                    recipientAddresses.add(ia.getAddress());
+                }
             }
+            String recipientAddressesStr = String.join(", ", recipientAddresses);
+            return recipientAddressesStr == null ? "" : recipientAddressesStr;
+        } catch (AddressException e) {
+            return "";
         }
-        String recipientAddressesStr = String.join(", ", recipientAddresses);
-        return recipientAddressesStr == null ? "" : recipientAddressesStr;
     }
 
     private boolean hasAttachments(Message msg) throws MessagingException, IOException {
