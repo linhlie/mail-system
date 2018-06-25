@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.mail;
 
+import com.sun.mail.imap.IMAPFolder;
 import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
@@ -422,36 +423,28 @@ public class MailBoxService {
             }
 
             //create the folder object and open it
-            Folder emailFolder = store.getFolder("INBOX");
+            IMAPFolder emailFolder = (IMAPFolder) store.getFolder("INBOX");
             int openFolderFlag = Folder.READ_ONLY ;
             emailFolder.open(openFolderFlag);
 
-            SearchTerm searchTerm = buildRetryTerm(email.getMessageNumber());
-            Message messages[] = emailFolder.search(searchTerm);
-            if(messages.length > 0) {
-                try {
-                    MimeMessage message = (MimeMessage) messages[0];
-                    try {
-                        email = IMAPFetchMailJob.buildReceivedMail(message, email);
-                        boolean hasAttachments = saveFiles(message, email);
-                        email.setHasAttachment(hasAttachments);
-                        email = IMAPFetchMailJob.setMailContent(message, email);
-                        email.setErrorLog(null);
-                        emailDAO.save(email);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Email errorEmail = findOne(email.getMessageId());
-                        if(errorEmail != null) {
-                            String error = ExceptionUtils.getStackTrace(e);
-                            errorEmail.setErrorLog(error);
-                            emailDAO.save(errorEmail);
-                        }
-                    }
-                    logger.info("retry email: " + message.getSubject());
-                } catch (Exception e) {
-                    e.printStackTrace();
+            IMAPFetchMailJob.OwsMimeMessage message = IMAPFetchMailJob.getMessage(emailFolder, Integer.parseInt(email.getMessageNumber()));
+            try {
+                email = IMAPFetchMailJob.buildReceivedMail(message, email);
+                boolean hasAttachments = saveFiles(message, email);
+                email.setHasAttachment(hasAttachments);
+                email = IMAPFetchMailJob.setMailContent(message, email);
+                email.setErrorLog(null);
+                emailDAO.save(email);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Email errorEmail = findOne(email.getMessageId());
+                if(errorEmail != null) {
+                    String error = ExceptionUtils.getStackTrace(e);
+                    errorEmail.setErrorLog(error);
+                    emailDAO.save(errorEmail);
                 }
             }
+            logger.info("retry email: " + message.getSubject());
             emailFolder.close(true);
             store.close();
 
@@ -476,7 +469,12 @@ public class MailBoxService {
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
                 if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
-                    String fileName = MimeUtility.decodeText(part.getFileName());
+                    String fileName = part.getFileName();
+                    if(fileName.indexOf("=?") == -1) {
+                        fileName = new String(fileName.getBytes("ISO-8859-1"));
+                    } else {
+                        fileName = MimeUtility.decodeText(part.getFileName());
+                    }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
                     saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
@@ -513,10 +511,6 @@ public class MailBoxService {
     private Email findOne(String messageId) {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
-    }
-
-    private SearchTerm buildRetryTerm(String messageNumber) {
-        return messageNumber != null ? new MessageNumberTerm(Integer.parseInt(messageNumber)) : null;
     }
 
     private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
