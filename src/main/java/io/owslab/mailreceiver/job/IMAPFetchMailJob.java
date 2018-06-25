@@ -476,23 +476,25 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private OwsMimeMessage[] getMessages(IMAPFolder emailFolder, int start, Date beforeDate) throws MessagingException {
-//            int[] a = {200767, 201348, 202663,199465,197229,197318,198716,198722,197225,197322};
-//            int[] a = {202663,197229,197318,198716,201348,198722,197225,197322};
-//            int[] a = {197225, 197229,197318,197322};
-//            int[] a = {197322};
-//            int[] a = {203489};
-//            int[] a = {200766, 201347, 202662};
         int end = emailFolder.getMessageCount();
         if(end == -1 && !emailFolder.isOpen()) {
             emailFolder.open(openFolderFlag);
             end = emailFolder.getMessageCount();
         }
-        if (start <= end) {
-            OwsMimeMessage[] msgs = new OwsMimeMessage[end - start + 1];
-            for(int i = start; i <= end; ++i) {
-                msgs[i - start] = getMessage(emailFolder, i);
+        if (end > 0) {
+            List<OwsMimeMessage> messages = new ArrayList<>();
+            int msgnum = end;
+            while (true) {
+                if (msgnum == 0) break;
+                OwsMimeMessage message = getMessage(emailFolder, msgnum);
+                boolean exist = isEmailExist(message, account);
+                if(exist) {
+                    break;
+                }
+                messages.add(0, message);
+                msgnum = msgnum - 1;
             }
-            return msgs;
+            return messages.toArray(new OwsMimeMessage[messages.size()]);
         } else {
             return new OwsMimeMessage[0];
         }
