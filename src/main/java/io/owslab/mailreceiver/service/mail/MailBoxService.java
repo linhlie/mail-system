@@ -292,7 +292,7 @@ public class MailBoxService {
         if(sendAccountForm == null) {
             throw new Exception("Missing sender account info. Can't reply this email");
         }
-        DetailMailDTO result = new DetailMailDTO(replyEmail, emailAccount.getAccount());
+        DetailMailDTO result = new DetailMailDTO(replyEmail, emailAccount);
         result.setExternalCC(sendAccountForm.getCc());
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
@@ -326,7 +326,7 @@ public class MailBoxService {
             List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
             EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
             SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
-            DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount.getAccount());
+            DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount);
             String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
             result.setExternalCC(sendAccountForm.getCc());
             if(rangeStr != null && firstRangeStr != null){

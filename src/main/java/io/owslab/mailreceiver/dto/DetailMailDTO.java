@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.dto;
 import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.EmailAccount;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -20,6 +21,8 @@ public class DetailMailDTO {
     private long accountId;
 
     private String account;
+
+    private long senderAccountId;
 
     private String from;
 
@@ -77,9 +80,10 @@ public class DetailMailDTO {
         this.highLightRanges = new ArrayList<>();
     }
 
-    public DetailMailDTO(Email email, String account) {
+    public DetailMailDTO(Email email, EmailAccount account) {
         this(email);
-        this.setAccount(account);
+        this.setAccount(account.getAccount());
+        this.setSenderAccountId(account.getId());
     }
 
     public String getMessageId() {
@@ -272,5 +276,13 @@ public class DetailMailDTO {
 
     public void setHighLightRanges(List<String> highLightRanges) {
         this.highLightRanges = highLightRanges;
+    }
+
+    public long getSenderAccountId() {
+        return senderAccountId;
+    }
+
+    public void setSenderAccountId(long senderAccountId) {
+        this.senderAccountId = senderAccountId;
     }
 }
