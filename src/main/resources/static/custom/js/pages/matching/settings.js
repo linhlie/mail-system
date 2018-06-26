@@ -175,6 +175,16 @@
             type: 'string',
             operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
+            id: '13',
+            label: '全て(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '14',
+            label: 'いずれか(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
             id: '4',
             label: '数値',
             type: 'string',

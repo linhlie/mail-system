@@ -431,6 +431,14 @@ public class MatchingConditionService {
             case BODY:
                 match = isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
                 break;
+            case AND_SUBJECT_BODY:
+                match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective)
+                        && isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
+                break;
+            case OR_SUBJECT_BODY:
+                match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective)
+                        || isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
+                break;
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
