@@ -303,12 +303,26 @@ public class MailBoxService {
         return result;
     }
 
-    public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType){
-        List<DetailMailDTO> results = new ArrayList<>();
+    public  DetailMailDTO getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType, String accountId) throws Exception {
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
+        Email originEmail = emailList.size() > 0 ? emailList.get(0) : null;
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
-        //TODO: handle mail deleted error;
+        if(replyEmail == null) {
+            throw new Exception("Reply mail has been deleted or does not exist");
+        }
+        if(originEmail == null) {
+            throw new Exception("Email has been deleted or does not exist");
+        }
+        List<EmailAccount> listAccount = accountId != null ? mailAccountsService.findById(Long.parseLong(accountId)) : mailAccountsService.list();
+        EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+        if(emailAccount == null) {
+            throw new Exception("Missing sender account info. Can't reply this email");
+        }
+        SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
+        if(sendAccountForm == null) {
+            throw new Exception("Missing sender account info. Can't reply this email");
+        }
         String forBuildRangeStr = replaceType >= 3 ? matchRangeStr : rangeStr;
         List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(forBuildRangeStr, forBuildRangeStr, false, false);
         FullNumberRange firstRange = fullNumberRanges.size() > 0 ? fullNumberRanges.get(0) : null;
@@ -322,34 +336,28 @@ public class MailBoxService {
         if(firstRange != null){
             firstRangeStr = firstRange.toString(ratio);
         }
-        for(Email email : emailList) {
-            List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
-            EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
-            SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
-            DetailMailDTO result = emailAccount == null ? new DetailMailDTO(email) : new DetailMailDTO(email, emailAccount);
-            String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
-            result.setExternalCC(sendAccountForm.getCc());
-            if(rangeStr != null && firstRangeStr != null){
-                String rawBody = result.getOriginalBody();
-                String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
-                result.setReplacedBody(replacedBody);
-            }
-            result.setExcerpt(getExcerpt(replyEmail));
-            result.setSignature(signature);
-            if(replyEmail != null) {
-                String replyText = getReplyContentFromEmail(replyEmail);
-                result.setReplyOrigin(replyText);
-                result.setSubject("Re: " + replyEmail.getSubject());
-                result.setTo(replyEmail.getTo());
-                result.setCc(replyEmail.getCc());
-            }
-            List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
-            for(AttachmentFile file : files){
-                result.addFile(file);
-            }
-            results.add(result);
+        DetailMailDTO result = emailAccount == null ? new DetailMailDTO(originEmail) : new DetailMailDTO(originEmail, emailAccount);
+        String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
+        result.setExternalCC(sendAccountForm.getCc());
+        if(rangeStr != null && firstRangeStr != null){
+            String rawBody = result.getOriginalBody();
+            String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
+            result.setReplacedBody(replacedBody);
         }
-        return results;
+        result.setExcerpt(getExcerpt(replyEmail));
+        result.setSignature(signature);
+        if(replyEmail != null) {
+            String replyText = getReplyContentFromEmail(replyEmail);
+            result.setReplyOrigin(replyText);
+            result.setSubject("Re: " + replyEmail.getSubject());
+            result.setTo(replyEmail.getTo());
+            result.setCc(replyEmail.getCc());
+        }
+        List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+        for(AttachmentFile file : files){
+            result.addFile(file);
+        }
+        return result;
     }
 
     private String getExcerpt(Email email){

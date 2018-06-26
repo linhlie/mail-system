@@ -178,8 +178,10 @@
                         <div class="form-group row">
                             <label for="rdMailSender" class="control-label col-md-1 text-lef">送信者:</label>
                             <div class="col-md-5">
-                                <input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>
+                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
+                                </select>
                             </div>
+
                             <div id="rdMailReceiver-container">
                                 <label for="rdMailReceiver" class="control-label col-md-1 text-lef">受信者:</label>
                                 <div class="col-md-5">

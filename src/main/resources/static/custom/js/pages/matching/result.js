@@ -44,6 +44,13 @@
 
     var externalCCGlobal = [];
     var senderGlobal = "";
+    var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+    var lastReceiver;
+    var lastMessageId;
+    var lastTextRange;
+    var lastTextMatchRange;
+    var lastReplaceType;
+    var lastSendTo;
 
     var spaceEffective = false;
     var distinguish = false;
@@ -393,7 +400,8 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            showMailEditor(rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType, "moto")
+                            lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+                            showMailEditor(lastSelectedSendMailAccountId, rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType, "moto")
                         }
                     });
                     setRowClickListener("sendToSaki", function () {
@@ -403,7 +411,8 @@
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                showMailEditor(selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType, "saki")
+                                lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+                                showMailEditor(lastSelectedSendMailAccountId, selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType, "saki")
                             }
                         }
                     });
@@ -586,24 +595,28 @@
         });
     }
 
-    function showMailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, callback) {
+    function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
         replyId = replyId.replace(/\+/g, '%2B');
+        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType;
+        if(!!accountId){
+            url = url + "&accountId=" + accountId;
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType,
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {
-                var result;
+                var email;
+                var accounts;
                 if(data.status){
-                    if(data.list && data.list.length > 0){
-                        result = data.list[0];
-                    }
+                    email = data.mail;
+                    accounts = data.list;
                 }
                 if(typeof callback === "function"){
-                    callback(result);
+                    callback(email, accounts);
                 }
             },
             error: function (e) {
@@ -656,13 +669,13 @@
         highlight(id, data);
     }
 
-    function showMailContenttToEditor(data, receiverData, sendTo) {
+    function showMailContenttToEditor(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if(data){
-            document.getElementById(rdMailSenderId).value = data.account;
+            updateSenderSelector(data, accounts);
             senderGlobal = data.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
@@ -704,6 +717,18 @@
             var files = data.files ? data.files : [];
             updateDropzoneData(files);
         }
+    }
+
+    function updateSenderSelector(email, accounts) {
+        accounts = accounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id.toString() === lastSelectedSendMailAccountId)
+            }));
+        });
     }
 
     function updateCCList(currentCCs, newCCs) {
@@ -752,10 +777,23 @@
         }
     }
     
-    function showMailEditor(messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
+    function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (result) {
-            showMailContenttToEditor(result, receiver, sendTo)
+        lastMessageId = messageId;
+        lastReceiver = receiver;
+        lastTextRange = textRange;
+        lastTextMatchRange = textMatchRange;
+        lastReplaceType = replaceType;
+        lastSendTo = sendTo;
+        showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (email, accounts) {
+            showMailContenttToEditor(email, accounts, receiver, sendTo)
+        });
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, function (email, accounts) {
+                showMailContenttToEditor(email, accounts, lastReceiver, lastSendTo)
+            });
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');

@@ -167,13 +167,23 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "replyId") String replyId,
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
-                                          @RequestParam(value = "replaceType", required = false) int replaceType){
-        AjaxResponseBody result = new AjaxResponseBody();
-        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType);
-        result.setMsg("done");
-        result.setStatus(true);
-        result.setList(mailDetail);
-        return ResponseEntity.ok(result);
+                                          @RequestParam(value = "replaceType", required = false) int replaceType,
+                                          @RequestParam(value = "accountId", required = false) String accountId){
+        DetailMailResponseBody result = new DetailMailResponseBody();
+        try {
+            DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
+            List<EmailAccount> accountList = mailAccountsService.list();
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setMail(mailDetail);
+            result.setList(accountList);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("getEditEmailInJSON: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
