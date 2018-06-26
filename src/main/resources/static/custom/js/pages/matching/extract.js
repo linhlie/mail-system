@@ -27,6 +27,9 @@
 
     var externalCCGlobal = [];
     var senderGlobal = "";
+    var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+    var lastReceiver;
+    var lastMessageId;
 
     var markOptions = {
         "element": "mark",
@@ -251,9 +254,8 @@
                 var index = row.getAttribute("data");
                 var rowData = extractResult[index];
                 if (rowData && rowData.messageId) {
-                    var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-                    console.log("reply: ", rowData);
-                    showMailEditor(rowData.messageId, selectedSendMailAccountId, rowData)
+                    lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+                    showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData)
                 }
             });
         }
@@ -484,8 +486,17 @@
 
     function showMailEditor(messageId, accountId, receiver) {
         $('#sendMailModal').modal();
+        lastReceiver = receiver;
+        lastMessageId = messageId;
         showMailWithReplacedRange(messageId, accountId, function (email, accounts) {
             showMailContenttToEditor(email, accounts, receiver)
+        });
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            showMailWithReplacedRange(lastMessageId, this.value, function (email, accounts) {
+                showMailContenttToEditor(email, accounts, lastReceiver)
+            });
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -612,7 +623,7 @@
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if (data) {
-            document.getElementById(rdMailSenderId).value = data.account;
+            updateSenderSelector(data, accounts);
             senderGlobal = data.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
@@ -644,6 +655,18 @@
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData();
+    }
+    
+    function updateSenderSelector(email, accounts) {
+        accounts = accounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id.toString() === lastSelectedSendMailAccountId)
+            }));
+        });
     }
 
     function updateCCList(currentCCs, newCCs) {
