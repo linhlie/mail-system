@@ -277,14 +277,14 @@ public class MailBoxService {
         return results;
     }
 
-    public List<DetailMailDTO> getContentRelyEmail(String replyId) throws Exception {
+    public List<DetailMailDTO> getContentRelyEmail(String replyId, String accountId) throws Exception {
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         if(replyEmail == null) {
             throw new Exception("This mail has been deleted or does not exist");
         }
-        List<EmailAccount> listAccount = mailAccountsService.findById(replyEmail.getAccountId());
+        List<EmailAccount> listAccount = accountId != null ? mailAccountsService.findById(Long.parseLong(accountId)) : mailAccountsService.list();
         EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
         if(emailAccount == null) {
             throw new Exception("Missing sender account info. Can't reply this email");

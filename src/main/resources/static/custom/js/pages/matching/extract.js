@@ -251,8 +251,9 @@
                 var index = row.getAttribute("data");
                 var rowData = extractResult[index];
                 if (rowData && rowData.messageId) {
+                    var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
                     console.log("reply: ", rowData);
-                    showMailEditor(rowData.messageId, rowData)
+                    showMailEditor(rowData.messageId, selectedSendMailAccountId, rowData)
                 }
             });
         }
@@ -481,9 +482,9 @@
         $("#printElement").hide();
     }
 
-    function showMailEditor(messageId, receiver) {
+    function showMailEditor(messageId, accountId, receiver) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, function (result) {
+        showMailWithReplacedRange(messageId, accountId, function (result) {
             showMailContenttToEditor(result, receiver)
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -566,12 +567,16 @@
         })
     }
 
-    function showMailWithReplacedRange(messageId, callback) {
+    function showMailWithReplacedRange(messageId, accountId, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
+        var url = "/user/matchingResult/replyEmail?messageId=" + messageId;
+        if(!!accountId){
+            url = url + "&accountId=" + accountId;
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/matchingResult/replyEmail?messageId=" + messageId,
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {

@@ -172,10 +172,10 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId){
+    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "accountId", required = false) String accountId){
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<DetailMailDTO> mailDetail = mailBoxService.getContentRelyEmail(messageId);
+            List<DetailMailDTO> mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
             result.setMsg("done");
             result.setStatus(true);
             result.setList(mailDetail);
