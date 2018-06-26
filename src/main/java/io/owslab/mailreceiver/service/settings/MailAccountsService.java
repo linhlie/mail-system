@@ -34,6 +34,10 @@ public class MailAccountsService {
         return list;
     }
 
+    public List<EmailAccount> list() {
+        return (List<EmailAccount>) emailAccountDAO.findAll();
+    }
+
     @Cacheable(key="\"MailAccountsService:findById:\"+#id")
     public List<EmailAccount> findById(long id){
         return emailAccountDAO.findById(id);

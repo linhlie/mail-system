@@ -25,6 +25,23 @@
                 </div>
                 <!-- /.box -->
             </div>
+            <div class="col-md-8 col-sm-12 col-xs-12">
+                <div class="box box-default">
+                    <div class="box-header">
+                        <h3 class="box-title">送信アカウントの選択</h3>
+                    </div>
+                    <div class="box-body">
+                        <select id="sendMailAccountSelect" style="width: 100%">
+                            <option value="" selected="selected" th:disabled="true">選んでください</option>
+                            <option th:each="account : ${accounts}"
+                                    th:value="${account.id}"
+                                    th:utext="${account.account}"/>
+                        </select>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
         </div>
     </section>
 </div>
