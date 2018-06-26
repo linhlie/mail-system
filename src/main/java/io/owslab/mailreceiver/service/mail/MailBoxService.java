@@ -277,8 +277,7 @@ public class MailBoxService {
         return results;
     }
 
-    public List<DetailMailDTO> getContentRelyEmail(String replyId, String accountId) throws Exception {
-        List<DetailMailDTO> results = new ArrayList<>();
+    public DetailMailDTO getContentRelyEmail(String replyId, String accountId) throws Exception {
         List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         if(replyEmail == null) {
@@ -301,8 +300,7 @@ public class MailBoxService {
         String replyText = getReplyContentFromEmail(replyEmail);
         result.setReplyOrigin(replyText);
         result.setSubject("Re: " + replyEmail.getSubject());
-        results.add(result);
-        return results;
+        return result;
     }
 
     public List<DetailMailDTO> getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType){

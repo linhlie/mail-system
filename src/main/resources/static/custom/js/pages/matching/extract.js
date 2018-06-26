@@ -484,8 +484,8 @@
 
     function showMailEditor(messageId, accountId, receiver) {
         $('#sendMailModal').modal();
-        showMailWithReplacedRange(messageId, accountId, function (result) {
-            showMailContenttToEditor(result, receiver)
+        showMailWithReplacedRange(messageId, accountId, function (email, accounts) {
+            showMailContenttToEditor(email, accounts, receiver)
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -580,14 +580,14 @@
             cache: false,
             timeout: 600000,
             success: function (data) {
-                var result;
+                var email;
+                var accounts;
                 if (data.status) {
-                    if (data.list && data.list.length > 0) {
-                        result = data.list[0];
-                    }
+                    email = data.mail;
+                    accounts = data.list;
                 }
                 if (typeof callback === "function") {
-                    callback(result);
+                    callback(email, accounts);
                 }
             },
             error: function (e) {
@@ -606,7 +606,7 @@
         highlight(data);
     }
 
-    function showMailContenttToEditor(data, receiverData) {
+    function showMailContenttToEditor(data, accounts, receiverData) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;

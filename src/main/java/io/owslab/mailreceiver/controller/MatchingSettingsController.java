@@ -5,12 +5,15 @@ import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.SendMailForm;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.DetailMailResponseBody;
 import io.owslab.mailreceiver.response.MatchingResponeBody;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.json.JSONObject;
@@ -63,6 +66,9 @@ public class MatchingSettingsController {
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private MailAccountsService mailAccountsService;
 
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -173,12 +179,14 @@ public class MatchingSettingsController {
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "accountId", required = false) String accountId){
-        AjaxResponseBody result = new AjaxResponseBody();
+        DetailMailResponseBody result = new DetailMailResponseBody();
         try {
-            List<DetailMailDTO> mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
+            DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
+            List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");
             result.setStatus(true);
-            result.setList(mailDetail);
+            result.setMail(mailDetail);
+            result.setList(accountList);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("replyEmail: " + e.getMessage());
