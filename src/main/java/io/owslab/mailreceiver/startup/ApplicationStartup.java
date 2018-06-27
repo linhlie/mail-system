@@ -1,14 +1,11 @@
 package io.owslab.mailreceiver.startup;
 
 import io.owslab.mailreceiver.dao.AccountDAO;
-import io.owslab.mailreceiver.dao.EmailDAO;
-import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
-import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
@@ -58,12 +55,6 @@ public class ApplicationStartup {
 
     @Autowired
     private AccountDAO accountDAO;
-
-    @Autowired
-    private FileDAO fileDAO;
-
-    @Autowired
-    private EmailDAO emailDAO;
 
     @Autowired
     private AccountService accountService;
@@ -117,7 +108,6 @@ public class ApplicationStartup {
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        System.setProperty("mail.mime.decodetext.strict", "false");
         Utils.init();
         initStorageDirectory();
         enviromentSettingService.init();
