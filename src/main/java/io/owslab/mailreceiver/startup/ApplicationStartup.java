@@ -108,6 +108,7 @@ public class ApplicationStartup {
 
     @EventListener
     public void onApplicationEvent(final ContextRefreshedEvent event) {
+        System.setProperty("mail.mime.decodetext.strict", "false");
         Utils.init();
         initStorageDirectory();
         enviromentSettingService.init();
