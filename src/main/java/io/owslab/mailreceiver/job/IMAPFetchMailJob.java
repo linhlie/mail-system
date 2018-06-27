@@ -529,17 +529,19 @@ public class IMAPFetchMailJob implements Runnable {
                 ByteArrayInputStream is = body.getByteArrayInputStream();
                 try {
                     mm = new OwsMimeMessage(new MimeMessage(session, is), msgnum, internaldate.getDate());
-                    String subject = mm.getSubject();
+                    String subject = mm.getHeader("Subject", null);
                     if(subject != null) {
-                        int index = subject.indexOf("=?UTF-8?B?");
-                        if(index > -1) {
-                            try {
-                                subject = new String(subject.substring(0,index).getBytes("ISO-8859-1"))
-                                        + MimeUtility.decodeText(subject.substring(index));
-                                mm.setSubject(subject);
-                            } catch (Exception e) {
-                                ;
+                        try {
+                            if(subject.startsWith("=?")) {
+                                mm.setSubject(MimeUtility.decodeText(subject));
+                            } else {
+                                int index = subject.indexOf("=?UTF-8?B?");
+                                if(index > 0) {
+                                    mm.setSubject(new String(subject.substring(0,index).getBytes("ISO-8859-1")) + MimeUtility.decodeText(subject.substring(index)));
+                                }
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
                     }
                 } catch (MessagingException e) {
