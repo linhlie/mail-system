@@ -3,7 +3,7 @@
     <ul class="sidebar-menu tree" data-widget="tree">
         <li sec:authorize="hasRole('ROLE_MEMBER')">
             <a href="#">
-                <span>受信メール操作</span>
+                <i class="fa fa-cloud-download"></i> <span>受信メール操作</span>
             </a>
             <ul class="treeview-menu visible">
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview menu-open">
@@ -51,23 +51,23 @@
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview menu-open':'treeview'">
             <a href="#">
-                <span>システム共通設定</span>
+                <i class="fa fa-cogs"></i> <span>システム共通設定</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
-                <ul class="treeview-menu" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview-menu visible':'treeview-menu'">
-                    <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
-                        <a href="#" th:href="@{/user/fuzzyWord}">
-                            <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
-                        </a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
-                        <a href="#" th:href="@{/user/numberTreatment}">
-                            <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
-                        </a>
-                    </li>
-                </ul>
             </a>
+            <ul class="treeview-menu" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview-menu visible':'treeview-menu'">
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+                    <a href="#" th:href="@{/user/fuzzyWord}">
+                        <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+                    <a href="#" th:href="@{/user/numberTreatment}">
+                        <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
+                    </a>
+                </li>
+            </ul>
         </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
@@ -93,23 +93,23 @@
         </li>
         <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration'})?'treeview menu-open':'treeview'">
             <a href="#">
-                <span>PC個別設定</span>
+                <i class="fa fa-male"></i> <span>PC個別設定</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
-                <ul class="treeview-menu" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration'})?'treeview-menu visible':'treeview-menu'">
-                    <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
-                        <a href="#" th:href="@{/user/sendMailSettings}">
-                            <i class="fa fa-send"></i> <span>送信設定</span>
-                        </a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
-                        <a href="#" th:href="@{/user/greetingRegistration}">
-                            <i class="fa fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
-                        </a>
-                    </li>
-                </ul>
             </a>
+            <ul class="treeview-menu" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration'})?'treeview-menu visible':'treeview-menu'">
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
+                    <a href="#" th:href="@{/user/sendMailSettings}">
+                        <i class="fa fa-send"></i> <span>送信設定</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
+                    <a href="#" th:href="@{/user/greetingRegistration}">
+                        <i class="fa fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
+                    </a>
+                </li>
+            </ul>
         </li>
     </ul>
 </section>
