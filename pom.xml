@@ -77,6 +77,11 @@
 			<version>1.4.7</version>
 		</dependency>
 		<dependency>
+			<groupId>jp.co.worksap.message.wrapper</groupId>
+			<artifactId>message-wrapper</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>

@@ -473,9 +473,10 @@ public class MailBoxService {
             for (int partCount = 0; partCount < numberOfParts; partCount++) {
                 //TODO: try catch if fails or transaction
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
-                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || Part.INLINE.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
                     String fileName = part.getFileName();
+                    if(fileName == null) continue;
                     if(fileName.indexOf("=?") == -1) {
                         fileName = new String(fileName.getBytes("ISO-8859-1"));
                     } else {
