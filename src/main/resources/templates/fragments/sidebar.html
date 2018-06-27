@@ -1,32 +1,26 @@
 <!-- sidebar: style can be found in sidebar.less -->
 <section class="sidebar">
     <ul class="sidebar-menu tree" data-widget="tree">
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasRole('ROLE_MEMBER')">
             <a href="#">
                 <span>受信メール操作</span>
-                <span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                </span>
             </a>
-            <ul class="treeview-menu"
-                th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview-menu visible':'treeview-menu'">
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview menu-open':'treeview'">
+            <ul class="treeview-menu visible">
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview menu-open">
                     <a href="#">
                         <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
                         <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
                     </a>
-                    <ul class="treeview-menu"
-                        th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview-menu visible':'treeview-menu'">
-                        <li class="treeview" th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview menu-open':'treeview'">
+                    <ul class="treeview-menu visible">
+                        <li class="treeview menu-open">
                             <a href="#"><i class="fa fa-circle-o"></i>メールマッチング
                                 <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                             </a>
-                            <ul class="treeview-menu"
-                                th:class="(${currentMenu == 'matchingSettings' || currentMenu == 'matchingResult'})?'treeview-menu visible':'treeview-menu'">
+                            <ul class="treeview-menu visible">
                                 <li th:class="(${currentMenu == 'matchingSettings'})?'active':''"><a href="#"
                                                                                                      th:href="@{/user/matchingSettings}"><i
                                         class="fa fa-circle-o"></i>条件設定</a></li>
