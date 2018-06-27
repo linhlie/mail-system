@@ -18,6 +18,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
 import io.owslab.mailreceiver.utils.Utils;
+import jp.co.worksap.message.decoder.HeaderDecoder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.annotations.Fetch;
 import org.slf4j.Logger;
@@ -387,9 +388,10 @@ public class IMAPFetchMailJob implements Runnable {
             for (int partCount = 0; partCount < numberOfParts; partCount++) {
                 //TODO: try catch if fails or transaction
                 MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
-                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || Part.INLINE.equalsIgnoreCase(part.getDisposition())) {
                     // this part is attachment
                     String fileName = part.getFileName();
+                    if(fileName == null) continue;
                     if(fileName.indexOf("=?") == -1) {
                         fileName = new String(fileName.getBytes("ISO-8859-1"));
                     } else {
@@ -532,12 +534,13 @@ public class IMAPFetchMailJob implements Runnable {
                     String subject = mm.getHeader("Subject", null);
                     if(subject != null) {
                         try {
+                            HeaderDecoder decoder = new HeaderDecoder();
                             if(subject.startsWith("=?")) {
-                                mm.setSubject(MimeUtility.decodeText(subject));
+                                mm.setSubject(decoder.decodeSubject(subject));
                             } else {
-                                int index = subject.indexOf("=?UTF-8?B?");
+                                int index = subject.indexOf("=?");
                                 if(index > 0) {
-                                    mm.setSubject(new String(subject.substring(0,index).getBytes("ISO-8859-1")) + MimeUtility.decodeText(subject.substring(index)));
+                                    mm.setSubject(new String(subject.substring(0,index).getBytes("ISO-8859-1")) + decoder.decodeSubject(subject.substring(index)));
                                 }
                             }
                         } catch (UnsupportedEncodingException e) {

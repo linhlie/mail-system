@@ -131,17 +131,6 @@ public class ApplicationStartup {
 //        for(FullNumberRange range : rangeList) {
 //            System.out.println("Found range: " + range.toString());
 //        }
-        List<AttachmentFile> fileList = (List<AttachmentFile>)fileDAO.findAll();
-        for(AttachmentFile file : fileList) {
-            String msgId = file.getMessageId();
-            Email email = emailDAO.findOne(msgId);
-            if(email != null) {
-                if(!email.isHasAttachment()) {
-                    System.out.println(msgId);
-                }
-            }
-        }
-        System.out.println("Done");
         return;
     }
 

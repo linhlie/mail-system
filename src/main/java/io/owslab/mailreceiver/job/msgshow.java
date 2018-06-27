@@ -5,14 +5,13 @@ import com.sun.mail.iap.ProtocolException;
 import com.sun.mail.iap.Response;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.protocol.*;
+import jp.co.worksap.message.decoder.HeaderDecoder;
 
-import java.net.URLDecoder;
 import java.util.*;
 import java.io.*;
 import javax.mail.*;
 import javax.mail.event.*;
 import javax.mail.internet.*;
-import javax.security.auth.Subject;
 
 /*
  * Demo app that exercises the Message interfaces.
@@ -172,7 +171,7 @@ public class msgshow {
             }
 
             IMAPFolder imapFolder = (IMAPFolder)folder;
-            imapFolder.doCommand(new CustomProtocolCommand(209133, 209133));
+            imapFolder.doCommand(new CustomProtocolCommand(203489, 203489));
 
             folder.close(false);
             store.close();
@@ -405,13 +404,15 @@ public class msgshow {
         // SUBJECT
         pr("SUBJECT: " + m.getSubject());
         String subject = ((MimeMessage) m).getHeader("Subject", null);
+        HeaderDecoder decoder = new HeaderDecoder();
+        pr("raw subject: " + subject + " | " + decoder.decodeSubject(subject));
         if(subject != null) {
             if(subject.startsWith("=?")) {
-                pr("decoded subject: " + MimeUtility.decodeText(subject));
+                pr("decoded subject: " + decoder.decodeSubject(subject));
             } else {
-                int index = subject.indexOf("=?UTF-8?B?");
+                int index = subject.indexOf("=?");
                 if(index > 0) {
-                    pr("decoded subject: " + new String(subject.substring(0,index).getBytes("ISO-8859-1")) + MimeUtility.decodeText(subject.substring(index)));
+                    pr("decoded subject: " + new String(subject.substring(0,index).getBytes("ISO-8859-1")) + decoder.decodeSubject(subject.substring(index)));
                 }
             }
         }
