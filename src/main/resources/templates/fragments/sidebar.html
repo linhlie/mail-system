@@ -8,7 +8,7 @@
             <ul class="treeview-menu visible">
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview menu-open">
                     <a href="#">
-                        <i class="fa fa-asterisk"></i> <span>受信メール分析</span>
+                        <i class="fa fa-circle-o"></i> <span>受信メール分析</span>
                         <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
@@ -30,6 +30,11 @@
                             </ul>
                         </li>
                     </ul>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailHistory'})?'active':''">
+                    <a href="#" th:href="@{/user/sendMailHistory}">
+                        <i class="fa fa-circle-o"></i> <span>送信履歴</span>
+                    </a>
                 </li>
             </ul>
         </li>
@@ -106,7 +111,7 @@
                 </li>
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
                     <a href="#" th:href="@{/user/greetingRegistration}">
-                        <i class="fa fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
+                        <i class="fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
                     </a>
                 </li>
             </ul>
