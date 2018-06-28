@@ -139,11 +139,7 @@
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
         var rowData = histories[index];
-        if (rowData && rowData && rowData.messageId) {
-            showMail(rowData.messageId, function (result) {
-                showMailContent(result);
-            }, rowData.range);
-        }
+        showMailContent(rowData);
     }
 
     function selectFirstRow() {
@@ -152,11 +148,7 @@
             firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var index = firstTr[0].getAttribute("data");
             var rowData = histories[index];
-            if (rowData && rowData.messageId) {
-                showMail(rowData.messageId, function (result) {
-                    showMailContent(result);
-                }, rowData.range);
-            }
+            showMailContent(rowData);
             selectedRowData = rowData;
         }
     }
@@ -174,49 +166,16 @@
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
-    function showMail(messageId, callback, matchRange) {
-        messageId = messageId.replace(/\+/g, '%2B');
-        var url = "/user/matchingResult/email?messageId=" + messageId;
-        if(matchRange && matchRange.length > 0) {
-            url = url + "&matchRange=" + matchRange
-        }
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                var result;
-                if (data.status) {
-                    if (data.list && data.list.length > 0) {
-                        result = data.list[0];
-                    }
-                }
-                if (typeof callback === "function") {
-                    callback(result);
-                }
-            },
-            error: function (e) {
-                console.error("getMail ERROR : ", e);
-                if (typeof callback === "function") {
-                    callback();
-                }
-            }
-        });
-    }
-
     function showMailContent(data) {
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
-        var mailBodyDiv = document.getElementById(mailBodyDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
-        showMailBodyContent({originalBody: ""});
+        showMailBodyContent({body: ""});
         mailAttachmentDiv.innerHTML = "";
         if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
                 '<h5><b>' + data.subject + '</b></h5>' +
-                '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
+                '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
                 '</div>';
             showMailBodyContent(data);
             mailAttachmentDiv.innerHTML = "添付ファイル";
@@ -224,9 +183,9 @@
     }
 
     function showMailBodyContent(data) {
-        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        data.body = data.body.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(mailBodyDivId);
-        mailBodyDiv.innerHTML = data.originalBody;
+        mailBodyDiv.innerHTML = data.body;
     }
 
     function initStickyHeader() {
