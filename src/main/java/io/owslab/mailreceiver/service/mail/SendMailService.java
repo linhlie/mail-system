@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
 import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
@@ -48,6 +49,9 @@ public class SendMailService {
 
     @Autowired
     private UploadFileService uploadFileService;
+
+    @Autowired
+    private SentMailHistoryDAO sentMailHistoryDAO;
 
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId(), false);
@@ -137,11 +141,13 @@ public class SendMailService {
 
             List<Long> originAttachment = form.getOriginAttachment();
             List<Long> uploadAttachment = form.getUploadAttachment();
+            boolean hasAttachment = false;
             if(originAttachment != null && originAttachment.size() > 0) {
                 List<AttachmentFile> files = fileDAO.findByIdInAndDeleted(originAttachment, false);
                 for (AttachmentFile attachmentFile : files){
                     MimeBodyPart attachmentPart = buildAttachmentPart(attachmentFile.getStoragePath(), attachmentFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
+                    hasAttachment = true;
                 }
             }
 
@@ -150,6 +156,7 @@ public class SendMailService {
                 for (UploadFile uploadFile : uploadFiles){
                     MimeBodyPart attachmentPart = buildUploadAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
+                    hasAttachment = true;
                 }
             }
 
@@ -159,6 +166,7 @@ public class SendMailService {
             // Send message
             Transport.send(message);
             uploadFileService.delete(uploadAttachment);
+            saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
@@ -213,5 +221,10 @@ public class SendMailService {
             }
         }
         return String.join(",", result);
+    }
+
+    private void saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment);
+        sentMailHistoryDAO.save(history);
     }
 }
