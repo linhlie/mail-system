@@ -52,12 +52,18 @@ public class SendMailService {
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId(), false);
         if(email == null) return;
-        long accountid = email.getAccountId();
-        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountid);
+        String formAccountId = form.getAccountId();
+        long accountId = formAccountId != null ? Long.parseLong(formAccountId) : email.getAccountId();
+        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
         EmailAccount account = emailAccounts.size() > 0 ? emailAccounts.get(0) : null;
         if(account == null) return;
         EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
         if(accountSetting == null) return;
+
+        Email matchingEmail = null;
+        if(form.getMatchingMessageId() != null) {
+            matchingEmail = emailService.findOne(form.getMatchingMessageId(), false);
+        }
 
         // Sender's email ID needs to be mentioned
         String from = account.getAccount();
