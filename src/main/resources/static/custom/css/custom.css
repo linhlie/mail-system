@@ -455,7 +455,7 @@ input.form-error {
     padding-right: 10px;
 }
 
-table#sourceMatch, table#destinationMatch {
+table#sourceMatch, table#destinationMatch, table#sendMailHistory {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }

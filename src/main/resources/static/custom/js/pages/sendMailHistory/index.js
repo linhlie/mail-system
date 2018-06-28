@@ -1,113 +1,100 @@
 (function () {
     "use strict";
-    var sourceTableId = 'sourceMatch';
+    var sendMailHistoryTableId = 'sendMailHistory';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
-    var extractResult = null;
-    var sourceMatchDataTable;
+    var histories = null;
+    var historyDataTable;
     var selectedRowData;
 
-    var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
-        '<button type="button" class="btn btn-xs btn-default">返信</button>' +
-        '</td>' +
+    var replaceHistoryHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="sentAt"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="to"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="sendType"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="originalReceivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingReceivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
         '</tr>';
 
     $(function () {
-        loadExtractData();
+        loadHistoryData();
         initStickyHeader();
     });
 
     function enableResizeColums() {
-        $("#" + sourceTableId).colResizable(
+        $("#" + sendMailHistoryTableId).colResizable(
             {
                 resizeMode: 'overflow',
             }
         );
     }
 
-    function loadExtractData() {
-        var extractDataStr;
-        var key = window.location.href.indexOf("extractSource") >= 0 ? "extractSourceData" : "extractDestinationData";
-        extractDataStr = sessionStorage.getItem(key);
-        if (extractDataStr) {
-            $('body').loadingModal({
-                position: 'auto',
-                text: '抽出中...',
-                color: '#fff',
-                opacity: '0.7',
-                backgroundColor: 'rgb(0,0,0)',
-                animation: 'doubleBounce',
-            });
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/submitExtract",
-                data: extractDataStr,
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    $('body').loadingModal('hide');
-                    if (data && data.status) {
-                        extractResult = data.list;
-                    } else {
-                        console.error("[ERROR] submit failed: ");
-                    }
-                    updateData();
-                },
-                error: function (e) {
-                    console.error("[ERROR] submit error: ", e);
-                    $('body').loadingModal('hide');
-                    updateData();
+    function loadHistoryData() {
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/sendMailHistoryData",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if (data && data.status) {
+                    histories = data.list;
+                } else {
+                    console.error("[ERROR] submit failed: ");
                 }
-            });
-        } else {
-            updateData();
-        }
+                updateData();
+            },
+            error: function (e) {
+                console.error("[ERROR] submit error: ", e);
+                $('body').loadingModal('hide');
+                updateData();
+            }
+        });
     }
 
     function updateData() {
-        showSourceData(sourceTableId, extractResult);
+        showHistoryData(sendMailHistoryTableId, histories);
     }
 
-    function showSourceData(tableId, data) {
-        destroySortSource();
-        removeAllRow(tableId, replaceSourceHTML);
-        if (data.length > 0) {
-            var html = replaceSourceHTML;
+    function showHistoryData(tableId, data) {
+        destroySortHistory();
+        removeAllRow(tableId, replaceHistoryHTML);
+        if (data && data.length > 0) {
+            var html = replaceHistoryHTML;
             for (var i = 0; i < data.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", selectedRow);
+            setRowClickListener("historyRow", selectedRow);
         }
-        initSortSource();
+        initSortHistory();
         selectFirstRow();
         enableResizeColums();
     }
 
-    function destroySortSource() {
-        if (!!sourceMatchDataTable) {
-            sourceMatchDataTable.destroy();
+    function destroySortHistory() {
+        if (!!historyDataTable) {
+            historyDataTable.destroy();
         }
     }
 
-    function initSortSource() {
-        $("#sourceMatch").tablesorter(
+    function initSortHistory() {
+        $("#" + sendMailHistoryTableId).tablesorter(
             {
                 theme: 'default',
-                headers: {
-                    4: {
-                        sorter: false
-                    },
-                },
-                sortList: [[1, 1], [2, 0]]
+                sortList: [[0, 1], [1, 0]]
             });
     }
 
@@ -148,10 +135,10 @@
         })
     }
 
-    function showSourceMail() {
+    function showHistory() {
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
-        var rowData = extractResult[index];
+        var rowData = histories[index];
         if (rowData && rowData && rowData.messageId) {
             showMail(rowData.messageId, function (result) {
                 showMailContent(result);
@@ -160,11 +147,11 @@
     }
 
     function selectFirstRow() {
-        if (extractResult && extractResult.length > 0) {
-            var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+        if (histories && histories.length > 0) {
+            var firstTr = $('#' + sendMailHistoryTableId).find(' tbody tr:first');
             firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
             var index = firstTr[0].getAttribute("data");
-            var rowData = extractResult[index];
+            var rowData = histories[index];
             if (rowData && rowData.messageId) {
                 showMail(rowData.messageId, function (result) {
                     showMailContent(result);
@@ -176,10 +163,10 @@
 
     function selectedRow() {
         $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        showSourceMail.call(this);
+        showHistory.call(this);
         var row = $(this)[0].parentNode;
         var index = row.getAttribute("data");
-        var rowData = extractResult[index];
+        var rowData = histories[index];
         selectedRowData = rowData;
     }
 

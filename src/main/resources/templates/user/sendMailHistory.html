@@ -15,7 +15,7 @@
                     <h4>送信履歴</h4>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 450px;">
-                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                            <table id="sendMailHistory" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
                                     <th class="fit">送信日時</th>
@@ -29,16 +29,6 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr role="row" class="hidden">
-                                    <td class="clickable fit" name="sourceRow" th:data="sentAt"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="from"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="to"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="subject"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="sendType"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="originalReceivedAt"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="matchingReceivedAt"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="matchingMailAddress"><span></span></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
