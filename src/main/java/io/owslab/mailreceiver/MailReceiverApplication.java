@@ -14,6 +14,7 @@ public class MailReceiverApplication {
 	private static final Logger logger = LoggerFactory.getLogger(MailReceiverApplication.class);
 
 	public static void main(String[] args) {
+		System.setProperty("mail.mime.decodetext.strict", "false");
 		SpringApplication.run(MailReceiverApplication.class, args);
 		logger.info("--Application Started--");
 	}

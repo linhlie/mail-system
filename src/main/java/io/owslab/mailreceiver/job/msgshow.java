@@ -5,14 +5,13 @@ import com.sun.mail.iap.ProtocolException;
 import com.sun.mail.iap.Response;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.protocol.*;
+import jp.co.worksap.message.decoder.HeaderDecoder;
 
-import java.net.URLDecoder;
 import java.util.*;
 import java.io.*;
 import javax.mail.*;
 import javax.mail.event.*;
 import javax.mail.internet.*;
-import javax.security.auth.Subject;
 
 /*
  * Demo app that exercises the Message interfaces.
@@ -42,6 +41,8 @@ public class msgshow {
     public static void main(String argv[]) {
         int optind;
         InputStream msgStream = System.in;
+
+        System.setProperty("mail.mime.decodetext.strict", "false");
 
         for (optind = 0; optind < argv.length; optind++) {
             if (argv[optind].equals("-T")) {
@@ -170,7 +171,7 @@ public class msgshow {
             }
 
             IMAPFolder imapFolder = (IMAPFolder)folder;
-            imapFolder.doCommand(new CustomProtocolCommand(209125, 209125));
+            imapFolder.doCommand(new CustomProtocolCommand(203489, 203489));
 
             folder.close(false);
             store.close();
@@ -198,9 +199,7 @@ public class msgshow {
         @Override
         public Object doCommand(IMAPProtocol protocol) throws ProtocolException {
             Argument args = new Argument();
-//            args.writeString(Integer.toString(start) + ":" + Integer.toString(end));
-//            args.writeString("BODY[]");
-            Response[] r = protocol.command("FETCH " + Integer.toString(start) + ":" + Integer.toString(end) + " (INTERNALDATE BODY[])", null);
+            Response[] r = protocol.command("FETCH " + Integer.toString(start) + ":" + Integer.toString(end) + " (INTERNALDATE BODY.PEEK[])", null);
             Response response = r[r.length - 1];
             if (response.isOK()) {
 
@@ -403,16 +402,18 @@ public class msgshow {
         pr("Message-Id: " + ((MimeMessage) m).getMessageID());
 
         // SUBJECT
-        pr("SUBJECT: " + m.getSubject() + " | " + ((MimeMessage) m).getHeader("Subject", (String)null));
-        String subject = m.getSubject();
+        pr("SUBJECT: " + m.getSubject());
+        String subject = ((MimeMessage) m).getHeader("Subject", null);
+        HeaderDecoder decoder = new HeaderDecoder();
+        pr("raw subject: " + subject + " | " + decoder.decodeSubject(subject));
         if(subject != null) {
-            int index = subject.indexOf("=?UTF-8?B?");
-            if(index > -1) {
-                byte[] bytes = "Fwd: 6月分請求書リスト".getBytes("UTF-8");
-                String encoded = Base64.getEncoder().encodeToString(bytes);
-                pr("encoded: " + encoded);
-                pr("subjectParts 0: " + new String(subject.substring(0,index).getBytes("ISO-8859-1")));
-                pr("subjectParts 1 decoded: " + MimeUtility.decodeText(subject.substring(index)));
+            if(subject.startsWith("=?")) {
+                pr("decoded subject: " + decoder.decodeSubject(subject));
+            } else {
+                int index = subject.indexOf("=?");
+                if(index > 0) {
+                    pr("decoded subject: " + new String(subject.substring(0,index).getBytes("ISO-8859-1")) + decoder.decodeSubject(subject.substring(index)));
+                }
             }
         }
 
