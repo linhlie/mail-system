@@ -175,7 +175,7 @@
         if (data) {
             mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
                 '<h5><b>' + data.subject + '</b></h5>' +
-                '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
+                '<h6>送信者:&nbsp;' + data.from + '&nbsp;&nbsp;&nbsp;&nbsp;受信者:&nbsp;' + data.to + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
                 '</div>';
             showMailBodyContent(data);
             mailAttachmentDiv.innerHTML = "添付ファイル";
