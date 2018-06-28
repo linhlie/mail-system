@@ -18,8 +18,23 @@
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingReceivedAt"><span></span></td>' +
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
         '</tr>';
-
     $(function () {
+        var datepicker = $.fn.datepicker.noConflict();
+        $.fn.bootstrapDP = datepicker;
+        $('#historyFromDate').datepicker({
+            beforeShow: function() {
+                setTimeout(function(){
+                    $('.ui-datepicker').css('z-index', 99999999999999);
+                }, 0);
+            }
+        });
+        $('#historyToDate').datepicker({
+            beforeShow: function() {
+                setTimeout(function(){
+                    $('.ui-datepicker').css('z-index', 99999999999999);
+                }, 0);
+            }
+        });
         loadHistoryData();
         initStickyHeader();
     });
