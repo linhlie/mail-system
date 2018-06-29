@@ -4,6 +4,10 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
+    var historyQuickFilterId = 'historyQuickFilter';
+    var fromDateId = 'historyFromDate';
+    var toDateId = 'historyToDate';
+    var historySearchBtnId = 'historySearchBtn';
     var histories = null;
     var historyDataTable;
     var selectedRowData;
@@ -19,25 +23,52 @@
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
         '</tr>';
     $(function () {
+        setupDatePickers();
+        var payload = getSearchPayload();
+        loadHistoryData(payload);
+        initStickyHeader();
+        addEventListeners();
+    });
+    
+    function addEventListeners() {
+        addHistorySearchButtonClickListener()
+    }
+    
+    function addHistorySearchButtonClickListener() {
+        $('#' + historySearchBtnId).off('click');
+        $('#' + historySearchBtnId).click(function () {
+            var payload = getSearchPayload();
+            loadHistoryData(payload);
+        });
+    }
+    
+    function getSearchPayload() {
+        var payload = {
+            filterType: $("#" + historyQuickFilterId).val(),
+            fromDateStr: $("#" + fromDateId).val(),
+            toDateStr: $("#" + toDateId).val(),
+        };
+        return payload;
+    }
+
+    function setupDatePickers() {
         var datepicker = $.fn.datepicker.noConflict();
         $.fn.bootstrapDP = datepicker;
-        $('#historyFromDate').datepicker({
+        $('#' + fromDateId).datepicker({
             beforeShow: function() {
                 setTimeout(function(){
                     $('.ui-datepicker').css('z-index', 99999999999999);
                 }, 0);
             }
         });
-        $('#historyToDate').datepicker({
+        $('#' + toDateId).datepicker({
             beforeShow: function() {
                 setTimeout(function(){
                     $('.ui-datepicker').css('z-index', 99999999999999);
                 }, 0);
             }
         });
-        loadHistoryData();
-        initStickyHeader();
-    });
+    }
 
     function enableResizeColums() {
         $("#" + sendMailHistoryTableId).colResizable(
@@ -47,7 +78,9 @@
         );
     }
 
-    function loadHistoryData() {
+    function loadHistoryData(payload) {
+        payload = payload ? payload : {};
+        var payloadStr = JSON.stringify(payload);
         $('body').loadingModal({
             position: 'auto',
             text: 'ローディング...',
@@ -57,9 +90,11 @@
             animation: 'doubleBounce',
         });
         $.ajax({
-            type: "GET",
+            type: "POST",
             contentType: "application/json",
             url: "/user/sendMailHistoryData",
+            data: payloadStr,
+            dataType: 'json',
             cache: false,
             timeout: 600000,
             success: function (data) {

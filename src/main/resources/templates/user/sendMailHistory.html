@@ -14,9 +14,8 @@
                 <div class="col-sm-12">
                     <br/>
                     <span style="font-size: 18px;">履歴表示期間&nbsp;&nbsp;&nbsp;</span>
-                    <select style="background-color: white; border-radius: 4px;border-width: 2px;border-top-color: #9a9a9a;border-left-color: #9a9a9a;border-bottom-color: #eee;border-right-color: #eee;padding-top: 4px;padding-bottom: 4px;">
-                        <option selected="selected"></option>
-                        <option value="全て">全て</option>
+                    <select id="historyQuickFilter" style="background-color: white; border-radius: 4px;border-width: 2px;border-top-color: #9a9a9a;border-left-color: #9a9a9a;border-bottom-color: #eee;border-right-color: #eee;padding-top: 4px;padding-bottom: 4px;">
+                        <option selected="selected" value="全て">全て</option>
                         <option value="本日">本日</option>
                     </select>
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -24,7 +23,7 @@
                     <span>&nbsp;&nbsp;~&nbsp;&nbsp;</span>
                     <input class="datepicker" id="historyToDate" />
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <button style="padding: 5px 12px; transform: translateY(-1px);" type="button" class="btn btn-default">検索</button>
+                    <button id="historySearchBtn" style="padding: 5px 12px; transform: translateY(-1px);" type="button" class="btn btn-default">検索</button>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 250px;">
                             <table id="sendMailHistory" class="table table-bordered table-hover tablesorter sticky-header-table">
