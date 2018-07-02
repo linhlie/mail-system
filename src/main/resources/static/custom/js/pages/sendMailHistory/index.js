@@ -24,6 +24,7 @@
         '</tr>';
     $(function () {
         setupDatePickers();
+        updateDisableDatePickers($('#' + historyQuickFilterId).val());
         var payload = getSearchPayload();
         loadHistoryData(payload);
         initStickyHeader();
@@ -68,6 +69,16 @@
                 }, 0);
             }
         });
+        $('#' + historyQuickFilterId).change(function() {
+           console.log("historyQuickFilterId: ", this.value);
+           updateDisableDatePickers(this.value);
+        });
+    }
+
+    function updateDisableDatePickers(type) {
+        var disabled = type !== "期間";
+        $('#' + fromDateId).datepicker("option", "disabled", disabled);
+        $('#' + toDateId).datepicker("option", "disabled", disabled);
     }
 
     function enableResizeColums() {

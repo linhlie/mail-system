@@ -820,3 +820,7 @@ div.table-container-section {
 div.greeting-part .table-container-wrapper {
     background-color: whitesmoke;
 }
+
+input#historyFromDate[disabled], input#historyToDate[disabled] {
+    background-color: #ccc;
+}

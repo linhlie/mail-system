@@ -27,8 +27,7 @@ public class SendMailHistoryService {
         String toDateStr = form.getToDateStr();
         if(filterType.equals(SentMailHistoryForm.FilterType.TODAY)) {
             return findToday();
-        }
-        if((fromDateStr != null && fromDateStr.length() > 0) || (toDateStr != null && toDateStr.length() > 0)) {
+        } else if (filterType.equals(SentMailHistoryForm.FilterType.PERIOD)) {
             return findByDateRange(fromDateStr, toDateStr);
         }
         return findAll();

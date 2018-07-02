@@ -7,6 +7,7 @@ public class SentMailHistoryForm {
     public class FilterType {
         public static final String TODAY = "本日";
         public static final String ALL = "全て";
+        public static final String PERIOD = "期間";
     }
     private String filterType;
     private String fromDateStr;

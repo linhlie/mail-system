@@ -17,9 +17,10 @@
                     <select id="historyQuickFilter" style="background-color: white; border-radius: 4px;border-width: 2px;border-top-color: #9a9a9a;border-left-color: #9a9a9a;border-bottom-color: #eee;border-right-color: #eee;padding-top: 4px;padding-bottom: 4px;">
                         <option selected="selected" value="全て">全て</option>
                         <option value="本日">本日</option>
+                        <option value="期間">期間</option>
                     </select>
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input class="datepicker" id="historyFromDate" />
+                    <input class="datepicker" id="historyFromDate" th:readonly="true"/>
                     <span>&nbsp;&nbsp;~&nbsp;&nbsp;</span>
                     <input class="datepicker" id="historyToDate" />
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
