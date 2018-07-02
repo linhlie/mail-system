@@ -73,6 +73,11 @@
     function enableResizeColums() {
         $("#" + sendMailHistoryTableId).colResizable(
             {
+                disable: true,
+            }
+        );
+        $("#" + sendMailHistoryTableId).colResizable(
+            {
                 resizeMode: 'overflow',
             }
         );
@@ -131,7 +136,14 @@
         }
         initSortHistory();
         selectFirstRow();
+        updateHistoryDataTrigger(tableId);
         enableResizeColums();
+    }
+
+    function updateHistoryDataTrigger(tableId) {
+        $("#" + tableId).trigger("updateAll", [ true, function () {
+
+        } ]);
     }
 
     function destroySortHistory() {
