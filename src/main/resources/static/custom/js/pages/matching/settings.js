@@ -423,7 +423,21 @@
         initSameDomainHandle();
         loadDefaultSettings();
         $(window).on('beforeunload', saveDefaultSettings);
+        $(document).on("keydown", keydownHandler);
     });
+
+    function keydownHandler(e) {
+        if((e.which || e.keyCode) == 114) {
+            e.preventDefault();
+            $(extractSourceBtnId).click();
+        } else if((e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            $(extractDestinationBtnId).click();
+        } else if((e.which || e.keyCode) == 116) {
+            e.preventDefault();
+            $(submitFormBtnId).click();
+        }
+    }
     
     function saveDefaultSettings() {
         var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
