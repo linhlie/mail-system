@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <section class="content">
         <div class="row">
-            <div class="col-md-10 col-sm-12 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="box box-default">
                     <div class="box-header">
                         <h3 class="box-title">環境設定</h3>
@@ -80,6 +80,14 @@
                                     </div>
                                 </div>
                                 <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 col-xs-4 control-label text-left">e!Helper@メールの送信履歴の保存日数</label>
+
+                                <div class="col-md-2 col-sm-3 col-xs-3">
+                                    <input th:field="*{map['__keep_sent_mail_history_day_key__']}" type="number" min="1" style="text-align:right;" class="form-control" placeholder=""/>
+                                </div>
+                                <label class="col-sm-6 col-xs-5 control-label text-left">日</label>
                             </div>
                             <div class="form-group">
                                 <label for="inputSkills" class="col-sm-3 col-xs-4 control-label text-left">PC起動時に常駐する</label>
