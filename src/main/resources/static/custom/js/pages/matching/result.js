@@ -839,13 +839,16 @@
             btn.button('loading');
             var attachmentData = getAttachmentData();
             var form = {
-                messageId: messageId,
+                messageId: lastReceiver.messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
                 receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
                 cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
+                accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
+                matchingMessageId: messageId,
+                sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
             };
             $.ajax({
                 type: "POST",

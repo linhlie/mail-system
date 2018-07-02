@@ -549,6 +549,8 @@
                 content: getMailEditorContent(),
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
+                accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
+                sendType: "[返信]",
             };
             $.ajax({
                 type: "POST",

@@ -1,0 +1,70 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>送信履歴</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>送信履歴</h1>
+    </section>
+    <section class="content matching-result">
+        <div class="row matching-result-container" style="position: relative">
+            <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
+                <div class="col-sm-12">
+                    <br/>
+                    <span style="font-size: 18px;">履歴表示期間&nbsp;&nbsp;&nbsp;</span>
+                    <select id="historyQuickFilter" style="background-color: white; border-radius: 4px;border-width: 2px;border-top-color: #9a9a9a;border-left-color: #9a9a9a;border-bottom-color: #eee;border-right-color: #eee;padding-top: 4px;padding-bottom: 4px;">
+                        <option selected="selected" value="全て">全て</option>
+                        <option value="本日">本日</option>
+                        <option value="期間">期間</option>
+                    </select>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <input class="datepicker" id="historyFromDate" th:readonly="true"/>
+                    <span>&nbsp;&nbsp;~&nbsp;&nbsp;</span>
+                    <input class="datepicker" id="historyToDate" />
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <button id="historySearchBtn" style="padding: 5px 12px; transform: translateY(-1px);" type="button" class="btn btn-default">検索</button>
+                    <div class="main-left">
+                        <div class="table-container table-container-wrapper" style="height: 250px;">
+                            <table id="sendMailHistory" class="table table-bordered table-hover tablesorter sticky-header-table">
+                                <thead class="sticky-header">
+                                <tr>
+                                    <th class="fit">送信日時</th>
+                                    <th class="fit">送信者</th>
+                                    <th class="fit">宛先</th>
+                                    <th>件名</th>
+                                    <th class="fit">送信種別</th>
+                                    <th class="fit">受信日時</th>
+                                    <th class="fit">マッチメール受信日時</th>
+                                    <th class="fit">マッチメール 送信アドレス</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <h4>プレビュー
+                    </h4>
+                    <div class="main-right">
+                        <div id="mailSubject" class="mail-subject"></div>
+                        <div class="mail-body-container" style="height: 444px;">
+                            <div id="mailBody" class="mail-body">
+
+                            </div>
+                        </div>
+                        <div id="mailAttachment" class="mail-attachment"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/sendMailHistory/index.js"></script>
+</th:block>
+</body>
+</html>

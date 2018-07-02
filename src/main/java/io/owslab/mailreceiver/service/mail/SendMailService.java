@@ -1,10 +1,12 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
 import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.file.UploadFileService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.runtime.ArrayUtil;
@@ -49,15 +51,27 @@ public class SendMailService {
     @Autowired
     private UploadFileService uploadFileService;
 
+    @Autowired
+    private SentMailHistoryDAO sentMailHistoryDAO;
+
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
+
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId(), false);
         if(email == null) return;
-        long accountid = email.getAccountId();
-        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountid);
+        String formAccountId = form.getAccountId();
+        long accountId = formAccountId != null ? Long.parseLong(formAccountId) : email.getAccountId();
+        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
         EmailAccount account = emailAccounts.size() > 0 ? emailAccounts.get(0) : null;
         if(account == null) return;
         EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
         if(accountSetting == null) return;
+
+        Email matchingEmail = null;
+        if(form.getMatchingMessageId() != null) {
+            matchingEmail = emailService.findOne(form.getMatchingMessageId(), false);
+        }
 
         // Sender's email ID needs to be mentioned
         String from = account.getAccount();
@@ -131,11 +145,13 @@ public class SendMailService {
 
             List<Long> originAttachment = form.getOriginAttachment();
             List<Long> uploadAttachment = form.getUploadAttachment();
+            boolean hasAttachment = false;
             if(originAttachment != null && originAttachment.size() > 0) {
                 List<AttachmentFile> files = fileDAO.findByIdInAndDeleted(originAttachment, false);
                 for (AttachmentFile attachmentFile : files){
                     MimeBodyPart attachmentPart = buildAttachmentPart(attachmentFile.getStoragePath(), attachmentFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
+                    hasAttachment = true;
                 }
             }
 
@@ -144,6 +160,7 @@ public class SendMailService {
                 for (UploadFile uploadFile : uploadFiles){
                     MimeBodyPart attachmentPart = buildUploadAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
+                    hasAttachment = true;
                 }
             }
 
@@ -153,6 +170,7 @@ public class SendMailService {
             // Send message
             Transport.send(message);
             uploadFileService.delete(uploadAttachment);
+            saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
@@ -207,5 +225,12 @@ public class SendMailService {
             }
         }
         return String.join(",", result);
+    }
+
+    private void saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+        String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
+        if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;
+        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment);
+        sentMailHistoryDAO.save(history);
     }
 }

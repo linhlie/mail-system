@@ -11,6 +11,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.BuildMatchEmailWordScheduler;
 import io.owslab.mailreceiver.service.schedulers.DeleteOldMailsScheduler;
+import io.owslab.mailreceiver.service.schedulers.DeleteSentMailHistoryScheduler;
 import io.owslab.mailreceiver.service.schedulers.FetchMailScheduler;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -49,6 +50,9 @@ public class ApplicationStartup {
 
     @Autowired
     private DeleteOldMailsScheduler deleteOldMailsScheduler;
+
+    @Autowired
+    private DeleteSentMailHistoryScheduler deleteSentMailHistoryScheduler;
 
     @Autowired
     private BuildMatchEmailWordScheduler buildMatchEmailWordScheduler;
@@ -117,6 +121,7 @@ public class ApplicationStartup {
         mailBoxService.getAll(true);
         fetchMailScheduler.start();
         deleteOldMailsScheduler.start();
+        deleteSentMailHistoryScheduler.start();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;
 //        List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput("random cacherhhe444h", testData.toLowerCase());
 //        for(FullNumberRange range : rangeList) {

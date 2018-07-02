@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,15 @@ public class UploadFileService {
         byte[] bytes = file.getBytes();
         String storagePath = enviromentSettingService.getStoragePath();
         storagePath = normalizeDirectoryPath(storagePath) + File.separator + "upload";
+        File saveDirectory = new File(storagePath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
+        storagePath = normalizeDirectoryPath(storagePath) + File.separator + getRandomFolderName();
+        saveDirectory = new File(storagePath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
         String fileName = file.getOriginalFilename();
         Path path = Paths.get(storagePath + File.separator + fileName);
         Files.write(path, bytes);
@@ -64,6 +74,12 @@ public class UploadFileService {
             Path path = Paths.get(fileFullName);
             try {
                 Files.delete(path);
+                Path parent = path.getParent();
+                if(Files.isDirectory(parent)) {
+                    if(Files.list(parent).count() == 0) {
+                        Files.delete(parent);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,5 +93,15 @@ public class UploadFileService {
                 this.delete(fileId);
             }
         }
+    }
+
+    public static String getRandomFolderName(){
+        return Long.toString(System.currentTimeMillis()) + "" + randomWithRange(1, 100);
+    }
+
+    public static int randomWithRange(int min, int max)
+    {
+        int range = (max - min) + 1;
+        return (int)(Math.random() * range) + min;
     }
 }
