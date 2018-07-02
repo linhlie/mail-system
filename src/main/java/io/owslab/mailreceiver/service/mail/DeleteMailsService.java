@@ -2,8 +2,10 @@ package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
+import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
 import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.SentMailHistory;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,9 @@ public class DeleteMailsService {
     private FileDAO fileDAO;
 
     @Autowired
+    private SentMailHistoryDAO sentMailHistoryDAO;
+
+    @Autowired
     private MailBoxService mailBoxService;
 
     public void deleteOldMails(Date beforeDate){
@@ -40,6 +45,11 @@ public class DeleteMailsService {
             this.deleteFileBelongToMail(email.getMessageId());
         }
         mailBoxService.getAll(true);
+    }
+
+    public void deleteSentMailHistory(Date beforeDate) {
+        List<SentMailHistory> histories = sentMailHistoryDAO.findBySentAtLessThanEqual(beforeDate);
+        sentMailHistoryDAO.delete(histories);
     }
 
     public void deleteFileBelongToMail(String messageId){

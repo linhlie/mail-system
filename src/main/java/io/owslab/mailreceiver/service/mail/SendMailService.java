@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.file.UploadFileService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.runtime.ArrayUtil;
@@ -52,6 +53,9 @@ public class SendMailService {
 
     @Autowired
     private SentMailHistoryDAO sentMailHistoryDAO;
+
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
 
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId(), false);
@@ -224,6 +228,8 @@ public class SendMailService {
     }
 
     private void saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+        String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
+        if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;
         SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment);
         sentMailHistoryDAO.save(history);
     }
