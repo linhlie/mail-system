@@ -10,7 +10,7 @@ import java.util.List;
  * Created by khanhlvb on 3/1/18.
  */
 @Transactional
-public interface AccountDAO extends CrudRepository<Account, String> {
+public interface AccountDAO extends CrudRepository<Account, Long> {
     List<Account> findByUserRole(String userRole);
     List<Account> findByUserName(String userName);
 }

@@ -77,12 +77,17 @@
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">操作</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'administratorSetting'})?'active':''">
             <a href="#" th:href="@{/admin/administratorSetting}">
-                <i class="fa fa-envelope"></i> <span>管理者設定</span>
+                <i class="fa fa-user-secret"></i> <span>管理者設定</span>
+            </a>
+        </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'userManagement'})?'active':''">
+            <a href="#" th:href="@{/admin/userManagement}">
+                <i class="fa fa-users"></i> <span>ユーザー管理</span>
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailbox'})?'active':''">
             <a href="#" th:href="@{/admin/mailbox}">
-                <i class="fa fa-envelope"></i> <span>メールボックス</span>
+                <i class="fa fa-inbox"></i> <span>メールボックス</span>
             </a>
         </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'mailboxError'})?'active':''">
