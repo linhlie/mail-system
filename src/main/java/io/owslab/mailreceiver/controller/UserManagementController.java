@@ -106,6 +106,7 @@ public class UserManagementController {
             return ResponseEntity.ok(result);
         }
         try {
+            accountService.saveUser(userAccountForm);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

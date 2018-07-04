@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.security;
 import io.owslab.mailreceiver.dao.AccountDAO;
 import io.owslab.mailreceiver.form.AdministratorSettingForm;
 import io.owslab.mailreceiver.form.RegisterAccountForm;
+import io.owslab.mailreceiver.form.UserAccountForm;
 import io.owslab.mailreceiver.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,5 +55,43 @@ public class AccountService {
 
     public void delete(long id){
         accountDAO.delete(id);
+    }
+
+    public void saveUser(UserAccountForm form) {
+        Account user = new Account();
+        if(form.getId() != null) {
+            long id = Long.parseLong(form.getId());
+            Account existUser = accountDAO.findOne(id);
+            if(existUser != null) {
+                updateUser(existUser, form);
+            } else {
+                addUser(form);
+            }
+        } else {
+            addUser(form);
+        }
+
+    }
+
+    private void updateUser(Account user, UserAccountForm form) {
+        user.setUserName(form.getUserName());
+        user.setName(form.getName());
+        user.setActive(true);
+        String newPassword = form.getNewPassword();
+        if(newPassword != null && newPassword.length() > 0) {
+            user.setEncryptedPassword(passwordEncoder.encode(newPassword));
+        }
+        user.setUserRole(Account.Role.MEMBER);
+        accountDAO.save(user);
+    }
+
+    private void addUser(UserAccountForm form) {
+        Account user = new Account();
+        user.setUserName(form.getUserName());
+        user.setName(form.getName());
+        user.setEncryptedPassword(passwordEncoder.encode(form.getNewPassword()));
+        user.setActive(true);
+        user.setUserRole(Account.Role.MEMBER);
+        accountDAO.save(user);
     }
 }
