@@ -1,0 +1,58 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>ユーザー管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content user-management">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <h4>ユーザー管理</h4>
+                        <div class="greeting-part table-container-section" style="height: 150px; position: relative">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="usersTable" class="table table-bordered table-hover sticky-header-table">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th th:colspan="4" class="dark" style="text-align: center">ユーザーID</th>
+                                        <th th:colspan="4" class="dark" style="text-align: center">ユーザー名称</th>
+                                        <th th:colspan="2" class="dark" style="text-align: center">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div style="width: 90%;">
+                                    <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="width: 90%;">
+                                    <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="width: 45%; margin: auto;">
+                                    <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/admin/userManagement.js"></script>
+</th:block>
+</body>
+</html>

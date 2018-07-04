@@ -455,7 +455,7 @@ input.form-error {
     padding-right: 10px;
 }
 
-table#sourceMatch, table#destinationMatch, table#sendMailHistory {
+table#sourceMatch, table#destinationMatch, table#sendMailHistory, table#usersTable {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
@@ -763,12 +763,12 @@ mark.mark-range {
     margin-left: -20px;
 }
 
-.greeting .box-body {
+.greeting .box-body, .user-management .box-body {
     padding: 20px;
     padding-top: 10px;
 }
 
-.greeting .greeting-part {
+.greeting .greeting-part, .user-management .greeting-part {
     width: 100%;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -823,4 +823,56 @@ div.greeting-part .table-container-wrapper {
 
 input#historyFromDate[disabled], input#historyToDate[disabled] {
     background-color: #ccc;
+}
+
+#usersTable td.fit,
+#usersTable th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#usersTable {
+    border: none;
+    background-color: white;
+}
+
+#usersTable th,
+#usersTable td {
+    border: 1px solid black;
+    border-left: none;
+    padding: 1px 6px;
+}
+
+#usersTable td {
+    border-top: none;
+}
+
+#usersTable td.action {
+    padding: 0;
+}
+
+#usersTable td.action button {
+    padding: 1px 15px;
+}
+
+#usersTable th {
+    background-color: white;
+}
+
+#usersTable th.dark {
+    background-color: #dee3ea;
+}
+
+#usersTable td span {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#usersTable td button {
+    border: none;
+    background-color: #ffe200;
+}
+
+.user-management table.tablesorter tr.highlight-selected td {
+    background-color: #ffffcc;
 }

@@ -25,6 +25,9 @@ public class Account {
     @Column(name = "User_Role", length = 20, nullable = false)
     private String userRole;
 
+    @Column(name = "Name", length = 50)
+    private String name;
+
     public Account(){
 
     }
@@ -45,6 +48,14 @@ public class Account {
         this.encryptedPassword = encryptedPassword;
         this.active = active;
         this.userRole = userRole;
+    }
+
+    public Account(String userName, String encryptedPassword, boolean active, String userRole, String name) {
+        this.userName = userName;
+        this.encryptedPassword = encryptedPassword;
+        this.active = active;
+        this.userRole = userRole;
+        this.name = name;
     }
 
     public long getId() {
@@ -85,6 +96,14 @@ public class Account {
 
     public void setUserRole(String userRole) {
         this.userRole = userRole;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public class Role {

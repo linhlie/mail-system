@@ -47,4 +47,8 @@ public class AccountService {
         List<Account> accounts = accountDAO.findByUserName(userName);
         return accounts.size() > 0 ? accounts.get(0) : null;
     }
+
+    public List<Account> getAllUserRoleAccounts(){
+        return accountDAO.findByUserRole(Account.Role.MEMBER);
+    }
 }
