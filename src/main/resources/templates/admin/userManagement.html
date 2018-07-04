@@ -11,37 +11,84 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>ユーザー管理</h4>
-                        <div class="greeting-part table-container-section" style="height: 150px; position: relative">
-                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
-                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
-                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
-                                <table id="usersTable" class="table table-bordered table-hover sticky-header-table">
-                                    <thead class="sticky-header">
-                                    <tr>
-                                        <th th:colspan="4" class="dark" style="text-align: center">ユーザーID</th>
-                                        <th th:colspan="4" class="dark" style="text-align: center">ユーザー名称</th>
-                                        <th th:colspan="2" class="dark" style="text-align: center">操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                        <div class="row" style="padding-top: 15px;">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="greeting-part table-container-section" style="height: 250px; position: relative">
+                                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                                    <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                                    <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                        <table id="usersTable" class="table table-bordered table-hover sticky-header-table">
+                                            <thead class="sticky-header">
+                                            <tr>
+                                                <th th:colspan="3" class="dark" style="text-align: center">ユーザーID</th>
+                                                <th th:colspan="3" class="dark" style="text-align: center">ユーザー名称</th>
+                                                <th th:colspan="2" class="dark" style="text-align: center">操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div style="width: 90%;">
-                                    <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div style="width: 90%;">
-                                    <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div style="width: 45%; margin: auto;">
-                                    <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
+                        <div class="row" style="padding-top: 20px;">
+                            <!--<div class="col-md-12">-->
+                                <!--<div class="callout callout-success">-->
+                                    <!--<p>ユーザーアカウント情報が保存されました</p>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div class="col-md-9 col-md-offset-1">
+                                <form method="post" class="form-horizontal">
+                                    <div class="form-group has-feedback">
+                                        <label class="col-md-3 control-label text-left">ユーザーID</label>
+                                        <div class="col-md-9">
+                                            <input class="form-control" type="text" name="username"/>
+                                            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                                            <span class="form-error" name="username">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label class="col-md-3 control-label text-left">ユーザー名称</label>
+                                        <div class="col-md-9">
+                                            <input class="form-control" type="text" name="name"/>
+                                            <span class="glyphicon glyphicon-credit-card form-control-feedback"></span>
+                                            <span class="form-error" name="name">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label class="col-md-3 control-label text-left">パスワード</label>
+                                        <div class="col-md-9">
+                                            <input class="form-control" type="password" name="newPassword"/>
+                                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                            <span class="form-error" name="newPassword">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        <label class="col-md-3 control-label text-left"></label>
+                                        <div class="col-md-9">
+                                            <input class="form-control" type="password" name="confirmNewPassword"/>
+                                            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                            <span class="form-error" name="confirmNewPassword">..</span>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="row" style="padding-top: 15px; padding-bottom: 15px;">
+                                    <div class="col-md-3 col-md-offset-1">
+                                        <div style="width: 90%;">
+                                            <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div style="width: 90%;">
+                                            <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div style="width: 70%; margin: auto;">
+                                            <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

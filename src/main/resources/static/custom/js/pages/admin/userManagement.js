@@ -6,8 +6,8 @@
     var selectedRowData;
 
     var replaceUserHTML = '<tr role="row" class="hidden">' +
-        '<td name="userRow" rowspan="1" colspan="4" data="userName"><span></span></td>' +
-        '<td name="userRow" rowspan="1" colspan="4" data="name"><span></span></td>' +
+        '<td name="userRow" rowspan="1" colspan="3" data="userName"><span></span></td>' +
+        '<td name="userRow" rowspan="1" colspan="3" data="name"><span></span></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="selectUser" type="button">編集</button></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="deleteUser" type="button">削除</button></td>' +
         '</tr>';

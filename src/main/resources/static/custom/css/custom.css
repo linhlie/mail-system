@@ -876,3 +876,11 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 .user-management table.tablesorter tr.highlight-selected td {
     background-color: #ffffcc;
 }
+
+.user-management div.form-group.has-feedback span.form-error {
+    display: none;
+}
+
+.user-management div.form-group.has-feedback.has-error span.form-error {
+    display: inherit;
+}
