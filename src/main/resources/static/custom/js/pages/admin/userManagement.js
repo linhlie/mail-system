@@ -4,6 +4,12 @@
     var users = [];
     var userDataTable;
     var selectedRowData;
+    var accountInput = "username";
+    var userNameInput = "name";
+    var newPasswordInput = "newPassword";
+    var confirmNewPasswordInput = "confirmNewPassword";
+
+    var editingUserIndex = null;
 
     var replaceUserHTML = '<tr role="row" class="hidden">' +
         '<td name="userRow" rowspan="1" colspan="3" data="userName"><span></span></td>' +
@@ -15,12 +21,12 @@
         loadUserData();
         initStickyHeader();
         addEventListeners();
-        setTimeout(function () {
-            loadUserData();
-        }, 10000)
     });
 
     function addEventListeners() {
+        setButtonClickListener("userAdd", addUser);
+        setButtonClickListener("userUpdate", updateUser);
+        setButtonClickListener("userClear", clearEditingUser);
     }
 
     function enableResizeColums() {
@@ -96,9 +102,6 @@
         initSortUser();
         updateUserDataTrigger(tableId);
         enableResizeColums();
-    }
-
-    function selectUser(user, index) {
     }
 
     function deleteUser(index) {
@@ -207,6 +210,66 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+
+    function selectUser(user, index) {
+        editingUserIndex = index;
+        updateEnableUpdateUserAccountBtn();
+        setAccount(user.userName);
+        setUserName(user.name);
+        setPassword();
+        setConfirmPassword();
+    }
+    
+    function addUser() {
+        console.log("addUser");
+    }
+    
+    function updateUser() {
+        console.log("updateUser");
+    }
+
+    function clearEditingUser() {
+        $("#" + usersTableId).find("tr").removeClass('highlight-selected');
+        clearUserFormInput();
+        editingUserIndex = null;
+        updateEnableUpdateUserAccountBtn();
+    }
+    
+    function clearUserFormInput() {
+        setAccount();
+        setUserName();
+        setPassword();
+        setConfirmPassword();
+    }
+
+    function setAccount(account){
+        account = account || "";
+        $("input[name='" + accountInput + "']").val(account);
+    }
+
+    function setUserName(userName) {
+        userName = userName || "";
+        $("input[name='" + userNameInput + "']").val(userName);
+    }
+    
+    function setPassword(password) {
+        password = password || "";
+        $("input[name='" + newPasswordInput + "']").val(password);
+    }
+    
+    function setConfirmPassword(confirmPassword) {
+        confirmPassword = confirmPassword || "";
+        $("input[name='" + confirmNewPasswordInput + "']").val(confirmPassword);
+    }
+
+    function updateEnableUpdateUserAccountBtn() {
+        var disabled = !isUpdate();
+        $("button[name='userUpdate']").prop("disabled", disabled);
+    }
+
+    function isUpdate() {
+        return !!editingUserIndex;
     }
 
 })(jQuery);
