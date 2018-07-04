@@ -102,6 +102,25 @@
     }
 
     function deleteUser(index) {
+        var user = users[index];
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/admin/deleteUser?id=" + user.id,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                if(data && data.status){
+                    window.location.reload();
+                } else {
+                    console.error("[ERROR] deleteAccount failed: ");
+                }
+            },
+            error: function (e) {
+                console.error("[ERROR] deleteAccount error: ", e);
+            }
+        });
+
     }
 
     function updateUserDataTrigger(tableId) {

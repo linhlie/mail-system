@@ -53,4 +53,23 @@ public class UserManagementController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = { "/deleteUser" }, method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> deleteUser(
+            Model model,
+            @RequestParam(value = "id") long id) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            accountService.delete(id);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("deleteUser: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }

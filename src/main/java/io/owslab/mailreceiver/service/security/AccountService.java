@@ -51,4 +51,8 @@ public class AccountService {
     public List<Account> getAllUserRoleAccounts(){
         return accountDAO.findByUserRole(Account.Role.MEMBER);
     }
+
+    public void delete(long id){
+        accountDAO.delete(id);
+    }
 }
