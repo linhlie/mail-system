@@ -4,7 +4,7 @@
     var users = [];
     var userDataTable;
     var selectedRowData;
-    var accountInput = "username";
+    var accountInput = "userName";
     var userNameInput = "name";
     var newPasswordInput = "newPassword";
     var confirmNewPasswordInput = "confirmNewPassword";
@@ -222,11 +222,79 @@
     }
     
     function addUser() {
-        console.log("addUser");
+        var user = {
+            userName: getAccount(),
+            name: getUserName(),
+            newPassword: getPassword(),
+            confirmNewPassword: getConfirmassword()
+        };
+        postSaveUser(user);
     }
     
     function updateUser() {
-        console.log("updateUser");
+        var user = {
+            id: users[editingUserIndex] ? users[editingUserIndex].id : undefined,
+            userName: getAccount(),
+            name: getUserName(),
+            newPassword: getPassword(),
+            confirmNewPassword: getConfirmassword()
+        };
+        postSaveUser(user);
+    }
+
+    function postSaveUser(payload) {
+        payload = payload ? payload : {};
+        var payloadStr = JSON.stringify(payload);
+        $('body').loadingModal({
+            position: 'auto',
+            text: '保存中...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: "/admin/saveUser",
+            data: payloadStr,
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if(data && data.status) {
+                    window.location.reload();
+                } else {
+                    handleErrors(data);
+                }
+            },
+            error: function (e) {
+                console.error("[ERROR] submit error: ", e);
+                $('body').loadingModal('hide');
+            }
+        });
+    }
+
+    function handleErrors(data) {
+        clearErrors();
+        if(data && data.list) {
+            var errors = data.list;
+            for(var i = 0; i < errors.length; i++ ){
+                var error = errors[i];
+                $("span[name='" + error.field + "']").text(error.defaultMessage);
+                $("span[name='" + error.field + "']").closest('div.has-feedback').addClass('has-error');
+            }
+        }
+    }
+    
+    function clearErrors() {
+        var fields = [accountInput, userNameInput, newPasswordInput, confirmNewPasswordInput];
+        for(var i = 0; i < fields.length; i++ ){
+            var field = fields[i];
+            $("span[name='" + field + "']").text();
+            $("span[name='" + field + "']").closest('div.has-feedback').removeClass('has-error');
+        }
     }
 
     function clearEditingUser() {
@@ -248,19 +316,43 @@
         $("input[name='" + accountInput + "']").val(account);
     }
 
+    function getAccount() {
+        var account = $("input[name='" + accountInput + "']").val();
+        account = account || "";
+        return account;
+    }
+
     function setUserName(userName) {
         userName = userName || "";
         $("input[name='" + userNameInput + "']").val(userName);
+    }
+
+    function getUserName() {
+        var userName = $("input[name='" + userNameInput + "']").val();
+        userName = userName || "";
+        return userName;
     }
     
     function setPassword(password) {
         password = password || "";
         $("input[name='" + newPasswordInput + "']").val(password);
     }
+
+    function getPassword() {
+        var password = $("input[name='" + newPasswordInput + "']").val();
+        password = password || "";
+        return password;
+    }
     
     function setConfirmPassword(confirmPassword) {
         confirmPassword = confirmPassword || "";
         $("input[name='" + confirmNewPasswordInput + "']").val(confirmPassword);
+    }
+
+    function getConfirmassword() {
+        var confirmPassword = $("input[name='" + confirmNewPasswordInput + "']").val();
+        confirmPassword = confirmPassword || "";
+        return confirmPassword;
     }
 
     function updateEnableUpdateUserAccountBtn() {
