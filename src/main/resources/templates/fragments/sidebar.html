@@ -101,14 +101,14 @@
                 <i class="fa fa-info-circle"></i> <span>ヘルプ</span>
             </a>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration' || currentMenu == 'extractConditionManagement'})?'treeview menu-open':'treeview'">
             <a href="#">
                 <i class="fa fa-male"></i> <span>PC個別設定</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
             </a>
-            <ul class="treeview-menu" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration'})?'treeview-menu visible':'treeview-menu'">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration' || currentMenu == 'extractConditionManagement'})?'treeview-menu visible':'treeview-menu'">
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
                     <a href="#" th:href="@{/user/sendMailSettings}">
                         <i class="fa fa-send"></i> <span>送信設定</span>
@@ -117,6 +117,11 @@
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
                     <a href="#" th:href="@{/user/greetingRegistration}">
                         <i class="fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'extractConditionManagement'})?'active':''">
+                    <a href="#" th:href="@{/user/extractConditionManagement}">
+                        <i class="fa fa-hand-spock-o"></i> <span>抽出条件文管理</span>
                     </a>
                 </li>
             </ul>

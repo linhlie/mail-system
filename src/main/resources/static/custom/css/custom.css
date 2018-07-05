@@ -763,12 +763,12 @@ mark.mark-range {
     margin-left: -20px;
 }
 
-.greeting .box-body, .user-management .box-body {
+.greeting .box-body, .user-management .box-body, .condition-management .box-body {
     padding: 20px;
     padding-top: 10px;
 }
 
-.greeting .greeting-part, .user-management .greeting-part {
+.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part {
     width: 100%;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -817,7 +817,7 @@ div.table-container-section {
     border-top: none !important;
 }
 
-div.greeting-part .table-container-wrapper {
+div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper {
     background-color: whitesmoke;
 }
 
@@ -883,4 +883,43 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 
 .user-management div.form-group.has-feedback.has-error span.form-error {
     display: inherit;
+}
+
+#conditionTable td.fit,
+#conditionTable th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#conditionTable {
+    border: none;
+    background-color: white;
+}
+
+#conditionTable th,
+#conditionTable td {
+    border: 1px solid black;
+    border-left: none;
+    padding: 1px 6px;
+}
+
+#conditionTable td {
+    border-top: none;
+}
+
+#conditionTable td.action {
+    padding: 0;
+}
+
+#conditionTable td.action button {
+    padding: 1px 15px;
+    min-width: 150px;
+}
+
+#conditionTable th {
+    background-color: white;
+}
+
+#conditionTable th.dark {
+    background-color: #dee3ea;
 }
