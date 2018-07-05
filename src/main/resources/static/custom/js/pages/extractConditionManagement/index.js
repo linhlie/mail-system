@@ -186,7 +186,7 @@
 
     function removeCondition(index) {
         var conditionName = conditionData[index];
-        conditionData.splice(index);
+        conditionData.splice(index, 1);
         localStorage.setItem(currentListKey, JSON.stringify(conditionData));
         localStorage.removeItem(currentPrefixUrlKey + "@" + conditionName);
         initConditionTable();
