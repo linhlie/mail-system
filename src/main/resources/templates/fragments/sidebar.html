@@ -121,7 +121,7 @@
                 </li>
                 <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'extractConditionManagement'})?'active':''">
                     <a href="#" th:href="@{/user/extractConditionManagement}">
-                        <i class="fa fa-hand-spock-o"></i> <span>抽出条件文管理</span>
+                        <i class="fa fa-clone"></i> <span>抽出条件文管理</span>
                     </a>
                 </li>
             </ul>
