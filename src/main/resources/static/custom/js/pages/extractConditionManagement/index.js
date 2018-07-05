@@ -39,6 +39,7 @@
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         saveConditionSetting(reader.result);
+                        $('#importFileId').val(null);
                     };
                     reader.readAsText(file);
                 }
@@ -48,15 +49,18 @@
     
     function saveConditionSetting(conditionSettingStr) {
         var conditionSetting = JSON.parse(conditionSettingStr);
-        if(conditionSetting && conditionSetting.name && conditionSetting.key && conditionSetting.listKey) {
+        if(conditionSetting && conditionSetting.prefixUrlKey && conditionSetting.listKey) {
             var datalistStr = localStorage.getItem(conditionSetting.listKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
-            if(datalist.indexOf(conditionSetting.name) < 0){
-                datalist.push(conditionSetting.name);
+            var name = prompt("保存された名前を入力してください:", conditionSetting.name);
+            if (name == null || name == "") return;
+            if(datalist.indexOf(name) < 0){
+                datalist.push(name);
             }
+            var key = conditionSetting.prefixUrlKey + "@" + name;
             localStorage.setItem(conditionSetting.listKey, JSON.stringify(datalist));
-            localStorage.setItem(conditionSetting.key, JSON.stringify(conditionSetting.conditions));
+            localStorage.setItem(key, JSON.stringify(conditionSetting.conditions));
         }
         initConditionTable();
     }
@@ -108,7 +112,6 @@
     function loadConditionData() {
         var conditionDataStr = localStorage.getItem(currentListKey);
         conditionData = JSON.parse(conditionDataStr);
-        console.log("loadConditionData: ", conditionData);
         conditionData = Array.isArray(conditionData) ? conditionData : [];
         return conditionData;
     }
@@ -175,7 +178,7 @@
         var data = {
             name: conditionName,
             listKey: currentListKey,
-            key: key,
+            prefixUrlKey: currentPrefixUrlKey,
             conditions: conditionData
         };
         download(JSON.stringify(data), conditionName, "text/plain");
