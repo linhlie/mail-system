@@ -12,8 +12,6 @@ public class AccountDTO {
 
     private String userName;
 
-    private String encryptedPassword;
-
     private boolean active;
 
     private String userRole;
@@ -23,7 +21,6 @@ public class AccountDTO {
     public AccountDTO(Account account) {
         this.setId(account.getId());
         this.setUserName(account.getUserName());
-        this.setEncryptedPassword(account.getEncryptedPassword());
         this.setActive(account.isActive());
         this.setUserRole(account.getUserRole());
         this.setName(account.getName());
@@ -43,14 +40,6 @@ public class AccountDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getEncryptedPassword() {
-        return encryptedPassword;
-    }
-
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.encryptedPassword = encryptedPassword;
     }
 
     public boolean isActive() {
