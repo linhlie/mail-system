@@ -656,6 +656,7 @@
     function showMailBodyContent(id, data) {
         data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(id);
+        mailBodyDiv.scrollTop = 0;
         mailBodyDiv.innerHTML = data.originalBody;
         highlight(id, data);
     }
