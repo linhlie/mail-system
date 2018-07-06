@@ -1231,13 +1231,16 @@
                 var leftWidth = (e.pageX - container.offset().left);
                 leftWidth = leftWidth <= (container.width()/4) ? 3 : leftWidth;
                 if(leftWidth == 3) {
-                    var keeperHeight = $('#moto-preview-content-wrapper').outerHeight();
+                    var keeperHeight = $('#saki-preview-content-wrapper').outerHeight();
+                    keeperHeight = keeperHeight > 0 ? keeperHeight : 600;
+                    console.log("keeperHeight: ", keeperHeight);
                     $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
                     $('#moto-preview-content-keeper').show();
                     $('#moto-preview-content-wrapper').hide();
                 } else {
-                    $('#moto-preview-content-wrapper').show();
+                    console.log("hide keeperHeight: ");
                     $('#moto-preview-content-keeper').hide();
+                    $('#moto-preview-content-wrapper').show();
                 }
                 var percentage = (leftWidth / container.width()) * 100;
                 percentage = percentage > 75 ? 100 : percentage;
