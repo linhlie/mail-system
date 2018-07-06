@@ -1,7 +1,9 @@
 
 (function () {
 
-    var conditionTableId = "conditionTable";
+    var sConditionTableId = "sConditionTable";
+    var dConditionTableId = "dConditionTable";
+    var mConditionTableId = "mConditionTable";
 
     var sourceListKey = "/user/matchingSettings/listSourceKey";
     var sourcePrefixUrlKey = "/user/matchingSettings/source";
@@ -18,16 +20,21 @@
         '<td class="action fit" rowspan="1" colspan="1" data="id"><button class="btn btn-block btn-default" name="exportCondition" type="button">エクスポート</button></td>' +
         '</tr>';
 
-    var conditionData = [];
+    var conditionData = {
+        "source": [],
+        "destination": [],
+        "matching": [],
+    };
 
     $(function () {
         addEventListeners();
         initStickyHeader();
-        initConditionTable();
+        initConditionTable(sConditionTableId);
+        initConditionTable(dConditionTableId);
+        initConditionTable(mConditionTableId);
     });
     
     function addEventListeners() {
-        $('#conditionSelectType').change(initConditionTable);
         setButtonClickListener("importFile", function () {
             $( "#importFileId" ).click();
         });
@@ -49,7 +56,8 @@
     
     function saveConditionSetting(conditionSettingStr) {
         var conditionSetting = JSON.parse(conditionSettingStr);
-        if(conditionSetting && conditionSetting.prefixUrlKey && conditionSetting.listKey) {
+        if(conditionSetting && conditionSetting.type && conditionSetting.prefixUrlKey && conditionSetting.listKey) {
+            var tableId = getTableIdFromType(conditionSetting.type);
             var datalistStr = localStorage.getItem(conditionSetting.listKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
@@ -61,8 +69,8 @@
             var key = conditionSetting.prefixUrlKey + "@" + name;
             localStorage.setItem(conditionSetting.listKey, JSON.stringify(datalist));
             localStorage.setItem(key, JSON.stringify(conditionSetting.conditions));
+            initConditionTable(tableId);
         }
-        initConditionTable();
     }
 
     function initStickyHeader() {
@@ -77,15 +85,61 @@
         });
     }
 
-    function initConditionTable() {
-        var type = getConditionType();
-        getKeys(type);
-        loadConditionData();
-        pushConditionData(conditionTableId);
+    function initConditionTable(tableId) {
+        loadConditionData(tableId);
+        pushConditionData(tableId);
     }
     
-    function getConditionType() {
-        return $("#conditionSelectType").val();
+    function getConditionType(tableId) {
+        switch (tableId) {
+            case sConditionTableId:
+                return "source";
+            case dConditionTableId:
+                return "destination";
+            case mConditionTableId:
+                return "matching";
+            default:
+                return "source";
+        }
+    }
+    
+    function getTableIdFromType(type) {
+        switch (type) {
+            case "source":
+                return sConditionTableId;
+            case "destination":
+                return dConditionTableId;
+            case "matching":
+                return mConditionTableId;
+            default:
+                return sConditionTableId;
+        }
+    }
+    
+    function getListKey(type) {
+        switch (type) {
+            case "source":
+                return sourceListKey;
+            case "destination":
+                return destinationListKey;
+            case "matching":
+                return matchingListKey;
+            default:
+                return sourceListKey;
+        }
+    }
+
+    function getPrefixUrlKey(type) {
+        switch (type) {
+            case "source":
+                return sourcePrefixUrlKey;
+            case "destination":
+                return destinationPrefixUrlKey;
+            case "matching":
+                return matchingPrefixUrlKey;
+            default:
+                return sourcePrefixUrlKey;
+        }
     }
 
     function getKeys(type){
@@ -109,29 +163,34 @@
         }
     }
 
-    function loadConditionData() {
-        var conditionDataStr = localStorage.getItem(currentListKey);
-        conditionData = JSON.parse(conditionDataStr);
-        conditionData = Array.isArray(conditionData) ? conditionData : [];
-        return conditionData;
+    function loadConditionData(tableId) {
+        var type = getConditionType(tableId);
+        var listKey = getListKey(type);
+        var conditionDataStr = localStorage.getItem(listKey);
+        conditionData[type] = JSON.parse(conditionDataStr);
+        conditionData[type] = Array.isArray(conditionData[type]) ? conditionData[type] : [];
+        return conditionData[type];
     }
 
     function pushConditionData(tableId) {
+        var type = getConditionType(tableId);
         removeAllRow(tableId, firstRowHTML);
         var html = firstRowHTML;
-        if (conditionData.length > 0) {
-            for(var i = 0; i < conditionData.length; i++) {
-                html = html + addRowWithData(tableId, conditionData[i], i);
+        if (conditionData[type].length > 0) {
+            for(var i = 0; i < conditionData[type].length; i++) {
+                html = html + addRowWithData(tableId, conditionData[type][i], i, type);
             }
             $("#" + tableId + "> tbody").html(html);
             setButtonClickListener("exportCondition", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
-                var rowData = conditionData[index];
-                exportCondition(rowData, index);
+                var type = $(this).closest('tr')[0].getAttribute("data-type");
+                var rowData = conditionData[type][index];
+                exportCondition(rowData, type, index);
             });
             setButtonClickListener("removeCondition", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
-                removeCondition(index);
+                var type = $(this).closest('tr')[0].getAttribute("data-type");
+                removeCondition(index, type);
             });
         }
     }
@@ -140,12 +199,13 @@
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
-    function addRowWithData(tableId, data, index) {
+    function addRowWithData(tableId, data, index, type) {
         var table = document.getElementById(tableId);
         if (!table) return "";
         var rowToClone = table.rows[1];
         var row = rowToClone.cloneNode(true);
         row.setAttribute("data", index);
+        row.setAttribute("data-type", type);
         row.className = undefined;
         var cells = row.cells;
         for (var i = 0; i < cells.length; i++) {
@@ -172,24 +232,31 @@
         })
     }
 
-    function exportCondition(conditionName, index) {
-        var key = currentPrefixUrlKey + "@" + conditionName;
+    function exportCondition(conditionName, type, index) {
+        var listKey = getListKey(type);
+        var prefixUrlKey = getPrefixUrlKey(type);
+        var key = prefixUrlKey + "@" + conditionName;
         var conditionData = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
         var data = {
+            type: type,
             name: conditionName,
-            listKey: currentListKey,
-            prefixUrlKey: currentPrefixUrlKey,
+            listKey: listKey,
+            prefixUrlKey: prefixUrlKey,
             conditions: conditionData
         };
         download(JSON.stringify(data), conditionName, "text/plain");
     }
 
-    function removeCondition(index) {
-        var conditionName = conditionData[index];
-        conditionData.splice(index, 1);
-        localStorage.setItem(currentListKey, JSON.stringify(conditionData));
-        localStorage.removeItem(currentPrefixUrlKey + "@" + conditionName);
-        initConditionTable();
+    function removeCondition(index, type) {
+        console.log("removeCondition: ", index, type);
+        var conditionName = conditionData[type][index];
+        conditionData[type].splice(index, 1);
+        var listKey = getListKey(type);
+        var prefixUrlKey = getPrefixUrlKey(type);
+        var tableId = getTableIdFromType(type);
+        localStorage.setItem(listKey, JSON.stringify(conditionData[type]));
+        localStorage.removeItem(prefixUrlKey + "@" + conditionName);
+        initConditionTable(tableId);
     }
 
     function download(data, filename, type) {

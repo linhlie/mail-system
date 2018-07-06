@@ -774,6 +774,10 @@ mark.mark-range {
     margin-bottom: 20px;
 }
 
+.condition-management .condition-management-part {
+    margin-bottom: 15px;
+}
+
 #greetingTable td.fit,
 #greetingTable th.fit {
     white-space: nowrap;
@@ -885,41 +889,41 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
     display: inherit;
 }
 
-#conditionTable td.fit,
-#conditionTable th.fit {
-    white-space: nowrap;
-    width: 1%;
+.conditionTable td.fit,
+.conditionTable th.fit {
+    white-space: nowrap !important;
+    width: 1% !important;
 }
 
-#conditionTable {
-    border: none;
-    background-color: white;
+.conditionTable {
+    border: none !important;
+    background-color: white !important;
 }
 
-#conditionTable th,
-#conditionTable td {
-    border: 1px solid black;
-    border-left: none;
-    padding: 1px 6px;
+.conditionTable th,
+.conditionTable td {
+    border: 1px solid black !important;
+    border-left: none !important;
+    padding: 1px 6px !important;
 }
 
-#conditionTable td {
-    border-top: none;
+.conditionTable td {
+    border-top: none !important;
 }
 
-#conditionTable td.action {
-    padding: 0;
+.conditionTable td.action {
+    padding: 0 !important;
 }
 
-#conditionTable td.action button {
-    padding: 1px 15px;
-    min-width: 150px;
+.conditionTable td.action button {
+    padding: 1px 15px !important;
+    min-width: 150px !important;
 }
 
-#conditionTable th {
-    background-color: white;
+.conditionTable th {
+    background-color: white !important;
 }
 
-#conditionTable th.dark {
-    background-color: #dee3ea;
+.conditionTable th.dark {
+    background-color: #dee3ea !important;
 }
