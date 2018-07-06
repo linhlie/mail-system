@@ -131,8 +131,6 @@
         });
         getEnvSettings();
         fixingForTinyMCEOnModal();
-        onlyDisplayNonZeroRow = $('#displayNonZeroCheckbox').is(":checked");
-        setupDisplatNonZeroListener();
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
         var spaceEffectiveStr = sessionStorage.getItem("spaceEffective");
@@ -321,13 +319,6 @@
             if ($(e.target).closest(".mce-window").length) {
                 e.stopImmediatePropagation();
             }
-        });
-    }
-    
-    function setupDisplatNonZeroListener() {
-        $('#displayNonZeroCheckbox').change(function() {
-            onlyDisplayNonZeroRow = $(this).is(":checked");
-            updateData();
         });
     }
     
