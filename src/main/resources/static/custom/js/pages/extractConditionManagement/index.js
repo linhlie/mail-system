@@ -12,8 +12,8 @@
     var matchingListKey = "/user/matchingSettings/listMatchingKey";
     var matchingPrefixUrlKey = "/user/matchingSettings/matching";
 
-    var currentListKey;
-    var currentPrefixUrlKey;
+    var importFileType;
+
     var firstRowHTML = '<tr class="hidden" role="row">' +
         '<td rowspan="1" colspan="1" data="key"><span></span></td>' +
         '<td class="action fit" rowspan="1" colspan="1" data="id"><button class="btn btn-block btn-default" name="removeCondition" type="button">削除</button></td>' +
@@ -36,6 +36,8 @@
     
     function addEventListeners() {
         setButtonClickListener("importFile", function () {
+            var type = this.getAttribute("data");
+            importFileType = type;
             $( "#importFileId" ).click();
         });
         $('#importFileId').change(function(){
@@ -56,9 +58,17 @@
     
     function saveConditionSetting(conditionSettingStr) {
         var conditionSetting = JSON.parse(conditionSettingStr);
-        if(conditionSetting && conditionSetting.type && conditionSetting.prefixUrlKey && conditionSetting.listKey) {
-            var tableId = getTableIdFromType(conditionSetting.type);
-            var datalistStr = localStorage.getItem(conditionSetting.listKey);
+        if(conditionSetting && conditionSetting.type) {
+            var isAllow = isAllowType(conditionSetting.type);
+            if(!isAllow) {
+                var incompatibleTypeMessage = getIncompatibleTypeMessage(conditionSetting.type);
+                alert(incompatibleTypeMessage);
+                return;
+            }
+            var listKey = getListKey(importFileType);
+            var prefixUrlKey = getPrefixUrlKey(importFileType);
+            var tableId = getTableIdFromType(importFileType);
+            var datalistStr = localStorage.getItem(listKey);
             var datalist = JSON.parse(datalistStr);
             datalist = datalist || [];
             var name = prompt("保存された名前を入力してください:", conditionSetting.name);
@@ -66,10 +76,42 @@
             if(datalist.indexOf(name) < 0){
                 datalist.push(name);
             }
-            var key = conditionSetting.prefixUrlKey + "@" + name;
-            localStorage.setItem(conditionSetting.listKey, JSON.stringify(datalist));
+            var key = prefixUrlKey + "@" + name;
+            localStorage.setItem(listKey, JSON.stringify(datalist));
             localStorage.setItem(key, JSON.stringify(conditionSetting.conditions));
             initConditionTable(tableId);
+        }
+    }
+    
+    function getIncompatibleTypeMessage(type) {
+        var type1 = getTypeMessageInJapanese(importFileType);
+        var type2 = getTypeMessageInJapanese(type);
+        return "「" + type1 + "」に「" + type2 + "」のデータを取り込むことができません。";
+    }
+    
+    function getTypeMessageInJapanese(type) {
+        switch (type) {
+            case "source":
+                return "比較メール元抽出条件";
+            case "destination":
+                return "比較メール先抽出条件";
+            case "matching":
+                return "マッチング条件";
+            default:
+                return "比較メール元抽出条件"
+        }
+    }
+
+    function isAllowType(type) {
+        switch (type) {
+            case "source":
+                return (importFileType === "source");
+            case "destination":
+                return (importFileType === "destination");
+            case "matching":
+                return (importFileType === "matching");
+            default:
+                return false
         }
     }
 
@@ -139,27 +181,6 @@
                 return matchingPrefixUrlKey;
             default:
                 return sourcePrefixUrlKey;
-        }
-    }
-
-    function getKeys(type){
-        switch (type) {
-            case "source":
-                currentListKey = sourceListKey;
-                currentPrefixUrlKey = sourcePrefixUrlKey;
-                break;
-            case "destination":
-                currentListKey = destinationListKey;
-                currentPrefixUrlKey = destinationPrefixUrlKey;
-                break;
-            case "matching":
-                currentListKey = matchingListKey;
-                currentPrefixUrlKey = matchingPrefixUrlKey;
-                break;
-            default:
-                currentListKey = sourceListKey;
-                currentPrefixUrlKey = sourcePrefixUrlKey;
-                break;
         }
     }
 
