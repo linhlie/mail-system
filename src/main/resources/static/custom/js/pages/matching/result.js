@@ -770,6 +770,11 @@
     
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
+        if(sendTo === "moto") {
+            $('#sendSuggestMailTitle').text("マッチング【元】へメール送信");
+        } else {
+            $('#sendSuggestMailTitle').text("マッチング【先】へメール送信");
+        }
         lastMessageId = messageId;
         lastReceiver = receiver;
         lastTextRange = textRange;
