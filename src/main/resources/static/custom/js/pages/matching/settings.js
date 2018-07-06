@@ -690,10 +690,10 @@
             data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
         }
         if(data != null){
-            var enableAddDefaultRow = !skipAddDefaultRow;
-            if(enableAddDefaultRow) {
-                data = addDefaultReceiveDateRow(data);
-            }
+            // var enableAddDefaultRow = !skipAddDefaultRow;
+            // if(enableAddDefaultRow) {
+            //     data = addDefaultReceiveDateRow(data);
+            // }
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
