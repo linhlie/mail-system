@@ -13,6 +13,30 @@
     <section class="content">
         <!-- Info boxes -->
         <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-envelope-o"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">メッセージ</span>
+                        <span class="info-box-number" th:text="${numberOfMessage}"></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-exchange"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">マッチング回数</span>
+                        <span class="info-box-number" th:text="${matchingCount}"></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
         </div>
         <!-- /.row -->
     </section>

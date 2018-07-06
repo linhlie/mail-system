@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -26,6 +27,9 @@ public class IndexController {
     @Autowired
     private FetchMailsService fetchMailsService;
 
+    @Autowired
+    private MatchingConditionService matchingConditionService;
+
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @RequestMapping("/default")
@@ -42,6 +46,10 @@ public class IndexController {
         if (request.isUserInRole("ROLE_ADMIN")) {
             return "redirect:/admin/";
         }
+        long numberOfMessage = mailBoxService.count();
+        model.addAttribute("numberOfMessage", numberOfMessage);
+        int matchingCount = matchingConditionService.getMatchingCount();
+        model.addAttribute("matchingCount", matchingCount);
         return "index";
     }
 

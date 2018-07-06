@@ -63,6 +63,8 @@ public class MatchingConditionService {
 
     private ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+    private int matchingCounter = 0;
+
     @Value("${mailreceiver.app.daysago}")
     private int daysago;
 
@@ -266,6 +268,7 @@ public class MatchingConditionService {
         matchingResults = new ArrayList<MatchingResult>(matchingResultMap.values());
         logger.info("Matching done: " + matchingResults.size());
         FinalMatchingResult result = new FinalMatchingResult(matchingResults, previewMailDTOList);
+        this.increaseMatchingCounter();
         return result;
     }
 
@@ -996,5 +999,21 @@ public class MatchingConditionService {
     private List<FullNumberRange> getMailRanges(Email email, String cacheId, String input) {
         List<FullNumberRange> mailRanges = email.getRangeList();
         return mailRanges != null && mailRanges.size() > 0 ? mailRanges : numberRangeService.buildNumberRangeForInput(cacheId, input);
+    }
+
+    private void increaseMatchingCounter() {
+        this.setMatchingCounter(this.getMatchingCounter() + 1);
+    }
+
+    private void setMatchingCounter(int counter) {
+        matchingCounter = counter;
+    }
+
+    private int getMatchingCounter() {
+        return matchingCounter;
+    }
+
+    public int getMatchingCount() {
+        return this.getMatchingCounter();
     }
 }
