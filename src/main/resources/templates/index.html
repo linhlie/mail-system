@@ -10,32 +10,193 @@
             ダッシュボード
         </h1>
     </section>
-    <section class="content">
+    <section class="content dashboard">
         <!-- Info boxes -->
         <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-envelope-o"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">メッセージ</span>
-                        <span class="info-box-number" th:text="${numberOfMessage}"></span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
+            <div class="col-md-3 col-md-offset-1">最新のメール受信日時</div>
+            <div class="col-md-8">yyyy/mm/dd hh:mm:ss</div>
+            <div class="col-md-11 col-md-offset-1" style="margin-top: 30px;"><b>ボタン押下件数</b></div>
+            <div class="col-md-11 col-md-offset-1">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th scope="col">本日</th>
+                        <th scope="col">前日</th>
+                        <th scope="col">2日前</th>
+                        <th scope="col">3日前</th>
+                        <th scope="col">4日前</th>
+                        <th scope="col">5日前</th>
+                        <th scope="col">6日前</th>
+                        <th scope="col">7日前</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">元のみ抽出</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">先のみ抽出</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">マッチング</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                </table>
             </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-exchange"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">マッチング回数</span>
-                        <span class="info-box-number" th:text="${matchingCount}"></span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
+            <div class="col-md-11 col-md-offset-1" style="margin-top: 30px;"><b>メール受信件数</b></div>
+            <div class="col-md-11 col-md-offset-1">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th scope="col">本日</th>
+                        <th scope="col">前日</th>
+                        <th scope="col">2日前</th>
+                        <th scope="col">3日前</th>
+                        <th scope="col">4日前</th>
+                        <th scope="col">5日前</th>
+                        <th scope="col">6日前</th>
+                        <th scope="col">7日前</th>
+                    </tr>
+                    <tr>
+                        <th scope="row"></th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-11 col-md-offset-1">
+                <span style="padding-left: 160px">※受信アカウントに登録されているメールアドレスからの受信は含まない</span>
+            </div>
+            <div class="col-md-11 col-md-offset-1" style="margin-top: 20px;"><b>メール送信件数<br/>1回のクリックでの送信件数</b></div>
+            <div class="col-md-11 col-md-offset-1">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th scope="col">本日</th>
+                        <th scope="col">前日</th>
+                        <th scope="col">2日前</th>
+                        <th scope="col">3日前</th>
+                        <th scope="col">4日前</th>
+                        <th scope="col">5日前</th>
+                        <th scope="col">6日前</th>
+                        <th scope="col">7日前</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">マッチング後、「元へ」</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr class="subrow">
+                        <th scope="row"></th>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">マッチング後、「先へ」</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr class="subrow">
+                        <th scope="row"></th>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">元抽出後、「返信」</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr class="subrow">
+                        <th scope="row"></th>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">先抽出後、「返信」</th>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                        <td>99,999</td>
+                    </tr>
+                    <tr class="subrow subrowLast">
+                        <th scope="row"></th>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                        <td>99,99</td>
+                    </tr>
+                </table>
             </div>
         </div>
         <!-- /.row -->

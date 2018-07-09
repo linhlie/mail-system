@@ -927,3 +927,41 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 .conditionTable th.dark {
     background-color: #dee3ea !important;
 }
+
+.dashboard table th {
+    font-weight: 400;
+}
+
+.dashboard table th[scope="row"] {
+    border-right: solid black 1px;
+    width: 160px;
+}
+
+.dashboard table th[scope="col"] {
+    border-bottom: solid black 1px;
+    text-align: center;
+    padding: 0 25px;
+}
+
+.dashboard table td {
+    text-align: center;
+    border-bottom: solid black 1px;
+    border-right: solid black 1px;
+    min-width: 80px;
+}
+
+.dashboard table tr.subrow th[scope="row"] {
+    border: none;
+}
+
+.dashboard table tr.subrow td {
+    border: none;
+    border-bottom: solid black 1px;
+    text-align: right;
+    padding-right: 5px;
+    font-size: 12px;
+}
+
+.dashboard table tr.subrowLast td {
+    border: none;
+}
