@@ -586,10 +586,12 @@
         });
     }
 
-    function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, callback) {
+    function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
         replyId = replyId.replace(/\+/g, '%2B');
         var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType;
+        var type = sendTo === "moto" ? 4 : 5
+        url = url + "&type=" + type;
         if(!!accountId){
             url = url + "&accountId=" + accountId;
         }
@@ -782,13 +784,13 @@
         lastTextMatchRange = textMatchRange;
         lastReplaceType = replaceType;
         lastSendTo = sendTo;
-        showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, function (email, accounts) {
+        showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
             showMailContenttToEditor(email, accounts, receiver, sendTo)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
-            showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, function (email, accounts) {
+            showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
                 showMailContenttToEditor(email, accounts, lastReceiver, lastSendTo)
             });
         });

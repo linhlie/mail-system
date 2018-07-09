@@ -10,6 +10,8 @@ public class ExtractForm {
     private boolean handleDuplicateSender;
     private boolean handleDuplicateSubject;
 
+    private int type;
+
     public ExtractForm() {
     }
 
@@ -51,5 +53,13 @@ public class ExtractForm {
 
     public void setHandleDuplicateSubject(boolean handleDuplicateSubject) {
         this.handleDuplicateSubject = handleDuplicateSubject;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

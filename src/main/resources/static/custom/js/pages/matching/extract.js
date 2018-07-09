@@ -583,7 +583,8 @@
 
     function showMailWithReplacedRange(messageId, accountId, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
-        var url = "/user/matchingResult/replyEmail?messageId=" + messageId;
+        var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
+        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
         if(!!accountId){
             url = url + "&accountId=" + accountId;
         }

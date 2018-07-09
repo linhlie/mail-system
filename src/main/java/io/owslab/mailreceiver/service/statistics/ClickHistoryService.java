@@ -29,6 +29,27 @@ public class ClickHistoryService {
         clickSentHistoryDAO.save(history);
     }
 
+    public String getTypeFromInt(int value){
+        switch (value) {
+            case 1:
+                return ClickHistory.ClickType.EXTRACT_SOURCE;
+            case 2:
+                return ClickHistory.ClickType.EXTRACT_DESTINATION;
+            case 3:
+                return ClickHistory.ClickType.MATCHING;
+            case 4:
+                return ClickHistory.ClickType.MATCHING_SOURCE;
+            case 5:
+                return ClickHistory.ClickType.MATCHING_DESTINATION;
+            case 6:
+                return ClickHistory.ClickType.REPLY_SOURCE;
+            case 7:
+                return ClickHistory.ClickType.REPLY_DESTINATION;
+            default:
+                return "";
+        }
+    }
+
     public String getSentTypeFromInt(int value){
         switch (value) {
             case 1:
@@ -40,7 +61,7 @@ public class ClickHistoryService {
             case 4:
                 return ClickSentHistory.ClickSentType.REPLY_DESTINATION;
             default:
-                return ClickSentHistory.ClickSentType.MATCHING_SOURCE;
+                return "";
         }
     }
 }

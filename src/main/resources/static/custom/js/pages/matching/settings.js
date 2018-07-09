@@ -768,6 +768,7 @@
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
+            "type": 1,
         };
         sessionStorage.setItem("extractSourceData", JSON.stringify(data));
         saveDefaultSettings();
@@ -791,6 +792,7 @@
             "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
+            "type": 2,
         };
         sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
         saveDefaultSettings();

@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.SendMailForm;
+import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.DetailMailResponseBody;
@@ -14,6 +15,7 @@ import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
 import org.json.JSONObject;
@@ -70,6 +72,9 @@ public class MatchingSettingsController {
     @Autowired
     private MailAccountsService mailAccountsService;
 
+    @Autowired
+    private ClickHistoryService clickHistoryService;
+
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
@@ -125,6 +130,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
+            clickHistoryService.save(ClickHistory.ClickType.MATCHING);
             FinalMatchingResult finalMatchingResult = matchingConditionService.matching(matchingConditionForm);
             result.setMsg("done");
             result.setStatus(true);
@@ -164,6 +170,7 @@ public class MatchingSettingsController {
     @RequestMapping(value="/matchingResult/editEmail", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
+                                          @RequestParam(value = "type") int type,
                                           @RequestParam(value = "replyId") String replyId,
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
@@ -171,6 +178,8 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
+            String historyType = clickHistoryService.getTypeFromInt(type);
+            clickHistoryService.save(historyType);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");
@@ -188,9 +197,11 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "accountId", required = false) String accountId){
+    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type, @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
+            String historyType = clickHistoryService.getTypeFromInt(type);
+            clickHistoryService.save(historyType);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");
@@ -269,6 +280,8 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
+            String historyType = clickHistoryService.getTypeFromInt(extractForm.getType());
+            clickHistoryService.save(historyType);
             List<ExtractMailDTO> extractResult = matchingConditionService.extract(extractForm);
             result.setMsg("done");
             result.setStatus(true);
