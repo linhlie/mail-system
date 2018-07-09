@@ -2,28 +2,54 @@
 (function () {
 
     $(function () {
-        var data = [
-            1, 2, 3, 4, 5, 6, 7, 8,
-            9, 10, 11, 12, 13, 14, 15, 16,
-            17, 18, 19, 20, 21, 22, 23, 24,
-        ];
-        var data2 = [
-            1, 2, 3, 4, 5, 6, 7, 8,
-        ];
-        var data3 = [
-            1, 2, 3, 4, 5, 6, 7, 8,
-            1, 2, 3, 4, 5, 6, 7, 8,
-            9, 10, 11, 12, 13, 14, 15, 16,
-            9, 10, 11, 12, 13, 14, 15, 16,
-            17, 18, 19, 20, 21, 22, 23, 24,
-            17, 18, 19, 20, 21, 22, 23, 24,
-            1, 2, 3, 4, 5, 6, 7, 8,
-            1, 2, 3, 4, 5, 6, 7, 8,
-        ];
-        pushDataToTable(data, "clickCount");
-        pushDataToTable(data2, "receiveMailNumber");
-        pushDataToTable(data3, "sendPerClick");
+        loadData();
     });
+    
+    function loadData() {
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/user/dashboard/statistics",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if (data && data.status) {
+                    console.log("[LOG] dashboard load data  success: ", data);
+                    pushData(data);
+                } else {
+                    console.error("[ERROR] dashboard load data failed: ");
+                }
+            },
+            error: function (e) {
+                $('body').loadingModal('hide');
+                console.error("[ERROR] dashboard load data error: ", e);
+            }
+        });
+    }
+    
+    function pushData(data) {
+        if(data && data.latestReceive){
+            $("#latestReceive").text(data.latestReceive);
+        }
+        if(data && data.clickCount){
+            pushDataToTable(data.clickCount, "clickCount");
+        }
+        if(data && data.receiveMailNumber){
+            pushDataToTable(data.receiveMailNumber, "receiveMailNumber");
+        }
+        if(data && data.sendPerClick){
+            pushDataToTable(data.sendPerClick, "sendPerClick");
+        }
+    }
     
     function pushDataToTable(data, tableId) {
         for(var i = 0; i < data.length; i++) {

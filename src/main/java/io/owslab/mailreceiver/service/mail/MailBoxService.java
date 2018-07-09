@@ -567,6 +567,19 @@ public class MailBoxService {
             return value1;
         }
     }
+
+    public String getLatestReceive() {
+        try {
+            List<Email> emailList = emailDAO.findFirstByOrderByReceivedAtDesc();
+            if(emailList.size() > 0) {
+                Email email = emailList.get(0);
+                return Utils.formatGMT2(email.getReceivedAt());
+            }
+        } catch (Exception e) {
+            ;
+        }
+        return "不詳";
+    }
     @Cacheable(key="\"EmailWordJobService:reverseStringWithCache:\"+#raw")
     public static String reverseStringWithCache(String raw) {
         return new StringBuilder(raw).reverse().toString();
