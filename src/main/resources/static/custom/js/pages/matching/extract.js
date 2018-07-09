@@ -551,6 +551,7 @@
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 sendType: "[返信]",
+                historyType: window.location.href.indexOf("extractSource") >= 0 ? 3 : 4,
             };
             $.ajax({
                 type: "POST",

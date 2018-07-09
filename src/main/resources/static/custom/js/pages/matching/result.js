@@ -846,6 +846,7 @@
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 matchingMessageId: messageId,
                 sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
+                historyType: lastSendTo === "moto" ? 1 : 2,
             };
             $.ajax({
                 type: "POST",

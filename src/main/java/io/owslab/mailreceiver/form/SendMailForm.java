@@ -20,12 +20,13 @@ public class SendMailForm {
 
     private String accountId;
     private String sendType;
+    private int historyType;
     private String matchingMessageId;
 
     public SendMailForm() {
     }
 
-    public SendMailForm(String messageId, String subject, String receiver, boolean activeCC, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment, String accountId, String sendType, String matchingMessageId) {
+    public SendMailForm(String messageId, String subject, String receiver, boolean activeCC, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment, String accountId, String sendType, int historyType, String matchingMessageId) {
         this.messageId = messageId;
         this.subject = subject;
         this.receiver = receiver;
@@ -36,6 +37,7 @@ public class SendMailForm {
         this.uploadAttachment = uploadAttachment;
         this.accountId = accountId;
         this.sendType = sendType;
+        this.historyType = historyType;
         this.matchingMessageId = matchingMessageId;
     }
 
@@ -125,5 +127,13 @@ public class SendMailForm {
 
     public void setMatchingMessageId(String matchingMessageId) {
         this.matchingMessageId = matchingMessageId;
+    }
+
+    public int getHistoryType() {
+        return historyType;
+    }
+
+    public void setHistoryType(int historyType) {
+        this.historyType = historyType;
     }
 }
