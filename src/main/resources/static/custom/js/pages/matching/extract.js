@@ -442,7 +442,7 @@
         var printElment = document.getElementById('printElement');
         printElment.innerHTML = "";
         if (data) {
-            data.originalBody = wrapText(data.originalBody);
+            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
             var innerHtml = '<div class="box-body no-padding">' +
                 '<div class="mailbox-read-info">' +
                 '<h3>' + data.subject + '</h3>' +
@@ -615,9 +615,10 @@
     }
 
     function showMailBodyContent(data) {
+        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         mailBodyDiv.scrollTop = 0;
-        mailBodyDiv.innerHTML = wrapText(data.originalBody);
+        mailBodyDiv.innerHTML = data.originalBody;
         highlight(data);
     }
 
@@ -652,7 +653,7 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
