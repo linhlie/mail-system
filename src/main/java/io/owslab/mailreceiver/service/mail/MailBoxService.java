@@ -37,6 +37,7 @@ import javax.mail.internet.MimeUtility;
 import javax.mail.search.MessageNumberTerm;
 import javax.mail.search.SearchTerm;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,6 +83,8 @@ public class MailBoxService {
     private EnviromentSettingService enviromentSettingService;
     
     private List<Email> cachedEmailList = null;
+
+    private DecimalFormat df = new DecimalFormat("#,##0");
 
     public long count(){
         return emailDAO.countByDeleted(false);
@@ -602,7 +605,7 @@ public class MailBoxService {
                 toDate = Utils.addDayToDate(toDate, -1);
             }
             long clicks = emailDAO.countByFromIgnoreCaseNotAndReceivedAtBetween(from, fromDate, toDate);
-            stats.add(Long.toString(clicks));
+            stats.add(df.format(clicks));
         }
         return stats;
     }
