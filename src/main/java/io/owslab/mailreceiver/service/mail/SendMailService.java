@@ -172,7 +172,7 @@ public class SendMailService {
             message.setContent(multipart);
 
             // Send message
-//            Transport.send(message);
+            Transport.send(message);
             uploadFileService.delete(uploadAttachment);
             saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
 

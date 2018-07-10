@@ -1008,14 +1008,14 @@
         greetingData = Array.isArray(greetingData) ? greetingData : [];
         return greetingData;
     }
+    
+    function wrapText(text) {
+        return isHTML(text) ? text : wrapPlainText(text);
+    }
 
     function isHTML(str) {
         var doc = new DOMParser().parseFromString(str, "text/html");
         return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
-    }
-    
-    function wrapText(text) {
-        return isHTML(text) ? text : wrapPlainText(text);
     }
     
     function wrapPlainText(text) {
