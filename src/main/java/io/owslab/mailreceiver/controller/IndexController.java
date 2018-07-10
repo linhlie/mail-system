@@ -72,7 +72,7 @@ public class IndexController {
         try {
             String latestReceive = mailBoxService.getLatestReceive();
             List<String> clickCount = clickHistoryService.getClickCount();
-            List<String> receiveMailNumber = new ArrayList<>();
+            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats();
             List<String> sendPerClick = new ArrayList<>();
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);

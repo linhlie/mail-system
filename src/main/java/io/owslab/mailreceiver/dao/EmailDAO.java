@@ -27,4 +27,5 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findFirstByOrderByReceivedAtDesc();
     List<Email> findByErrorLogIsNullOrderByReceivedAtDesc();
     long countByDeleted(boolean deleted);
+    long countByFromIgnoreCaseNotAndReceivedAtBetween(String from, Date fromDate, Date toDate);
 }

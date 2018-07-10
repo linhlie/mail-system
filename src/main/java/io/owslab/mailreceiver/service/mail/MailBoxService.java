@@ -580,6 +580,33 @@ public class MailBoxService {
         }
         return "不詳";
     }
+
+    public List<String> getReceiveMailNumberStats(){
+        List<String> stats = new ArrayList<>();
+        List<EmailAccount> accountList = mailAccountsService.list();
+        for(EmailAccount account : accountList) {
+            List<String> statsExceptAccount = getReceiveMailNumberExceptFrom(account.getAccount());
+            stats.addAll(statsExceptAccount);
+        }
+        return stats;
+    }
+
+    public List<String> getReceiveMailNumberExceptFrom(String from) {
+        List<String> stats = new ArrayList<>();
+        Date now = new Date();
+        Date fromDate = Utils.atStartOfDay(now);
+        Date toDate = Utils.atEndOfDay(now);
+        for(int i = 0; i < 8; i++){
+            if(i > 0) {
+                fromDate = Utils.addDayToDate(fromDate, -1);
+                toDate = Utils.addDayToDate(toDate, -1);
+            }
+            long clicks = emailDAO.countByFromIgnoreCaseNotAndReceivedAtBetween(from, fromDate, toDate);
+            stats.add(Long.toString(clicks));
+        }
+        return stats;
+    }
+
     @Cacheable(key="\"EmailWordJobService:reverseStringWithCache:\"+#raw")
     public static String reverseStringWithCache(String raw) {
         return new StringBuilder(raw).reverse().toString();
