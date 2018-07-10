@@ -23,6 +23,7 @@
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
         '</tr>';
     $(function () {
+        initSortHistory();
         setupDatePickers();
         updateDisableDatePickers($('#' + historyQuickFilterId).val());
         var payload = getSearchPayload();
@@ -145,7 +146,6 @@
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("historyRow", selectedRow);
         }
-        initSortHistory();
         selectFirstRow();
         updateHistoryDataTrigger(tableId);
         enableResizeColums();
