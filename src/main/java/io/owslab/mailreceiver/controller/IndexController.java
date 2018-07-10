@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class IndexController {
     @Autowired
     private MatchingConditionService matchingConditionService;
 
+    @Autowired
+    private ClickHistoryService clickHistoryService;
+
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @RequestMapping("/default")
@@ -67,7 +71,7 @@ public class IndexController {
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             String latestReceive = mailBoxService.getLatestReceive();
-            List<String> clickCount = new ArrayList<>();
+            List<String> clickCount = clickHistoryService.getClickCount();
             List<String> receiveMailNumber = new ArrayList<>();
             List<String> sendPerClick = new ArrayList<>();
             responseBody.setLatestReceive(latestReceive);

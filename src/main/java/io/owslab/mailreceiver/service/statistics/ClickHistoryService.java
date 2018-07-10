@@ -4,8 +4,13 @@ import io.owslab.mailreceiver.dao.ClickHistoryDAO;
 import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
+import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by khanhlvb on 7/9/18.
@@ -63,5 +68,32 @@ public class ClickHistoryService {
             default:
                 return "";
         }
+    }
+
+    public List<String> getClickCount() {
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickCountByType(ClickHistory.ClickType.EXTRACT_SOURCE);
+        List<String> clickCount2 = getClickCountByType(ClickHistory.ClickType.EXTRACT_DESTINATION);
+        List<String> clickCount3 = getClickCountByType(ClickHistory.ClickType.MATCHING);
+        clickCount.addAll(clickCount1);
+        clickCount.addAll(clickCount2);
+        clickCount.addAll(clickCount3);
+        return clickCount;
+    }
+
+    public List<String> getClickCountByType(String type) {
+        List<String> clickCount = new ArrayList<>();
+        Date now = new Date();
+        Date fromDate = Utils.atStartOfDay(now);
+        Date toDate = Utils.atEndOfDay(now);
+        for(int i = 0; i < 8; i++){
+            if(i > 0) {
+                fromDate = Utils.addDayToDate(fromDate, -1);
+                toDate = Utils.addDayToDate(toDate, -1);
+            }
+            long clicks = clickHistoryDAO.countByTypeAndCreatedAtBetween(type, fromDate, toDate);
+            clickCount.add(Long.toString(clicks));
+        }
+        return clickCount;
     }
 }
