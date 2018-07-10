@@ -928,6 +928,18 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
     background-color: #dee3ea !important;
 }
 
+.dashboard table {
+    width: 100%;
+}
+
+.dashboard .stats-wrapper {
+    margin-top: 15px;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #3c8dbc;
+}
+
 .dashboard table th {
     font-weight: 400;
 }
