@@ -584,19 +584,18 @@ public class MailBoxService {
         return "不詳";
     }
 
-    public List<String> getReceiveMailNumberStats(){
+    public List<String> getReceiveMailNumberStats(Date now){
         List<String> stats = new ArrayList<>();
         List<EmailAccount> accountList = mailAccountsService.list();
         for(EmailAccount account : accountList) {
-            List<String> statsExceptAccount = getReceiveMailNumberExceptFrom(account.getAccount());
+            List<String> statsExceptAccount = getReceiveMailNumberExceptFrom(now, account.getAccount());
             stats.addAll(statsExceptAccount);
         }
         return stats;
     }
 
-    public List<String> getReceiveMailNumberExceptFrom(String from) {
+    public List<String> getReceiveMailNumberExceptFrom(Date now, String from) {
         List<String> stats = new ArrayList<>();
-        Date now = new Date();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
         for(int i = 0; i < 8; i++){

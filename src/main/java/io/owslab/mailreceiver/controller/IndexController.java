@@ -70,10 +70,11 @@ public class IndexController {
     ResponseEntity<?> getStatistics (){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
+            Date now = new Date();
             String latestReceive = mailBoxService.getLatestReceive();
-            List<String> clickCount = clickHistoryService.getClickCount();
-            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats();
-            List<String> sendPerClick = clickHistoryService.getTotalSentStats();
+            List<String> clickCount = clickHistoryService.getClickCount(now);
+            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now);
+            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);
             responseBody.setClickCount(clickCount);

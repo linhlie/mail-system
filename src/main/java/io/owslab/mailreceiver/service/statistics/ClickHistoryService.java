@@ -74,20 +74,19 @@ public class ClickHistoryService {
         }
     }
 
-    public List<String> getClickCount() {
+    public List<String> getClickCount(Date now) {
         List<String> clickCount = new ArrayList<>();
-        List<String> clickCount1 = getClickCountByType(ClickHistory.ClickType.EXTRACT_SOURCE);
-        List<String> clickCount2 = getClickCountByType(ClickHistory.ClickType.EXTRACT_DESTINATION);
-        List<String> clickCount3 = getClickCountByType(ClickHistory.ClickType.MATCHING);
+        List<String> clickCount1 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_SOURCE);
+        List<String> clickCount2 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_DESTINATION);
+        List<String> clickCount3 = getClickCountByType(now, ClickHistory.ClickType.MATCHING);
         clickCount.addAll(clickCount1);
         clickCount.addAll(clickCount2);
         clickCount.addAll(clickCount3);
         return clickCount;
     }
 
-    private List<String> getClickCountByType(String type) {
+    private List<String> getClickCountByType(Date now, String type) {
         List<String> clickCount = new ArrayList<>();
-        Date now = new Date();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
         for(int i = 0; i < 8; i++){
@@ -101,16 +100,16 @@ public class ClickHistoryService {
         return clickCount;
     }
 
-    public List<String> getTotalSentStats() {
+    public List<String> getTotalSentStats(Date now) {
         List<String> stats = new ArrayList<>();
         List<String> sent1 = getClickSentCountByType(ClickSentHistory.ClickSentType.MATCHING_SOURCE);
-        List<String> click1 = getClickCountByType(ClickHistory.ClickType.MATCHING_SOURCE);
+        List<String> click1 = getClickCountByType(now, ClickHistory.ClickType.MATCHING);
         List<String> sent2 = getClickSentCountByType(ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
-        List<String> click2 = getClickCountByType(ClickHistory.ClickType.MATCHING_DESTINATION);
+        List<String> click2 = click1;
         List<String> sent3 = getClickSentCountByType(ClickSentHistory.ClickSentType.REPLY_SOURCE);
-        List<String> click3 = getClickCountByType(ClickHistory.ClickType.REPLY_SOURCE);
+        List<String> click3 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_SOURCE);
         List<String> sent4 = getClickSentCountByType(ClickSentHistory.ClickSentType.REPLY_DESTINATION);
-        List<String> click4 = getClickCountByType(ClickHistory.ClickType.REPLY_DESTINATION);
+        List<String> click4 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_DESTINATION);
         stats.addAll(sent1);
         stats.addAll(getSentRate(sent1, click1));
         stats.addAll(sent2);
@@ -148,7 +147,7 @@ public class ClickHistoryService {
                 result.add(df.format(0));
             } else {
                 long sentCount = Long.parseLong(sentCountStr);
-                double rate = ((double) sentCount / (double) clickCount) * 100;
+                double rate = ((double) sentCount / (double) clickCount);
                 result.add(df.format(rate));
             }
         }
