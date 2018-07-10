@@ -442,7 +442,7 @@
         var printElment = document.getElementById('printElement');
         printElment.innerHTML = "";
         if (data) {
-            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            data.originalBody = wrapText(data.originalBody);
             var innerHtml = '<div class="box-body no-padding">' +
                 '<div class="mailbox-read-info">' +
                 '<h3>' + data.subject + '</h3>' +
@@ -615,10 +615,9 @@
     }
 
     function showMailBodyContent(data) {
-        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         mailBodyDiv.scrollTop = 0;
-        mailBodyDiv.innerHTML = data.originalBody;
+        mailBodyDiv.innerHTML = wrapText(data.originalBody);
         highlight(data);
     }
 
@@ -653,7 +652,7 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
+            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
@@ -1008,6 +1007,19 @@
         var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
         greetingData = Array.isArray(greetingData) ? greetingData : [];
         return greetingData;
+    }
+
+    function isHTML(str) {
+        var doc = new DOMParser().parseFromString(str, "text/html");
+        return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+    }
+    
+    function wrapText(text) {
+        return isHTML(text) ? text : wrapPlainText(text);
+    }
+    
+    function wrapPlainText(text) {
+        return "<span style='white-space: pre-line'>" + text + "</span>";
     }
 
 })(jQuery);
