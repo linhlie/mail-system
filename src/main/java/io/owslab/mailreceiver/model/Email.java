@@ -335,15 +335,15 @@ public class Email {
 
     public String getOptimizedText(boolean distinguish) {
         String raw = this.getSubjectAndOptimizedBody();
-        if(this.optimizedTextDistinguish == null) {
+        if(this.optimizedText == null) {
             int conv_op_flags = 0;
             conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
             conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
             String japaneseOptimizedText = KanaConverter.convertKana(raw, conv_op_flags);
-            this.setOptimizedTextDistinguish(japaneseOptimizedText.toLowerCase());
+            this.setOptimizedText(japaneseOptimizedText.toLowerCase());
         }
-        if(this.optimizedText == null){
-            this.setOptimizedText(raw.toLowerCase());
+        if(this.optimizedTextDistinguish == null){
+            this.setOptimizedTextDistinguish(raw.toLowerCase());
         }
         return distinguish ? optimizedTextDistinguish : optimizedText;
     }

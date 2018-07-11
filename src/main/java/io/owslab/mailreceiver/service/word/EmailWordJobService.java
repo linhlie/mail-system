@@ -125,10 +125,10 @@ public class EmailWordJobService {
         return result;
     }
 
-    public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective){
+    public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            if(matchWord(email.getMessageId(), email.getSubjectAndOptimizedBody(), word, spaceEffective)){
+            if(matchWord(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
                 result.addMatchWord(word);
             }
         }

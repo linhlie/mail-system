@@ -219,8 +219,8 @@ public class MatchingConditionService {
         matchDestinationList = mailBoxService.filterDuplicate(matchDestinationList, filterSender, filterSubject);
         logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
         List<String> matchingWords = getWordList(matchingConditionForm);
-        List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective);
-        List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective);
+        List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective, distinguish);
+        List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective, distinguish);
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
         for(MatchingWordResult sourceResult : matchWordSource) {
@@ -511,7 +511,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_LOWER:
             case NUMBER_UPPER:
-                targetPart = target.getSubjectAndOptimizedBody();
+                targetPart = target.getOptimizedText(distinguish);
                 break;
             default:
                 break;
@@ -686,10 +686,10 @@ public class MatchingConditionService {
         return result;
     }
 
-    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective){
+    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective, boolean distinguish){
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
         for(Email email : emailList){
-            MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective);
+            MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective, distinguish);
             matchingWordResults.add(result);
         }
         return matchingWordResults;
