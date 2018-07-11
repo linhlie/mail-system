@@ -300,8 +300,10 @@ public class MailBoxService {
         String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setSignature(signature);
         result.setExcerpt(getExcerpt(replyEmail));
-        String replyText = getReplyContentFromEmail(replyEmail);
+        String replyText = replyEmail.getOriginalBody();
         result.setReplyOrigin(replyText);
+        result.setReplyFrom(replyEmail.getFrom());
+        result.setReplySentAt(Utils.formatGMT(replyEmail.getSentAt()));
         result.setSubject("Re: " + replyEmail.getSubject());
         return result;
     }
@@ -350,8 +352,10 @@ public class MailBoxService {
         result.setExcerpt(getExcerpt(replyEmail));
         result.setSignature(signature);
         if(replyEmail != null) {
-            String replyText = getReplyContentFromEmail(replyEmail);
+            String replyText = replyEmail.getOriginalBody();
             result.setReplyOrigin(replyText);
+            result.setReplyFrom(replyEmail.getFrom());
+            result.setReplySentAt(Utils.formatGMT(replyEmail.getSentAt()));
             result.setSubject("Re: " + replyEmail.getSubject());
             result.setTo(replyEmail.getTo());
             result.setCc(replyEmail.getCc());
