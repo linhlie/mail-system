@@ -13,13 +13,16 @@
     <section class="content dashboard">
         <!-- Info boxes -->
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 stats-wrapper">
+            <div class="stats-wrapper">
                 <span><b>最新のメール受信日時</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span id="latestReceive">&nbsp;</span>
+                <div class="dashboard-icon-wrapper">
+                    <span class="dashboard-box-icon"><i class="fa fa-clock-o"></i></span>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 stats-wrapper">
+            <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
                 <table id="clickCount">
                     <tr>
@@ -67,10 +70,13 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
+                <div class="dashboard-icon-wrapper">
+                    <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 stats-wrapper">
+            <div class="stats-wrapper">
                 <b>メール受信件数</b>
                 <table id="receiveMailNumber">
                     <tr>
@@ -99,10 +105,13 @@
                 <div style="padding-top: 10px;">
                     <span style="padding-left: 160px">※受信アカウントに登録されているメールアドレスからの受信は含まない</span>
                 </div>
+                <div class="dashboard-icon-wrapper">
+                    <span class="dashboard-box-icon"><i class="fa fa-envelope-o"></i></span>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-10 col-md-offset-1 stats-wrapper">
+            <div class="stats-wrapper">
                 <b>メール送信件数<br/>1回のクリックでの送信件数</b>
                 <table id="sendPerClick">
                     <tr>
@@ -205,6 +214,9 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
+                <div class="dashboard-icon-wrapper">
+                    <span class="dashboard-box-icon"><i class="fa fa-send-o"></i></span>
+                </div>
             </div>
         </div>
         <!-- /.row -->

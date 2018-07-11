@@ -935,9 +935,12 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 .dashboard .stats-wrapper {
     margin-top: 15px;
     background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
     padding: 10px 15px;
     border-radius: 10px;
     border: 1px solid #3c8dbc;
+    position: relative;
 }
 
 .dashboard table th {
@@ -976,4 +979,23 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 
 .dashboard table tr.subrowLast td {
     border: none;
+}
+div.dashboard-icon-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -90px;
+    width: 90px;
+}
+.dashboard-box-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    float: left;
+    height: auto;
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    line-height: 100%;
 }
