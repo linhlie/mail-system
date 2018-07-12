@@ -1023,16 +1023,49 @@
     function highlight(id, data) {
         data = data || {};
         var highLightWords = data.highLightWords || [];
+        highLightWords = buildHighlightWordNonSpace(highLightWords);
+        var highLightWordRegexs = buildHighlightWordRegex(highLightWords);
         var excludeWords = data.excludeWords || [];
+        excludeWords = buildHighlightWordNonSpace(excludeWords);
+        var excludeWordRegexs = buildHighlightWordRegex(excludeWords);
         var highLightRanges = data.highLightRanges || [];
         $("input[data-search='"+ id +"']").val("");
         $("#" + id).unmark({
             done: function() {
-                $("#" + id).mark(highLightWords, markOptions);
-                $("#" + id).mark(excludeWords, invisibleMarkOptions);
+                for(var i = 0; i < highLightWordRegexs.length; i++){
+                    $("#" + id).markRegExp(highLightWordRegexs[i], markOptions);
+                }
+                for(var y = 0; y < excludeWordRegexs.length; i++){
+                    $("#" + id).markRegExp(excludeWordRegexs[y], invisibleMarkOptions);
+                }
                 $("#" + id).mark(highLightRanges, rangeMarkOptions);
             }
         });
+    }
+    
+    function buildHighlightWordNonSpace(highLightWords) {
+        var highLightWordsExtended = [];
+        for(var i = 0; i < highLightWords.length; i++) {
+            var highLightWord = highLightWords[i];
+            // highLightWordsExtended.push(highLightWord);
+            var highLightWordNonSpace = highLightWord.replace(/ /g,'');
+            if(highLightWordsExtended.indexOf(highLightWordNonSpace) == -1) {
+                highLightWordsExtended.push(highLightWordNonSpace);
+            }
+        }
+        return highLightWordsExtended;
+    }
+    
+    function buildHighlightWordRegex(highLightWords) {
+        var regexs = [];
+        for(var i = 0; i < highLightWords.length; i++){
+            var highLightWord = highLightWords[i];
+            if(highLightWord && highLightWord.length > 0) {
+                var regex = new RegExp(highLightWord.split("").join("\\s*"), "gmi");
+                regexs.push(regex);
+            }
+        }
+        return regexs;
     }
 
     function initSearch(id, type) {
