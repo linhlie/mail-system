@@ -1331,8 +1331,9 @@
     }
 
     function isHTML(str) {
-        var doc = new DOMParser().parseFromString(str, "text/html");
-        return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+        return str && (str.toLowerCase().indexOf("<html") > -1);
+        // var doc = new DOMParser().parseFromString(str, "text/html");
+        // return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
     }
 
     function wrapPlainText(text) {
