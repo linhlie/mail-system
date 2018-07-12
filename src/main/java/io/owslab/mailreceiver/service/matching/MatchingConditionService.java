@@ -152,8 +152,9 @@ public class MatchingConditionService {
         List<Email> emailList = mailBoxService.getAll();
         List<Email> matchList;
 //        boolean distinguish = extractForm.isDistinguish();
+//        boolean spaceEffective = extractForm.isSpaceEffective();
         boolean distinguish = false;
-        boolean spaceEffective = extractForm.isSpaceEffective();
+        boolean spaceEffective = false;
         if(rootRule.getRules().size() > 0) {
             findMailMatching(emailList, rootRule, distinguish, spaceEffective);
             matchList = rootRule.getMatchEmails();
@@ -199,8 +200,10 @@ public class MatchingConditionService {
         boolean filterSameDomain = matchingConditionForm.isHandleSameDomain();
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
-        boolean distinguish = matchingConditionForm.isDistinguish();
-        boolean spaceEffective = matchingConditionForm.isSpaceEffective();
+//        boolean distinguish = matchingConditionForm.isDistinguish();
+//        boolean spaceEffective = matchingConditionForm.isSpaceEffective();
+        boolean distinguish = false;
+        boolean spaceEffective = false;
         List<Email> matchSourceList;
         if(sourceRule.getRules().size() > 0) {
             findMailMatching(emailList, sourceRule, distinguish, spaceEffective);

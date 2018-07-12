@@ -949,7 +949,7 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 
 .dashboard table th[scope="row"] {
     border-right: solid black 1px;
-    width: 160px;
+    width: 190px;
 }
 
 .dashboard table th[scope="col"] {
@@ -998,4 +998,24 @@ div.dashboard-icon-wrapper {
     text-align: center;
     font-size: 30px;
     line-height: 100%;
+}
+
+.dashboard-number-circle-wrapper-head {
+    float: right;
+    display: block;
+    padding-right: 5px;
+}
+
+.dashboard-number-circle-wrapper {
+    transform: translateY(-2px)
+}
+
+.dashboard-number-circle {
+    -moz-border-radius: 10px/10px;
+    -webkit-border-radius: 22px 22px;
+    border-radius: 22px/22px;
+    border: solid 1px #000;
+    width: 22px;
+    height: 22px; text-align: center;
+    display: inline-block;
 }

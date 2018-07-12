@@ -446,8 +446,10 @@
         localStorage.setItem("destinationConditions", JSON.stringify(destinationConditions));
         var matchingConditions = $(matchingBuilderId).queryBuilder('getRules');
         localStorage.setItem("matchingConditions", JSON.stringify(matchingConditions));
-        var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
-        var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        // var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
+        // var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        var spaceEffective = false;
+        var distinguish = false;
         localStorage.setItem("spaceEffective", spaceEffective);
         localStorage.setItem("distinguish", distinguish);
         var matchingWords = $(matchingWordsAreaId).val();
@@ -468,14 +470,14 @@
         var matchingConditionsStr = localStorage.getItem("matchingConditions");
         var matchingConditions = matchingConditionsStr == null || JSON.parse(matchingConditionsStr) == null ? {condition: "AND", rules: []} : JSON.parse(matchingConditionsStr);
         $(matchingBuilderId).queryBuilder('setRules', matchingConditions);
-        var spaceEffective = localStorage.getItem("spaceEffective");
-        spaceEffective = spaceEffective == "true" ? true : false;
-        $("#spaceEffective1").prop("checked", !spaceEffective);
-        $("#spaceEffective2").prop("checked", spaceEffective);
-        var distinguish = localStorage.getItem("distinguish");
-        distinguish = distinguish == "true" ? true : false;
-        $("#distinguish1").prop("checked", !distinguish);
-        $("#distinguish2").prop("checked", distinguish);
+        // var spaceEffective = localStorage.getItem("spaceEffective");
+        // spaceEffective = spaceEffective == "true" ? true : false;
+        // $("#spaceEffective1").prop("checked", !spaceEffective);
+        // $("#spaceEffective2").prop("checked", spaceEffective);
+        // var distinguish = localStorage.getItem("distinguish");
+        // distinguish = distinguish == "true" ? true : false;
+        // $("#distinguish1").prop("checked", !distinguish);
+        // $("#distinguish2").prop("checked", distinguish);
         var matchingWords = localStorage.getItem("matchingWords");
         $(matchingWordsAreaId).val(matchingWords);
     }
@@ -764,8 +766,10 @@
         const duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : sourceConditionData,
-            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
-            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            "distinguish": false,
+            "spaceEffective": false,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "type": 1,
@@ -788,8 +792,10 @@
         const duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : destinationConditionData,
-            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
-            "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
+            "distinguish": false,
+            "spaceEffective": false,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "type": 2,
@@ -816,15 +822,17 @@
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
-        var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
-        var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        // var spaceEffective = $('input[name=spaceEffective]:checked', formId).val() === "true";
+        // var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
+        var spaceEffective = false;
+        var distinguish = false;
         const duplicateSettingData = getCachedDuplicationSettingData();
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
             "matchingConditionData" : matchingConditionData,
             "matchingWords": matchingWords,
-            "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
+            "distinguish": distinguish,
             "spaceEffective": spaceEffective,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
