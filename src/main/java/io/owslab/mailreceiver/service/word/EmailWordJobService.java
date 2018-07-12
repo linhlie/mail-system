@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
@@ -125,10 +126,20 @@ public class EmailWordJobService {
         return result;
     }
 
+    private boolean matchWordContainComma(String cacheId, String toSearch, String wordStr, boolean spaceEffective){
+        List<String> words = Arrays.asList(wordStr.split(","));
+        for(String word : words){
+            if(!matchWord(cacheId, toSearch, word, spaceEffective)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            if(matchWord(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            if(matchWordContainComma(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
                 result.addMatchWord(word);
             }
         }

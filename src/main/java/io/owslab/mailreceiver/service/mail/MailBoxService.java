@@ -235,27 +235,32 @@ public class MailBoxService {
         return commentstr;
     }
 
-    public List<DetailMailDTO> getMailDetail(String messageId, String highlightWord, String matchRange, boolean spaceEffective, boolean distinguish){
+    public List<DetailMailDTO> getMailDetail(String messageId, String highlightWordsStr, String matchRange, boolean spaceEffective, boolean distinguish){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
         if(emailList.size() == 0) return results;
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
-        if(highlightWord != null) {
-            List<String> highLightWords = result.getHighLightWords();
-            List<String> excludeWords = result.getExcludeWords();
-            highLightWords.add(highlightWord);
-            Word word = wordService.findOne(highlightWord);
-            if(word != null) {
-                List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
-                List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
-                for(Word sameWord : sameWords){
-                    highLightWords.add(sameWord.getWord());
-                }
-                for(Word exclusionWord : exclusionWords){
-                    String exclusionWordStr = exclusionWord.getWord();
-                    if(!highLightWords.contains(exclusionWordStr))
-                        excludeWords.add(exclusionWordStr);
+        if(highlightWordsStr != null) {
+            List<String> hlWords = Arrays.asList(highlightWordsStr.split(","));
+            for(String highlightWord : hlWords) {
+                if(highlightWord != null) {
+                    List<String> highLightWords = result.getHighLightWords();
+                    List<String> excludeWords = result.getExcludeWords();
+                    highLightWords.add(highlightWord);
+                    Word word = wordService.findOne(highlightWord);
+                    if(word != null) {
+                        List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
+                        List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
+                        for(Word sameWord : sameWords){
+                            highLightWords.add(sameWord.getWord());
+                        }
+                        for(Word exclusionWord : exclusionWords){
+                            String exclusionWordStr = exclusionWord.getWord();
+                            if(!highLightWords.contains(exclusionWordStr))
+                                excludeWords.add(exclusionWordStr);
+                        }
+                    }
                 }
             }
         }

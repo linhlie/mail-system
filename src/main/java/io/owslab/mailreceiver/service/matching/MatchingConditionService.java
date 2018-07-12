@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by khanhlvb on 3/6/18.
@@ -914,8 +916,20 @@ public class MatchingConditionService {
     }
 
     private List<String> getWordList(MatchingConditionForm matchingConditionForm){
-        List<String> matchingWords = Arrays.asList(matchingConditionForm.getMatchingWords().split(","));
+        String matchingWprdsStr = matchingConditionForm.getMatchingWords();
         List<String> normalizedMatchingWords = new ArrayList<>();
+        Pattern p = Pattern.compile("\"([^\"]*)\"");
+        Matcher m = p.matcher(matchingWprdsStr);
+        while (m.find()) {
+            matchingWprdsStr = matchingWprdsStr.replaceAll(m.group(), "");
+            String word = m.group(1);
+            word = word.toLowerCase();
+            if(word.isEmpty()) continue;
+            if(!normalizedMatchingWords.contains(word)){
+                normalizedMatchingWords.add(word);
+            }
+        }
+        List<String> matchingWords = Arrays.asList(matchingWprdsStr.split(","));
         for(String word : matchingWords) {
             word = word.toLowerCase();
             if(word.isEmpty()) continue;
