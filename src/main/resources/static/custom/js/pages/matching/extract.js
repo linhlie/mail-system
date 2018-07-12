@@ -442,7 +442,7 @@
         var printElment = document.getElementById('printElement');
         printElment.innerHTML = "";
         if (data) {
-            data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            data.originalBody = wrapText(data.originalBody);
             var innerHtml = '<div class="box-body no-padding">' +
                 '<div class="mailbox-read-info">' +
                 '<h3>' + data.subject + '</h3>' +
@@ -615,7 +615,7 @@
     }
 
     function showMailBodyContent(data) {
-        data.originalBody = data.originalBody.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        data.originalBody = wrapText(data.originalBody);
         var mailBodyDiv = document.getElementById(mailBodyDivId);
         mailBodyDiv.scrollTop = 0;
         mailBodyDiv.innerHTML = data.originalBody;
@@ -653,7 +653,8 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replyOrigin = data.replyOrigin ? data.replyOrigin.replace(/(?:\r\n|\r|\n)/g, '<br />') : data.replyOrigin;
+            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
@@ -968,6 +969,20 @@
                 });
         });
     }
+    
+    function getReplyWrapper(data) {
+        var wrapperText = '<div class="gmail_extra"><br>' +
+                '<div class="gmail_quote">' +
+            data.replySentAt +
+                ' <span dir="ltr">&lt;<a href="mailto:' +
+                data.replyFrom +
+                '" target="_blank" rel="noopener">' +
+            data.replyFrom +
+                '</a>&gt;</span>:<br />' +
+                '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
+                '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
+        return wrapperText;
+    }
 
     function getExcerptWithGreeting(excerpt) {
         var greeting = loadGreeting("返");
@@ -1020,7 +1035,9 @@
     }
     
     function wrapPlainText(text) {
-        return "<span style='white-space: pre-line'>" + text + "</span>";
+        if(text)
+            return text.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        return text;
     }
 
 })(jQuery);

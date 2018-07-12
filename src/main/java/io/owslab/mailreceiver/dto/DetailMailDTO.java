@@ -42,6 +42,10 @@ public class DetailMailDTO {
 
     private String replyOrigin;
 
+    private String replyFrom;
+
+    private String replySentAt;
+
     private boolean hasAttachment;
 
     private int contentType;
@@ -284,5 +288,21 @@ public class DetailMailDTO {
 
     public void setSenderAccountId(long senderAccountId) {
         this.senderAccountId = senderAccountId;
+    }
+
+    public String getReplyFrom() {
+        return replyFrom;
+    }
+
+    public void setReplyFrom(String replyFrom) {
+        this.replyFrom = replyFrom;
+    }
+
+    public String getReplySentAt() {
+        return replySentAt;
+    }
+
+    public void setReplySentAt(String replySentAt) {
+        this.replySentAt = replySentAt;
     }
 }
