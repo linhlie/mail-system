@@ -2,6 +2,7 @@
 (function () {
     "use strict";
     var formId = '#matchingConditionSettingsForm';
+    var switchConditionsBtnId = '#switchConditions';
     var saveSourceBtnId = '#saveSourceBtn';
     var getSourceBtnId = '#getSourceBtn';
     var saveDestinationBtnId = '#saveDestinationBtn';
@@ -410,6 +411,7 @@
             setInputAutoComplete("matchingValue");
         });
 
+        setButtonClickListenter(switchConditionsBtnId, switchConditions);
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
@@ -425,6 +427,15 @@
         $(window).on('beforeunload', saveDefaultSettings);
         $(document).on("keydown", keydownHandler);
     });
+    
+    function switchConditions() {
+        var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
+        var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(sourceConditions)) return;
+        if ($.isEmptyObject(destinationConditions)) return;
+        $(sourceBuilderId).queryBuilder('setRules', destinationConditions);
+        $(destinationBuilderId).queryBuilder('setRules', sourceConditions);
+    }
 
     function keydownHandler(e) {
         if((e.which || e.keyCode) == 114) {
