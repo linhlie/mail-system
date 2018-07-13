@@ -1035,7 +1035,7 @@
                 for(var i = 0; i < highLightWordRegexs.length; i++){
                     $("#" + id).markRegExp(highLightWordRegexs[i], markOptions);
                 }
-                for(var y = 0; y < excludeWordRegexs.length; i++){
+                for(var y = 0; y < excludeWordRegexs.length; y++){
                     $("#" + id).markRegExp(excludeWordRegexs[y], invisibleMarkOptions);
                 }
                 $("#" + id).mark(highLightRanges, rangeMarkOptions);
