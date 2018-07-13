@@ -52,6 +52,8 @@
     var lastReplaceType;
     var lastSendTo;
 
+    var standardEscape = ["+", "?", "(", ")", "{", "}", "|"];
+
     var spaceEffective = false;
     var distinguish = false;
 
@@ -1058,14 +1060,32 @@
     
     function buildHighlightWordRegex(highLightWords) {
         var regexs = [];
-        for(var i = 0; i < highLightWords.length; i++){
-            var highLightWord = highLightWords[i];
-            if(highLightWord && highLightWord.length > 0) {
-                var regex = new RegExp(highLightWord.split("").join("\\s*"), "gmi");
-                regexs.push(regex);
+        try {
+            for(var i = 0; i < highLightWords.length; i++){
+                var highLightWord = highLightWords[i];
+                if(highLightWord && highLightWord.length > 0) {
+                    var parts = getHighlightWordParts(highLightWord);
+                    var regex = new RegExp(parts.join("\\s*"), "gmi");
+                    regexs.push(regex);
+                }
             }
+        } catch (e) {
+            console.error("[ERR] buildHighlightWordRegex: ", e);
         }
         return regexs;
+    }
+
+    function getHighlightWordParts(word) {
+        var parts = word.split("");
+        var result = [];
+        for(var i = 0; i < parts.length; i++) {
+            var part = word[i];
+            if(standardEscape.indexOf(word[i]) > -1) {
+                 part = "\\" + part;
+            }
+            result.push(part);
+        }
+        return result;
     }
 
     function initSearch(id, type) {
