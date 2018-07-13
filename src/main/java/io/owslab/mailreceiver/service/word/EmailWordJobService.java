@@ -126,7 +126,7 @@ public class EmailWordJobService {
         return result;
     }
 
-    private boolean matchWordContainComma(String cacheId, String toSearch, String wordStr, boolean spaceEffective){
+    private boolean matchWordAND(String cacheId, String toSearch, String wordStr, boolean spaceEffective){
         List<String> words = Arrays.asList(wordStr.split(","));
         for(String word : words){
             if(!matchWord(cacheId, toSearch, word, spaceEffective)){
@@ -136,10 +136,20 @@ public class EmailWordJobService {
         return true;
     }
 
+    private boolean matchWordOR(String cacheId, String toSearch, String wordStr, boolean spaceEffective) {
+        List<String> words = Arrays.asList(wordStr.split("!!"));
+        for(String word : words){
+            if(matchWordAND(cacheId, toSearch, word, spaceEffective)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            if(matchWordContainComma(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
                 result.addMatchWord(word);
             }
         }

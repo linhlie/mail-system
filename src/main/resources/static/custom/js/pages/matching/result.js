@@ -58,7 +58,7 @@
     var markOptions = {
         "element": "mark",
         "separateWordSearch": false,
-        "acrossElements": true,
+        "acrossElements": false,
     };
 
     var invisibleMarkOptions = {

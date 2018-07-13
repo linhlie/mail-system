@@ -242,6 +242,7 @@ public class MailBoxService {
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
         if(highlightWordsStr != null) {
+            highlightWordsStr = highlightWordsStr.replace("!!", ",");
             List<String> hlWords = Arrays.asList(highlightWordsStr.split(","));
             for(String highlightWord : hlWords) {
                 if(highlightWord != null) {
