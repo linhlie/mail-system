@@ -27,6 +27,10 @@
     var matchingListKey = "/user/matchingSettings/listMatchingKey";
     var matchingPrefixUrlKey = "/user/matchingSettings/matching";
 
+    var collapsedPrefixKey = "/user/matchingSettings/collapsed";
+
+    var collapseViewPostfix = "-collapse-view";
+
     var default_source_rules = {
         condition: "AND",
         rules: [
@@ -411,6 +415,7 @@
             setInputAutoComplete("matchingValue");
         });
 
+        setButtonClickListenerByName("builder-ec", onExpandCollapseBuilder);
         setButtonClickListenter(switchConditionsBtnId, switchConditions);
         setButtonClickListenter(saveSourceBtnId, saveSourceListData);
         setButtonClickListenter(getSourceBtnId, getSourceListData);
@@ -427,6 +432,27 @@
         $(window).on('beforeunload', saveDefaultSettings);
         $(document).on("keydown", keydownHandler);
     });
+
+    function onExpandCollapseBuilder() {
+        var builderId = this.getAttribute("data");
+        if(builderId) {
+            var builder = $(builderId);
+            $(this).html(builder.is(":visible") ? "＋" : "ー");
+            if(builder.is(":visible")){
+                $(builderId).slideToggle(200, function () {
+                    $(builderId + collapseViewPostfix).slideToggle(200, function () {
+
+                    })
+                })
+            } else {
+                $(builderId + collapseViewPostfix).slideToggle(200, function () {
+                    $(builderId).slideToggle(200, function () {
+
+                    })
+                });
+            }
+        }
+    }
     
     function switchConditions() {
         var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
@@ -467,9 +493,19 @@
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
         localStorage.setItem("matchingWords", matchingWords);
+        localStorage.setItem(getCollapseKey(sourceBuilderId), $(sourceBuilderId).is(":hidden"));
+        localStorage.setItem(getCollapseKey(destinationBuilderId), $(destinationBuilderId).is(":hidden"));
+        localStorage.setItem(getCollapseKey(matchingBuilderId), $(matchingBuilderId).is(":hidden"));
+    }
+    
+    function getCollapseKey(builderId) {
+        return collapsedPrefixKey + "-" + builderId;
     }
 
     function loadDefaultSettings() {
+        loadExpandCollapseSetting(sourceBuilderId);
+        loadExpandCollapseSetting(destinationBuilderId);
+        loadExpandCollapseSetting(matchingBuilderId);
         var sourceConditionsStr = localStorage.getItem("sourceConditions");
         var sourceConditions = sourceConditionsStr == null || JSON.parse(sourceConditionsStr) == null ? default_source_rules : JSON.parse(sourceConditionsStr);
         $(sourceBuilderId).queryBuilder('setRules', sourceConditions);
@@ -493,6 +529,22 @@
         $(matchingWordsAreaId).val(matchingWords);
     }
 
+    function loadExpandCollapseSetting(builderId) {
+        var isHidden = localStorage.getItem(getCollapseKey(builderId)) === "true";
+        var $builder = $(builderId);
+        var $collapseView = $(builderId + collapseViewPostfix);
+        var $button = $builder.parent().parent().find("button[name='builder-ec']");
+        if(isHidden) {
+            $button.html("＋");
+            $builder.hide();
+            $collapseView.show();
+        } else {
+            $button.html("ー");
+            $collapseView.hide();
+            $builder.show();
+        }
+    }
+
     function setButtonClickListenter(id, callback) {
         $(id).off('click');
         $(id).click(function () {
@@ -500,6 +552,15 @@
                 callback();
             }
         });
+    }
+
+    function setButtonClickListenerByName(name, callback) {
+        $("button[name='"+name+"']").off('click');
+        $("button[name='"+name+"']").click(function () {
+            if(typeof callback == "function"){
+                callback.apply(this);
+            }
+        })
     }
 
     function saveSourceListData(){

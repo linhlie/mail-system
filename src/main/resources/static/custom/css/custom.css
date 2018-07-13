@@ -1019,3 +1019,26 @@ div.dashboard-icon-wrapper {
     height: 22px; text-align: center;
     display: inline-block;
 }
+
+div.builder-wrapper {
+    width: 100%;
+}
+
+div.builder-wrapper div.builder-collapse-view {
+    display: none;
+    width: 100%;
+    height: 50px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding: 15px;
+    font-size: 14px;
+    color: #333;
+    background-color: rgba(250, 240, 210, 0.5);
+    border: 1px solid #dcc896;
+    border-radius: 5px;
+}
+
+button[name=builder-ec] {
+    width: 50px;
+    margin-left: 5px
+}
