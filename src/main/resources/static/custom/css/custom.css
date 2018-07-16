@@ -1042,3 +1042,14 @@ button[name=builder-ec] {
     width: 50px;
     margin-left: 5px
 }
+
+.receive-rule .matching-section-wrapper {
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.receive-rule div.radio {
+    display: inline-block;
+    padding-top: 0;
+    padding-right: 15px;
+}

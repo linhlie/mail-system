@@ -1,0 +1,297 @@
+
+(function () {
+    "use strict";
+
+    var receiveBuilderId = '#receive-builder';
+    var markABuilderId = '#mark-a-builder';
+    var markBBuilderId = '#mark-b-builder';
+
+    var collapsedPrefixKey = "/user/matchingSettings/collapsed";
+    var collapseViewPostfix = "-collapse-view";
+
+    function fullWidthNumConvert(fullWidthNum){
+        return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
+            return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
+        });
+    }
+
+    function numberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
+    }
+
+    $(function () {
+        var default_plugins = [
+            'sortable',
+            'filter-description',
+            'unique-filter',
+            'bt-tooltip-errors',
+            'bt-selectpicker',
+            'bt-checkbox',
+            'invert',
+        ];
+
+        var default_filters = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '9',
+            label: 'CC',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '10',
+            label: 'BCC',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '11',
+            label: '全て(受信者・CC・BCC)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '12',
+            label: 'いずれか(受信者・CC・BCC)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '13',
+            label: '全て(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '14',
+            label: 'いずれか(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '4',
+            label: '数値',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '5',
+            label: '数値(上代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '6',
+            label: '数値(下代)',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+            validation: {
+                callback: numberValidator
+            },
+        }, {
+            id: '7',
+            label: '添付ファイル',
+            type: 'integer',
+            input: 'radio',
+            values: {
+                1: '有り',
+                0: '無し'
+            },
+            colors: {
+                1: 'success',
+                0: 'danger'
+            },
+            operators: ['equal']
+        }, {
+            id: '8',
+            label: '受信日',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+        }];
+
+        var default_lang = {
+            "__locale": "English (en)",
+            "__author": "Damien \"Mistic\" Sorel, http://www.strangeplanet.fr",
+
+            "add_rule": "ルールの追加",
+            "add_group": "グループの追加",
+            "delete_rule": "削除",
+            "delete_group": "削除",
+
+            "conditions": {
+                "AND": "AND",
+                "OR": "OR"
+            },
+
+            "operators": {
+                "equal": "等しい ＝",
+                "not_equal": "異なる ≠",
+                "in": "いずれか ...",
+                "not_in": "いずれでもない",
+                "less": "未満 ＜",
+                "less_or_equal": "以下 ≦",
+                "greater": "超 ＞",
+                "greater_or_equal": "以上 ≧",
+                "between": "範囲",
+                "not_between": "範囲外",
+                "begins_with": "開始する",
+                "not_begins_with": "開始ではない",
+                "contains": "含む 〇",
+                "not_contains": "含まない ×",
+                "ends_with": "終了する",
+                "not_ends_with": "終了ではない",
+                "is_empty": "空",
+                "is_not_empty": "空でない",
+                "is_null": "空",
+                "is_not_null": "空でない"
+            },
+
+            "errors": {
+                "no_filter": "No filter selected",
+                "empty_group": "The group is empty",
+                "radio_empty": "No value selected",
+                "checkbox_empty": "No value selected",
+                "select_empty": "No value selected",
+                "string_empty": "Empty value",
+                "string_exceed_min_length": "Must contain at least {0} characters",
+                "string_exceed_max_length": "Must not contain more than {0} characters",
+                "string_invalid_format": "Invalid format ({0})",
+                "number_nan": "Not a number",
+                "number_not_integer": "Not an integer",
+                "number_not_double": "Not a real number",
+                "number_exceed_min": "Must be greater than {0}",
+                "number_exceed_max": "Must be lower than {0}",
+                "number_wrong_step": "Must be a multiple of {0}",
+                "number_between_invalid": "Invalid values, {0} is greater than {1}",
+                "datetime_empty": "Empty value",
+                "datetime_invalid": "Invalid date format ({0})",
+                "datetime_exceed_min": "Must be after {0}",
+                "datetime_exceed_max": "Must be before {0}",
+                "datetime_between_invalid": "Invalid values, {0} is greater than {1}",
+                "boolean_not_valid": "Not a boolean",
+                "operator_not_multiple": "Operator \"{1}\" cannot accept multiple values"
+            },
+            "invert": "Invert",
+            "NOT": "NOT"
+        }
+
+        var default_configs = {
+            plugins: default_plugins,
+            allow_empty: true,
+            filters: default_filters,
+            rules: null,
+            lang: default_lang,
+        };
+
+        $(receiveBuilderId).queryBuilder(default_configs);
+        $(markABuilderId).queryBuilder(default_configs);
+        $(markBBuilderId).queryBuilder(default_configs);
+        var group = $(receiveBuilderId)[0].queryBuilder.model.root;
+        if(group){
+            group.empty();
+        }
+        group = $(markABuilderId)[0].queryBuilder.model.root;
+        if(group){
+            group.empty();
+        }
+
+        group = $(markBBuilderId)[0].queryBuilder.model.root;
+        if(group){
+            group.empty();
+        }
+
+        setButtonClickListenerByName("builder-ec", onExpandCollapseBuilder);
+        loadDefaultSettings();
+        $(window).on('beforeunload', saveDefaultSettings);
+    });
+
+    function setButtonClickListenerByName(name, callback) {
+        $("button[name='"+name+"']").off('click');
+        $("button[name='"+name+"']").click(function () {
+            if(typeof callback == "function"){
+                callback.apply(this);
+            }
+        })
+    }
+
+    function onExpandCollapseBuilder() {
+        var builderId = this.getAttribute("data");
+        if(builderId) {
+            var builder = $(builderId);
+            $(this).html(builder.is(":visible") ? "＋" : "ー");
+            if(builder.is(":visible")){
+                $(builderId).slideToggle(200, function () {
+                    $(builderId + collapseViewPostfix).slideToggle(200, function () {
+
+                    })
+                })
+            } else {
+                $(builderId + collapseViewPostfix).slideToggle(200, function () {
+                    $(builderId).slideToggle(200, function () {
+
+                    })
+                });
+            }
+        }
+    }
+
+    function loadDefaultSettings() {
+        loadExpandCollapseSetting(receiveBuilderId);
+        loadExpandCollapseSetting(markABuilderId);
+        loadExpandCollapseSetting(markBBuilderId);
+    }
+
+    function loadExpandCollapseSetting(builderId) {
+        var isHidden = localStorage.getItem(getCollapseKey(builderId)) === "true";
+        var $builder = $(builderId);
+        var $collapseView = $(builderId + collapseViewPostfix);
+        var $button = $builder.parent().parent().find("button[name='builder-ec']");
+        if(isHidden) {
+            $button.html("＋");
+            $builder.hide();
+            $collapseView.show();
+        } else {
+            $button.html("ー");
+            $collapseView.hide();
+            $builder.show();
+        }
+    }
+
+    function saveDefaultSettings() {
+        localStorage.setItem(getCollapseKey(receiveBuilderId), $(receiveBuilderId).is(":hidden"));
+        localStorage.setItem(getCollapseKey(markABuilderId), $(markABuilderId).is(":hidden"));
+        localStorage.setItem(getCollapseKey(markBBuilderId), $(markBBuilderId).is(":hidden"));
+    }
+
+    function getCollapseKey(builderId) {
+        return collapsedPrefixKey + "-" + builderId;
+    }
+
+})(jQuery);

@@ -5,7 +5,136 @@
 </head>
 <body>
 <div layout:fragment="content">
-    受信ルール設定
+    <section class="content-header" style="position: relative;">
+        <h1>受信ルール設定</h1>
+    </section>
+    <section class="content receive-rule">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <form class="form-horizontal" method="POST">
+                            <datalist id="itemlist">
+                                <option data-value="送信者" value="送信者"></option>
+                                <option data-value="受信者" value="受信者"></option>
+                                <option data-value="件名" value="件名"></option>
+                                <option data-value="本文" value="本文"></option>
+                            </datalist>
+                            <datalist id="itemlist2">
+                                <option data-value="数値" value="数値"></option>
+                                <option data-value="数値(上代)" value="数値(上代)"></option>
+                                <option data-value="数値(下代)" value="数値(下代)"></option>
+                            </datalist>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <div style="width: 100%; padding-bottom: 15px;">
+                                        <div class="radio">
+                                            <label><input type="radio" id="receiveType1" name="receiveType" value="1"/>全て受信</label>
+                                        </div>
+                                        <div class="radio">
+                                            <label><input type="radio" id="receiveType2" name="receiveType" value="2"/>受信条件設定</label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span>受信条件</span>
+                                        <button name="builder-ec" data="#receive-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
+                                    </div>
+                                    <div class="builder-wrapper">
+                                        <div id="receive-builder"></div>
+                                        <div id="receive-builder-collapse-view" class="builder-collapse-view">
+                                            <span>非表示</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveReceiveBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getReceiveBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-md-offset-9" style="padding-bottom: 10px;">
+                                    <button type="button" class="btn btn-default btn-block">受信ルール更新(F5)</button>
+                                </div>
+                            </div>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <div>
+                                        <span>マークA設定条件</span>
+                                        <button name="builder-ec" data="#mark-a-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
+                                    </div>
+                                    <div class="builder-wrapper">
+                                        <div id="mark-a-builder"></div>
+                                        <div id="mark-a-builder-collapse-view" class="builder-collapse-view">
+                                            <span>非表示</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveMarkABtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getMarkABtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                            </div>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <div>
+                                        <span>マークB設定条件</span>
+                                        <button name="builder-ec" data="#mark-b-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
+                                    </div>
+                                    <div class="builder-wrapper">
+                                        <div id="mark-b-builder"></div>
+                                        <div id="mark-b-builder-collapse-view" class="builder-collapse-view">
+                                            <span>非表示</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveMarkBBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getMarkBBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <span><b>マーク反映の範囲</b></span>
+                                    <div style="display: inline-block; padding-left: 15px;">
+                                        <div class="radio">
+                                            <label><input type="radio" id="markReflectionScope1" name="markReflectionScope" value="1"/>以降の受信メールから反映</label>
+                                        </div>
+                                        <div class="radio">
+                                            <label><input type="radio" id="markReflectionScope2" name="markReflectionScope" value="2"/>過去のメールにも反映する</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-default btn-block">マーク更新(F6)</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/admin/receiveRules.js"></script>
+</th:block>
 </body>
 </html>
