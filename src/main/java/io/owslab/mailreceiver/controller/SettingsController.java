@@ -29,8 +29,10 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/")
@@ -265,6 +267,54 @@ public class SettingsController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("loadReceiveRuleSettings: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/receiveRuleSettings/save", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveReceiveReceiveRule(
+            @Valid @RequestBody ReceiveRuleForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            mailReceiveRuleService.saveReceiveRule(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("saveReceiveReceiveRule: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/receiveRuleSettings/saveMarkReflectionScope", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveMarkReflectionScope(
+            @Valid @RequestBody MarkReflectionScopeForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            mailReceiveRuleService.saveMarkReflectionScope(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("saveMarkReflectionScope: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);

@@ -1,6 +1,7 @@
 
 (function () {
     "use strict";
+    var formId = '#receiveRuleSettingsForm';
 
     var receiveBuilderId = '#receive-builder';
     var markABuilderId = '#mark-a-builder';
@@ -8,6 +9,9 @@
 
     var collapsedPrefixKey = "/user/matchingSettings/collapsed";
     var collapseViewPostfix = "-collapse-view";
+
+    var saveReceiveRuleBtnId = "#saveReceiveRuleBtn";
+    var saveMarkConditionsBtnId = "#saveMarkConditionsBtn";
 
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
@@ -230,10 +234,57 @@
         setButtonClickListenerByName("builder-ec", onExpandCollapseBuilder);
         loadDefaultSettings();
         $(window).on('beforeunload', saveDefaultSettings);
+        $(document).on("keydown", keydownHandler);
+        setButtonClickListenter(saveReceiveRuleBtnId, saveReceiveRule);
+        setButtonClickListenter(saveMarkConditionsBtnId, saveMarkConditions);
         loadData();
     });
 
+    function keydownHandler(e) {
+        if((e.which || e.keyCode) == 116) {
+            e.preventDefault();
+            $(saveReceiveRuleBtnId).click();
+        } else if((e.which || e.keyCode) == 117) {
+            e.preventDefault();
+            $(saveMarkConditionsBtnId).click();
+        }
+    }
+
+    function setButtonClickListenter(id, callback) {
+        $(id).off('click');
+        $(id).click(function () {
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
+
+    function saveReceiveRule() {
+        var rules = $(receiveBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(rules)) return;
+        var data = {
+            receiveMailType: $('input[name=receiveType]:checked', formId).val(),
+            receiveMailRule: JSON.stringify(rules),
+        };
+
+        save("/admin/receiveRuleSettings/save", JSON.stringify(data))
+    }
+
+    function saveMarkConditions() {
+        var markAConditions = $(markABuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(markAConditions)) return;
+        var markBConditions = $(markBBuilderId).queryBuilder('getRules');
+        if ($.isEmptyObject(markBConditions)) return;
+        var data = {
+            markReflectionScope: $('input[name=markReflectionScope]:checked', formId).val(),
+            markAConditions: JSON.stringify(markAConditions),
+            markBConditions: JSON.stringify(markBConditions),
+        };
+        save("/admin/receiveRuleSettings/saveMarkReflectionScope", JSON.stringify(data))
+    }
+
     function loadData() {
+        $('body').loadingModal('destroy');
         $('body').loadingModal({
             position: 'auto',
             text: 'ローディング...',
@@ -370,6 +421,33 @@
 
     function getCollapseKey(builderId) {
         return collapsedPrefixKey + "-" + builderId;
+    }
+    
+    function save(url, data) {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: '更新中...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: url,
+            data: data,
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function (response) {
+                $('body').loadingModal('hide');
+            },
+            error: function (e) {
+                $('body').loadingModal('hide');
+            }
+        });
     }
 
 })(jQuery);
