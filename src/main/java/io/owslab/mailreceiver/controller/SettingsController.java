@@ -5,13 +5,16 @@ import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.JsonStringResponseBody;
 import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.settings.MailReceiveRuleService;
 import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.FileAssertResult;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import io.owslab.mailreceiver.validator.MailAccountSettingValidator;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,9 @@ public class SettingsController {
 
     @Autowired
     private MailAccountSettingValidator mailAccountSettingValidator;
+
+    @Autowired
+    private MailReceiveRuleService mailReceiveRuleService;
 
     @InitBinder
     protected void initBinder(WebDataBinder dataBinder) {
@@ -245,5 +251,23 @@ public class SettingsController {
     @RequestMapping("/receiveRuleSettings")
     public String receiveRuleSettings() {
         return "admin/settings/receive_mail_rule_settings";
+    }
+
+    @RequestMapping(value = "/receiveRuleSettings/load", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> loadReceiveRuleSettings() {
+        JsonStringResponseBody result = new JsonStringResponseBody();
+        try {
+            JSONObject json = mailReceiveRuleService.getReceiveRuleSettings();
+            result.setJson(json.toString());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("loadReceiveRuleSettings: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }

@@ -230,7 +230,85 @@
         setButtonClickListenerByName("builder-ec", onExpandCollapseBuilder);
         loadDefaultSettings();
         $(window).on('beforeunload', saveDefaultSettings);
+        loadData();
     });
+
+    function loadData() {
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/admin/receiveRuleSettings/load",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if (data && data.status) {
+                    var jsonData = getJson(data.json);
+                    setSettingsData(jsonData);
+                } else {
+                    console.error("[ERROR] dashboard load data failed: ");
+                }
+            },
+            error: function (e) {
+                $('body').loadingModal('hide');
+                console.error("[ERROR] dashboard load data error: ", e);
+            }
+        });
+    }
+    
+    function getJson(rawStr) {
+        var json = null;
+        try {
+            return JSON.parse(rawStr);
+        } catch (e) {
+            console.warn("getJson error: ", e);
+        }
+        return json;
+    }
+    
+    function setSettingsData(data) {
+        setReceiveMailType(data.receiveMailType);
+        setReceiveMailRule(data.receiveMailRule);
+        setMarkARule(data.markAConditions);
+        setMarkBRule(data.markBConditions);
+        setMarkReflectionScope(data.markReflectionScope);
+    }
+
+    function setReceiveMailType(type) {
+        $("input[name=receiveType][value=" + type + "]").attr('checked', 'checked');
+    }
+
+    function setReceiveMailRule(ruleStr) {
+        var rule = getJson(ruleStr);
+        setBuilderRules(receiveBuilderId, rule);
+    }
+
+    function setMarkARule(ruleStr) {
+        var rule = getJson(ruleStr);
+        setBuilderRules(markABuilderId, rule);
+    }
+
+    function setMarkBRule(ruleStr) {
+        var rule = getJson(ruleStr);
+        setBuilderRules(markBBuilderId, rule);
+    }
+
+    function setMarkReflectionScope(scope) {
+        $("input[name=markReflectionScope][value=" + scope + "]").attr('checked', 'checked');
+    }
+
+    function setBuilderRules(builderId, rules) {
+        if(!rules) return;
+        $(builderId).queryBuilder('setRules', rules);
+    }
 
     function setButtonClickListenerByName(name, callback) {
         $("button[name='"+name+"']").off('click');
