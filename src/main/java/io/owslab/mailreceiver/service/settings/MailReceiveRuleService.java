@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +65,13 @@ public class MailReceiveRuleService {
         }
         rule.setLastUpdate(new Date());
         receiveRuleDAO.save(rule);
+    }
+
+    public List<ReceiveRule> getRulesByForm(ReceiveRuleForm form) {
+        List<ReceiveRule> list = new ArrayList<ReceiveRule>();
+        ReceiveRule existRule = findRuleByNameAndType(form.getName(), form.getType());
+        if(existRule != null) list.add(existRule);
+        return list;
     }
 
     private ReceiveRule findRuleByNameAndType(String name, int type) {

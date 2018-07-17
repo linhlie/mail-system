@@ -308,8 +308,23 @@
     }
     
     function getReceive() {
-        var name = showPrompt();
-        if (name == null || name.length == 0) return;
+        getRule(RuleTypes.RECEIVE, function (rule) {
+            if(rule) {
+                setReceiveMailRule(rule);
+            }
+        })
+    }
+
+    function showRuleNotFoundError() {
+        setTimeout(function () {
+            alert("データが見つかりません");
+        }, 10);
+    }
+
+    function showCannotLoadDataError() {
+        setTimeout(function () {
+            alert("エラーが発生しました。データをロードできませんでした。");
+        }, 10);
     }
     
     function saveMarkA() {
@@ -317,13 +332,23 @@
     }
     
     function getMarkA() {
+        getRule(RuleTypes.MARKA, function (rule) {
+            if(rule) {
+                setMarkARule(rule);
+            }
+        })
     }
 
     function saveMarkB() {
-        saveRule(markABuilderId, RuleTypes.MARKB);
+        saveRule(markBBuilderId, RuleTypes.MARKB);
     }
     
     function getMarkB() {
+        getRule(RuleTypes.MARKB, function (rule) {
+            if(rule) {
+                setMarkBRule(rule);
+            }
+        })
     }
     
     function saveRule(builderId, type) {
@@ -337,6 +362,34 @@
             rule: JSON.stringify(rule)
         };
         save("/admin/receiveRuleSettings/saveRule", JSON.stringify(data), "保存中...");
+    }
+
+    function getRule(type, callback) {
+        var name = showPrompt();
+        if (name == null || name.length == 0) return;
+        getRuleHandle(name, type,
+            function onSuccess(response) {
+                if(!response || !response.list || response.list.length < 1) {
+                    callback();
+                    showRuleNotFoundError();
+                } else {
+                    var item = response.list[0];
+                    callback(item.rule);
+                }
+            },
+            function onError(e) {
+                callback();
+                showCannotLoadDataError();
+            }
+        );
+    }
+
+    function getRuleHandle(name, type, onSuccess, onError) {
+        var data = {
+            type: type,
+            name: name,
+        };
+        post("/admin/receiveRuleSettings/getRule", JSON.stringify(data), "ローディング...", onSuccess, onError);
     }
     
     function showPrompt() {
@@ -485,6 +538,10 @@
     }
     
     function save(url, data, text) {
+        post(url, data, text, function() {}, function () {})
+    }
+    
+    function post(url, data, text, onSuccess, onError) {
         text = text || "更新中...";
         $('body').loadingModal('destroy');
         $('body').loadingModal({
@@ -503,11 +560,17 @@
             dataType: 'json',
             cache: false,
             timeout: 600000,
-            success: function (response) {
+            success: function () {
                 $('body').loadingModal('hide');
+                if(typeof onSuccess === "function"){
+                    onSuccess.apply(this, arguments);
+                }
             },
-            error: function (e) {
+            error: function () {
                 $('body').loadingModal('hide');
+                if(typeof onError === "function"){
+                    onError.apply(this, arguments);
+                }
             }
         });
     }

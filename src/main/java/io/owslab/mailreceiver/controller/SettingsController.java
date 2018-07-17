@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dto.EmailAccountDTO;
 import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
+import io.owslab.mailreceiver.model.ReceiveRule;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.JsonStringResponseBody;
 import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
@@ -333,6 +334,31 @@ public class SettingsController {
         }
         try {
             mailReceiveRuleService.saveRule(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("saveRule: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/receiveRuleSettings/getRule", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> getRule(
+            @Valid @RequestBody ReceiveRuleForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<ReceiveRule> rules = mailReceiveRuleService.getRulesByForm(form);
+            result.setList(rules);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
