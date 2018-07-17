@@ -6,12 +6,26 @@
     var receiveBuilderId = '#receive-builder';
     var markABuilderId = '#mark-a-builder';
     var markBBuilderId = '#mark-b-builder';
+    var saveReceiveBtnId = '#saveReceiveBtn';
+    var getReceiveBtnId = '#getReceiveBtn';
+
+    var saveMarkABtnId = '#saveMarkABtn';
+    var getMarkABtnId = '#getMarkABtn';
+
+    var saveMarkBBtnId = '#saveMarkBBtn';
+    var getMarkBBtnId = '#getMarkBBtn';
 
     var collapsedPrefixKey = "/user/matchingSettings/collapsed";
     var collapseViewPostfix = "-collapse-view";
 
     var saveReceiveRuleBtnId = "#saveReceiveRuleBtn";
     var saveMarkConditionsBtnId = "#saveMarkConditionsBtn";
+
+    var RuleTypes = {
+        RECEIVE: 0,
+        MARKA: 1,
+        MARKB: 2,
+    }
 
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
@@ -237,6 +251,12 @@
         $(document).on("keydown", keydownHandler);
         setButtonClickListenter(saveReceiveRuleBtnId, saveReceiveRule);
         setButtonClickListenter(saveMarkConditionsBtnId, saveMarkConditions);
+        setButtonClickListenter(saveReceiveBtnId, saveReceive);
+        setButtonClickListenter(getReceiveBtnId, getReceive);
+        setButtonClickListenter(saveMarkABtnId, saveMarkA);
+        setButtonClickListenter(getMarkABtnId, getMarkA);
+        setButtonClickListenter(saveMarkBBtnId, saveMarkB);
+        setButtonClickListenter(getMarkBBtnId, getMarkB);
         loadData();
     });
 
@@ -267,7 +287,7 @@
             receiveMailRule: JSON.stringify(rules),
         };
 
-        save("/admin/receiveRuleSettings/save", JSON.stringify(data))
+        save("/admin/receiveRuleSettings/saveReceiveReceiveRuleBundle", JSON.stringify(data))
     }
 
     function saveMarkConditions() {
@@ -280,7 +300,48 @@
             markAConditions: JSON.stringify(markAConditions),
             markBConditions: JSON.stringify(markBConditions),
         };
-        save("/admin/receiveRuleSettings/saveMarkReflectionScope", JSON.stringify(data))
+        save("/admin/receiveRuleSettings/saveMarkReflectionScopeBundle", JSON.stringify(data))
+    }
+    
+    function saveReceive() {
+        saveRule(receiveBuilderId, RuleTypes.RECEIVE);
+    }
+    
+    function getReceive() {
+        var name = showPrompt();
+        if (name == null || name.length == 0) return;
+    }
+    
+    function saveMarkA() {
+        saveRule(markABuilderId, RuleTypes.MARKA);
+    }
+    
+    function getMarkA() {
+    }
+
+    function saveMarkB() {
+        saveRule(markABuilderId, RuleTypes.MARKB);
+    }
+    
+    function getMarkB() {
+    }
+    
+    function saveRule(builderId, type) {
+        var rule = $(builderId).queryBuilder('getRules');
+        if ($.isEmptyObject(rule)) return;
+        var name = showPrompt();
+        if (name == null || name.length == 0) return;
+        var data = {
+            type: type,
+            name: name,
+            rule: JSON.stringify(rule)
+        };
+        save("/admin/receiveRuleSettings/saveRule", JSON.stringify(data), "保存中...");
+    }
+    
+    function showPrompt() {
+        var name = prompt("保存された名前を入力してください", "");
+        return name;
     }
 
     function loadData() {
@@ -423,11 +484,12 @@
         return collapsedPrefixKey + "-" + builderId;
     }
     
-    function save(url, data) {
+    function save(url, data, text) {
+        text = text || "更新中...";
         $('body').loadingModal('destroy');
         $('body').loadingModal({
             position: 'auto',
-            text: '更新中...',
+            text: text,
             color: '#fff',
             opacity: '0.7',
             backgroundColor: 'rgb(0,0,0)',

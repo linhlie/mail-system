@@ -3,7 +3,7 @@ package io.owslab.mailreceiver.form;
 /**
  * Created by khanhlvb on 7/17/18.
  */
-public class MarkReflectionScopeForm {
+public class MarkReflectionScopeBundleForm {
 
     private String markReflectionScope;
     private String markAConditions;
