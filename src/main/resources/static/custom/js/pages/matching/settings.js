@@ -232,6 +232,11 @@
             label: '受信日',
             type: 'string',
             operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+        }, {
+            id: '15',
+            label: 'マーク',
+            type: 'string',
+            operators: ['equal', 'not_equal']
         }];
 
         var default_lang = {

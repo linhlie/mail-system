@@ -466,6 +466,9 @@ public class MatchingConditionService {
                 match = isMatchPart(email.getSubject(), condition, distinguish, spaceEffective)
                         || isMatchPart(email.getOptimizedBody(), condition, distinguish, spaceEffective);
                 break;
+            case MARK:
+                match = isMatchPart(email.getMark(), condition, distinguish, spaceEffective);
+                break;
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
