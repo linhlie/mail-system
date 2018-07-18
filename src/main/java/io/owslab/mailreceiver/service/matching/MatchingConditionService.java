@@ -146,10 +146,11 @@ public class MatchingConditionService {
     }
 
     public List<String> filter(List<Email> emailList, FilterRule rootRule) {
+        List<String> msgIdList = new ArrayList<>();
+        if(rootRule == null) return  msgIdList;
         numberTreatment = numberTreatmentService.getFirst();
         boolean distinguish = false;
         boolean spaceEffective = false;
-        List<String> msgIdList = new ArrayList<>();
         List<Email> matchList;
         if(rootRule.getRules().size() > 0) {
             findMailMatching(emailList, rootRule, distinguish, spaceEffective);

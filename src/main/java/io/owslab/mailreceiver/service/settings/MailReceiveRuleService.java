@@ -102,16 +102,26 @@ public class MailReceiveRuleService {
         if(emailList.size() == 0) return;
         String receiveMailType = ess.getReceiveMailType();
         String receiveMailRule = ess.getReceiveMailRule();
+        String markAConditions = ess.getMarkAConditions();
+        String markBConditions = ess.getMarkBConditions();
         FilterRule receiveMailFilterRule = getFilterRule(receiveMailRule);
+        FilterRule markAFilterRule = getFilterRule(markAConditions);
+        FilterRule markBFilterRule = getFilterRule(markBConditions);
+        List<String> markAIdList = mcs.filter(emailList, markAFilterRule);
+        List<String> markBIdList = mcs.filter(emailList, markBFilterRule);
         if(receiveMailType.equals(ReceiveType.ALL) || receiveMailFilterRule == null) {
             for(Email email : emailList) {
                 email.setStatus(Email.Status.DONE);
+                String mark = getMark(markAIdList, markBIdList, email);
+                email.setMark(mark);
             }
         } else {
             List<String> matchIdList = mcs.filter(emailList, receiveMailFilterRule);
             for(Email email : emailList) {
                 if(matchIdList.contains(email.getMessageId())) {
                     email.setStatus(Email.Status.DONE);
+                    String mark = getMark(markAIdList, markBIdList, email);
+                    email.setMark(mark);
                 } else {
                     email.setStatus(Email.Status.SKIPPED);
                 }
@@ -158,5 +168,16 @@ public class MailReceiveRuleService {
             }
         }
         return result;
+    }
+
+    private String getMark(List<String> markAIdList, List<String> markBIdList, Email email) {
+        String msgId = email.getMessageId();
+        if(markAIdList.contains(msgId)) {
+            return Email.Mark.A;
+        } else if(markBIdList.contains(msgId)) {
+            return Email.Mark.B;
+        } else {
+            return Email.Mark.NONE;
+        }
     }
 }

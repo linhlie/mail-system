@@ -399,10 +399,16 @@ public class Email {
         this.status = status;
     }
 
-    public class Status {
+    public static class Status {
         public static final int NEW = 0;
         public static final int DONE = 1;
         public static final int SKIPPED = 2;
         public static final int ERROR_OCCURRED = 3;
+    }
+
+    public static class Mark {
+        public static final String A = "a";
+        public static final String B = "b";
+        public static final String NONE = null;
     }
 }
