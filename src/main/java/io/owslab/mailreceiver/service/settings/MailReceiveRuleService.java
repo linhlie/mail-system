@@ -12,6 +12,7 @@ import io.owslab.mailreceiver.response.JsonStringResponseBody;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.FilterRule;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -160,12 +161,16 @@ public class MailReceiveRuleService {
 
     public FilterRule getFilterRule(String ruleStr) {
         FilterRule filterRule = null;
-        JSONObject raw = new JSONObject(ruleStr);
-        JSONObject rule = buildGroupDataFromRaw(raw);
-        ObjectMapper mapper = new ObjectMapper();
         try {
+            JSONObject raw = new JSONObject(ruleStr);
+            JSONObject rule = buildGroupDataFromRaw(raw);
+            ObjectMapper mapper = new ObjectMapper();
             filterRule = mapper.readValue(rule.toString(), FilterRule.class);
+        } catch (JSONException e) {
+
         } catch (IOException e) {
+
+        } catch (Exception e) {
 
         }
         return filterRule;
