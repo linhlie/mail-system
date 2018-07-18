@@ -62,7 +62,7 @@ public class SendMailService {
     private ClickHistoryService clickHistoryService;
 
     public void sendMail(SendMailForm form){
-        Email email = emailService.findOne(form.getMessageId(), false);
+        Email email = emailService.findOne(form.getMessageId());
         if(email == null) return;
         String formAccountId = form.getAccountId();
         long accountId = formAccountId != null ? Long.parseLong(formAccountId) : email.getAccountId();
@@ -74,7 +74,7 @@ public class SendMailService {
 
         Email matchingEmail = null;
         if(form.getMatchingMessageId() != null) {
-            matchingEmail = emailService.findOne(form.getMatchingMessageId(), false);
+            matchingEmail = emailService.findOne(form.getMatchingMessageId());
         }
 
         // Sender's email ID needs to be mentioned

@@ -1,14 +1,22 @@
 package io.owslab.mailreceiver.service.settings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.ReceiveRuleDAO;
 import io.owslab.mailreceiver.form.MarkReflectionScopeBundleForm;
 import io.owslab.mailreceiver.form.ReceiveRuleBundleForm;
 import io.owslab.mailreceiver.form.ReceiveRuleForm;
+import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveRule;
+import io.owslab.mailreceiver.response.JsonStringResponseBody;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.utils.FilterRule;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,12 +26,22 @@ import java.util.List;
  */
 @Service
 public class MailReceiveRuleService {
+    public class ReceiveType {
+        public static final String ALL = "1";
+        public static final String FILTER = "2";
+    }
 
     @Autowired
     private EnviromentSettingService ess;
 
     @Autowired
+    private MatchingConditionService mcs;
+
+    @Autowired
     private ReceiveRuleDAO receiveRuleDAO;
+
+    @Autowired
+    private EmailDAO emailDAO;
 
     public JSONObject getReceiveRuleSettings() {
         JSONObject obj = new JSONObject();
@@ -77,5 +95,68 @@ public class MailReceiveRuleService {
     private ReceiveRule findRuleByNameAndType(String name, int type) {
         List<ReceiveRule> rules = receiveRuleDAO.findByNameAndTypeOrderByLastUpdateDesc(name, type);
         return rules.size() > 0 ? rules.get(0) : null;
+    }
+
+    public synchronized void checkMailStatus() {
+        List<Email> emailList = emailDAO.findByStatus(Email.Status.NEW);
+        if(emailList.size() == 0) return;
+        String receiveMailType = ess.getReceiveMailType();
+        String receiveMailRule = ess.getReceiveMailRule();
+        FilterRule receiveMailFilterRule = getFilterRule(receiveMailRule);
+        if(receiveMailType.equals(ReceiveType.ALL) || receiveMailFilterRule == null) {
+            for(Email email : emailList) {
+                email.setStatus(Email.Status.DONE);
+            }
+        } else {
+            List<String> matchIdList = mcs.filter(emailList, receiveMailFilterRule);
+            for(Email email : emailList) {
+                if(matchIdList.contains(email.getMessageId())) {
+                    email.setStatus(Email.Status.DONE);
+                } else {
+                    email.setStatus(Email.Status.SKIPPED);
+                }
+            }
+        }
+        emailDAO.save(emailList);
+    }
+
+    public FilterRule getFilterRule(String ruleStr) {
+        FilterRule filterRule = null;
+        JSONObject raw = new JSONObject(ruleStr);
+        JSONObject rule = buildGroupDataFromRaw(raw);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            filterRule = mapper.readValue(rule.toString(), FilterRule.class);
+        } catch (IOException e) {
+
+        }
+        return filterRule;
+    }
+
+    private JSONObject buildGroupDataFromRaw(JSONObject data) {
+        JSONObject result = new JSONObject();
+        result.put("condition", data.get("condition"));
+        result.put("rules", buildRulesDataFromRaw(data));
+        return result;
+    }
+
+    private JSONArray buildRulesDataFromRaw(JSONObject data) {
+        JSONArray result = new JSONArray();
+        JSONArray rules = data.getJSONArray("rules");
+        for(int i = 0 ; i < rules.length(); i++){
+            JSONObject rawRule = (JSONObject) rules.get(i);
+            if(rawRule.has("id")){
+                JSONObject rule = new JSONObject();
+                rule.put("id", rawRule.get("id"));
+                rule.put("operator", rawRule.get("operator"));
+                rule.put("type", rawRule.get("type"));
+                rule.put("value", rawRule.get("value"));
+                result.put(rule);
+            } else if (rawRule.has("condition")) {
+                JSONObject rule = buildGroupDataFromRaw(rawRule);
+                result.put(rule);
+            }
+        }
+        return result;
     }
 }

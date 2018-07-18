@@ -52,7 +52,7 @@ public class EmailWordJobService {
     private void build(EmailWordJob emailWordJob){
         String messageId = emailWordJob.getMessageId();
         long wordId = emailWordJob.getWordId();
-        Email email = emailService.findOne(messageId, false);
+        Email email = emailService.findOne(messageId);
         if(email == null) return;
         Word word = wordService.findById(wordId);
         if(word == null) return;

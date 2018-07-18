@@ -15,8 +15,8 @@ public class EmailService {
     @Autowired
     private EmailDAO emailDAO;
 
-    public Email findOne(String messageId, boolean deleted){
-        List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, deleted);
+    public Email findOne(String messageId){
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
     }
 }

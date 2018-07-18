@@ -145,6 +145,24 @@ public class MatchingConditionService {
         return matchingConditionDAO.findByType(type);
     }
 
+    public List<String> filter(List<Email> emailList, FilterRule rootRule) {
+        numberTreatment = numberTreatmentService.getFirst();
+        boolean distinguish = false;
+        boolean spaceEffective = false;
+        List<String> msgIdList = new ArrayList<>();
+        List<Email> matchList;
+        if(rootRule.getRules().size() > 0) {
+            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
+            matchList = rootRule.getMatchEmails();
+        } else {
+            matchList = emailList;
+        }
+        for(Email email : matchList) {
+            msgIdList.add(email.getMessageId());
+        }
+        return msgIdList;
+    }
+
     public List<ExtractMailDTO> extract(ExtractForm extractForm){
         List<ExtractMailDTO> extractResult = new ArrayList<>();
         numberTreatment = numberTreatmentService.getFirst();

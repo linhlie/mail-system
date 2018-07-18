@@ -66,6 +66,11 @@ public class Email {
 
     private String messageNumber;
 
+    @Column(name="[mark]")
+    private String mark;
+
+    private int status;
+
     @Transient
     private String optimizedText;
 
@@ -167,8 +172,6 @@ public class Email {
         this.rangeList = new ArrayList<>();
         this.messageNumber = messageNumber;
     }
-
-
 
     public String getMessageId() {
         return messageId;
@@ -378,5 +381,28 @@ public class Email {
 
     public void setMessageNumber(String messageNumber) {
         this.messageNumber = messageNumber;
+    }
+
+    public String getMark() {
+        return mark;
+    }
+
+    public void setMark(String mark) {
+        this.mark = mark;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public class Status {
+        public static final int NEW = 0;
+        public static final int DONE = 1;
+        public static final int SKIPPED = 2;
+        public static final int ERROR_OCCURRED = 3;
     }
 }
