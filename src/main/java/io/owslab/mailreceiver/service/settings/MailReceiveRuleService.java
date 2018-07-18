@@ -14,6 +14,7 @@ import io.owslab.mailreceiver.utils.FilterRule;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,9 +27,14 @@ import java.util.List;
  */
 @Service
 public class MailReceiveRuleService {
-    public class ReceiveType {
+    public static class ReceiveType {
         public static final String ALL = "1";
         public static final String FILTER = "2";
+    }
+
+    public static class MarkReflectionScopeType {
+        public static final String FROM_NEXT = "1";
+        public static final String INCLUDE_PAST = "2";
     }
 
     @Autowired
@@ -39,6 +45,8 @@ public class MailReceiveRuleService {
 
     @Autowired
     private ReceiveRuleDAO receiveRuleDAO;
+
+    @Autowired ProcessService processService;
 
     @Autowired
     private EmailDAO emailDAO;
@@ -66,9 +74,29 @@ public class MailReceiveRuleService {
     }
 
     public void saveMarkReflectionScopeBundle(MarkReflectionScopeBundleForm form) {
-        ess.set(EnviromentSettingService.MARK_REFLECTION_SCOPE_KEY, form.getMarkReflectionScope());
+        String markType = form.getMarkReflectionScope();
+        ess.set(EnviromentSettingService.MARK_REFLECTION_SCOPE_KEY, markType);
         ess.set(EnviromentSettingService.MARK_A_CONDITIONS_KEY, form.getMarkAConditions());
         ess.set(EnviromentSettingService.MARK_B_CONDITIONS_KEY, form.getMarkBConditions());
+        if(markType.equals(MarkReflectionScopeType.INCLUDE_PAST)) {
+            processService.markPast();
+        }
+    }
+
+    public void markPast() {
+        List<Email> emailList = emailDAO.findByStatus(Email.Status.DONE);
+        if(emailList.size() == 0) return;
+        String markAConditions = ess.getMarkAConditions();
+        String markBConditions = ess.getMarkBConditions();
+        FilterRule markAFilterRule = getFilterRule(markAConditions);
+        FilterRule markBFilterRule = getFilterRule(markBConditions);
+        List<String> markAIdList = mcs.filter(emailList, markAFilterRule);
+        List<String> markBIdList = mcs.filter(emailList, markBFilterRule);
+        for(Email email : emailList) {
+            String mark = getMark(markAIdList, markBIdList, email);
+            email.setMark(mark);
+        }
+        emailDAO.save(emailList);
     }
 
     public List<ReceiveRule> getRuleList() {
@@ -109,13 +137,7 @@ public class MailReceiveRuleService {
         FilterRule markBFilterRule = getFilterRule(markBConditions);
         List<String> markAIdList = mcs.filter(emailList, markAFilterRule);
         List<String> markBIdList = mcs.filter(emailList, markBFilterRule);
-        if(receiveMailType.equals(ReceiveType.ALL) || receiveMailFilterRule == null) {
-            for(Email email : emailList) {
-                email.setStatus(Email.Status.DONE);
-                String mark = getMark(markAIdList, markBIdList, email);
-                email.setMark(mark);
-            }
-        } else {
+        if(receiveMailType.equals(ReceiveType.FILTER) && receiveMailFilterRule != null) {
             List<String> matchIdList = mcs.filter(emailList, receiveMailFilterRule);
             for(Email email : emailList) {
                 if(matchIdList.contains(email.getMessageId())) {
@@ -125,6 +147,12 @@ public class MailReceiveRuleService {
                 } else {
                     email.setStatus(Email.Status.SKIPPED);
                 }
+            }
+        } else {
+            for(Email email : emailList) {
+                email.setStatus(Email.Status.DONE);
+                String mark = getMark(markAIdList, markBIdList, email);
+                email.setMark(mark);
             }
         }
         emailDAO.save(emailList);
