@@ -31,6 +31,10 @@
 
     var collapseViewPostfix = "-collapse-view";
 
+    var sourceConditionNameId = "#source-condition-name";
+    var destinationConditionNameId = "#destination-condition-name";
+    var matchingConditionNameId = "#matching-condition-name";
+
     var default_source_rules = {
         condition: "AND",
         rules: [
@@ -501,6 +505,12 @@
         localStorage.setItem(getCollapseKey(sourceBuilderId), $(sourceBuilderId).is(":hidden"));
         localStorage.setItem(getCollapseKey(destinationBuilderId), $(destinationBuilderId).is(":hidden"));
         localStorage.setItem(getCollapseKey(matchingBuilderId), $(matchingBuilderId).is(":hidden"));
+        var sourceConditionName = getInputValue(sourceConditionNameId);
+        var destinationConditionName = getInputValue(destinationConditionNameId);
+        var matchingConditionName = getInputValue(matchingConditionNameId);
+        localStorage.setItem("sourceConditionName", sourceConditionName);
+        localStorage.setItem("destinationConditionName", destinationConditionName);
+        localStorage.setItem("matchingConditionName", matchingConditionName);
     }
     
     function getCollapseKey(builderId) {
@@ -530,6 +540,12 @@
         // distinguish = distinguish == "true" ? true : false;
         // $("#distinguish1").prop("checked", !distinguish);
         // $("#distinguish2").prop("checked", distinguish);
+        var sourceConditionName = localStorage.getItem("sourceConditionName") || "未登録の条件";
+        var destinationConditionName = localStorage.getItem("destinationConditionName") || "未登録の条件";
+        var matchingConditionName = localStorage.getItem("matchingConditionName") || "未登録の条件";
+        setInputValue(sourceConditionNameId, sourceConditionName);
+        setInputValue(destinationConditionNameId, destinationConditionName);
+        setInputValue(matchingConditionNameId, matchingConditionName);
         var matchingWords = localStorage.getItem("matchingWords");
         $(matchingWordsAreaId).val(matchingWords);
     }
@@ -699,6 +715,8 @@
 
     function saveListData(url, name,  data) {
         var key = url + "@" + name;
+        var inputId = getInputIdFromUrl(url);
+        setInputValue(inputId, name);
         localStorage.setItem(key, JSON.stringify(data));
     }
     
@@ -717,49 +735,37 @@
         });
     }
     
-    function getSourceListData(skip) {
-        if(skip){
-            getListData(sourcePrefixUrlKey, null, sourceBuilderId);
-        } else {
-            var datalistStr = localStorage.getItem(sourceListKey);
-            var datalist = JSON.parse(datalistStr);
-            datalist = datalist || [];
-            showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
-                if (name != null && name.length > 0) {
-                    getListData(sourcePrefixUrlKey, name, sourceBuilderId);
-                }
-            })
-        }
+    function getSourceListData() {
+        var datalistStr = localStorage.getItem(sourceListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                getListData(sourcePrefixUrlKey, name, sourceBuilderId);
+            }
+        })
     }
 
     function getDestinationListData(skip) {
-        if(skip){
-            getListData(destinationPrefixUrlKey, null, destinationBuilderId);
-        } else {
-            var datalistStr = localStorage.getItem(destinationListKey);
-            var datalist = JSON.parse(datalistStr);
-            datalist = datalist || [];
-            showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
-                if (name != null && name.length > 0) {
-                    getListData(destinationPrefixUrlKey, name, destinationBuilderId);
-                }
-            })
-        }
+        var datalistStr = localStorage.getItem(destinationListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                getListData(destinationPrefixUrlKey, name, destinationBuilderId);
+            }
+        })
     }
 
     function getMatchingListData(skip) {
-        if(skip){
-            getListData(matchingPrefixUrlKey, null, matchingBuilderId);
-        } else {
-            var datalistStr = localStorage.getItem(matchingListKey);
-            var datalist = JSON.parse(datalistStr);
-            datalist = datalist || [];
-            showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, function (name) {
-                if (name != null && name.length > 0) {
-                    getListData(matchingPrefixUrlKey, name, matchingBuilderId, true);
-                }
-            })
-        }
+        var datalistStr = localStorage.getItem(matchingListKey);
+        var datalist = JSON.parse(datalistStr);
+        datalist = datalist || [];
+        showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, function (name) {
+            if (name != null && name.length > 0) {
+                getListData(matchingPrefixUrlKey, name, matchingBuilderId, true);
+            }
+        })
     }
 
     function getListData(url, name, builderId, skipAddDefaultRow) {
@@ -773,6 +779,8 @@
             // if(enableAddDefaultRow) {
             //     data = addDefaultReceiveDateRow(data);
             // }
+            var inputId = getInputIdFromUrl(url);
+            setInputValue(inputId, name);
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
@@ -983,6 +991,27 @@
         let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
         let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
+    }
+    
+    function getInputIdFromUrl(url) {
+        switch (url) {
+            case sourcePrefixUrlKey:
+                return sourceConditionNameId;
+            case destinationPrefixUrlKey:
+                return destinationConditionNameId;
+            case matchingPrefixUrlKey:
+                return matchingConditionNameId;
+            default:
+                return sourceConditionNameId;
+        }
+    }
+    
+    function setInputValue(inputId, value) {
+        $(inputId).val(value);
+    }
+    
+    function getInputValue(inputId) {
+        return $(inputId).val();
     }
 
 })(jQuery);
