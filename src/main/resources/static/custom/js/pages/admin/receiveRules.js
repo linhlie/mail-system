@@ -257,6 +257,10 @@
         setButtonClickListenter(getMarkABtnId, getMarkA);
         setButtonClickListenter(saveMarkBBtnId, saveMarkB);
         setButtonClickListenter(getMarkBBtnId, getMarkB);
+        $(':radio[name="receiveType"]').change(function() {
+            var type = $(this).filter(':checked').val();
+            updateReceiveMailBlocker(type);
+        });
         loadData();
     });
 
@@ -449,6 +453,15 @@
 
     function setReceiveMailType(type) {
         $("input[name=receiveType][value=" + type + "]").attr('checked', 'checked');
+        updateReceiveMailBlocker(type)
+    }
+
+    function updateReceiveMailBlocker(type) {
+        if(type == "1") {
+            $("#receive-rule-blocker").show();
+        } else if(type == "2") {
+            $("#receive-rule-blocker").hide();
+        }
     }
 
     function setReceiveMailRule(ruleStr) {
