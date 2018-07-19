@@ -26,6 +26,11 @@
         MARKA: 1,
         MARKB: 2,
     }
+    var ruleNameList = {
+        "0" : [],
+        "1" : [],
+        "2" : [],
+    }
 
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
@@ -358,34 +363,39 @@
     function saveRule(builderId, type) {
         var rule = $(builderId).queryBuilder('getRules');
         if ($.isEmptyObject(rule)) return;
-        var name = showPrompt();
-        if (name == null || name.length == 0) return;
-        var data = {
-            type: type,
-            name: name,
-            rule: JSON.stringify(rule)
-        };
-        save("/admin/receiveRuleSettings/saveRule", JSON.stringify(data), "保存中...");
+        showNamePrompt(ruleNameList[type], function (name) {
+            if (name == null || name.length == 0) return;
+            if(ruleNameList[type].indexOf(name) < 0){
+                ruleNameList[type].push(name);
+            }
+            var data = {
+                type: type,
+                name: name,
+                rule: JSON.stringify(rule)
+            };
+            save("/admin/receiveRuleSettings/saveRule", JSON.stringify(data), "保存中...");
+        })
     }
 
     function getRule(type, callback) {
-        var name = showPrompt();
-        if (name == null || name.length == 0) return;
-        getRuleHandle(name, type,
-            function onSuccess(response) {
-                if(!response || !response.list || response.list.length < 1) {
+        showNamePrompt(ruleNameList[type], function (name) {
+            if (name == null || name.length == 0) return;
+            getRuleHandle(name, type,
+                function onSuccess(response) {
+                    if(!response || !response.list || response.list.length < 1) {
+                        callback();
+                        showRuleNotFoundError();
+                    } else {
+                        var item = response.list[0];
+                        callback(item.rule);
+                    }
+                },
+                function onError(e) {
                     callback();
-                    showRuleNotFoundError();
-                } else {
-                    var item = response.list[0];
-                    callback(item.rule);
+                    showCannotLoadDataError();
                 }
-            },
-            function onError(e) {
-                callback();
-                showCannotLoadDataError();
-            }
-        );
+            );
+        });
     }
 
     function getRuleHandle(name, type, onSuccess, onError) {
@@ -394,6 +404,10 @@
             name: name,
         };
         post("/admin/receiveRuleSettings/getRule", JSON.stringify(data), "ローディング...", onSuccess, onError);
+    }
+    
+    function showNamePrompt() {
+        
     }
     
     function showPrompt() {
@@ -420,6 +434,7 @@
             success: function (data) {
                 $('body').loadingModal('hide');
                 if (data && data.status) {
+                    handleRuleNameList(data.list);
                     var jsonData = getJson(data.json);
                     setSettingsData(jsonData);
                 } else {
@@ -431,6 +446,13 @@
                 console.error("[ERROR] dashboard load data error: ", e);
             }
         });
+    }
+
+    function handleRuleNameList(list) {
+        for(var i = 0; i < list.length; i++) {
+            var item = list[i];
+            ruleNameList[item.type].push(item.name);
+        }
     }
     
     function getJson(rawStr) {
@@ -584,6 +606,50 @@
                 if(typeof onError === "function"){
                     onError.apply(this, arguments);
                 }
+            }
+        });
+    }
+
+    function showNamePrompt(datalist, callback) {
+        $('#dataModal').modal();
+        $( '#dataModalName').val('');
+        updateKeyList(datalist);
+        setInputAutoComplete("dataModalName");
+        $('#dataModalOk').off('click');
+        $("#dataModalOk").click(function () {
+            var name = $( '#dataModalName').val();
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback(name);
+            }
+        });
+        $('#dataModalCancel').off('click');
+        $("#dataModalCancel").click(function () {
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
+
+    function updateKeyList(datalist) {
+        datalist = datalist || [];
+        $('#keylist').html('');
+        for(var i = 0; i < datalist.length; i++){
+            $('#keylist').append("<option value='" + datalist[i] + "'>");
+        }
+    }
+
+    function setInputAutoComplete(className) {
+        $( "." + className ).off('click');
+        $( "." + className ).off('mouseleave');
+        $( "." + className ).on('click', function() {
+            $(this).attr('placeholder',$(this).val());
+            $(this).val('');
+        });
+        $( "." + className ).on('mouseleave', function() {
+            if ($(this).val() == '') {
+                $(this).val($(this).attr('placeholder'));
             }
         });
     }

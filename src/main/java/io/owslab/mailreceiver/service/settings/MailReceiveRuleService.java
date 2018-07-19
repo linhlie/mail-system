@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.settings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.ReceiveRuleDAO;
+import io.owslab.mailreceiver.dto.ReceiveRuleDTO;
 import io.owslab.mailreceiver.form.MarkReflectionScopeBundleForm;
 import io.owslab.mailreceiver.form.ReceiveRuleBundleForm;
 import io.owslab.mailreceiver.form.ReceiveRuleForm;
@@ -98,6 +99,15 @@ public class MailReceiveRuleService {
             email.setMark(mark);
         }
         emailDAO.save(emailList);
+    }
+
+    public List<ReceiveRuleDTO> getRuleNameList() {
+        List<ReceiveRule> ruleList = getRuleList();
+        List<ReceiveRuleDTO> ruleNameList = new ArrayList<>();
+        for(ReceiveRule rule : ruleList) {
+            ruleNameList.add(new ReceiveRuleDTO(rule));
+        }
+        return ruleNameList;
     }
 
     public List<ReceiveRule> getRuleList() {

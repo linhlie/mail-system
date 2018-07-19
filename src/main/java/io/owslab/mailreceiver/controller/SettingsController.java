@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EmailAccountDTO;
+import io.owslab.mailreceiver.dto.ReceiveRuleDTO;
 import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
@@ -261,7 +262,9 @@ public class SettingsController {
         JsonStringResponseBody result = new JsonStringResponseBody();
         try {
             JSONObject json = mailReceiveRuleService.getReceiveRuleSettings();
+            List<ReceiveRuleDTO> list = mailReceiveRuleService.getRuleNameList();
             result.setJson(json.toString());
+            result.setList(list);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
