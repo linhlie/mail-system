@@ -470,6 +470,10 @@
         if ($.isEmptyObject(destinationConditions)) return;
         $(sourceBuilderId).queryBuilder('setRules', destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', sourceConditions);
+        var sourceConditionName = getInputValue(sourceConditionNameId);
+        var destinationConditionName = getInputValue(destinationConditionNameId);
+        setInputValue(sourceConditionNameId, destinationConditionName);
+        setInputValue(destinationConditionNameId, sourceConditionName);
     }
 
     function keydownHandler(e) {
