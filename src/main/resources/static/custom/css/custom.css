@@ -1053,3 +1053,24 @@ button[name=builder-ec] {
     padding-top: 0;
     padding-right: 15px;
 }
+.builder-wrapper-header {
+    position: relative;
+}
+
+.builder-wrapper-header div.builder-condition-name {
+    position: absolute;
+    top: -1px;
+    bottom: 0;
+    left: 250px;
+}
+
+.builder-wrapper-header div.builder-condition-name label {
+    font-weight: normal;
+}
+
+.builder-wrapper-header div.builder-condition-name input {
+    background-color: #ffffc6;
+    border: 1px solid #ccc;
+    padding: 0px 10px;
+    min-width: 250px;
+}
