@@ -39,6 +39,15 @@
     var selectedSourceTableRow;
     var selectedDestinationTableRow;
 
+    var sourceFirstBtnId = "source-first";
+    var sourceLastBtnId = "source-last";
+    var sourcePrevBtnId = "source-prev";
+    var sourceNextBtnId = "source-next";
+    var desFirstBtnId = "des-first";
+    var desLastBtnId = "des-last";
+    var desPrevBtnId = "des-prev";
+    var desNextBtnId = "des-next";
+
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
@@ -135,6 +144,15 @@
         setButtonClickListenter(printSakiBtnId, function () {
             printPreviewEmail(printSakiElementId);
         });
+        setButtonClickListenter(sourceFirstBtnId, sourceFirst);
+        setButtonClickListenter(sourceLastBtnId, sourceLast);
+        setButtonClickListenter(sourcePrevBtnId, sourcePrev);
+        setButtonClickListenter(sourceNextBtnId, sourceNext);
+        setButtonClickListenter(desFirstBtnId, destinationFirst);
+        setButtonClickListenter(desLastBtnId, destinationLast);
+        setButtonClickListenter(desPrevBtnId, destinationPrev);
+        setButtonClickListenter(desNextBtnId, destinationNext);
+
         getEnvSettings();
         fixingForTinyMCEOnModal();
         var matchingConditionStr;
@@ -205,23 +223,34 @@
     });
 
     function keydownHandler(e) {
-        // e.preventDefault();
+        var button = undefined;
         if(e.shiftKey && (e.which || e.keyCode) == 112) {
             e.preventDefault();
+            button = $("#" + sourceFirstBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
+            button = $("#" + sourceLastBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 112) {
             e.preventDefault();
+            button = $("#" + sourcePrevBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
+            button = $("#" + sourceNextBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 121) {
             e.preventDefault();
+            button = $("#" + desFirstBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 123) {
             e.preventDefault();
+            button = $("#" + desLastBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 121) {
             e.preventDefault();
+            button = $("#" + desPrevBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 123) {
             e.preventDefault();
+            button = $("#" + desNextBtnId);
+        }
+        if(button && !button.is(":disabled")) {
+            button.click();
         }
     }
 
@@ -519,6 +548,8 @@
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
+            selectedDestinationTableRow = undefined;
+            updateDestinationControls(-1, -1);
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
                 updatePreviewMailToPrint(result, printElementId);
@@ -527,6 +558,8 @@
     }
 
     function showDestinationMail(row) {
+        selectedDestinationTableRow = row;
+        updateDestinationControls(row.index(), currentDestinationResult.length);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = currentDestinationResult[index];
@@ -554,6 +587,8 @@
     }
     
     function selectedRow(row) {
+        selectedSourceTableRow = row;
+        updateSourceControls(row.index(), matchingResult.length);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
@@ -1460,6 +1495,63 @@
             '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
             '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
         return wrapperText;
+    }
+    
+    function updateSourceControls(index, total) {
+        var container = $("#source-control");
+        updateControls(container, index, total);
+    }
+
+    function updateDestinationControls(index, total) {
+        var container = $("#destination-control");
+        updateControls(container, index, total);
+    }
+    
+    function updateControls(container, index, total) {
+        var firstDisable = (total <= 1 || index == 0);
+        var lastDisable = (total <= 1 || index == (total - 1));
+        var backDisable = (total <= 1 || index == 0);
+        var nextDisable = (total <= 1 || index == (total - 1));
+        container.find("button[name='first']").prop("disabled", firstDisable);
+        container.find("button[name='last']").prop("disabled", lastDisable);
+        container.find("button[name='prev']").prop("disabled", backDisable);
+        container.find("button[name='next']").prop("disabled", nextDisable);
+    }
+    
+    function sourceFirst() {
+        var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+        selectedRow(firstTr);
+    }
+
+    function sourcePrev() {
+        selectedRow(selectedSourceTableRow.prev());
+    }
+
+    function sourceNext() {
+        selectedRow(selectedSourceTableRow.next());
+    }
+
+    function sourceLast() {
+        var lastTr = $('#' + sourceTableId).find(' tbody tr:last');
+        selectedRow(lastTr.prev());
+    }
+
+    function destinationFirst() {
+        var firstTr = $('#' + destinationTableId).find(' tbody tr:first');
+        showDestinationMail(firstTr);
+    }
+
+    function destinationPrev() {
+        showDestinationMail(selectedDestinationTableRow.prev());
+    }
+
+    function destinationNext() {
+        showDestinationMail(selectedDestinationTableRow.next());
+    }
+
+    function destinationLast() {
+        var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
+        showDestinationMail(lastTr.prev());
     }
 
 })(jQuery);
