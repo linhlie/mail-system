@@ -414,6 +414,11 @@
             {
                 theme : 'default',
                 sortList: [[2,1], [3,0]]
+            })
+            .bind("sortEnd",function() {
+                var index = selectedSourceTableRow ? selectedSourceTableRow.index() : -1;
+                var total = matchingResult ? matchingResult.length : 0;
+                updateSourceControls(index, total);
             });
 
     }
@@ -497,6 +502,11 @@
                     }
                 },
                 sortList: [[3,1], [4,0]]
+            })
+            .bind("sortEnd",function() {
+                var index = selectedDestinationTableRow ? selectedDestinationTableRow.index() : -1;
+                var total = currentDestinationResult ? currentDestinationResult.length : 0;
+                updateDestinationControls(index, total);
             });
     }
     
@@ -549,7 +559,6 @@
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
             selectedDestinationTableRow = undefined;
-            updateDestinationControls(-1, -1);
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
                 updatePreviewMailToPrint(result, printElementId);
@@ -1524,11 +1533,19 @@
     }
 
     function sourcePrev() {
-        selectedRow(selectedSourceTableRow.prev());
+        if(!selectedSourceTableRow) {
+            sourceLast();
+        } else {
+            selectedRow(selectedSourceTableRow.prev());
+        }
     }
 
     function sourceNext() {
-        selectedRow(selectedSourceTableRow.next());
+        if(!selectedSourceTableRow) {
+            sourceNext();
+        } else {
+            selectedRow(selectedSourceTableRow.next());
+        }
     }
 
     function sourceLast() {
@@ -1542,11 +1559,19 @@
     }
 
     function destinationPrev() {
-        showDestinationMail(selectedDestinationTableRow.prev());
+        if(!selectedDestinationTableRow) {
+            destinationLast();
+        } else {
+            showDestinationMail(selectedDestinationTableRow.prev());
+        }
     }
 
     function destinationNext() {
-        showDestinationMail(selectedDestinationTableRow.next());
+        if(!selectedDestinationTableRow) {
+            destinationFirst();
+        } else {
+            showDestinationMail(selectedDestinationTableRow.next());
+        }
     }
 
     function destinationLast() {
