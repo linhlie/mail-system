@@ -36,6 +36,9 @@
     var attachmentDropzoneId = "#attachment-dropzone";
     var attachmentDropzone;
 
+    var selectedSourceTableRow;
+    var selectedDestinationTableRow;
+
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
@@ -198,7 +201,29 @@
             updateData();
         }
         initStickyHeader();
+        $(document).on("keyup", keydownHandler);
     });
+
+    function keydownHandler(e) {
+        // e.preventDefault();
+        if(e.shiftKey && (e.which || e.keyCode) == 112) {
+            e.preventDefault();
+        } else if(e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 112) {
+            e.preventDefault();
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+        } else if(e.shiftKey && (e.which || e.keyCode) == 121) {
+            e.preventDefault();
+        } else if(e.shiftKey && (e.which || e.keyCode) == 123) {
+            e.preventDefault();
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 121) {
+            e.preventDefault();
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 123) {
+            e.preventDefault();
+        }
+    }
 
     function getEmailDomain(email) {
         if(typeof email === "string"  && email.indexOf("@") >= 0) {
@@ -345,7 +370,9 @@
                 sourceMatchingCounter++;
             }
             $("#"+ tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", selectedRow);
+            setRowClickListener("sourceRow", function () {
+                selectedRow($(this).closest('tr'))
+            });
         }
         initSortSource();
         selectFirstRow();
@@ -387,7 +414,9 @@
                         html = html + addRowWithData(tableId, currentDestinationResult[i], i);
                     }
                     $("#"+ tableId + "> tbody").html(html);
-                    setRowClickListener("showDestinationMail", showDestinationMail);
+                    setRowClickListener("showDestinationMail", function () {
+                        showDestinationMail($(this).closest('tr'))
+                    });
                     setRowClickListener("sendToMoto", function () {
                         var replaceType = $(motoReplaceSelectorId).val();
                         var row = $(this)[0].parentNode;
@@ -486,9 +515,7 @@
         })
     }
     
-    function showSourceMail() {
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function showSourceMail(index) {
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
@@ -499,10 +526,9 @@
         }
     }
 
-    function showDestinationMail() {
-        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function showDestinationMail(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var index = row[0].getAttribute("data");
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, rowData.word, function (result) {
@@ -523,27 +549,16 @@
                 selectFirstRow();
                 return;
             }
-            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            var rowData = matchingResult[index];
-            if(rowData && rowData.source && rowData.source.messageId){
-                showMail(rowData.source.messageId, rowData.word, function (result) {
-                    showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
-                    updatePreviewMailToPrint(result, printElementId);
-                });
-            }
-            selectedRowData = rowData;
-            $('#' + sakiPreviewContainerId).hide();
-            showDestinationData(destinationTableId, rowData);
+            selectedRow(firstTr);
         }
     }
     
-    function selectedRow() {
-        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        showSourceMail.call(this);
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function selectedRow(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
         selectedRowData = rowData;
+        showSourceMail(index);
         showDestinationData(destinationTableId, rowData);
     }
 

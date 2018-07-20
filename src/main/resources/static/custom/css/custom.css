@@ -1082,3 +1082,21 @@ button[name=builder-ec] {
     padding: 0px 10px;
     min-width: 250px;
 }
+
+div.select-row-control-container {
+    padding-top: 10px;
+}
+
+div.select-row-control-container div.btn-group {
+    display: block;
+    text-align: right;
+}
+
+div.select-row-control-container div.btn-group button.btn {
+    float: none;
+    font-size: 10px;
+}
+
+#destination-control {
+    display: none;
+}
