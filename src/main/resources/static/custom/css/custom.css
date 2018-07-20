@@ -387,7 +387,6 @@ input.form-error {
 
 .matching-result .mail-body-container {
     margin-top: 10px;
-    height: 490px;
 }
 
 .matching-result .mail-body {
@@ -666,6 +665,15 @@ mark.mark-range {
 }
 #ghostbar{
     width:3px;
+    background-color:#000;
+    opacity:0.2;
+    position:absolute;
+    cursor: col-resize;
+    z-index:999
+}
+
+#ghostbar2{
+    height:3px;
     background-color:#000;
     opacity:0.2;
     position:absolute;

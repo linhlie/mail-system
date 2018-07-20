@@ -120,6 +120,7 @@
 
     $(function () {
         previewDraggingSetup();
+        previewDraggingSetup2();
         initSearch(mailBodyDivId, "moto");
         initSearch(mailSakiBodyDivId, "saki");
         initReplaceSelector();
@@ -1309,6 +1310,43 @@
                 $('#moto-preview-wrapper').css("width",percentage + "%");
                 $('#saki-preview-wrapper').css("width",mainPercentage + "%");
                 $('#ghostbar').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
+    }
+
+    function previewDraggingSetup2() {
+        var dragging = false;
+        $('#dragbar2').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var dragbar = $('#dragbar2');
+            var ghostbar = $('<div>',
+                {id:'ghostbar2',
+                    css: {
+                        width: dragbar.outerWidth(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("top",e.pageY);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#table-section');
+                var topHeight = (e.pageY - container.offset().top);
+                var tableHeight = Math.floor((topHeight - 78) / 2);
+                tableHeight = tableHeight > 60 ? tableHeight : 60;
+                $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('#ghostbar2').remove();
                 $(document).unbind('mousemove');
                 dragging = false;
             }
