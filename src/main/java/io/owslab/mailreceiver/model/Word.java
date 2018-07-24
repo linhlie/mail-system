@@ -17,10 +17,10 @@ public class Word implements Serializable {
     @NotNull
     private String word;
 
-    @OneToMany(mappedBy = "originalWord")
+    @OneToMany(mappedBy = "originalWord", fetch = FetchType.EAGER)
     private Set<FuzzyWord> originalWords;
 
-    @OneToMany(mappedBy = "associatedWord")
+    @OneToMany(mappedBy = "associatedWord", fetch = FetchType.EAGER)
     private Set<FuzzyWord> associatedWords;
 
     public Word() {}
