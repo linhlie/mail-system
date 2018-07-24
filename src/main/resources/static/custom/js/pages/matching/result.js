@@ -224,16 +224,16 @@
 
     function keydownHandler(e) {
         var button = undefined;
-        if(e.shiftKey && (e.which || e.keyCode) == 112) {
+        if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
             button = $("#" + sourceFirstBtnId);
-        } else if(e.shiftKey && (e.which || e.keyCode) == 113) {
+        } else if(e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
             button = $("#" + sourceLastBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 112) {
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
             button = $("#" + sourcePrevBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
             button = $("#" + sourceNextBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 121) {
