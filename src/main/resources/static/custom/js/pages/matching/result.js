@@ -558,6 +558,7 @@
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
+            $('#' + printSakiBtnId).prop("disabled", true);
             selectedDestinationTableRow = undefined;
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
@@ -577,6 +578,7 @@
                 showMailContent(result, [mailSakiSubjectDivId, mailSakiBodyDivId, mailSakiAttachmentDivId]);
                 updatePreviewMailToPrint(result, printSakiElementId);
                 $('#' + sakiPreviewContainerId).show();
+                $('#' + printSakiBtnId).prop("disabled", false);
             }, rowData.matchRange);
         }
     }

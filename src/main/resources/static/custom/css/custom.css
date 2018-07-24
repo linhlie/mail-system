@@ -1084,7 +1084,7 @@ button[name=builder-ec] {
 }
 
 div.select-row-control-container {
-    padding-top: 10px;
+    padding-top: 0px;
 }
 
 div.select-row-control-container div.btn-group {
@@ -1095,4 +1095,12 @@ div.select-row-control-container div.btn-group {
 div.select-row-control-container div.btn-group button.btn {
     float: none;
     font-size: 10px;
+}
+
+#source-control, #destination-control {
+    float: right;
+}
+
+#source-control:after, #destination-control:after {
+    clear: both;
 }

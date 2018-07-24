@@ -100,12 +100,33 @@
                     <div class="clearfix" id="preview-section">
                         <div id="moto-preview-wrapper" style="position: relative;">
                             <div id="moto-preview-content-wrapper" style="width: 100%; padding-right: 8px">
-                                <span>プレビュー元
-                        <button style="float: right; min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
-                                data-toggle="tooltip" title="" data-original-title="Print">
-                            <i class="fa fa-print"></i>
-                        </button>
-                    </span>
+                                <div style="width: 100%;">
+                                    <span>プレビュー元</span>
+                                    <div id="source-control" class="select-row-control-container" style="display: inline-block;padding-right: 0;">
+                                        <div class="btn-group">
+                                            <button id="source-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-backward"></span>
+                                                (SHIFT+F2)
+                                            </button>
+                                            <button id="source-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-left"></span>
+                                                前ページ(F2)
+                                            </button>
+                                            <button id="source-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-right"></span>
+                                                次ページ(F4)
+                                            </button>
+                                            <button id="source-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-forward"></span>
+                                                (SHIFT+F4)
+                                            </button>
+                                            <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                                    data-toggle="tooltip" title="" data-original-title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="main-right">
                                     <div id="mailSubject" class="mail-subject"></div>
                                     <div class="mail-body-container">
@@ -130,12 +151,33 @@
                         </div>
                         <div id="saki-preview-wrapper" style="padding-left: 5px">
                             <div id="saki-preview-content-wrapper" style="width: 100%;">
+                                <div style="width: 100%;">
+                                    <span>プレビュー先</span>
+                                    <div id="destination-control" class="select-row-control-container" style="display: inline-block;">
+                                        <div class="btn-group">
+                                            <button id="des-first" name="first" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-backward"></span>
+                                                (SHIFT+F10)
+                                            </button>
+                                            <button id="des-prev" name="prev" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-left"></span>
+                                                前ページ(F10)
+                                            </button>
+                                            <button id="des-next" name="next" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-right"></span>
+                                                次ページ(F12)
+                                            </button>
+                                            <button id="des-last" name="last" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-forward"></span>
+                                                (SHIFT+F12)
+                                            </button>
+                                            <button style="min-width: 60px;" id="printSakiBtn" th:disabled="true" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div id="saki-preview-container" style="width: 100%; display: none;">
-                    <span>プレビュー先
-                        <button style="float: right; min-width: 60px;" id="printSakiBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
-                            <i class="fa fa-print"></i>
-                        </button>
-                    </span>
                                     <div class="main-right">
                                         <div id="mailSakiSubject" class="mail-subject"></div>
                                         <div class="mail-body-container">
@@ -157,46 +199,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div id="source-control" class="col-sm-6 select-row-control-container" style="padding-right: 0;">
-                    <div class="btn-group">
-                        <button id="source-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-step-backward"></span>
-                            (SHIFT+F2)
-                        </button>
-                        <button id="source-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-triangle-left"></span>
-                            前ページ(F2)
-                        </button>
-                        <button id="source-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-triangle-right"></span>
-                            次ページ(F4)
-                        </button>
-                        <button id="source-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-step-forward"></span>
-                            (SHIFT+F4)
-                        </button>
-                    </div>
-                </div>
-                <div id="destination-control" class="col-sm-6 select-row-control-container">
-                    <div class="btn-group">
-                        <button id="des-first" name="first" th:data="destination" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-step-backward"></span>
-                            (SHIFT+F10)
-                        </button>
-                        <button id="des-prev" name="prev" th:data="destination" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-triangle-left"></span>
-                            前ページ(F10)
-                        </button>
-                        <button id="des-next" name="next" th:data="destination" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-triangle-right"></span>
-                            次ページ(F12)
-                        </button>
-                        <button id="des-last" name="last" th:data="destination" th:disabled="true" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-step-forward"></span>
-                            (SHIFT+F12)
-                        </button>
                     </div>
                 </div>
             </form>
