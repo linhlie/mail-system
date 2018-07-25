@@ -224,6 +224,7 @@
 
     function keydownHandler(e) {
         var button = undefined;
+        console.log("keydownHandler: ", e.shiftKey, e.keyCode);
         if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
             button = $("#" + sourceFirstBtnId);
@@ -236,16 +237,16 @@
         } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
             button = $("#" + sourceNextBtnId);
-        } else if(e.shiftKey && (e.which || e.keyCode) == 121) {
+        } else if(e.shiftKey && (e.which || e.keyCode) == 119) {
             e.preventDefault();
             button = $("#" + desFirstBtnId);
-        } else if(e.shiftKey && (e.which || e.keyCode) == 123) {
+        } else if(e.shiftKey && (e.which || e.keyCode) == 120) {
             e.preventDefault();
             button = $("#" + desLastBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 121) {
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 119) {
             e.preventDefault();
             button = $("#" + desPrevBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 123) {
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 120) {
             e.preventDefault();
             button = $("#" + desNextBtnId);
         }
