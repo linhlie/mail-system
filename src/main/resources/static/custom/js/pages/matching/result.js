@@ -36,6 +36,18 @@
     var attachmentDropzoneId = "#attachment-dropzone";
     var attachmentDropzone;
 
+    var selectedSourceTableRow;
+    var selectedDestinationTableRow;
+
+    var sourceFirstBtnId = "source-first";
+    var sourceLastBtnId = "source-last";
+    var sourcePrevBtnId = "source-prev";
+    var sourceNextBtnId = "source-next";
+    var desFirstBtnId = "des-first";
+    var desLastBtnId = "des-last";
+    var desPrevBtnId = "des-prev";
+    var desNextBtnId = "des-next";
+
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
@@ -120,6 +132,7 @@
 
     $(function () {
         previewDraggingSetup();
+        previewDraggingSetup2();
         initSearch(mailBodyDivId, "moto");
         initSearch(mailSakiBodyDivId, "saki");
         initReplaceSelector();
@@ -131,6 +144,15 @@
         setButtonClickListenter(printSakiBtnId, function () {
             printPreviewEmail(printSakiElementId);
         });
+        setButtonClickListenter(sourceFirstBtnId, sourceFirst);
+        setButtonClickListenter(sourceLastBtnId, sourceLast);
+        setButtonClickListenter(sourcePrevBtnId, sourcePrev);
+        setButtonClickListenter(sourceNextBtnId, sourceNext);
+        setButtonClickListenter(desFirstBtnId, destinationFirst);
+        setButtonClickListenter(desLastBtnId, destinationLast);
+        setButtonClickListenter(desPrevBtnId, destinationPrev);
+        setButtonClickListenter(desNextBtnId, destinationNext);
+
         getEnvSettings();
         fixingForTinyMCEOnModal();
         var matchingConditionStr;
@@ -197,7 +219,40 @@
             updateData();
         }
         initStickyHeader();
+        $(document).on("keyup", keydownHandler);
     });
+
+    function keydownHandler(e) {
+        var button = undefined;
+        if(e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+            button = $("#" + sourceFirstBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            button = $("#" + sourceLastBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+            button = $("#" + sourcePrevBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            button = $("#" + sourceNextBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 121) {
+            e.preventDefault();
+            button = $("#" + desFirstBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 123) {
+            e.preventDefault();
+            button = $("#" + desLastBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 121) {
+            e.preventDefault();
+            button = $("#" + desPrevBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 123) {
+            e.preventDefault();
+            button = $("#" + desNextBtnId);
+        }
+        if(button && !button.is(":disabled")) {
+            button.click();
+        }
+    }
 
     function getEmailDomain(email) {
         if(typeof email === "string"  && email.indexOf("@") >= 0) {
@@ -344,7 +399,9 @@
                 sourceMatchingCounter++;
             }
             $("#"+ tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", selectedRow);
+            setRowClickListener("sourceRow", function () {
+                selectedRow($(this).closest('tr'))
+            });
         }
         initSortSource();
         selectFirstRow();
@@ -357,6 +414,11 @@
             {
                 theme : 'default',
                 sortList: [[2,1], [3,0]]
+            })
+            .bind("sortEnd",function() {
+                var index = selectedSourceTableRow ? selectedSourceTableRow.index() : -1;
+                var total = matchingResult ? matchingResult.length : 0;
+                updateSourceControls(index, total);
             });
 
     }
@@ -386,7 +448,9 @@
                         html = html + addRowWithData(tableId, currentDestinationResult[i], i);
                     }
                     $("#"+ tableId + "> tbody").html(html);
-                    setRowClickListener("showDestinationMail", showDestinationMail);
+                    setRowClickListener("showDestinationMail", function () {
+                        showDestinationMail($(this).closest('tr'))
+                    });
                     setRowClickListener("sendToMoto", function () {
                         var replaceType = $(motoReplaceSelectorId).val();
                         var row = $(this)[0].parentNode;
@@ -438,6 +502,11 @@
                     }
                 },
                 sortList: [[3,1], [4,0]]
+            })
+            .bind("sortEnd",function() {
+                var index = selectedDestinationTableRow ? selectedDestinationTableRow.index() : -1;
+                var total = currentDestinationResult ? currentDestinationResult.length : 0;
+                updateDestinationControls(index, total);
             });
     }
     
@@ -485,12 +554,12 @@
         })
     }
     
-    function showSourceMail() {
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function showSourceMail(index) {
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
+            $('#' + printSakiBtnId).prop("disabled", true);
+            selectedDestinationTableRow = undefined;
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
                 updatePreviewMailToPrint(result, printElementId);
@@ -498,16 +567,18 @@
         }
     }
 
-    function showDestinationMail() {
-        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function showDestinationMail(row) {
+        selectedDestinationTableRow = row;
+        updateDestinationControls(row.index(), currentDestinationResult.length);
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var index = row[0].getAttribute("data");
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSakiSubjectDivId, mailSakiBodyDivId, mailSakiAttachmentDivId]);
                 updatePreviewMailToPrint(result, printSakiElementId);
                 $('#' + sakiPreviewContainerId).show();
+                $('#' + printSakiBtnId).prop("disabled", false);
             }, rowData.matchRange);
         }
     }
@@ -522,27 +593,18 @@
                 selectFirstRow();
                 return;
             }
-            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            var rowData = matchingResult[index];
-            if(rowData && rowData.source && rowData.source.messageId){
-                showMail(rowData.source.messageId, rowData.word, function (result) {
-                    showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
-                    updatePreviewMailToPrint(result, printElementId);
-                });
-            }
-            selectedRowData = rowData;
-            $('#' + sakiPreviewContainerId).hide();
-            showDestinationData(destinationTableId, rowData);
+            selectedRow(firstTr);
         }
     }
     
-    function selectedRow() {
-        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        showSourceMail.call(this);
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function selectedRow(row) {
+        selectedSourceTableRow = row;
+        updateSourceControls(row.index(), matchingResult.length);
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
         selectedRowData = rowData;
+        showSourceMail(index);
         showDestinationData(destinationTableId, rowData);
     }
 
@@ -1315,6 +1377,43 @@
         });
     }
 
+    function previewDraggingSetup2() {
+        var dragging = false;
+        $('#dragbar2').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var dragbar = $('#dragbar2');
+            var ghostbar = $('<div>',
+                {id:'ghostbar2',
+                    css: {
+                        width: dragbar.outerWidth(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("top",e.pageY);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#table-section');
+                var topHeight = (e.pageY - container.offset().top);
+                var tableHeight = Math.floor((topHeight - 78) / 2);
+                tableHeight = tableHeight > 60 ? tableHeight : 60;
+                $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('#ghostbar2').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
+    }
+
     function initStickyHeader() {
         $(".table-container-wrapper").scroll(function () {
             $(this).find("thead.sticky-header")
@@ -1407,6 +1506,79 @@
             '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
             '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
         return wrapperText;
+    }
+    
+    function updateSourceControls(index, total) {
+        var container = $("#source-control");
+        updateControls(container, index, total);
+    }
+
+    function updateDestinationControls(index, total) {
+        var container = $("#destination-control");
+        updateControls(container, index, total);
+    }
+    
+    function updateControls(container, index, total) {
+        var firstDisable = (total <= 1 || index == 0);
+        var lastDisable = (total <= 1 || index == (total - 1));
+        var backDisable = (total <= 1 || index == 0);
+        var nextDisable = (total <= 1 || index == (total - 1));
+        container.find("button[name='first']").prop("disabled", firstDisable);
+        container.find("button[name='last']").prop("disabled", lastDisable);
+        container.find("button[name='prev']").prop("disabled", backDisable);
+        container.find("button[name='next']").prop("disabled", nextDisable);
+    }
+    
+    function sourceFirst() {
+        var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+        selectedRow(firstTr);
+    }
+
+    function sourcePrev() {
+        if(!selectedSourceTableRow) {
+            sourceLast();
+        } else {
+            selectedRow(selectedSourceTableRow.prev());
+        }
+    }
+
+    function sourceNext() {
+        if(!selectedSourceTableRow) {
+            sourceNext();
+        } else {
+            selectedRow(selectedSourceTableRow.next());
+        }
+    }
+
+    function sourceLast() {
+        var lastTr = $('#' + sourceTableId).find(' tbody tr:last');
+        selectedRow(lastTr.prev());
+    }
+
+    function destinationFirst() {
+        var firstTr = $('#' + destinationTableId).find(' tbody tr:first');
+        showDestinationMail(firstTr);
+    }
+
+    function destinationPrev() {
+        if(!selectedDestinationTableRow) {
+            destinationLast();
+        } else {
+            showDestinationMail(selectedDestinationTableRow.prev());
+        }
+    }
+
+    function destinationNext() {
+        if(!selectedDestinationTableRow) {
+            destinationFirst();
+        } else {
+            showDestinationMail(selectedDestinationTableRow.next());
+        }
+    }
+
+    function destinationLast() {
+        var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
+        showDestinationMail(lastTr.prev());
     }
 
 })(jQuery);

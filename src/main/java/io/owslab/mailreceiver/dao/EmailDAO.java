@@ -17,15 +17,19 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findByAccountIdOrderByMessageNumberDesc(long accountId);
     List<Email> findByMessageId(String messageId);
     List<Email> findByMessageIdAndDeleted(String messageId, boolean deleted);
-    List<Email> findBySentAtBeforeAndDeletedOrderBySentAtAsc(Date sentAt, boolean deleted);
-    Page<Email> findByOptimizedBodyIgnoreCaseContainingAndDeleted(String content, boolean deleted, Pageable pageable);
-    Page<Email> findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(String subject, boolean deleted, Pageable pageable);
+    List<Email> findBySentAtBeforeOrderBySentAtAsc(Date sentAt);
+    Page<Email> findByOptimizedBodyIgnoreCaseContainingAndStatus(String content, int status, Pageable pageable);
+    Page<Email> findBySubjectIgnoreCaseContainingAndErrorLogNotNull(String subject, Pageable pageable);
     Page<Email> findByOriginalBodyIgnoreCaseContainingAndDeleted(String content, boolean deleted, Pageable pageable);
     Page<Email> findByDeleted(boolean deleted, Pageable pageable);
-    Page<Email> findByErrorLogNotNullAndDeleted(boolean deleted, Pageable pageable);
+    Page<Email> findByStatus(int status, Pageable pageable);
+    List<Email> findByStatus(int status);
+    Page<Email> findByErrorLogNotNull(Pageable pageable);
     List<Email> findByDeleted(boolean deleted);
-    List<Email> findFirstByOrderByReceivedAtDesc();
+    List<Email> findFirst1ByStatusOrderByReceivedAtDesc(int status);
     List<Email> findByErrorLogIsNullOrderByReceivedAtDesc();
+    List<Email> findByStatusOrderByReceivedAtDesc(int status);
     long countByDeleted(boolean deleted);
-    long countByFromIgnoreCaseNotAndReceivedAtBetween(String from, Date fromDate, Date toDate);
+    long countByStatus(int status);
+    long countByFromIgnoreCaseNotAndReceivedAtBetweenAndStatus(String from, Date fromDate, Date toDate, int status);
 }

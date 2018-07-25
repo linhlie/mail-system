@@ -35,7 +35,7 @@ public class DeleteMailsService {
     private MailBoxService mailBoxService;
 
     public void deleteOldMails(Date beforeDate){
-        List<Email> emailList = emailDAO.findBySentAtBeforeAndDeletedOrderBySentAtAsc(beforeDate, false);
+        List<Email> emailList = emailDAO.findBySentAtBeforeOrderBySentAtAsc(beforeDate);
         System.out.println("Start delete Old mails - total: " + emailList.size());
         for(int i = 0, n = emailList.size(); i < n; i++){
             Email email = emailList.get(i);

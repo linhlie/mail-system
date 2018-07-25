@@ -87,16 +87,16 @@ public class MailBoxService {
     private DecimalFormat df = new DecimalFormat("#,##0");
 
     public long count(){
-        return emailDAO.countByDeleted(false);
+        return emailDAO.countByStatus(Email.Status.DONE);
     }
 
     public Page<Email> list(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findByDeleted(false, pageRequest);
+        Page<Email> list = emailDAO.findByStatus(Email.Status.DONE, pageRequest);
         return list;
     }
 
     public Page<Email> listError(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findByErrorLogNotNullAndDeleted(false, pageRequest);
+        Page<Email> list = emailDAO.findByErrorLogNotNull(pageRequest);
         return list;
     }
 
@@ -105,7 +105,7 @@ public class MailBoxService {
             return list(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndDeleted(optimizeSearchText, false, pageRequest);
+        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.DONE, pageRequest);
         return list;
     }
 
@@ -114,7 +114,7 @@ public class MailBoxService {
             return listError(pageRequest);
         }
         String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNullAndDeleted(optimizeSearchText, false, pageRequest);
+        Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNull(optimizeSearchText, pageRequest);
         return list;
     }
 
@@ -204,7 +204,7 @@ public class MailBoxService {
 
     public List<Email> getAll(boolean forceUpdate){
         if(forceUpdate || cachedEmailList == null){
-            cachedEmailList = emailDAO.findByErrorLogIsNullOrderByReceivedAtDesc();
+            cachedEmailList = emailDAO.findByStatusOrderByReceivedAtDesc(Email.Status.DONE);
         }
         return cachedEmailList;
     }
@@ -237,7 +237,7 @@ public class MailBoxService {
 
     public List<DetailMailDTO> getMailDetail(String messageId, String highlightWordsStr, String matchRange, boolean spaceEffective, boolean distinguish){
         List<DetailMailDTO> results = new ArrayList<>();
-        List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
         if(emailList.size() == 0) return results;
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
@@ -287,7 +287,7 @@ public class MailBoxService {
     }
 
     public DetailMailDTO getContentRelyEmail(String replyId, String accountId) throws Exception {
-        List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
+        List<Email> replyList = emailDAO.findByMessageId(replyId);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         if(replyEmail == null) {
             throw new Exception("This mail has been deleted or does not exist");
@@ -315,8 +315,8 @@ public class MailBoxService {
     }
 
     public  DetailMailDTO getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType, String accountId) throws Exception {
-        List<Email> emailList = emailDAO.findByMessageIdAndDeleted(messageId, false);
-        List<Email> replyList = emailDAO.findByMessageIdAndDeleted(replyId, false);
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
+        List<Email> replyList = emailDAO.findByMessageId(replyId);
         Email originEmail = emailList.size() > 0 ? emailList.get(0) : null;
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         if(replyEmail == null) {
@@ -453,6 +453,7 @@ public class MailBoxService {
                 email.setHasAttachment(hasAttachments);
                 email = IMAPFetchMailJob.setMailContent(message, email);
                 email.setErrorLog(null);
+                email.setStatus(Email.Status.NEW);
                 emailDAO.save(email);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -460,6 +461,7 @@ public class MailBoxService {
                 if(errorEmail != null) {
                     String error = ExceptionUtils.getStackTrace(e);
                     errorEmail.setErrorLog(error);
+                    errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
                     emailDAO.save(errorEmail);
                 }
             }
@@ -583,7 +585,7 @@ public class MailBoxService {
 
     public String getLatestReceive() {
         try {
-            List<Email> emailList = emailDAO.findFirstByOrderByReceivedAtDesc();
+            List<Email> emailList = emailDAO.findFirst1ByStatusOrderByReceivedAtDesc(Email.Status.DONE);
             if(emailList.size() > 0) {
                 Email email = emailList.get(0);
                 return Utils.formatGMT2(email.getReceivedAt());
@@ -613,7 +615,7 @@ public class MailBoxService {
                 fromDate = Utils.addDayToDate(fromDate, -1);
                 toDate = Utils.addDayToDate(toDate, -1);
             }
-            long clicks = emailDAO.countByFromIgnoreCaseNotAndReceivedAtBetween(from, fromDate, toDate);
+            long clicks = emailDAO.countByFromIgnoreCaseNotAndReceivedAtBetweenAndStatus(from, fromDate, toDate, Email.Status.DONE);
             stats.add(df.format(clicks));
         }
         return stats;

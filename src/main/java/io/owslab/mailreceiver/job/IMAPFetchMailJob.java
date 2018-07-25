@@ -173,6 +173,7 @@ public class IMAPFetchMailJob implements Runnable {
                     if(errorEmail != null) {
                         String error = ExceptionUtils.getStackTrace(e);
                         errorEmail.setErrorLog(error);
+                        errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
                         emailDAO.save(errorEmail);
                     }
                     if (!emailFolder.isOpen()) {
@@ -184,6 +185,7 @@ public class IMAPFetchMailJob implements Runnable {
                     if(errorEmail != null) {
                         String error = ExceptionUtils.getStackTrace(e);
                         errorEmail.setErrorLog(error);
+                        errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
                         emailDAO.save(errorEmail);
                     }
                 }
