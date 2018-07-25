@@ -1406,7 +1406,11 @@
                 var topHeight = (e.pageY - container.offset().top);
                 var tableHeight = Math.floor((topHeight - 78) / 2);
                 tableHeight = tableHeight > 60 ? tableHeight : 60;
+                tableHeight = tableHeight < 420 ? tableHeight : 420;
+                var previewHeightChange = 500 - tableHeight * 2;
+                var previewHeight = 444 + previewHeightChange;
                 $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('.matching-result .mail-body').css("height", previewHeight + "px");
                 $('#ghostbar2').remove();
                 $(document).unbind('mousemove');
                 dragging = false;
