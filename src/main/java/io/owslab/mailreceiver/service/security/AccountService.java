@@ -91,7 +91,7 @@ public class AccountService {
         user.setName(form.getName());
         user.setEncryptedPassword(passwordEncoder.encode(form.getNewPassword()));
         user.setActive(true);
-        user.setUserRole(Account.Role.MEMBER);
+        user.setUserRole(Account.Role.MEMBER_EXPANSION);
         accountDAO.save(user);
     }
 }
