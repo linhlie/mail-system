@@ -865,6 +865,11 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 
 #usersTable td.action button {
     padding: 1px 15px;
+    height: 21px;
+}
+
+#usersTable td input[type="checkbox"][disabled] {
+    cursor: default;
 }
 
 #usersTable th {

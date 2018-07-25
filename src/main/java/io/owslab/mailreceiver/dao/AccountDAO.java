@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.model.Account;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,5 +13,6 @@ import java.util.List;
 @Transactional
 public interface AccountDAO extends CrudRepository<Account, Long> {
     List<Account> findByUserRole(String userRole);
+    List<Account> findByUserRoleIn(Collection<String> userRoles);
     List<Account> findByUserName(String userName);
 }

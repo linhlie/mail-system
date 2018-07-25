@@ -18,12 +18,15 @@ public class AccountDTO {
 
     private String name;
 
+    private boolean expansion;
+
     public AccountDTO(Account account) {
         this.setId(account.getId());
         this.setUserName(account.getUserName());
         this.setActive(account.isActive());
         this.setUserRole(account.getUserRole());
         this.setName(account.getName());
+        this.setExpansion(Account.Role.MEMBER_EXPANSION.equals(account.getUserRole()));
     }
 
     public long getId() {
@@ -64,5 +67,13 @@ public class AccountDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isExpansion() {
+        return expansion;
+    }
+
+    public void setExpansion(boolean expansion) {
+        this.expansion = expansion;
     }
 }

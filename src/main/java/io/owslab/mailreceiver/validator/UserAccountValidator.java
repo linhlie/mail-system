@@ -21,7 +21,7 @@ import java.util.List;
  * Created by khanhlvb on 7/4/18.
  */
 @Component
-@PropertySource("classpath:validation.properties")
+@PropertySource(value = "classpath:validation.properties", encoding = "UTF-8")
 public class UserAccountValidator implements Validator {
     @Autowired
     private AccountDAO accountDAO;
