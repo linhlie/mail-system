@@ -324,24 +324,6 @@
         });
     }
     
-    function getAttachmentData() {
-        var result = {
-            origin: [],
-            upload: []
-        };
-        for(var i = 0; i < attachmentDropzone.files.length; i++){
-            var file = attachmentDropzone.files[i];
-            if(!!file.id){
-                if(!!file.upload){
-                    result.upload.push(file.id);
-                } else {
-                    result.origin.push(file.id);
-                }
-            }
-        }
-        return result;
-    }
-    
     function enableResizeSourceColumns() {
         enableResizeColums(sourceTableId);
     }
@@ -651,41 +633,6 @@
         });
     }
 
-    function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback) {
-        messageId = messageId.replace(/\+/g, '%2B');
-        replyId = replyId.replace(/\+/g, '%2B');
-        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType;
-        var type = sendTo === "moto" ? 4 : 5
-        url = url + "&type=" + type;
-        if(!!accountId){
-            url = url + "&accountId=" + accountId;
-        }
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                var email;
-                var accounts;
-                if(data.status){
-                    email = data.mail;
-                    accounts = data.list;
-                }
-                if(typeof callback === "function"){
-                    callback(email, accounts);
-                }
-            },
-            error: function (e) {
-                console.error("getMail ERROR : ", e);
-                if(typeof callback === "function"){
-                    callback();
-                }
-            }
-        });
-    }
-
     function showMailContent(data, elementIds) {
         var mailSubjectDiv = document.getElementById(elementIds[0]);
         var mailAttachmentDiv = document.getElementById(elementIds[2]);
@@ -775,7 +722,7 @@
                 updateMailEditorContent(data.replacedBody, true);
             }
             var files = data.files ? data.files : [];
-            updateDropzoneData(files);
+            updateDropzoneData(attachmentDropzone, files);
         }
     }
 
@@ -789,32 +736,6 @@
                 selected: (item.id.toString() === lastSelectedSendMailAccountId)
             }));
         });
-    }
-
-    function updateCCList(currentCCs, newCCs) {
-        for (var i = 0; i < newCCs.length; i++) {
-            if (currentCCs.indexOf(newCCs[i]) == -1) {
-                currentCCs.push(newCCs[i]);
-            }
-        }
-        return currentCCs;
-    }
-
-    function updateDropzoneData(files) {
-        var cachedIncludeAttachmentStr = localStorage.getItem("includeAttachment");
-        var cachedIncludeAttachment = typeof cachedIncludeAttachmentStr !== "string" ? false : !!JSON.parse(cachedIncludeAttachmentStr);
-        attachmentDropzone.removeAllFiles(true);
-        if(cachedIncludeAttachment && files.length > 0){
-            for(var i = 0; i < files.length; i++ ){
-                var file = files[i];
-                var mockFile = { id: file.id, name: file.fileName, size: file.size, type: 'text/plain'};
-                attachmentDropzone.emit("addedfile", mockFile);
-                attachmentDropzone.emit("processing", mockFile);
-                attachmentDropzone.emit("success", mockFile);
-                attachmentDropzone.emit("complete", mockFile);
-                attachmentDropzone.files.push( mockFile );
-            }
-        }
     }
 
     function updateMailEditorContent(content, preventClear){
@@ -838,6 +759,34 @@
     }
     
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
+        var cachedSeparateTab = getCachedSeparateTabSetting();
+        if(cachedSeparateTab) {
+            showMailEditorInNewTab(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo);
+        } else {
+            showMailEditorInTab(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo);
+        }
+    }
+    
+    function showMailEditorInNewTab(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
+        var data = {
+            "accountId" : accountId,
+            "messageId" : messageId,
+            "receiver" : receiver,
+            "textRange" : textRange,
+            "textMatchRange" : textMatchRange,
+            "replaceType" : replaceType,
+            "sendTo" : sendTo,
+        };
+        sessionStorage.setItem("separateSendMailData", JSON.stringify(data));
+        var win = window.open('/user/sendTab', '_blank');
+        if (win) {
+            win.focus();
+        } else {
+            alert('Please allow popups for this website');
+        }
+    }
+    
+    function showMailEditorInTab(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         $('#sendMailModal').modal();
         if(sendTo === "moto") {
             $('#sendSuggestMailTitle').text("マッチング【元】へメール送信");
@@ -865,7 +814,7 @@
         $("button[name='sendSuggestMailClose']").click(function() {
             var btn = $('#cancelSendSuggestMail');
             btn.button('loading');
-            var attachmentData = getAttachmentData();
+            var attachmentData = getAttachmentData(attachmentDropzone);
             if(attachmentData.upload.length == 0) {
                 btn.button('reset');
                 $('#sendMailModal').modal('hide');
@@ -902,7 +851,7 @@
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
             btn.button('loading');
-            var attachmentData = getAttachmentData();
+            var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: lastReceiver.messageId,
                 subject: $( "#" + rdMailSubjectId).val(),
@@ -1039,42 +988,6 @@
                 callback(valid);
             }
         });
-    }
-
-    function validateAndShowEmailListInput(id, acceptEmpty) {
-        var valid = validateEmailListInput(id);
-        if (!acceptEmpty) {
-            var value = $('#' + id).val();
-            valid = valid && (value.length > 0);
-        }
-        valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
-        return valid;
-    }
-
-    function validateEmailListInput(id) {
-        var rawCC = $('#' + id).val();
-        rawCC = rawCC || "";
-        var ccText = rawCC.replace(/\s*,\s*/g, ",");
-        var cc = ccText.split(",");
-        var senderValid = true;
-        if(cc.length === 1 && cc[0] == "") {
-            senderValid = true;
-        } else {
-            for(var i = 0; i < cc.length; i++) {
-                var email = cc[i];
-                var valid = validateEmail(email);
-                if(!valid) {
-                    senderValid = false;
-                    break;
-                }
-            }
-        }
-        return senderValid;
-    }
-
-    function validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
     }
 
     function resetValidation() {
@@ -1430,87 +1343,9 @@
                 });
         });
     }
-    
-    function getDecorateExcerpt(excerpt, sendTo) {
-        if(sendTo === "moto") {
-            excerpt = getExcerptWithGreeting(excerpt, "元");
-            excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + excerpt;
-        } else if (sendTo === "saki") {
-            excerpt = getExcerptWithGreeting(excerpt, "先");
-            excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + excerpt;
-        }
-        return excerpt;
-    }
-
-    function getExcerptWithGreeting(excerpt, type) {
-        var greeting = loadGreeting(type);
-        if(greeting == null) {
-            greeting = getExceprtLine("---------------------");
-            greeting = greeting + '<br /><br /><br /><br /><br />';
-        } else {
-            greeting = '<br /><br />' + greeting + '<br /><br />';
-        }
-        excerpt = excerpt + greeting;
-        return excerpt;
-    }
 
     function wrapperWithRed(text) {
         return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
-    }
-
-    function getExceprtLine(line) {
-        var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
-        return exceprtLine;
-    }
-
-    function loadGreeting(type) {
-        var greeting = null;
-        var greetingData = loadGreetingData();
-        for(var i = 0; i < greetingData.length; i++){
-            var item = greetingData[i];
-            if(item && item.type === type) {
-                greeting = item.greeting;
-                break;
-            }
-        }
-        return greeting
-    }
-
-    function loadGreetingData() {
-        var greetingDataInStr = localStorage.getItem("greetingData");
-        var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
-        greetingData = Array.isArray(greetingData) ? greetingData : [];
-        return greetingData;
-    }
-
-    function wrapText(text) {
-        return isHTML(text) ? text : wrapPlainText(text);
-    }
-
-    function isHTML(str) {
-        return str && (str.toLowerCase().indexOf("<html") > -1);
-        // var doc = new DOMParser().parseFromString(str, "text/html");
-        // return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
-    }
-
-    function wrapPlainText(text) {
-        if(text)
-            return text.replace(/(?:\r\n|\r|\n)/g, '<br />');
-        return text;
-    }
-
-    function getReplyWrapper(data) {
-        var wrapperText = '<div class="gmail_extra"><br>' +
-            '<div class="gmail_quote">' +
-            data.replySentAt +
-            ' <span dir="ltr">&lt;<a href="mailto:' +
-            data.replyFrom +
-            '" target="_blank" rel="noopener">' +
-            data.replyFrom +
-            '</a>&gt;</span>:<br />' +
-            '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
-            '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
-        return wrapperText;
     }
     
     function updateSourceControls(index, total) {

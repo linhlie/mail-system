@@ -5,8 +5,7 @@
         var cachedIncludeAttachmentStr = localStorage.getItem("includeAttachment");
         var cachedIncludeAttachment = typeof cachedIncludeAttachmentStr !== "string" ? false : !!JSON.parse(cachedIncludeAttachmentStr);
         $('#includeAttachment').prop('checked', cachedIncludeAttachment);
-        var cachedSeparateTabStr = localStorage.getItem("separateTab");
-        var cachedSeparateTab = typeof cachedSeparateTabStr !== "string" ? false : !!JSON.parse(cachedSeparateTabStr);
+        var cachedSeparateTab = getCachedSeparateTabSetting();
         $('#separateTab').prop('checked', cachedSeparateTab);
         var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
         if(selectedSendMailAccountId) {
@@ -22,7 +21,7 @@
         });
         $('#separateTab').change(function() {
             var separateTab = $(this).is(":checked");
-            localStorage.setItem("separateTab", separateTab);
+            setCachedSeparateTabSetting(separateTab);
         });
         $('#sendMailAccountSelect').on('change', function() {
             localStorage.setItem("selectedSendMailAccountId", this.value);
