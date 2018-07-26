@@ -255,13 +255,6 @@
         }
     }
 
-    function getEmailDomain(email) {
-        if(typeof email === "string"  && email.indexOf("@") >= 0) {
-            return email.split("@")[1]
-        }
-        return "";
-    }
-
     function initReplaceSelector() {
         var motoSelectedValue = localStorage.getItem("motoSelectedValue");
         var sakiSelectedValue = localStorage.getItem("sakiSelectedValue");

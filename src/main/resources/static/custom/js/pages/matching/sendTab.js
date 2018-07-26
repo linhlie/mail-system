@@ -1,7 +1,7 @@
 (function () {
     "use strict";
     var rdMailSubjectId = 'rdMailSubject';
-    var rdMailBodyId = 'rdMailBody';
+    var rdMailBodyId = 'rdMailBodyTab';
     var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
@@ -13,7 +13,7 @@
     var externalCCGlobal = [];
     var senderGlobal = "";
 
-    var attachmentDropzoneId = "#attachment-dropzone";
+    var attachmentDropzoneId = "#attachment-dropzone-tab";
     var attachmentDropzone;
 
     var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
@@ -26,6 +26,50 @@
 
     $(function () {
         initDropzone();
+        $('#' + rdMailCCId).tagsInput({
+            defaultText: '',
+            minInputWidth: 150,
+            maxInputWidth: 600,
+            width: 'auto',
+            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            validationMsg: 'メールアドレスを入力してください',
+            onChange: function (elem, elem_tags) {
+                $('.tag').each(function () {
+                    var tag = $(this).text();
+                    var email = tag.substring(0, tag.length - 3);
+                    var globalMailDoman = getEmailDomain(senderGlobal);
+                    var emailDomain = getEmailDomain(email);
+                    if (globalMailDoman == emailDomain) {
+                        $(this).css('background-color', 'yellow');
+                    } else if(externalCCGlobal.indexOf(email) >= 0) {
+                        $(this).css('background-color', 'yellow');
+                    }
+                });
+            }
+        });
+        tinymce.init({
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block : '',
+            selector: '#' + rdMailBodyId,
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 350,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            init_instance_callback: function (editor) {
+                init();
+            }
+        });
+    });
+    
+    function init() {
         var separateSendMailDataStr = sessionStorage.getItem("separateSendMailData");
         var separateSendMailData = JSON.parse(separateSendMailDataStr);
         lastMessageId = separateSendMailData.messageId;
@@ -35,7 +79,7 @@
         lastReplaceType = separateSendMailData.replaceType;
         lastSendTo = separateSendMailData.sendTo;
         showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo);
-    });
+    }
 
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         setSendMailTitle(sendTo);
@@ -203,7 +247,6 @@
     }
 
     function updateMailEditorContent(content, preventClear){
-        console.log("content: ", content);
         var editor = tinymce.get(rdMailBodyId);
         editor.setContent(content);
         if(!preventClear){
