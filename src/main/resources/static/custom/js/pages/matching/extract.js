@@ -535,8 +535,8 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            receiverValidate = validateaNDsHOWEmailListInput(rdMailReceiverId, false);
-            ccValidate = validateaNDsHOWEmailListInput(rdMailCCId, true);
+            receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
+            ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
             btn.button('loading');
@@ -734,7 +734,7 @@
         });
     }
     
-    function validateaNDsHOWEmailListInput(id, acceptEmpty) {
+    function validateAndShowEmailListInput(id, acceptEmpty) {
         var valid = validateEmailListInput(id);
         if (!acceptEmpty) {
             var value = $('#' + id).val();
