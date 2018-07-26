@@ -1,0 +1,76 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="non-fragments">
+<head>
+    <title>比較メールのみ抽出</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content sendTab">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h4 class="modal-title">返信</h4>
+                    <div class="box-tools pull-right">
+                        <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body padding">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
+                            <!--<div class="col-md-5">-->
+                            <!--<input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>-->
+                            <!--</div>-->
+                            <div class="col-md-5">
+                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
+                                </select>
+                            </div>
+                            <div id="rdMailReceiver-container">
+                                <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
+                                <div class="col-md-5">
+                                    <input id="rdMailReceiver" class="form-control"
+                                           placeholder="user@example.com, user2@example.com"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="rdMailCC-container" class="form-group row">
+                            <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailCC" class="tags form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                            </div>
+                        </div>
+                    </form>
+                    <textarea id="rdMailBody"></textarea>
+                    <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="reply-dropzone"></div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <button type="button" id="cancelSendSuggestMail" name="sendSuggestMailClose"
+                                class="btn btn-default" data-loading-text="終了中...">終了
+                        </button>
+                        <button type="button" id="sendSuggestMail" class="btn btn-primary" data-loading-text="送信中...">
+                            送信
+                        </button>
+                    </div>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /. box -->
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/pages/matching/sendTab.js"></script>
+</th:block>
+</body>
+</html>

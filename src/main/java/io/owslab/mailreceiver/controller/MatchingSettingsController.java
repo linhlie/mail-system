@@ -294,4 +294,9 @@ public class MatchingSettingsController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = "/sendTab", method = RequestMethod.GET)
+    public String getSendTab() {
+        return "user/matching/sendTab";
+    }
 }

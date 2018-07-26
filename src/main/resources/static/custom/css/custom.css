@@ -1109,3 +1109,7 @@ div.select-row-control-container div.btn-group button.btn {
 #source-control:after, #destination-control:after {
     clear: both;
 }
+
+section.sendTab.content {
+    padding: 15px 0;
+}
