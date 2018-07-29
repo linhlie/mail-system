@@ -100,13 +100,6 @@
         initStickyHeader();
     });
 
-    function getEmailDomain(email) {
-        if(typeof email === "string"  && email.indexOf("@") >= 0) {
-            return email.split("@")[1]
-        }
-        return "";
-    }
-
     function initDropzone() {
         Dropzone.autoDiscover = false;
         attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
@@ -483,19 +476,32 @@
         $("#printElement").print();
         $("#printElement").hide();
     }
-
+    
     function showMailEditor(messageId, accountId, receiver) {
+        var cachedSeparateTab = getCachedSeparateTabSetting();
+        if(cachedSeparateTab) {
+            showMailEditorInNewTab(messageId, accountId, receiver);
+        } else {
+            showMailEditorInTab(messageId, accountId, receiver);
+        }
+    }
+    
+    function showMailEditorInNewTab(messageId, accountId, receiver) {
+        
+    }
+
+    function showMailEditorInTab(messageId, accountId, receiver) {
         $('#sendMailModal').modal();
         lastReceiver = receiver;
         lastMessageId = messageId;
         showMailWithReplacedRange(messageId, accountId, function (email, accounts) {
-            showMailContenttToEditor(email, accounts, receiver)
+            showMailContentToEditor(email, accounts, receiver)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
             showMailWithReplacedRange(lastMessageId, this.value, function (email, accounts) {
-                showMailContenttToEditor(email, accounts, lastReceiver)
+                showMailContentToEditor(email, accounts, lastReceiver)
             });
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -503,7 +509,7 @@
         $("button[name='sendSuggestMailClose']").click(function () {
             var btn = $('#cancelSendSuggestMail');
             btn.button('loading');
-            var attachmentData = getAttachmentData();
+            var attachmentData = getAttachmentData(attachmentDropzone);
             if (attachmentData.upload.length == 0) {
                 btn.button('reset');
                 $('#sendMailModal').modal('hide');
@@ -540,7 +546,7 @@
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
             btn.button('loading');
-            var attachmentData = getAttachmentData();
+            var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: messageId,
                 subject: $("#" + rdMailSubjectId).val(),
@@ -622,7 +628,7 @@
         highlight(data);
     }
 
-    function showMailContenttToEditor(data, accounts, receiverData) {
+    function showMailContentToEditor(data, accounts, receiverData) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -660,7 +666,7 @@
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
         }
-        updateDropzoneData();
+        updateDropzoneData(attachmentDropzone);
     }
     
     function updateSenderSelector(email, accounts) {
@@ -673,15 +679,6 @@
                 selected: (item.id.toString() === lastSelectedSendMailAccountId)
             }));
         });
-    }
-
-    function updateCCList(currentCCs, newCCs) {
-        for (var i = 0; i < newCCs.length; i++) {
-            if (currentCCs.indexOf(newCCs[i]) == -1) {
-                currentCCs.push(newCCs[i]);
-            }
-        }
-        return currentCCs;
     }
 
     function updateMailEditorContent(content, preventClear) {
@@ -698,28 +695,6 @@
         return editor.getContent();
     }
 
-    function updateDropzoneData() {
-        attachmentDropzone.removeAllFiles(true);
-    }
-
-    function getAttachmentData() {
-        var result = {
-            origin: [],
-            upload: []
-        };
-        for (var i = 0; i < attachmentDropzone.files.length; i++) {
-            var file = attachmentDropzone.files[i];
-            if (!!file.id) {
-                if (!!file.upload) {
-                    result.upload.push(file.id);
-                } else {
-                    result.origin.push(file.id);
-                }
-            }
-        }
-        return result;
-    }
-
     function setInputChangeListener(id, acceptEmpty, callback) {
         $('#' + id).on('input', function () {
             var valid = validateEmailListInput(id);
@@ -732,46 +707,6 @@
                 callback(valid);
             }
         });
-    }
-    
-    function validateAndShowEmailListInput(id, acceptEmpty) {
-        var valid = validateEmailListInput(id);
-        if (!acceptEmpty) {
-            var value = $('#' + id).val();
-            valid = valid && (value.length > 0);
-        }
-        valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
-        return valid;
-    }
-
-    function validateEmailListInput(id) {
-        var rawCC = $('#' + id).val();
-        rawCC = rawCC || "";
-        var ccText = rawCC.replace(/\s*,\s*/g, ",");
-        var cc = ccText.split(",");
-        var senderValid = true;
-        if (cc.length === 1 && cc[0] == "") {
-            senderValid = true;
-        } else {
-            for (var i = 0; i < cc.length; i++) {
-                var email = cc[i];
-                var valid = validateEmail(email);
-                if (!valid) {
-                    senderValid = false;
-                    break;
-                }
-            }
-        }
-        return senderValid;
-    }
-
-    function validateEmail(email) {
-        var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return regex.test(String(email).toLowerCase());
-    }
-
-    function disableButton(btnId, disabled) {
-        $('#' + btnId).prop("disabled", disabled);
     }
 
     function resetValidation() {
@@ -984,67 +919,10 @@
         return wrapperText;
     }
 
-    function getExcerptWithGreeting(excerpt) {
-        var greeting = loadGreeting("返");
-        if(greeting == null) {
-            greeting = getExceprtLine("---------------------");
-            greeting = greeting + '<br /><br /><br /><br /><br />';
-        } else {
-            greeting = '<br /><br />' + greeting + '<br /><br />';
-        }
-        excerpt = excerpt + greeting;
-        return excerpt;
-    }
-    
-    function wrapperWithRed(text) {
-        return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
-    }
-
-    function getExceprtLine(line) {
-        var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
-        return exceprtLine;
-    }
-
-    function loadGreeting(type) {
-        var greeting = null;
-        var greetingData = loadGreetingData();
-        for(var i = 0; i < greetingData.length; i++){
-            var item = greetingData[i];
-            if(item && item.type === type) {
-                greeting = item.greeting;
-                break;
-            }
-        }
-        return greeting
-    }
-
-    function loadGreetingData() {
-        var greetingDataInStr = localStorage.getItem("greetingData");
-        var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
-        greetingData = Array.isArray(greetingData) ? greetingData : [];
-        return greetingData;
-    }
-    
-    function wrapText(text) {
-        return isHTML(text) ? text : wrapPlainText(text);
-    }
-
-    function isHTML(str) {
-        return str && (str.toLowerCase().indexOf("<html") > -1);
-        // var doc = new DOMParser().parseFromString(str, "text/html");
-        // return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
-    }
-
     function countSubstring(source, term) {
         var regex = new RegExp(term,"g");
         var count = (source.match(regex) || []).length;
         return count;
-    }
-    
-    function wrapPlainText(text) {
-        if(text)
-            return text.replace(/(?:\r\n|\r|\n)/g, '<br />');
-        return text;
     }
 
 })(jQuery);
