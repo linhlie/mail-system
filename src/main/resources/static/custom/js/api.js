@@ -33,6 +33,39 @@ function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRa
     });
 }
 
+function showReplyMail(accountId, messageId, callback) {
+    messageId = messageId.replace(/\+/g, '%2B');
+    var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
+    var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
+    if(!!accountId){
+        url = url + "&accountId=" + accountId;
+    }
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: url,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            var email;
+            var accounts;
+            if (data.status) {
+                email = data.mail;
+                accounts = data.list;
+            }
+            if (typeof callback === "function") {
+                callback(email, accounts);
+            }
+        },
+        error: function (e) {
+            console.error("showReplyMail ERROR : ", e);
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+    });
+}
+
 function removeFile(fileId){
     $.ajax({
         type: "GET",

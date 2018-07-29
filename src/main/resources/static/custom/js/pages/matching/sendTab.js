@@ -23,6 +23,7 @@
     var lastTextMatchRange;
     var lastReplaceType;
     var lastSendTo;
+    var matching = false;
 
     $(function () {
         initDropzone();
@@ -78,18 +79,19 @@
         lastTextMatchRange = separateSendMailData.textMatchRange;
         lastReplaceType = separateSendMailData.replaceType;
         lastSendTo = separateSendMailData.sendTo;
+        matching = !!lastSendTo;
         showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo);
     }
 
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         setSendMailTitle(sendTo);
-        showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
+        showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
             showMailContentToEditor(email, accounts, receiver, sendTo)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
-            showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+            showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
                 showMailContentToEditor(email, accounts, lastReceiver, lastSendTo)
             });
         });
@@ -177,7 +179,23 @@
         })
     }
 
+    function showMailWithData(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback) {
+        if(matching) {
+            showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback);
+        } else {
+            showReplyMail(accountId, messageId, callback)
+        }
+    }
+    
     function showMailContentToEditor(data, accounts, receiverData, sendTo) {
+        if(matching) {
+            showMailContentToEditorMatching(data, accounts, receiverData, sendTo);
+        } else {
+            showMailContentToEditorReply(data, accounts, receiverData);
+        }
+    }
+    
+    function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -226,6 +244,47 @@
             var files = data.files ? data.files : [];
             updateDropzoneData(attachmentDropzone, files);
         }
+    }
+
+    function showMailContentToEditorReply(data, accounts, receiverData) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
+        resetValidation();
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
+        updateMailEditorContent("");
+        if (data) {
+            updateSenderSelector(data, accounts);
+            senderGlobal = data.account;
+            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            externalCCGlobal = externalCC;
+            cc = updateCCList(cc,to);
+            var indexOfSender = cc.indexOf(data.account);
+            if (indexOfSender > -1) {
+                cc.splice(indexOfSender, 1);
+            }
+            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
+            if(receiverList.length > 0) {
+                cc = updateCCList(cc, [receiverData.from]);
+            }
+            for(var i = 0; i < receiverList.length; i++) {
+                var receiver = receiverList[i];
+                var indexOfReceiver = cc.indexOf(receiver);
+                if (indexOfReceiver > -1) {
+                    cc.splice(indexOfReceiver, 1)
+                }
+            }
+            cc = updateCCList(cc, externalCC);
+            $('#' + rdMailCCId).importTags(cc.join(","));
+            document.getElementById(rdMailSubjectId).value = data.subject;
+            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            data.replyOrigin = getReplyWrapper(data);
+            data.originalBody = data.replyOrigin ? data.replyOrigin : "";
+            data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
+            data.originalBody = data.originalBody + data.signature;
+            updateMailEditorContent(data.originalBody);
+        }
+        updateDropzoneData(attachmentDropzone);
     }
 
     function resetValidation() {

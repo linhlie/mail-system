@@ -487,7 +487,18 @@
     }
     
     function showMailEditorInNewTab(messageId, accountId, receiver) {
-        
+        var data = {
+            "accountId" : accountId,
+            "messageId" : messageId,
+            "receiver" : receiver,
+        };
+        sessionStorage.setItem("separateSendMailData", JSON.stringify(data));
+        var win = window.open('/user/sendTab', '_blank');
+        if (win) {
+            win.focus();
+        } else {
+            alert('Please allow popups for this website');
+        }
     }
 
     function showMailEditorInTab(messageId, accountId, receiver) {
