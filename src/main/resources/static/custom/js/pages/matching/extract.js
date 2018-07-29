@@ -491,6 +491,7 @@
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,
+            "historyType": getHistoryType(),
         };
         sessionStorage.setItem("separateSendMailData", JSON.stringify(data));
         var win = window.open('/user/sendTab', '_blank');
@@ -568,7 +569,7 @@
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 sendType: "[返信]",
-                historyType: window.location.href.indexOf("extractSource") >= 0 ? 3 : 4,
+                historyType: getHistoryType(),
             };
             $.ajax({
                 type: "POST",
@@ -934,6 +935,10 @@
         var regex = new RegExp(term,"g");
         var count = (source.match(regex) || []).length;
         return count;
+    }
+    
+    function getHistoryType() {
+        return window.location.href.indexOf("extractSource") >= 0 ? 3 : 4;
     }
 
 })(jQuery);

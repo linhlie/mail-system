@@ -769,6 +769,7 @@
             "textMatchRange" : textMatchRange,
             "replaceType" : replaceType,
             "sendTo" : sendTo,
+            "historyType": getHistoryType(),
         };
         sessionStorage.setItem("separateSendMailData", JSON.stringify(data));
         var win = window.open('/user/sendTab', '_blank');
@@ -856,7 +857,7 @@
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 matchingMessageId: messageId,
                 sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
-                historyType: lastSendTo === "moto" ? 1 : 2,
+                historyType: getHistoryType(),
             };
             $.ajax({
                 type: "POST",
@@ -1412,6 +1413,10 @@
     function destinationLast() {
         var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
         showDestinationMail(lastTr.prev());
+    }
+
+    function getHistoryType() {
+        return lastSendTo === "moto" ? 1 : 2;
     }
 
 })(jQuery);

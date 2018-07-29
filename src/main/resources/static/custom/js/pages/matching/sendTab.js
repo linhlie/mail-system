@@ -23,6 +23,7 @@
     var lastTextMatchRange;
     var lastReplaceType;
     var lastSendTo;
+    var lastHistoryType;
     var matching = false;
 
     $(function () {
@@ -79,6 +80,7 @@
         lastTextMatchRange = separateSendMailData.textMatchRange;
         lastReplaceType = separateSendMailData.replaceType;
         lastSendTo = separateSendMailData.sendTo;
+        lastHistoryType = separateSendMailData.historyType;
         matching = !!lastSendTo;
         showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo);
     }
@@ -148,8 +150,8 @@
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 matchingMessageId: messageId,
-                sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
-                historyType: lastSendTo === "moto" ? 1 : 2,
+                sendType: !lastSendTo ? "[返信]" : (lastSendTo === "moto" ? "[元へ]" : "[先へ]"),
+                historyType: lastHistoryType,
             };
             $.ajax({
                 type: "POST",
