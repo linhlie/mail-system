@@ -84,13 +84,13 @@
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         setSendMailTitle(sendTo);
         showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
-            showMailContenttToEditor(email, accounts, receiver, sendTo)
+            showMailContentToEditor(email, accounts, receiver, sendTo)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
             showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                showMailContenttToEditor(email, accounts, lastReceiver, lastSendTo)
+                showMailContentToEditor(email, accounts, lastReceiver, lastSendTo)
             });
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -101,7 +101,7 @@
             var attachmentData = getAttachmentData(attachmentDropzone);
             if(attachmentData.upload.length == 0) {
                 btn.button('reset');
-                $('#sendMailModal').modal('hide');
+                window.close();
                 return;
             }
             var form = {
@@ -117,13 +117,13 @@
                 timeout: 600000,
                 success: function (data) {
                     btn.button('reset');
-                    $('#sendMailModal').modal('hide');
+                    window.close();
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.log("ERROR : removeUploadedFiles: ", e);
                     btn.button('reset');
-                    $('#sendMailModal').modal('hide');
+                    window.close();
                 }
             });
         });
@@ -159,13 +159,12 @@
                 timeout: 600000,
                 success: function (data) {
                     btn.button('reset');
-                    console.log("sendSuggestMail: ", data);
-                    $('#sendMailModal').modal('hide');
                     if(data && data.status){
-                        //TODO: noti send mail success
+                        alert("成功しました");
                     } else {
-                        //TODO: noti send mail failed
+                        alert("失敗しました");
                     }
+                    window.close();
 
                 },
                 error: function (e) {
@@ -178,7 +177,7 @@
         })
     }
 
-    function showMailContenttToEditor(data, accounts, receiverData, sendTo) {
+    function showMailContentToEditor(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
