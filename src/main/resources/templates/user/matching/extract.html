@@ -11,7 +11,7 @@
     <section class="content matching-result">
         <div class="row matching-result-container" style="position: relative">
             <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
-                <div class="col-sm-12">
+                <div class="col-sm-12" id="table-section">
                     <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元:': '絞り込み先:'"></h4>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 450px;">
@@ -39,6 +39,7 @@
                             </table>
                         </div>
                     </div>
+                    <div id="dragbar2" style="margin-top: 5px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
                 </div>
                 <div class="col-sm-12">
                         <div style="width: 100%; padding-top: 10px;">

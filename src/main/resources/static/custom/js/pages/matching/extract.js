@@ -111,6 +111,7 @@
         setButtonClickListenter(extractPrevBtnId, extractPrev);
         setButtonClickListenter(extractNextBtnId, extractNext);
         keyDownListeners();
+        previewDraggingSetup();
     });
 
     function initDropzone() {
@@ -347,16 +348,7 @@
     function selectFirstRow() {
         if (extractResult && extractResult.length > 0) {
             var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
-            firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            var index = firstTr[0].getAttribute("data");
-            var rowData = extractResult[index];
-            if (rowData && rowData.messageId) {
-                showMail(rowData.messageId, function (result) {
-                    showMailContent(result);
-                    updatePreviewMailToPrint(result);
-                }, rowData.range);
-            }
-            selectedRowData = rowData;
+            selectedRow(firstTr);
         }
     }
 
@@ -1003,6 +995,48 @@
     function extractLast() {
         var lastTr = $('#' + sourceTableId).find(' tbody tr:last');
         selectedRow(lastTr.prev());
+    }
+
+    function previewDraggingSetup() {
+        var dragging = false;
+        $('#dragbar2').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var dragbar = $('#dragbar2');
+            var ghostbar = $('<div>',
+                {id:'ghostbar2',
+                    css: {
+                        width: dragbar.outerWidth(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("top",e.pageY);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#table-section');
+                var topHeight = (e.pageY - container.offset().top);
+                console.log("topHeight: ", topHeight);
+                var tableHeight = Math.floor(topHeight - 55);
+                tableHeight = tableHeight > 60 ? tableHeight : 60;
+                tableHeight = tableHeight < 800 ? tableHeight : 800;
+                var previewHeightChange = 450 - tableHeight;
+                var previewHeight = 444 + previewHeightChange;
+                $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('.matching-result .mail-body').css("height", previewHeight + "px");
+                $('#ghostbar2').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
     }
 
 })(jQuery);
