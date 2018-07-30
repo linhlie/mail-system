@@ -11,6 +11,12 @@
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
     var totalResultContainId = 'totalResultContain';
+
+    var extractFirstBtnId = "extract-first";
+    var extractLastBtnId = "extract-last";
+    var extractPrevBtnId = "extract-prev";
+    var extractNextBtnId = "extract-next";
+
     var printBtnId = 'printBtn';
     var extractResult = null;
     var sourceMatchDataTable;
@@ -21,6 +27,8 @@
 
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
+
+    var selectedSourceTableRow;
 
     var receiverValidate = true;
     var ccValidate = true;
@@ -98,6 +106,11 @@
         setButtonClickListenter(printBtnId, printPreviewEmail);
         loadExtractData();
         initStickyHeader();
+        setButtonClickListenter(extractFirstBtnId, extractFirst);
+        setButtonClickListenter(extractLastBtnId, extractLast);
+        setButtonClickListenter(extractPrevBtnId, extractPrev);
+        setButtonClickListenter(extractNextBtnId, extractNext);
+        keyDownListeners();
     });
 
     function initDropzone() {
@@ -241,7 +254,9 @@
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", selectedRow);
+            setRowClickListener("sourceRow", function () {
+                selectedRow($(this).closest('tr'))
+            });
             setRowClickListener("reply", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
@@ -319,9 +334,7 @@
         })
     }
 
-    function showSourceMail() {
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function showSourceMail(index) {
         var rowData = extractResult[index];
         if (rowData && rowData && rowData.messageId) {
             showMail(rowData.messageId, function (result) {
@@ -347,13 +360,14 @@
         }
     }
 
-    function selectedRow() {
-        $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-        showSourceMail.call(this);
-        var row = $(this)[0].parentNode;
-        var index = row.getAttribute("data");
+    function selectedRow(row) {
+        selectedSourceTableRow = row;
+        updateSourceControls(row.index(), extractResult.length);
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var index = row[0].getAttribute("data");
         var rowData = extractResult[index];
         selectedRowData = rowData;
+        showSourceMail(index);
     }
 
     function removeAllRow(tableId, replaceHtml) { //Except header row
@@ -939,6 +953,56 @@
     
     function getHistoryType() {
         return window.location.href.indexOf("extractSource") >= 0 ? 3 : 4;
+    }
+    
+    function keyDownListeners() {
+        $(document).on("keyup", keydownHandler);
+    }
+    
+    function keydownHandler(e) {
+        var button = undefined;
+        if(e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+            button = $("#" + extractFirstBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            button = $("#" + extractLastBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
+            e.preventDefault();
+            button = $("#" + extractPrevBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            button = $("#" + extractNextBtnId);
+        }
+        if(button && !button.is(":disabled")) {
+            button.click();
+        }
+    }
+
+    function extractFirst() {
+        var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+        selectedRow(firstTr);
+    }
+
+    function extractPrev() {
+        if(!selectedSourceTableRow) {
+            extractLast();
+        } else {
+            selectedRow(selectedSourceTableRow.prev());
+        }
+    }
+
+    function extractNext() {
+        if(!selectedSourceTableRow) {
+            extractNext();
+        } else {
+            selectedRow(selectedSourceTableRow.next());
+        }
+    }
+
+    function extractLast() {
+        var lastTr = $('#' + sourceTableId).find(' tbody tr:last');
+        selectedRow(lastTr.prev());
     }
 
 })(jQuery);

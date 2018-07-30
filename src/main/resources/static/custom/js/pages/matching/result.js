@@ -1342,27 +1342,6 @@
         return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
     }
     
-    function updateSourceControls(index, total) {
-        var container = $("#source-control");
-        updateControls(container, index, total);
-    }
-
-    function updateDestinationControls(index, total) {
-        var container = $("#destination-control");
-        updateControls(container, index, total);
-    }
-    
-    function updateControls(container, index, total) {
-        var firstDisable = (total <= 1 || index == 0);
-        var lastDisable = (total <= 1 || index == (total - 1));
-        var backDisable = (total <= 1 || index == 0);
-        var nextDisable = (total <= 1 || index == (total - 1));
-        container.find("button[name='first']").prop("disabled", firstDisable);
-        container.find("button[name='last']").prop("disabled", lastDisable);
-        container.find("button[name='prev']").prop("disabled", backDisable);
-        container.find("button[name='next']").prop("disabled", nextDisable);
-    }
-    
     function sourceFirst() {
         var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
         selectedRow(firstTr);

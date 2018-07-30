@@ -41,11 +41,33 @@
                     </div>
                 </div>
                 <div class="col-sm-12">
-                    <h4>プレビュー
-                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
-                            <i class="fa fa-print"></i>
-                        </button>
-                    </h4>
+                        <div style="width: 100%; padding-top: 10px;">
+                            <span>プレビュー</span>
+                            <div id="source-control" class="select-row-control-container" style="display: inline-block;padding-right: 0;">
+                                <div class="btn-group">
+                                    <button id="extract-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-step-backward"></span>
+                                        (SHIFT+F2)
+                                    </button>
+                                    <button id="extract-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-triangle-left"></span>
+                                        前ページ(F2)
+                                    </button>
+                                    <button id="extract-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-triangle-right"></span>
+                                        次ページ(F4)
+                                    </button>
+                                    <button id="extract-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-step-forward"></span>
+                                        (SHIFT+F4)
+                                    </button>
+                                    <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                            data-toggle="tooltip" title="" data-original-title="Print">
+                                        <i class="fa fa-print"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
                         <div class="mail-body-container">
