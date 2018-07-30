@@ -11,7 +11,7 @@
     <section class="content matching-result">
         <div class="row matching-result-container" style="position: relative">
             <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
-                <div class="col-sm-12">
+                <div class="col-sm-12" id="table-section">
                     <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元:': '絞り込み先:'"></h4>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 450px;">
@@ -39,13 +39,36 @@
                             </table>
                         </div>
                     </div>
+                    <div id="dragbar2" style="margin-top: 5px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
                 </div>
                 <div class="col-sm-12">
-                    <h4>プレビュー
-                        <button style="float: right" id="printBtn" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
-                            <i class="fa fa-print"></i>
-                        </button>
-                    </h4>
+                        <div style="width: 100%; padding-top: 10px;">
+                            <span>プレビュー</span>
+                            <div id="source-control" class="select-row-control-container" style="display: inline-block;padding-right: 0;">
+                                <div class="btn-group">
+                                    <button id="extract-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-step-backward"></span>
+                                        (SHIFT+F2)
+                                    </button>
+                                    <button id="extract-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-triangle-left"></span>
+                                        前ページ(F2)
+                                    </button>
+                                    <button id="extract-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-triangle-right"></span>
+                                        次ページ(F4)
+                                    </button>
+                                    <button id="extract-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                        <span class="glyphicon glyphicon-step-forward"></span>
+                                        (SHIFT+F4)
+                                    </button>
+                                    <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                            data-toggle="tooltip" title="" data-original-title="Print">
+                                        <i class="fa fa-print"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     <div class="main-right">
                         <div id="mailSubject" class="mail-subject"></div>
                         <div class="mail-body-container">
@@ -118,6 +141,9 @@
     </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/storage/sendTabSetting.js"></script>
     <script src="/custom/js/pages/matching/extract.js"></script>
 </th:block>
 </body>

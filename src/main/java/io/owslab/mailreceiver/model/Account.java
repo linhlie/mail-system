@@ -109,5 +109,6 @@ public class Account {
     public class Role {
         public static final String ADMIN = "ROLE_ADMIN";
         public static final String MEMBER = "ROLE_MEMBER";
+        public static final String MEMBER_EXPANSION = "ROLE_MEM_EXPANSION";
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,7 +51,10 @@ public class AccountService {
     }
 
     public List<Account> getAllUserRoleAccounts(){
-        return accountDAO.findByUserRole(Account.Role.MEMBER);
+        List<String> roles = new ArrayList<>();
+        roles.add(Account.Role.MEMBER);
+        roles.add(Account.Role.MEMBER_EXPANSION);
+        return accountDAO.findByUserRoleIn(roles);
     }
 
     public void delete(long id){
@@ -81,7 +85,11 @@ public class AccountService {
         if(newPassword != null && newPassword.length() > 0) {
             user.setEncryptedPassword(passwordEncoder.encode(newPassword));
         }
-        user.setUserRole(Account.Role.MEMBER);
+        if(form.isExpansion()) {
+            user.setUserRole(Account.Role.MEMBER_EXPANSION);
+        } else {
+            user.setUserRole(Account.Role.MEMBER);
+        }
         accountDAO.save(user);
     }
 
@@ -91,7 +99,11 @@ public class AccountService {
         user.setName(form.getName());
         user.setEncryptedPassword(passwordEncoder.encode(form.getNewPassword()));
         user.setActive(true);
-        user.setUserRole(Account.Role.MEMBER);
+        if(form.isExpansion()) {
+            user.setUserRole(Account.Role.MEMBER_EXPANSION);
+        } else {
+            user.setUserRole(Account.Role.MEMBER);
+        }
         accountDAO.save(user);
     }
 }

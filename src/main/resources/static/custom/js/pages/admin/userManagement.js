@@ -8,12 +8,14 @@
     var userNameInput = "name";
     var newPasswordInput = "newPassword";
     var confirmNewPasswordInput = "confirmNewPassword";
+    var expansionCheckboxInput = "expansion";
 
     var editingUserIndex = null;
 
     var replaceUserHTML = '<tr role="row" class="hidden">' +
         '<td name="userRow" rowspan="1" colspan="3" data="userName"><span></span></td>' +
         '<td name="userRow" rowspan="1" colspan="3" data="name"><span></span></td>' +
+        '<td class="fit text-center" name="userRow" rowspan="1" colspan="1" data="expansion"><input type="checkbox" disabled="true" /></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="selectUser" type="button">編集</button></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="deleteUser" type="button">削除</button></td>' +
         '</tr>';
@@ -173,6 +175,9 @@
                     } else {
                         cellNode.textContent = cellData;
                     }
+                } else if (cellNode.type === "checkbox") {
+                    var cellData = data[cellKeys[0]];
+                    $(cell).find('input:checkbox').attr('checked', cellData);
                 }
             }
         }
@@ -219,6 +224,7 @@
         setUserName(user.name);
         setPassword();
         setConfirmPassword();
+        setExpansion(user.expansion);
     }
     
     function addUser() {
@@ -226,7 +232,8 @@
             userName: getAccount(),
             name: getUserName(),
             newPassword: getPassword(),
-            confirmNewPassword: getConfirmassword()
+            confirmNewPassword: getConfirmassword(),
+            expansion: getExpansion(),
         };
         postSaveUser(user);
     }
@@ -237,7 +244,8 @@
             userName: getAccount(),
             name: getUserName(),
             newPassword: getPassword(),
-            confirmNewPassword: getConfirmassword()
+            confirmNewPassword: getConfirmassword(),
+            expansion: getExpansion(),
         };
         postSaveUser(user);
     }
@@ -309,6 +317,7 @@
         setUserName();
         setPassword();
         setConfirmPassword();
+        setExpansion(false);
     }
 
     function setAccount(account){
@@ -353,6 +362,15 @@
         var confirmPassword = $("input[name='" + confirmNewPasswordInput + "']").val();
         confirmPassword = confirmPassword || "";
         return confirmPassword;
+    }
+    
+    function setExpansion(expansion) {
+        $("input[name='" + expansionCheckboxInput + "']").prop('checked', expansion);
+    }
+    
+    function getExpansion() {
+        var expansion = $("input[name='" + expansionCheckboxInput + "']").is(":checked");
+        return !!expansion;
     }
 
     function updateEnableUpdateUserAccountBtn() {

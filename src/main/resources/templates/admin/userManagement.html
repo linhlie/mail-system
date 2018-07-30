@@ -22,6 +22,7 @@
                                             <tr>
                                                 <th th:colspan="3" class="dark" style="text-align: center">ユーザーID</th>
                                                 <th th:colspan="3" class="dark" style="text-align: center">ユーザー名称</th>
+                                                <th th:colspan="1" class="dark fit" style="text-align: center">拡大権限</th>
                                                 <th th:colspan="2" class="dark" style="text-align: center">操作</th>
                                             </tr>
                                             </thead>
@@ -70,6 +71,16 @@
                                             <input class="form-control" type="password" name="confirmNewPassword" placeholder="********"/>
                                             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                                             <span class="form-error" name="confirmNewPassword"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label text-left">拡大権限付与</label>
+                                        <div class="col-md-9">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="expansion"/>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>

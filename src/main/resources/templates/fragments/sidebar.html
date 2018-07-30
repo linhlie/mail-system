@@ -1,12 +1,12 @@
 <!-- sidebar: style can be found in sidebar.less -->
 <section class="sidebar">
     <ul class="sidebar-menu tree" data-widget="tree">
-        <li sec:authorize="hasRole('ROLE_MEMBER')">
+        <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')">
             <a href="#">
                 <i class="fa fa-cloud-download"></i> <span>受信メール操作</span>
             </a>
             <ul class="treeview-menu visible">
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview menu-open">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview menu-open">
                     <a href="#">
                         <i class="fa fa-circle-o"></i> <span>受信メール分析</span>
                         <span class="pull-right-container">
@@ -31,7 +31,7 @@
                         </li>
                     </ul>
                 </li>
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailHistory'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailHistory'})?'active':''">
                     <a href="#" th:href="@{/user/sendMailHistory}">
                         <i class="fa fa-circle-o"></i> <span>送信履歴</span>
                     </a>
@@ -54,7 +54,7 @@
                 <i class="fa fa-filter"></i> <span>受信ルール設定</span>
             </a>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview menu-open':'treeview'">
             <a href="#">
                 <i class="fa fa-cogs"></i> <span>システム共通設定</span>
                 <span class="pull-right-container">
@@ -62,12 +62,12 @@
                 </span>
             </a>
             <ul class="treeview-menu" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview-menu visible':'treeview-menu'">
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'fuzzyWord'})?'active':''">
                     <a href="#" th:href="@{/user/fuzzyWord}">
                         <i class="fa fa-external-link-square"></i> <span>あいまい単語登録</span>
                     </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'numberTreatment'})?'active':''">
                     <a href="#" th:href="@{/user/numberTreatment}">
                         <i class="fa fa-sort-numeric-asc"></i> <span>数値扱い設定</span>
                     </a>
@@ -101,7 +101,7 @@
                 <i class="fa fa-info-circle"></i> <span>ヘルプ</span>
             </a>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration' || currentMenu == 'extractConditionManagement'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration' || currentMenu == 'extractConditionManagement'})?'treeview menu-open':'treeview'">
             <a href="#">
                 <i class="fa fa-male"></i> <span>PC個別設定</span>
                 <span class="pull-right-container">
@@ -109,19 +109,34 @@
                 </span>
             </a>
             <ul class="treeview-menu" th:class="(${currentMenu == 'sendMailSettings' || currentMenu == 'greetingRegistration' || currentMenu == 'extractConditionManagement'})?'treeview-menu visible':'treeview-menu'">
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailSettings'})?'active':''">
                     <a href="#" th:href="@{/user/sendMailSettings}">
                         <i class="fa fa-send"></i> <span>送信設定</span>
                     </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'greetingRegistration'})?'active':''">
                     <a href="#" th:href="@{/user/greetingRegistration}">
                         <i class="fa fa-hand-spock-o"></i> <span>挨拶文登録</span>
                     </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_MEMBER')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'extractConditionManagement'})?'active':''">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'extractConditionManagement'})?'active':''">
                     <a href="#" th:href="@{/user/extractConditionManagement}">
                         <i class="fa fa-clone"></i> <span>抽出条件文管理</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'businessPartnerRegist'})?'treeview menu-open':'treeview'">
+            <a href="#">
+                <i class="fa fa-database"></i> <span>データベース登録</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist'})?'treeview-menu visible':'treeview-menu'">
+                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'businessPartnerRegist'})?'active':''">
+                    <a href="#" th:href="@{/expansion/businessPartnerRegist}">
+                        <i class="fa fa-handshake-o"></i> <span>取引先登録</span>
                     </a>
                 </li>
             </ul>

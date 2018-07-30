@@ -63,23 +63,10 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
-    <header class="main-header">
-        <div th:replace="fragments/header"></div>
-    </header>
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
-        <div th:replace="fragments/sidebar"></div>
-    </aside>
-
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="margin-left: 0">
         <div layout:fragment="content"></div>
     </div>
-    <!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2018 WorldLink.</strong>
-    </footer>
 </div>
 <!-- ./wrapper -->
 
@@ -90,7 +77,7 @@
 <script src="/plugins/jQueryUI/ui/i18n/datepicker-ja.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button);
+    $.widget.bridge('uibutton', $.ui.button);
 </script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script src="/bootstrap/js/bootstrap-treeview.min.js"></script>

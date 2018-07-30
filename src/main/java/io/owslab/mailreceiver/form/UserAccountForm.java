@@ -9,23 +9,26 @@ public class UserAccountForm {
     private String name;
     private String newPassword;
     private String confirmNewPassword;
+    private boolean expansion;
 
     public UserAccountForm() {
     }
 
-    public UserAccountForm(String userName, String name, String newPassword, String confirmNewPassword) {
+    public UserAccountForm(String userName, String name, String newPassword, String confirmNewPassword, boolean expansion) {
         this.userName = userName;
         this.name = name;
         this.newPassword = newPassword;
         this.confirmNewPassword = confirmNewPassword;
+        this.expansion = expansion;
     }
 
-    public UserAccountForm(String id, String userName, String name, String newPassword, String confirmNewPassword) {
+    public UserAccountForm(String id, String userName, String name, String newPassword, String confirmNewPassword, boolean expansion) {
         this.id = id;
         this.userName = userName;
         this.name = name;
         this.newPassword = newPassword;
         this.confirmNewPassword = confirmNewPassword;
+        this.expansion = expansion;
     }
 
     public String getId() {
@@ -66,5 +69,13 @@ public class UserAccountForm {
 
     public void setConfirmNewPassword(String confirmNewPassword) {
         this.confirmNewPassword = confirmNewPassword;
+    }
+
+    public boolean isExpansion() {
+        return expansion;
+    }
+
+    public void setExpansion(boolean expansion) {
+        this.expansion = expansion;
     }
 }
