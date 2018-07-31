@@ -853,8 +853,6 @@
             receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
             ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
-            var btn = $(this);
-            btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: lastReceiver.messageId,
@@ -871,31 +869,36 @@
             };
             var stripped = strip(form.content, originalContentWrapId);
             var afterEditDataLines = getHeaderFooterLines(stripped);
-            console.log("compare: ", dataLinesConfirm.header === afterEditDataLines.header, dataLinesConfirm.footer === afterEditDataLines.footer);
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    console.log("sendSuggestMail: ", data);
-                    $('#sendMailModal').modal('hide');
-                    if(data && data.status){
-                        //TODO: noti send mail success
-                    } else {
-                        //TODO: noti send mail failed
-                    }
+            checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
+                if(allowSend) {
+                    var btn = $(this);
+                    btn.button('loading');
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/user/sendRecommendationMail",
+                        data: JSON.stringify(form),
+                        dataType: 'json',
+                        cache: false,
+                        timeout: 600000,
+                        success: function (data) {
+                            btn.button('reset');
+                            console.log("sendSuggestMail: ", data);
+                            $('#sendMailModal').modal('hide');
+                            if(data && data.status){
+                                //TODO: noti send mail success
+                            } else {
+                                //TODO: noti send mail failed
+                            }
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
+                        },
+                        error: function (e) {
+                            btn.button('reset');
+                            console.log("ERROR : sendSuggestMail: ", e);
+                            $('#sendMailModal').modal('hide');
+                            //TODO: noti send mail error
+                        }
+                    });
                 }
             });
         })

@@ -245,3 +245,29 @@ function getHeaderFooterLines(text) {
         footer: data.footer.join("\n"),
     }
 }
+
+function checkDataLines(dataLines1, dataLines2, callback) {
+    if(dataLines1.header === dataLines2.header || dataLines1.footer === dataLines2.footer) {
+        $.confirm({
+            title: '<b>【送信確認】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">マッチング先の文章が修正されていません。<br/><br/>このまま送信しますか?<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        callback(true);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){
+                        callback(false);
+                    }
+                },
+            }
+        });
+    } else {
+        callback(true);
+    }
+}
