@@ -853,6 +853,7 @@
             receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
             ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
+            var btn = $(this);
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: lastReceiver.messageId,
@@ -871,7 +872,6 @@
             var afterEditDataLines = getHeaderFooterLines(stripped);
             checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
                 if(allowSend) {
-                    var btn = $(this);
                     btn.button('loading');
                     $.ajax({
                         type: "POST",

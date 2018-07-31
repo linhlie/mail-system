@@ -26,6 +26,9 @@
     var lastHistoryType;
     var matching = false;
 
+    var originalContentWrapId = "ows-mail-body";
+    var dataLinesConfirm;
+
     $(function () {
         initDropzone();
         $('#' + rdMailCCId).tagsInput({
@@ -138,7 +141,6 @@
             ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
-            btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: lastReceiver.messageId,
@@ -153,31 +155,46 @@
                 sendType: !lastSendTo ? "[返信]" : (lastSendTo === "moto" ? "[元へ]" : "[先へ]"),
                 historyType: lastHistoryType,
             };
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    if(data && data.status){
-                        alert("成功しました");
-                    } else {
-                        alert("失敗しました");
-                    }
-                    window.close();
+            
+            function sendMail() {
+                btn.button('loading');
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/user/sendRecommendationMail",
+                    data: JSON.stringify(form),
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        btn.button('reset');
+                        if(data && data.status){
+                            alert("成功しました");
+                        } else {
+                            alert("失敗しました");
+                        }
+                        window.close();
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
-                }
-            });
+                    },
+                    error: function (e) {
+                        btn.button('reset');
+                        console.log("ERROR : sendSuggestMail: ", e);
+                        $('#sendMailModal').modal('hide');
+                        //TODO: noti send mail error
+                    }
+                });
+            }
+            var stripped = strip(form.content, originalContentWrapId);
+            var afterEditDataLines = getHeaderFooterLines(stripped);
+            if(matching) {
+                checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
+                    if(allowSend) {
+                        sendMail();
+                    }
+                });
+            } else {
+                sendMail();
+            }
         })
     }
 
@@ -230,6 +247,9 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
             data.originalBody = wrapText(data.originalBody);
+            data.originalBody = wrapInDivWithId(originalContentWrapId,data.originalBody);
+            var stripped = strip(data.originalBody, originalContentWrapId);
+            dataLinesConfirm = getHeaderFooterLines(stripped);
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
@@ -238,6 +258,9 @@
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
+                data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
+                stripped = strip(data.replacedBody, originalContentWrapId);
+                dataLinesConfirm = getHeaderFooterLines(stripped);
                 data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
                 data.replacedBody = data.excerpt + data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
