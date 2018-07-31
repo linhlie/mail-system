@@ -46,6 +46,11 @@ function getDecorateExcerpt(excerpt, sendTo) {
     return excerpt;
 }
 
+function wrapInDivWithId(id, content) {
+    var div = '<div class="gmail_extra" id="'+ id +'">' + content + '</div>';
+    return div;
+}
+
 function getExcerptWithGreeting(excerpt, type) {
     var greeting = loadGreeting(type);
     if(greeting == null) {
@@ -180,4 +185,63 @@ function updateControls(container, index, total) {
     container.find("button[name='last']").prop("disabled", lastDisable);
     container.find("button[name='prev']").prop("disabled", backDisable);
     container.find("button[name='next']").prop("disabled", nextDisable);
+}
+
+//add Element with id is strip-el to html
+function strip(html, selectorId) {
+    var rv = '';
+    $( "#strip-el").html('');
+    html = html.replace(/<!--([\s\S]*?)-->/mig, "");
+    $("#strip-el").append(html);
+    var element = selectorId ? $( "#strip-el").find("#" + selectorId)[0] : $( "#strip-el")[0];
+    rv = getText(element);
+    return rv;
+}
+
+function getText(n) {
+    var rv = '';
+    if(!!n) {
+        if (n.nodeType == 3) {
+            rv = n.nodeValue;
+        } else {
+            for (var i = 0; i < n.childNodes.length; i++) {
+                rv += getText(n.childNodes[i]);
+            }
+            var d = getComputedStyle(n).getPropertyValue('display');
+            if (d.match(/^block/) || d.match(/list/) || n.tagName == 'BR') {
+                rv += "\n";
+            }
+        }
+    }
+
+    return rv;
+}
+
+function getHeaderFooterLines(text) {
+    var data = {
+        header: [],
+        footer: []
+    }
+    var textLines = text.split("\n");
+    for(var i = 0; i < textLines.length; i++){
+        var line = textLines[i];
+        line = line.trim();
+        if(line.length == 0) continue;
+        if(data.header.length < 5) {
+            data.header.push(line);
+        }
+    }
+    for(var i = textLines.length; i > 0; i--){
+        var line = textLines[i-1];
+        line = line.trim();
+        if(line.length == 0) continue;
+        if(data.footer.length < 5) {
+            data.footer.push(line);
+        }
+    }
+
+    return {
+        header: data.header.join("\n"),
+        footer: data.footer.join("\n"),
+    }
 }

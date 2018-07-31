@@ -48,6 +48,8 @@
     var desPrevBtnId = "des-prev";
     var desNextBtnId = "des-next";
 
+    var originalContentWrapId = "ows-mail-body";
+
     var isDebug = true;
     var debugMailAddress = "ows-test@world-link-system.com";
 
@@ -63,6 +65,8 @@
     var lastTextMatchRange;
     var lastReplaceType;
     var lastSendTo;
+
+    var dataLinesConfirm;
 
     var standardEscape = ["+", "?", "(", ")", "{", "}", "|"];
 
@@ -701,6 +705,9 @@
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
             data.originalBody = wrapText(data.originalBody);
+            data.originalBody = wrapInDivWithId(originalContentWrapId,data.originalBody);
+            var stripped = strip(data.originalBody, originalContentWrapId);
+            dataLinesConfirm = getHeaderFooterLines(stripped);
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
@@ -709,6 +716,9 @@
             data.originalBody = data.originalBody + data.signature;
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
+                data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
+                stripped = strip(data.replacedBody, originalContentWrapId);
+                dataLinesConfirm = getHeaderFooterLines(stripped);
                 data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
                 data.replacedBody = data.excerpt + data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
@@ -859,6 +869,9 @@
                 sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
                 historyType: getHistoryType(),
             };
+            var stripped = strip(form.content, originalContentWrapId);
+            var afterEditDataLines = getHeaderFooterLines(stripped);
+            console.log("compare: ", dataLinesConfirm.header === afterEditDataLines.header, dataLinesConfirm.footer === afterEditDataLines.footer);
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
