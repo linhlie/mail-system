@@ -40,7 +40,7 @@ public class EnviromentSettingService {
     private static final String DEFAULT_DELETE_OLD_MAIL = "0";
     private static final String DEFAULT_DELETE_AFTER = "30";
     private static final String DEFAULT_START_UP_WITH_PC = "0";
-    private static final String DEFAULT_DEBUG_ON = "0";
+    private static final String DEFAULT_DEBUG_ON = "1";
     private static final String DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS = "ows-test@world-link-system.com";
     private static final String DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY = "30";
     private static final String DEFAULT_RECEIVE_MAIL_TYPE = "1";
