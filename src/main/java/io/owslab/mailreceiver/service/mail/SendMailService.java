@@ -81,6 +81,11 @@ public class SendMailService {
         String from = account.getAccount();
         String to = form.getReceiver();
         String cc = form.getCc();
+        boolean debugOn = enviromentSettingService.getDebugOn();
+        if(debugOn){
+            to = enviromentSettingService.getDebugReceiveMailAddress();
+            cc = "";
+        }
         String replyTo = email.getReplyTo();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
