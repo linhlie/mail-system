@@ -30,6 +30,7 @@ public class EnviromentSettingService {
     public static final String KEEP_SENT_MAIL_HISTORY_DAY_KEY = "keep_sent_mail_history_day_key";
     public static final String RECEIVE_MAIL_TYPE_KEY = "RECEIVE_MAIL_TYPE_KEY";
     public static final String RECEIVE_MAIL_RULE_KEY = "RECEIVE_MAIL_RULE_KEY";
+    public static final String SAVE_TO_TRASH_BOX_KEY = "SAVE_TO_TRASH_BOX_KEY";
     public static final String MARK_A_CONDITIONS_KEY = "MARK_A_CONDITIONS_KEY";
     public static final String MARK_B_CONDITIONS_KEY = "MARK_B_CONDITIONS_KEY";
     public static final String MARK_REFLECTION_SCOPE_KEY = "MARK_REFLECTION_SCOPE_KEY";
@@ -45,6 +46,7 @@ public class EnviromentSettingService {
     private static final String DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY = "30";
     private static final String DEFAULT_RECEIVE_MAIL_TYPE = "1";
     private static final String DEFAULT_RECEIVE_MAIL_RULE = "";
+    private static final String DEFAULT_SAVE_TO_TRASH_BOX = "1";
     private static final String DEFAULT_MARK_A_CONDITIONS = "";
     private static final String DEFAULT_MARK_B_CONDITIONS = "";
     private static final String DEFAULT_MARK_REFLECTION_SCOPE = "1";
@@ -65,6 +67,7 @@ public class EnviromentSettingService {
         map.put(KEEP_SENT_MAIL_HISTORY_DAY_KEY, DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY);
         map.put(RECEIVE_MAIL_TYPE_KEY, DEFAULT_RECEIVE_MAIL_TYPE);
         map.put(RECEIVE_MAIL_RULE_KEY, DEFAULT_RECEIVE_MAIL_RULE);
+        map.put(SAVE_TO_TRASH_BOX_KEY, DEFAULT_SAVE_TO_TRASH_BOX);
         map.put(MARK_A_CONDITIONS_KEY, DEFAULT_MARK_A_CONDITIONS);
         map.put(MARK_B_CONDITIONS_KEY, DEFAULT_MARK_B_CONDITIONS);
         map.put(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
@@ -179,5 +182,9 @@ public class EnviromentSettingService {
 
     public String getMarkReflectionScope() {
         return this.getSetting(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
+    }
+
+    public String getSaveToTrashBox() {
+        return this.getSetting(SAVE_TO_TRASH_BOX_KEY, DEFAULT_SAVE_TO_TRASH_BOX);
     }
 }

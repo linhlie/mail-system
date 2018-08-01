@@ -58,12 +58,14 @@ public class MailReceiveRuleService {
 
         String receiveMailType = ess.getReceiveMailType();
         String receiveMailRule = ess.getReceiveMailRule();
+        String saveToTrashBox = ess.getSaveToTrashBox();
         String markAConditions = ess.getMarkAConditions();
         String markBConditions = ess.getMarkBConditions();
         String markReflectionScope = ess.getMarkReflectionScope();
 
         obj.put("receiveMailType", receiveMailType);
         obj.put("receiveMailRule", receiveMailRule);
+        obj.put("saveToTrashBox", saveToTrashBox);
         obj.put("markAConditions", markAConditions);
         obj.put("markBConditions", markBConditions);
         obj.put("markReflectionScope", markReflectionScope);
@@ -73,6 +75,7 @@ public class MailReceiveRuleService {
     public void saveReceiveRuleBundle(ReceiveRuleBundleForm form) {
         ess.set(EnviromentSettingService.RECEIVE_MAIL_TYPE_KEY, form.getReceiveMailType());
         ess.set(EnviromentSettingService.RECEIVE_MAIL_RULE_KEY, form.getReceiveMailRule());
+        ess.set(EnviromentSettingService.SAVE_TO_TRASH_BOX_KEY, form.getSaveToTrashBox());
     }
 
     public void saveMarkReflectionScopeBundle(MarkReflectionScopeBundleForm form) {

@@ -229,6 +229,7 @@
         var data = {
             receiveMailType: $('input[name=receiveType]:checked', formId).val(),
             receiveMailRule: JSON.stringify(rules),
+            saveToTrashBox: $(saveToTrashBoxId).is(":checked") ? "1" : "0",
         };
 
         save("/admin/receiveRuleSettings/saveReceiveReceiveRuleBundle", JSON.stringify(data))
@@ -403,6 +404,7 @@
     function setSettingsData(data) {
         setReceiveMailType(data.receiveMailType);
         setReceiveMailRule(data.receiveMailRule);
+        setSaveToTrashBox(data.saveToTrashBox);
         setMarkARule(data.markAConditions);
         setMarkBRule(data.markBConditions);
         setMarkReflectionScope(data.markReflectionScope);
@@ -419,6 +421,10 @@
         } else if(type == "2") {
             $("#receive-rule-blocker").hide();
         }
+    }
+    
+    function setSaveToTrashBox(value) {
+        $(saveToTrashBoxId).prop('checked', value == "1");
     }
 
     function setReceiveMailRule(ruleStr) {
