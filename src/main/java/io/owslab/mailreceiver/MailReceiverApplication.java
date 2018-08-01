@@ -37,6 +37,7 @@ public class MailReceiverApplication {
 	}
 
 	public static void main(String[] args) {
+		System.setProperty("spring.devtools.restart.enabled", "false");
 		System.setProperty("mail.mime.decodetext.strict", "false");
 		SpringApplication.run(MailReceiverApplication.class, args);
 		logger.info("--Application Started--");
