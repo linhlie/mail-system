@@ -1,5 +1,11 @@
 package io.owslab.mailreceiver.service.schedulers;
 
+import io.owslab.mailreceiver.service.BeanUtil;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import javax.annotation.Resource;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,6 +17,8 @@ public abstract class AbstractScheduler {
     private long interval;
     private TimerTask timerTask;
     private Timer timer;
+    @Resource(name = "reportErrorService")
+    ReportErrorService reportErrorService;
 
     public AbstractScheduler(int delay, long interval) {
         this.delay = delay;
@@ -20,14 +28,18 @@ public abstract class AbstractScheduler {
     public void start(){
         this.setTimerTask(new TimerTask() {
             public void run() {
-                doStuff();
+                try {
+                    doStuff();
+                } catch (Exception e) {
+                    reportErrorService.sendReportError(ExceptionUtils.getStackTrace(e));
+                }
             }
         });
         this.setTimer(new Timer("Timer"));
         this.timer.scheduleAtFixedRate(this.getTimerTask(), this.getDelay(), this.getInterval() * 1000);
     }
 
-    public abstract void doStuff();
+    public abstract void doStuff() throws Exception;
 
     public int getDelay() {
         return delay;

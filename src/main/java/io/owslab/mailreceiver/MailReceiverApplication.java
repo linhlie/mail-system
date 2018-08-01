@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver;
 
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,11 @@ public class MailReceiverApplication {
 		threadPoolTaskExecutor.afterPropertiesSet();
 		logger.info("ThreadPoolTaskExecutor set");
 		return threadPoolTaskExecutor;
+	}
+
+	@Bean(name = "reportErrorService")
+	public ReportErrorService reportErrorService() {
+		return new ReportErrorService();
 	}
 
 	public static void main(String[] args) {
