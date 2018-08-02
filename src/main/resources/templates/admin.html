@@ -41,9 +41,25 @@
                 </div>
                 <!-- /.info-box -->
             </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <button type="button" id="restartServer" class="info-box bg-red">
+                    <span class="info-box-icon"><i class="fa fa-refresh"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">&nbsp;</span>
+                        <span class="info-box-number">Restart server</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </button>
+                <!-- /.info-box -->
+            </div>
         </div>
         <!-- /.row -->
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/admin/admin.js"></script>
+</th:block>
 </body>
 </html>

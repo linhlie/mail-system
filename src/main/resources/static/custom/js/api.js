@@ -81,3 +81,21 @@ function removeFile(fileId){
         }
     });
 }
+
+function restartServer(){
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/admin/restart",
+        data: "{}",
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            $.alert("Restarting server. It will take for a while. Please refresh (F5) browser for continue");
+        },
+        error: function (e) {
+            $.alert("Restart server failed");
+        }
+    });
+}

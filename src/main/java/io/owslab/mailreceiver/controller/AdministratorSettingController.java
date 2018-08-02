@@ -1,20 +1,20 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.MailReceiverApplication;
 import io.owslab.mailreceiver.form.AdministratorSettingForm;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.validator.AdministratorSettingValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -76,5 +76,23 @@ public class AdministratorSettingController {
         }
 
         return "admin/setting";
+    }
+
+    @PostMapping("/restart")
+    @ResponseBody
+    public ResponseEntity<?> restart(Model model) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        Thread restartThread = new Thread(() -> {
+            try {
+                Runtime.getRuntime().exec("sudo sh /opt/mail-service/MailMatchingService.sh restart");
+            } catch (Exception ignored) {
+
+            }
+        });
+        restartThread.setDaemon(false);
+        restartThread.start();
+        result.setMsg("done");
+        result.setStatus(true);
+        return ResponseEntity.ok(result);
     }
 }
