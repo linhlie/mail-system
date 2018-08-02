@@ -11,6 +11,8 @@ public class FullAccountForm {
 
     private boolean disabled;
 
+    private boolean alertSend;
+
     private long accountId;
 
     private String rUserName;
@@ -56,6 +58,7 @@ public class FullAccountForm {
     public FullAccountForm(MailAccountForm mailAccountForm, ReceiveAccountForm receiveAccountForm, SendAccountForm sendAccountForm) {
         this.account = mailAccountForm.getAccount();
         this.disabled = mailAccountForm.isDisabled();
+        this.alertSend = mailAccountForm.isAlertSend();
         this.signature = mailAccountForm.getSignature();
         this.rUserName = receiveAccountForm.getUserName();
         this.rPassword = receiveAccountForm.getPassword();
@@ -240,12 +243,20 @@ public class FullAccountForm {
         return sCC;
     }
 
+    public boolean isAlertSend() {
+        return alertSend;
+    }
+
+    public void setAlertSend(boolean alertSend) {
+        this.alertSend = alertSend;
+    }
+
     public void setsCC(String sCC) {
         this.sCC = sCC;
     }
 
     public MailAccountForm getMailAccountForm(){
-        return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature());
+        return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature(), this.isAlertSend());
     }
 
     public ReceiveAccountForm getReceiveAccountForm(){

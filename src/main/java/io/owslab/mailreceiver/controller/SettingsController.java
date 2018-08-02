@@ -216,6 +216,7 @@ public class SettingsController {
             SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
             EmailAccount emailAccount = listAccount.get(0);
             emailAccount.setDisabled(mailAccountForm.isDisabled());
+            emailAccount.setAlertSend(mailAccountForm.isAlertSend());
             emailAccount.setSignature(mailAccountForm.getSignature());
             mailAccountsService.save(emailAccount);
             EmailAccountSetting existReceiveAccountSetting = emailAccountSettingService.findOneReceive(id);

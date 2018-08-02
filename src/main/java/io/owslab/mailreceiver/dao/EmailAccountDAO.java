@@ -9,5 +9,6 @@ import java.util.List;
 @Transactional
 public interface EmailAccountDAO extends PagingAndSortingRepository<EmailAccount, Long> {
     List<EmailAccount> findByDisabled(boolean disabled);
+    List<EmailAccount> findByAlertSend(boolean alertSend);
     List<EmailAccount> findById(long id);
 }

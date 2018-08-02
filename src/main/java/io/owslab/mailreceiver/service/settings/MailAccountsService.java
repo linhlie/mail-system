@@ -45,6 +45,15 @@ public class MailAccountsService {
 
     @CacheEvict(allEntries = true)
     public EmailAccount save(EmailAccount account){
+        if(account.isAlertSend()) {
+            List<EmailAccount> alertSends = emailAccountDAO.findByAlertSend(true);
+            if(alertSends != null && alertSends.size() > 0) {
+                for(EmailAccount deAlert : alertSends) {
+                    deAlert.setAlertSend(false);
+                }
+                emailAccountDAO.save(alertSends);
+            }
+        }
         return emailAccountDAO.save(account);
     }
 

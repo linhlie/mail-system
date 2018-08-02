@@ -9,11 +9,13 @@ public class MailAccountForm {
     private String account;
     private boolean disabled;
     private String signature;
+    private boolean alertSend;
 
-    public MailAccountForm(String account, boolean disabled, String signature) {
+    public MailAccountForm(String account, boolean disabled, String signature, boolean alertSend) {
         this.account = account;
         this.disabled = disabled;
         this.signature = signature;
+        this.alertSend = alertSend;
     }
 
     public MailAccountForm() {
@@ -23,6 +25,7 @@ public class MailAccountForm {
         this.account = emailAccount.getAccount();
         this.disabled = emailAccount.isDisabled();
         this.signature = emailAccount.getSignature();
+        this.alertSend = emailAccount.isAlertSend();
     }
 
     public String getAccount() {
@@ -47,5 +50,13 @@ public class MailAccountForm {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    public boolean isAlertSend() {
+        return alertSend;
+    }
+
+    public void setAlertSend(boolean alertSend) {
+        this.alertSend = alertSend;
     }
 }
