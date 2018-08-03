@@ -17,8 +17,6 @@ public abstract class AbstractScheduler {
     private long interval;
     private TimerTask timerTask;
     private Timer timer;
-    @Resource(name = "reportErrorService")
-    ReportErrorService reportErrorService;
 
     public AbstractScheduler(int delay, long interval) {
         this.delay = delay;
@@ -31,7 +29,7 @@ public abstract class AbstractScheduler {
                 try {
                     doStuff();
                 } catch (Exception e) {
-                    reportErrorService.sendReportError(ExceptionUtils.getStackTrace(e));
+                    ReportErrorService.sendReportError(ExceptionUtils.getStackTrace(e));
                 }
             }
         });
