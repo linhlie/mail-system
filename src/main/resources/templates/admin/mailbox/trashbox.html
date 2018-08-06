@@ -24,7 +24,7 @@
                         <!-- /.box-header -->
                         <div class="box-body no-padding">
                             <div class="table-responsive mailbox-messages">
-                                <table class="table table-hover table-striped">
+                                <table id="trashBoxTable" class="table table-hover table-striped">
                                     <thead>
                                     <tr>
                                         <th>To</th>
@@ -104,9 +104,26 @@
                 </div>
             </form>
         </div>
+        <div class="row">
+            <div class="col-md-4">
+                <button type="button" class="btn btn-default" id="emptyTrashBox">TrashBoxを空にする</button>
+            </div>
+            <div class="col-md-8">
+                <div style="display: inline-block; float: right;">
+                    <span>選択したメールを&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <select id="actionTypeSelect">
+                        <option th:selected="true" th:disabled="true">&nbsp;</option>
+                        <option>INBOXに移動する</option>
+                        <option>完全に削除する</option>
+                    </select>
+                    <button id="actionTrashBox" type="button" class="btn btn-default">実行</button>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/mailbox/trashbox.js"></script>
 </th:block>
 </body>
