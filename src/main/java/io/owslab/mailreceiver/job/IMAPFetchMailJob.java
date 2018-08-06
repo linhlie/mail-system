@@ -160,28 +160,17 @@ public class IMAPFetchMailJob implements Runnable {
                     return;
                 }
                 Email email = buildInitReceivedMail(message, account);
-                emailDAO.save(email);
                 try {
                     email = buildReceivedMail(message, email);
-                    boolean hasAttachments = saveFiles(message, email);
+                    List<AttachmentFile> attachmentFiles = saveFiles(message, email);
+                    boolean hasAttachments = attachmentFiles.size() > 0;
                     email.setHasAttachment(hasAttachments);
                     email = setMailContent(message, email);
                     emailDAO.save(email);
-                } catch (FolderClosedException e) {
-                    e.printStackTrace();
-                    Email errorEmail = findOne(email.getMessageId());
-                    if(errorEmail != null) {
-                        String error = ExceptionUtils.getStackTrace(e);
-                        errorEmail.setErrorLog(error);
-                        errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
-                        emailDAO.save(errorEmail);
-                    }
-                    if (!emailFolder.isOpen()) {
-                        emailFolder.open(openFolderFlag);
-                    }
+                    if(hasAttachments) fileDAO.save(attachmentFiles);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Email errorEmail = findOne(email.getMessageId());
+                    Email errorEmail = email;
                     if(errorEmail != null) {
                         String error = ExceptionUtils.getStackTrace(e);
                         errorEmail.setErrorLog(error);
@@ -380,8 +369,8 @@ public class IMAPFetchMailJob implements Runnable {
         return false;
     }
 
-    private boolean saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
-        boolean hasAttachments = false;
+    private List<AttachmentFile> saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+        List<AttachmentFile> attachmentFiles = new ArrayList<>();
         String contentType = message.getContentType();
         if (contentType.contains("multipart")) {
             // content may contain attachments
@@ -412,7 +401,6 @@ public class IMAPFetchMailJob implements Runnable {
                         saveDirectory.mkdir();
                     }
                     File file = new File(saveDirectoryPath + File.separator + fileName);
-                    logger.info("Start Save file: " + fileName + " " + file.length());
                     part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
@@ -423,13 +411,11 @@ public class IMAPFetchMailJob implements Runnable {
                             file.length()
                     );
                     logger.info("Save file: " + attachmentFile.toString());
-                    fileDAO.save(attachmentFile);
-                    hasAttachments = true;
+                    attachmentFiles.add(attachmentFile);
                 }
             }
         }
-
-        return hasAttachments;
+        return attachmentFiles;
     }
 
     public static String normalizeDirectoryPath(String path){
