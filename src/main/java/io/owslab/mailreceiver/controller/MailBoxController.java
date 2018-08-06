@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.form.TrashBoxForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -142,6 +144,40 @@ public class MailBoxController {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
             mailBoxService.emptyTrashBox();
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping(value="/admin/trashbox/delete")
+    @ResponseBody
+    ResponseEntity<?> deleteFromTrashBox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.deleteFromTrashBox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping(value="/admin/trashbox/moveToInbox")
+    @ResponseBody
+    ResponseEntity<?> moveToInbox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.moveToInbox(trashBoxForm.getMsgIds());
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

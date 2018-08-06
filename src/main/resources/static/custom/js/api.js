@@ -111,3 +111,33 @@ function emptyTrashBox(success, error) {
         error: error
     });
 }
+
+function moveToInbox(msgIds, onSuccess, onError){
+    var data = {
+        msgIds: msgIds
+    };
+    var url = "/admin/trashbox/moveToInbox";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteFromTrashBox(msgIds, onSuccess, onError){
+    var data = {
+        msgIds: msgIds
+    };
+    var url = "/admin/trashbox/delete";
+    _post(url, data, onSuccess, onError);
+}
+
+function _post(url, data, onSuccess, onError) {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: url,
+        data: JSON.stringify(data),
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -42,4 +43,11 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
             nativeQuery = true
     )
     int updateStatus(@Param("oldStatus") int oldStatus, @Param("newStatus") int newStatus);
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "UPDATE emails e SET e.status = :newStatus WHERE e.status = :oldStatus AND e.message_id in :msgIds",
+            nativeQuery = true
+    )
+    int updateStatusByMessageIdIn(@Param("oldStatus") int oldStatus, @Param("newStatus") int newStatus, @Param("msgIds") Collection<String> msgIds);
 }

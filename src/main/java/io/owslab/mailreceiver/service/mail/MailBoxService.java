@@ -646,4 +646,12 @@ public class MailBoxService {
     public void emptyTrashBox() {
         emailDAO.updateStatus(Email.Status.SKIPPED, Email.Status.DELETED);
     }
+
+    public void deleteFromTrashBox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DELETED, msgIds);
+    }
+
+    public void moveToInbox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DONE, msgIds);
+    }
 }

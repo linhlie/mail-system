@@ -4,10 +4,12 @@
     var selectAllCheckBoxId = "#selectall";
     var emptyTrashBoxId = "#emptyTrashBox";
     var trashBoxTableId = "#trashBoxTable";
+    var actionTrashBoxId = "#actionTrashBox";
 
     $(function(){
         setupSelectBoxes();
-        emptyTrashBoxListner();
+        setButtonClickListenter(emptyTrashBoxId, doEmptyTrashBox);
+        setButtonClickListenter(actionTrashBoxId, doActionTrashBox);
         initEmptyTrashBoxButton()
     });
     
@@ -29,10 +31,10 @@
         });
     }
     
-    function emptyTrashBoxListner () {
+    function doEmptyTrashBox () {
         $(emptyTrashBoxId).click(function () {
             function onSuccess() {
-                window.location.reload();
+                locationReload();
             }
             function onError() {
                 $.alert("Empty trash box failed");
@@ -60,6 +62,25 @@
     function initEmptyTrashBoxButton() {
         var isEmpty = $(trashBoxTableId + ' >tbody >tr').length == 0;
         $(emptyTrashBoxId).prop('disabled', isEmpty);
+    }
+    
+    function doActionTrashBox() {
+        var msgIds = [];
+        $(".case:checked").each(function () {
+            var msgId = $(this).attr("value");
+            if(msgId) msgIds.push(msgId);
+            function onSuccess() {
+                locationReload();
+            }
+            
+            function onError(e) {
+                console.log("error: ", e);
+                $.alert("delete from trash box failed");
+            }
+            console.log("deleteFromTrashBox: ", msgIds);
+            // deleteFromTrashBox(msgIds, onSuccess, onError);
+            moveToInbox(msgIds, onSuccess, onError);
+        });
     }
 
 })(jQuery);

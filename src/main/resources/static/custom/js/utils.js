@@ -271,3 +271,16 @@ function checkDataLines(dataLines1, dataLines2, callback) {
         callback(true);
     }
 }
+
+function setButtonClickListenter(id, callback) {
+    $(id).off('click');
+    $(id).click(function () {
+        if (typeof callback === "function") {
+            callback();
+        }
+    });
+}
+
+function locationReload() {
+    window.location.reload();
+}
