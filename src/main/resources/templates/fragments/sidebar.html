@@ -95,6 +95,11 @@
                 <i class="fa fa-bug"></i> <span>メールエラー</span>
             </a>
         </li>
+        <li sec:authorize="hasRole('ROLE_ADMIN')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'trashbox'})?'active':''">
+            <a href="#" th:href="@{/admin/trashbox}">
+                <i class="fa fa-trash-o"></i> <span>TrashBox</span>
+            </a>
+        </li>
         <li sec:authorize="hasRole('ROLE_ADMIN')" class="header">ヘルプ</li>
         <li sec:authorize="hasRole('ROLE_ADMIN')">
             <a href="#" th:href="@{/admin/help}">

@@ -91,7 +91,15 @@ public class MailBoxService {
     }
 
     public Page<Email> list(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findByStatus(Email.Status.DONE, pageRequest);
+        return listByStatus(pageRequest, Email.Status.DONE);
+    }
+
+    public Page<Email> listTrash(PageRequest pageRequest) {
+        return listByStatus(pageRequest, Email.Status.SKIPPED);
+    }
+
+    private Page<Email> listByStatus(PageRequest pageRequest, int status) {
+        Page<Email> list = emailDAO.findByStatus(status, pageRequest);
         return list;
     }
 
@@ -106,6 +114,15 @@ public class MailBoxService {
         }
         String optimizeSearchText = optimizeText(search);
         Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.DONE, pageRequest);
+        return list;
+    }
+
+    public Page<Email> searchTrash(String search, PageRequest pageRequest) {
+        if(search == null || search.length() == 0){
+            return listTrash(pageRequest);
+        }
+        String optimizeSearchText = optimizeText(search);
+        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.SKIPPED, pageRequest);
         return list;
     }
 

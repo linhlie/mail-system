@@ -105,4 +105,37 @@ public class MailBoxController {
         result.setStatus(true);
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "/admin/trashbox", method = RequestMethod.GET)
+    public String getTrashBox(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            Model model) {
+        page = page - 1;
+        List<RelativeSentAtEmail> relativeSentAtEmailList = new ArrayList<RelativeSentAtEmail>();
+        PageRequest pageRequest = new PageRequest(page, PAGE_SIZE, Sort.Direction.DESC, "sentAt");
+        Page<Email> pages = search == null || search.length() == 0? mailBoxService.listTrash(pageRequest) : mailBoxService.searchTrash(search, pageRequest);
+        List<Email> list = pages.getContent();
+        int rowsInPage = list.size();
+        PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/admin/trashbox");
+        for(int i = 0; i < rowsInPage; i++){
+            Email email = list.get(i);
+            RelativeSentAtEmail relativeSentAtEmail = new RelativeSentAtEmail(email);
+            List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
+            EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+            String emailAccountAddress = emailAccount != null ? emailAccount.getAccount() : "Unknown";
+            relativeSentAtEmail.setAccount(emailAccountAddress);
+            relativeSentAtEmailList.add(relativeSentAtEmail);
+        }
+        if(search != null && search.length() > 0){
+            model.addAttribute("search", search);
+        }
+        int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
+        int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
+        model.addAttribute("list", relativeSentAtEmailList);
+        model.addAttribute("page", pageWrapper);
+        model.addAttribute("fromEntry", fromEntry);
+        model.addAttribute("toEntry", toEntry);
+        return "admin/mailbox/trashbox";
+    }
 }
