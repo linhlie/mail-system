@@ -14,10 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -137,5 +134,22 @@ public class MailBoxController {
         model.addAttribute("fromEntry", fromEntry);
         model.addAttribute("toEntry", toEntry);
         return "admin/mailbox/trashbox";
+    }
+
+    @RequestMapping(value="/admin/trashbox/empty", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> emptyTrashBox (){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.emptyTrashBox();
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }

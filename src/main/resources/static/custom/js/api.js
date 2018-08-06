@@ -99,3 +99,15 @@ function restartServer(){
         }
     });
 }
+
+function emptyTrashBox(success, error) {
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: "/admin/trashbox/empty",
+        cache: false,
+        timeout: 600000,
+        success: success,
+        error: error
+    });
+}

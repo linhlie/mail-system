@@ -642,4 +642,8 @@ public class MailBoxService {
     public static String reverseStringWithCache(String raw) {
         return new StringBuilder(raw).reverse().toString();
     }
+
+    public void emptyTrashBox() {
+        emailDAO.updateStatus(Email.Status.SKIPPED, Email.Status.DELETED);
+    }
 }
