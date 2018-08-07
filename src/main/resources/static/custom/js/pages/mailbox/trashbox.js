@@ -69,18 +69,23 @@
         $(".case:checked").each(function () {
             var msgId = $(this).attr("value");
             if(msgId) msgIds.push(msgId);
-            function onSuccess() {
-                locationReload();
-            }
-            
-            function onError(e) {
-                console.log("error: ", e);
-                $.alert("delete from trash box failed");
-            }
-            console.log("deleteFromTrashBox: ", msgIds);
-            // deleteFromTrashBox(msgIds, onSuccess, onError);
-            moveToInbox(msgIds, onSuccess, onError);
         });
+        function onSuccess() {
+            locationReload();
+        }
+
+        function onError(e) {
+            console.log("error: ", e);
+            $.alert("delete from trash box failed");
+        }
+        var actionType = $("#actionTypeSelect").val();
+        if(msgIds.length > 0) {
+            if(actionType === "inbox") {
+                moveToInbox(msgIds, onSuccess, onError);
+            } else if (actionType === "delete") {
+                deleteFromTrashBox(msgIds, onSuccess, onError);
+            }
+        }
     }
 
 })(jQuery);

@@ -112,9 +112,9 @@
                 <div style="display: inline-block; float: right;">
                     <span>選択したメールを&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <select id="actionTypeSelect">
-                        <option th:selected="true" th:disabled="true">&nbsp;</option>
-                        <option>INBOXに移動する</option>
-                        <option>完全に削除する</option>
+                        <option th:selected="true" th:disabled="true" value="">&nbsp;</option>
+                        <option value="inbox">INBOXに移動する</option>
+                        <option value="delete">完全に削除する</option>
                     </select>
                     <button id="actionTrashBox" type="button" class="btn btn-default">実行</button>
                 </div>

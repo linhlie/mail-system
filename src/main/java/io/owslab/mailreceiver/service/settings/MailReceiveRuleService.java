@@ -39,6 +39,11 @@ public class MailReceiveRuleService {
         public static final String INCLUDE_PAST = "2";
     }
 
+    public static class SaveTrashBoxType {
+        public static final String NONE = "0";
+        public static final String ALL = "1";
+    }
+
     @Autowired
     private EnviromentSettingService ess;
 
@@ -146,6 +151,8 @@ public class MailReceiveRuleService {
         String receiveMailRule = ess.getReceiveMailRule();
         String markAConditions = ess.getMarkAConditions();
         String markBConditions = ess.getMarkBConditions();
+        String saveTrashBoxType = ess.getSaveToTrashBox();
+        int skipStatus = saveTrashBoxType.equals(SaveTrashBoxType.ALL) ? Email.Status.SKIPPED : Email.Status.DELETED;
         FilterRule receiveMailFilterRule = getFilterRule(receiveMailRule);
         FilterRule markAFilterRule = getFilterRule(markAConditions);
         FilterRule markBFilterRule = getFilterRule(markBConditions);
@@ -159,7 +166,7 @@ public class MailReceiveRuleService {
                     String mark = getMark(markAIdList, markBIdList, email);
                     email.setMark(mark);
                 } else {
-                    email.setStatus(Email.Status.SKIPPED);
+                    email.setStatus(skipStatus);
                 }
             }
         } else {
