@@ -129,7 +129,6 @@ function deleteFromTrashBox(msgIds, onSuccess, onError){
 }
 
 function deleteFromInBox(msgIds, onSuccess, onError){
-    console.log("deleteFromInBox: ", msgIds);
     var data = {
         msgIds: msgIds
     };
