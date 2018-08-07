@@ -8,6 +8,9 @@
         setupSelectBoxes();
         previewDraggingSetup();
         setButtonClickListenter(deleteMailsButtonId, doDeleteMails);
+        setRowClickListener("sourceRow", function () {
+            selectRow($(this).closest('tr'))
+        });
     });
 
     function setupSelectBoxes() {
@@ -102,6 +105,21 @@
                 }
             });
         }
+    }
+
+    function setRowClickListener(name, callback) {
+        $("td[name='" + name + "']").off('click');
+        $("td[name='" + name + "']").click(function () {
+            if (typeof callback == "function") {
+                callback.apply(this);
+            }
+        })
+    }
+
+    function selectRow(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+        var messageId = row.find('td[name="messageId"]').attr("value");
+        console.log("selectRow: ", messageId);
     }
 
 })(jQuery);

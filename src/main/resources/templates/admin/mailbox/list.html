@@ -18,10 +18,10 @@
                                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
                                 </div>
                                 <div style="display: inline-block">
-                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;全て:&nbsp;</span>
+                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;全て:&nbsp;</span>
                                     <input type="checkbox" id="selectall"/>
                                     <span>&nbsp;</span>
-                                    <button id="deleteMails" type="button" class="btn btn-default btn-sm">削除</button>
+                                    <button type="button" class="btn btn-default btn-sm">削除</button>
                                 </div>
                             </div>
                             <!-- /.box-tools -->
@@ -32,17 +32,18 @@
                                 <table class="table table-hover table-striped">
                                     <tbody>
                                     <tr role="row" class="odd" th:each="item:${list}">
-                                        <td class="mailbox-receiver" th:text="${item.account}"></td>
-                                        <td class="mailbox-name" th:text="${item.original.from}"></td>
-                                        <td class="mailbox-subject"><b th:text="${item.original.subject}"></b>
+                                        <td class="hidden" name="messageId" th:value="${item.original.messageId}"></td>
+                                        <td class="mailbox-receiver" name="sourceRow" th:text="${item.account}"></td>
+                                        <td class="mailbox-name" name="sourceRow" th:text="${item.original.from}"></td>
+                                        <td class="mailbox-subject" name="sourceRow"><b th:text="${item.original.subject}"></b>
                                         </td>
-                                        <td class="mailbox-attachment">
+                                        <td class="mailbox-attachment" name="sourceRow">
                                             <i th:class="${item.original.hasAttachment} ? 'fa fa-paperclip' : ''"></i>
                                         </td>
-                                        <td class="mailbox-mark">
+                                        <td class="mailbox-mark" name="sourceRow">
                                             <span th:text="${item.original.mark eq 'a'} ? 'A' : (${item.original.mark eq 'b'} ? 'B' : '&nbsp;')"></span>
                                         </td>
-                                        <td class="mailbox-date" th:text="${item.relativeDate}"></td>
+                                        <td class="mailbox-date" name="sourceRow" th:text="${item.relativeDate}"></td>
                                         <td align="center"><input type="checkbox" class="case" name="case" th:value="${item.original.messageId}"/></td>
                                     </tr>
                                     </tbody>

@@ -1113,3 +1113,11 @@ div.select-row-control-container div.btn-group button.btn {
 section.sendTab.content {
     padding: 15px 0;
 }
+
+#mailBox table td[name=sourceRow] {
+    cursor: pointer;
+}
+
+#mailBox table tr.highlight-selected td {
+    background-color: #ffffcc;
+}
