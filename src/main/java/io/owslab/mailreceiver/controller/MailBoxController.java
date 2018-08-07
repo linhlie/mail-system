@@ -188,4 +188,21 @@ public class MailBoxController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @PostMapping(value="/admin/mailbox/deleteFromInbox")
+    @ResponseBody
+    ResponseEntity<?> deleteFromInBox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.deleteFromInBox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }

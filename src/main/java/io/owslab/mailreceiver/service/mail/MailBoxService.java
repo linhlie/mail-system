@@ -654,4 +654,8 @@ public class MailBoxService {
     public void moveToInbox(Collection<String> msgIds) {
         emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DONE, msgIds);
     }
+
+    public void deleteFromInBox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.DONE, Email.Status.DELETED, msgIds);
+    }
 }

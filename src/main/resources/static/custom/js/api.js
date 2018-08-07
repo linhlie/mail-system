@@ -128,6 +128,15 @@ function deleteFromTrashBox(msgIds, onSuccess, onError){
     _post(url, data, onSuccess, onError);
 }
 
+function deleteFromInBox(msgIds, onSuccess, onError){
+    console.log("deleteFromInBox: ", msgIds);
+    var data = {
+        msgIds: msgIds
+    };
+    var url = "/admin/mailbox/deleteFromInbox";
+    _post(url, data, onSuccess, onError);
+}
+
 function _post(url, data, onSuccess, onError) {
     $.ajax({
         type: "POST",
