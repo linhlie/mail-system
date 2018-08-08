@@ -400,7 +400,8 @@ public class IMAPFetchMailJob implements Runnable {
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    saveDirectoryPath = saveDirectoryPath + File.separator + getUniqueFileName();
+                    File file = new File(saveDirectoryPath);
                     part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
@@ -416,6 +417,10 @@ public class IMAPFetchMailJob implements Runnable {
             }
         }
         return attachmentFiles;
+    }
+
+    public static String getUniqueFileName() {
+        return System.currentTimeMillis() + "" + UUID.randomUUID().toString();
     }
 
     public static String normalizeDirectoryPath(String path){

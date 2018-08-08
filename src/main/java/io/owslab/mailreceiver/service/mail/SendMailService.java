@@ -194,7 +194,7 @@ public class SendMailService {
 
     private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, UnsupportedEncodingException {
         MimeBodyPart attachmentPart = new MimeBodyPart();
-        String fullFilename = normalizeDirectoryPath(storagePath) + File.separator + fileName;
+        String fullFilename = normalizeDirectoryPath(storagePath);
         DataSource source = new FileDataSource(fullFilename);
         attachmentPart.setDataHandler(new DataHandler(source));
         String filename = MimeUtility.encodeText(fileName, "UTF-8", null);

@@ -526,7 +526,8 @@ public class MailBoxService {
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    saveDirectoryPath = saveDirectoryPath + File.separator + IMAPFetchMailJob.getUniqueFileName();
+                    File file = new File(saveDirectoryPath);
                     logger.info("Start Save file: " + fileName + " " + file.length());
                     part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
