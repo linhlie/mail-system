@@ -92,7 +92,7 @@ public class DownloadController {
         response.setContentType(mediaType.getType());
 
         // Content-Disposition
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(realFileName, "UTF-8"));
 
         // Content-Length
         response.setContentLength((int) file.length());

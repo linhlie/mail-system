@@ -122,7 +122,7 @@ public class IMAPFetchMailJob implements Runnable {
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
-            OwsMimeMessage messages[] = getMessages(emailFolder, msgnum,beforeDate);
+            OwsMimeMessage messages[] = getMessages(emailFolder, msgnum, beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
             mailProgress.setTotal(messages.length);
@@ -484,6 +484,12 @@ public class IMAPFetchMailJob implements Runnable {
                 boolean exist = isEmailExist(message, account);
                 if(exist) {
                     break;
+                }
+                if(beforeDate != null) {
+                    Date receivedDate = message.getReceivedDate();
+                    if (receivedDate.before(beforeDate)) {
+                        break;
+                    }
                 }
                 messages.add(0, message);
                 msgnum = msgnum - 1;
