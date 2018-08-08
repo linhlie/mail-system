@@ -85,7 +85,7 @@ public class DownloadController {
         String realFileName = attachmentFile.getFileName();
         MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, realFileName);
 
-        File file = new File(realPath + "/" + realFileName);
+        File file = new File(realPath + File.separator + realFileName);
 
         // Content-Type
         // application/pdf

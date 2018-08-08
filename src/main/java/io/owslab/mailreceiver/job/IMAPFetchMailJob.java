@@ -390,12 +390,12 @@ public class IMAPFetchMailJob implements Runnable {
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = getCurrentDateStr();
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();

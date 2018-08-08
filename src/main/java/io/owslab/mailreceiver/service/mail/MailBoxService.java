@@ -516,12 +516,12 @@ public class MailBoxService {
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
