@@ -6,7 +6,11 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
-
+    var markSearchOptions = {
+        "element": "mark",
+        "className": "mark-search",
+        "separateWordSearch": false,
+    };
     var extensionCommands = {
         ".pdf": "ms-word:ofv|u|",
         ".docx": "ms-word:ofv|u|",
@@ -25,6 +29,7 @@
         setRowClickListener("sourceRow", function () {
             selectRow($(this).closest('tr'))
         });
+        initSearch();
     });
 
     function setupSelectBoxes() {
@@ -257,6 +262,92 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    }
+
+    function initSearch() {
+        // the input field
+        var $input = $("input[type='search']"),
+            // clear button
+            $clearBtn = $("button[data-search='clear']"),
+            // prev button
+            $prevBtn = $("button[data-search='prev']"),
+            // next button
+            $nextBtn = $("button[data-search='next']"),
+            // the context where to search
+            $content = $("#" + mailBodyDivId),
+            // jQuery object to save <mark> elements
+            $results,
+            // the class that will be appended to the current
+            // focused element
+            currentClass = "current",
+            // the current index of the focused element
+            currentIndex = 0;
+
+        $input.keyup(function(event) {
+            if (event.keyCode === 10 || event.keyCode === 13)
+                event.preventDefault();
+        });
+
+        function jumpTo() {
+            if ($results.length) {
+                var position,
+                    $current = $results.eq(currentIndex);
+                $results.removeClass(currentClass);
+                if ($current.length) {
+                    $current.addClass(currentClass);
+                    $content.scrollTop($content.scrollTop() + $current.position().top
+                        - $content.height()/2 + $current.height()/2);
+                }
+            }
+        }
+
+        $input.on("input", function() {
+            var searchVal = this.value;
+            $content.unmark(
+                Object.assign(
+                    {},
+                    markSearchOptions,
+                    {
+                        done: function() {
+                            $content.mark(searchVal, Object.assign({},
+                                markSearchOptions,
+                                {
+                                    done: function() {
+                                        $results = $content.find("mark.mark-search");
+                                        currentIndex = 0;
+                                        jumpTo();
+                                    }
+                                }
+                            ));
+                        }
+                    }
+                )
+            );
+        });
+
+        /**
+         * Clears the search
+         */
+        $clearBtn.on("click", function() {
+            $content.unmark(markSearchOptions);
+            $input.val("").focus();
+        });
+
+        /**
+         * Next and previous search jump to
+         */
+        $nextBtn.add($prevBtn).on("click", function() {
+            if ($results.length) {
+                currentIndex += $(this).is($prevBtn) ? -1 : 1;
+                if (currentIndex < 0) {
+                    currentIndex = $results.length - 1;
+                }
+                if (currentIndex > $results.length - 1) {
+                    currentIndex = 0;
+                }
+                jumpTo();
+            }
+        });
     }
 
 })(jQuery);
