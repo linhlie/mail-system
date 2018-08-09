@@ -181,7 +181,7 @@ public class IMAPFetchMailJob implements Runnable {
                 logger.info("[" + index + "] save email: " + message.getSubject());
                 mailProgress.increase();
             } catch (FolderClosedException ex) {
-                logger.info("[" + index + "] FolderClosedException");
+                logger.warn("[" + index + "] FolderClosedException");
                 ex.printStackTrace();
                 if (!emailFolder.isOpen()) {
                     emailFolder.open(openFolderFlag);

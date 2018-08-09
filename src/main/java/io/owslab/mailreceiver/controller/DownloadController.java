@@ -72,7 +72,7 @@ public class DownloadController {
     ) throws IOException {
 
         String decodedDigest = new String(DatatypeConverter.parseHexBinary(digest));
-        String[] digestParts = decodedDigest.split("/", 2);
+        String[] digestParts = decodedDigest.split(File.separator, 2);
         if(digestParts.length == 0) return;
 
         long id = Long.parseLong(digestParts[0]);
