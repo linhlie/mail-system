@@ -3,6 +3,20 @@
     "use strict";
     var selectAllCheckBoxId = "#selectall";
     var deleteMailsButtonId = "#deleteMails";
+    var mailSubjectDivId = 'mailSubject';
+    var mailBodyDivId = 'mailBody';
+    var mailAttachmentDivId = 'mailAttachment';
+
+    var extensionCommands = {
+        ".pdf": "ms-word:ofv|u|",
+        ".docx": "ms-word:ofv|u|",
+        ".doc": "ms-word:ofv|u|",
+        ".xls": "ms-excel:ofv|u|",
+        ".xlsx": "ms-excel:ofv|u|",
+        ".xlsm": "ms-excel:ofv|u|",
+        ".ppt": "ms-powerpoint:ofv|u|",
+        ".pptx": "ms-powerpoint:ofv|u|",
+    }
 
     $(function(){
         setupSelectBoxes();
@@ -119,7 +133,130 @@
     function selectRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var messageId = row.find('td[name="messageId"]').attr("value");
+        showPreviewMail(messageId)
         console.log("selectRow: ", messageId);
+    }
+    
+    function showPreviewMail(messageId) {
+        showMail(messageId, function (result) {
+            showMailContent(result);
+        });
+    }
+
+    function showMail(messageId, callback) {
+        messageId = messageId.replace(/\+/g, '%2B');
+        var url = "/admin/mailbox/email?messageId=" + messageId;
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                var result;
+                if (data.status) {
+                    if (data.list && data.list.length > 0) {
+                        result = data.list[0];
+                    }
+                }
+                if (typeof callback === "function") {
+                    callback(result);
+                }
+            },
+            error: function (e) {
+                console.error("showMail ERROR : ", e);
+                if (typeof callback === "function") {
+                    callback();
+                }
+            }
+        });
+    }
+
+    function showMailContent(data) {
+        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
+        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
+        mailSubjectDiv.innerHTML = "";
+        showMailBodyContent({originalBody: ""});
+        mailAttachmentDiv.innerHTML = "";
+        if (data) {
+            mailSubjectDiv.innerHTML = '<div class="mailbox-read-info">' +
+                '<h5><b>' + data.subject + '</b></h5>' +
+                '<h6>送信者: ' + data.from + '<span class="mailbox-read-time pull-right">' + data.receivedAt + '</span></h6>' +
+                '</div>';
+            showMailBodyContent(data);
+            var files = data.files ? data.files : [];
+            if (files.length > 0) {
+                var filesInnerHTML = "";
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var fileExtension = getFileExtension(file.fileName);
+                    var command = extensionCommands[fileExtension];
+                    command = (isWindows() && !!command) ? command : "nope";
+                    var url = window.location.origin + "/download/" + encodeURIComponent(file.digest) + "/" + file.fileName;
+                    if (i > 0) {
+                        filesInnerHTML += "<br/>";
+                    }
+                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
+                }
+                mailAttachmentDiv.innerHTML = filesInnerHTML;
+                setDownloadLinkClickListener();
+            } else {
+                mailAttachmentDiv.innerHTML = "添付ファイルなし";
+            }
+        }
+    }
+
+    function showMailBodyContent(data) {
+        data.originalBody = wrapText(data.originalBody);
+        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        mailBodyDiv.scrollTop = 0;
+        mailBodyDiv.innerHTML = data.originalBody;
+    }
+
+    function setDownloadLinkClickListener() {
+        $('button.download-link').off("click");
+        $('button.download-link').click(function(event) {
+            var command = $(this).attr("data-command");
+            var href = $(this).attr("data-download");
+            var fileName = $(this).attr('data-filename');
+            if(command.startsWith("nope")) {
+                alert("Not support features");
+            } else {
+                doDownload(command+href, fileName);
+            }
+        });
+
+        $.contextMenu({
+            selector: 'button.download-link',
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                var command = $(this).attr("data-command");
+                var href = $(this).attr("data-download");
+                var fileName = $(this).attr('data-filename');
+                if(key === "open") {
+                    if(command.startsWith("nope")) {
+                        alert("Not support features");
+                    } else {
+                        doDownload(command+href, fileName);
+                    }
+                } else if (key === "save_as") {
+                    doDownload(href, fileName);
+                }
+            },
+            items: {
+                "open": {"name": "Open"},
+                "save_as": {"name": "Save as"},
+            }
+        });
+    }
+
+    function doDownload(href, fileName){
+        var a = document.createElement('A');
+        a.href = href;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
 })(jQuery);

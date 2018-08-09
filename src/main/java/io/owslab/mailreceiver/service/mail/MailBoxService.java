@@ -252,6 +252,20 @@ public class MailBoxService {
         return commentstr;
     }
 
+    public List<DetailMailDTO> getMailDetail(String messageId) {
+        List<DetailMailDTO> results = new ArrayList<>();
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
+        if(emailList.size() == 0) return results;
+        Email email = emailList.get(0);
+        DetailMailDTO result = new DetailMailDTO(email);
+        List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+        for(AttachmentFile file : files){
+            result.addFile(file);
+        }
+        results.add(result);
+        return results;
+    }
+
     public List<DetailMailDTO> getMailDetail(String messageId, String highlightWordsStr, String matchRange, boolean spaceEffective, boolean distinguish){
         List<DetailMailDTO> results = new ArrayList<>();
         List<Email> emailList = emailDAO.findByMessageId(messageId);

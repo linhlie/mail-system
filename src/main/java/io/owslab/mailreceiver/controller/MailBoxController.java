@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.TrashBoxForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
@@ -204,5 +205,18 @@ public class MailBoxController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value="/admin/mailbox/email", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEmailJsonAdmin (
+            @RequestParam(value = "messageId", required = true) String messageId
+    ){
+        AjaxResponseBody result = new AjaxResponseBody();
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId);
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(mailDetail);
+        return ResponseEntity.ok(result);
     }
 }
