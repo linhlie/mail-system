@@ -425,7 +425,7 @@ public class MailBoxService {
     }
 
     private String getExceprtLine(String line) {
-        String exceprtLine = "<div class=\"gmail_extra\"><span style=\"color: #ff0000;\">" + line + "</span></div>\n";
+        String exceprtLine = "<div class=\"gmail_extra\"><span>" + line + "</span></div>\n";
         return exceprtLine;
     }
 

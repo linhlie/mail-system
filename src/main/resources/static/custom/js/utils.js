@@ -38,10 +38,10 @@ function getReplyWrapper(data) {
 function getDecorateExcerpt(excerpt, sendTo) {
     if(sendTo === "moto") {
         excerpt = getExcerptWithGreeting(excerpt, "元");
-        excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + excerpt;
+        excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング元へ送信</span></div>' + excerpt;
     } else if (sendTo === "saki") {
         excerpt = getExcerptWithGreeting(excerpt, "先");
-        excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + excerpt;
+        excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング先へ送信</span></div>' + excerpt;
     }
     return excerpt;
 }
@@ -64,7 +64,7 @@ function getExcerptWithGreeting(excerpt, type) {
 }
 
 function getExceprtLine(line) {
-    var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
+    var exceprtLine = '<div class="gmail_extra"><span>' + line + '</span></div>';
     return exceprtLine;
 }
 
