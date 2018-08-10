@@ -5,15 +5,325 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <section class="content">
+    <section class="content partner">
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-default">
-                    <div class="box-header">
-                        <h3 class="box-title">取引先登録</h3>
-                    </div>
                     <div class="box-body">
-
+                        <h4>挨拶文登録</h4>
+                        <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="partner" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th class="dark">取引先名</th>
+                                        <th class="fit dark" style="text-align: center">識別ID</th>
+                                        <th th:colspan="2"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>123</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>123</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>124</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>124</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>125</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>125</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>126</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>126</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>127</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>127</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>128</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>128</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>129</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>129</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>130</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>130</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>131</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>131</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                        <tr role="row">
+                                            <td rowspan="1" colspan="1" data="title"><span>132</span></td>
+                                            <td rowspan="1" colspan="1" data="type"><span>132</span></td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="editGreetimg" type="button">編集</button>
+                                            </td>
+                                            <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                <button name="removeGreeting" type="button">削除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="width: 100%">
+                            <form class="form-horizontal" action="javascript:void(0);">
+                                <div class="form-group row">
+                                    <label for="partnerName" class="control-label col-md-2 text-left">取引先名</label>
+                                    <div class="col-md-10">
+                                        <input id="partnerName" class="form-control" placeholder="全角">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="partnerKanaName" class="control-label col-md-2 text-left">カナ名称</label>
+                                    <div class="col-md-10">
+                                        <input id="partnerKanaName" class="form-control" placeholder="全角カナ">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-2 text-left">会社形態</label>
+                                    <div class="col-md-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>株式会社
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>有限会社
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>合名会社
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>株式会社
+                                        </label>
+                                        <br/>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>財団法人
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>社団法人
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="companyType"/>その他
+                                            <span>(</span>
+                                            <input type="text" style="border: none; width: 105px"/>
+                                            <span>)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-2 text-left">前株後株</label>
+                                    <div class="col-md-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="stockShare"/>前
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="stockShare"/>後
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="identificationId" class="control-label col-md-2 text-left">識別ID</label>
+                                    <div class="col-md-2">
+                                        <input id="identificationId" class="form-control" placeholder="">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-2 text-left">ドメイン</label>
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="">
+                                        </input>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="">
+                                        </input>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" placeholder="">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-2 text-left">取引グループ</label>
+                                    <div class="col-md-10">
+                                        <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="partnerGroup" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                                    <thead class="sticky-header">
+                                                    <tr>
+                                                        <th class="dark">取引先名</th>
+                                                        <th class="fit dark" style="text-align: center">識別ID</th>
+                                                        <th th:colspan="2"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>123</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>123</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>124</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>124</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>125</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>125</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>126</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>126</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>127</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>127</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>128</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>128</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>129</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>129</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>130</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>130</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>131</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>131</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1" data="title"><span>132</span></td>
+                                                        <td rowspan="1" colspan="1" data="type"><span>132</span></td>
+                                                        <td class="fit action" rowspan="1" colspan="1" data="id">
+                                                            <button name="removeGreeting" type="button">削除</button>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="ourCompany" class="control-label col-md-2 text-left">自社</label>
+                                    <div class="col-md-10">
+                                        <label class="checkbox-inline"><input id="ourCompany" type="checkbox" value=""/>&nbsp;</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div style="width: 90%;">
+                                            <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div style="width: 90%;">
+                                            <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div style="width: 45%; margin: auto;">
+                                            <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <!-- /.box-body -->
                 </div>
@@ -23,5 +333,10 @@
         </div>
     </section>
 </div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/expansion/businessPartnerRegist.js"></script>
+</th:block>
 </body>
 </html>

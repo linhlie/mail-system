@@ -771,12 +771,12 @@ mark.mark-range {
     margin-left: -20px;
 }
 
-.greeting .box-body, .user-management .box-body, .condition-management .box-body {
+.greeting .box-body, .user-management .box-body, .condition-management .box-body, .partner .box-body {
     padding: 20px;
     padding-top: 10px;
 }
 
-.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part {
+.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part, .partner .partner-part {
     width: 100%;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -829,7 +829,7 @@ div.table-container-section {
     border-top: none !important;
 }
 
-div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper {
+div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper, div.partner-part .table-container-wrapper {
     background-color: whitesmoke;
 }
 
@@ -1120,4 +1120,46 @@ section.sendTab.content {
 
 #mailBox table tr.highlight-selected td {
     background-color: #ffffcc;
+}
+
+.partner .radio-inline+.radio-inline {
+    margin-left: 30px;
+}
+
+.stickyHeaderTable td.fit,
+.stickyHeaderTable th.fit {
+    white-space: nowrap !important;
+    width: 1% !important;
+}
+
+.stickyHeaderTable {
+    border: none !important;
+    background-color: white !important;
+}
+
+.stickyHeaderTable th,
+.stickyHeaderTable td {
+    border: 1px solid black !important;
+    border-left: none !important;
+    padding: 1px 6px !important;
+}
+
+.stickyHeaderTable td {
+    border-top: none !important;
+}
+
+.stickyHeaderTable td.action {
+    padding: 0 !important;
+}
+
+.stickyHeaderTable td.action button {
+    padding: 1px 15px !important;
+}
+
+.stickyHeaderTable th {
+    background-color: white !important;
+}
+
+.stickyHeaderTable th.dark {
+    background-color: #dee3ea !important;
 }
