@@ -135,6 +135,7 @@
                                     <div class="col-md-10">
                                         <input id="partnerName" class="form-control" placeholder="全角">
                                         </input>
+                                        <span class="form-error">..</span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -142,13 +143,14 @@
                                     <div class="col-md-10">
                                         <input id="partnerKanaName" class="form-control" placeholder="全角カナ">
                                         </input>
+                                        <span class="form-error">..</span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="control-label col-md-2 text-left">会社形態</label>
                                     <div class="col-md-10">
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>株式会社
+                                            <input type="radio" name="companyType" checked="checked"/>株式会社
                                         </label>
                                         <label class="radio-inline">
                                             <input type="radio" name="companyType"/>有限会社
@@ -178,7 +180,7 @@
                                     <label class="control-label col-md-2 text-left">前株後株</label>
                                     <div class="col-md-10">
                                         <label class="radio-inline">
-                                            <input type="radio" name="stockShare"/>前
+                                            <input type="radio" name="stockShare" checked="checked"/>前
                                         </label>
                                         <label class="radio-inline">
                                             <input type="radio" name="stockShare"/>後
@@ -190,6 +192,7 @@
                                     <div class="col-md-2">
                                         <input id="identificationId" class="form-control" placeholder="">
                                         </input>
+                                        <span class="form-error">..</span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -197,6 +200,7 @@
                                     <div class="col-md-3">
                                         <input class="form-control" placeholder="">
                                         </input>
+                                        <span class="form-error">..</span>
                                     </div>
                                     <div class="col-md-3">
                                         <input class="form-control" placeholder="">
@@ -293,6 +297,15 @@
                                                             <button name="removeGreeting" type="button">削除</button>
                                                         </td>
                                                     </tr>
+                                                    <tr role="row">
+                                                        <td rowspan="1" colspan="1">
+                                                            <select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                            </select>
+                                                        </td>
+                                                        <td rowspan="1" colspan="1"></td>
+                                                        <td class="fit" rowspan="1" colspan="1">
+                                                        </td>
+                                                    </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -308,17 +321,17 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div style="width: 90%;">
-                                            <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                            <button id="partnerAdd" name="partnerAdd" type="button" class="btn btn-success btn-block">登録</button>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div style="width: 90%;">
-                                            <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                            <button id="partnerUpdate" disabled="true" name="partnerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div style="width: 45%; margin: auto;">
-                                            <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                            <button id="partnerClear" name="partnerClear" type="button" class="btn btn-default btn-block">クリア</button>
                                         </div>
                                     </div>
                                 </div>

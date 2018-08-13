@@ -272,7 +272,7 @@ select:not([multiple]) {
 }
 
 span.form-error {
-    color: red !important;
+    color: red;
 }
 
 input.form-error {
@@ -1162,4 +1162,13 @@ section.sendTab.content {
 
 .stickyHeaderTable th.dark {
     background-color: #dee3ea !important;
+}
+
+.partner span.form-error {
+    display: none;
+    color: #dd4b39;
+}
+
+.partner .has-error span.form-error {
+    display: inherit;
 }

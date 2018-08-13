@@ -322,3 +322,11 @@ function isWindows() {
 function getFileSizeString(fileSize) {
     return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
 }
+
+function comparePartner(a,b) {
+    if (a.name < b.name)
+        return -1;
+    if (a.name > b.name)
+        return 1;
+    return 0;
+}
