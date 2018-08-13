@@ -136,6 +136,21 @@ function deleteFromInBox(msgIds, onSuccess, onError){
     _post(url, data, onSuccess, onError);
 }
 
+function addPartner(data, onSuccess, onError) {
+    var url = "/expansion/businessPartner/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function getBusinessPartners(onSuccess, onError) {
+    var url = "/expansion/businessPartner/list";
+    _get(url, onSuccess, onError);
+}
+
+function deletePartner(id, onSuccess, onError) {
+    var url = "/expansion/businessPartner/delete/" + id;
+    _delete(url, onSuccess, onError);
+}
+
 function _post(url, data, onSuccess, onError) {
     $.ajax({
         type: "POST",
@@ -145,6 +160,27 @@ function _post(url, data, onSuccess, onError) {
         dataType: 'json',
         cache: false,
         timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function _get(url, onSuccess, onError) {
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: url,
+        cache: false,
+        timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function _delete(url, onSuccess, onError) {
+    $.ajax({
+        type: "DELETE",
+        url: url,
         success: onSuccess,
         error: onError
     });
