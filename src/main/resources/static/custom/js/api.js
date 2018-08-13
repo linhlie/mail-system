@@ -141,6 +141,11 @@ function addPartner(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function updatePartner(id, data, onSuccess, onError) {
+    var url = "/expansion/businessPartner/update/" + id;
+    _post(url, data, onSuccess, onError);
+}
+
 function getBusinessPartners(onSuccess, onError) {
     var url = "/expansion/businessPartner/list";
     _get(url, onSuccess, onError);

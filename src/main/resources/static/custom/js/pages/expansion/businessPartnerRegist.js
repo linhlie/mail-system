@@ -7,6 +7,30 @@
     var formId = "#partnerForm";
     var partnerTableId = "partner";
     var partners = null;
+    var updatingPartnerId = null;
+
+    var formFields = [
+        {type: "input", name: "name"},
+        {type: "input", name: "kanaName"},
+        {type: "input", name: "partnerCode"},
+        {type: "input", name: "domain1"},
+        {type: "input", name: "domain2"},
+        {type: "input", name: "domain3"},
+        {type: "checkbox", name: "ourCompany"},
+        {type: "radio", name: "companyType"},
+        {type: "input", name: "companySpecificType"},
+        {type: "radio", name: "stockShare"},
+    ];
+
+    var CompanyTypes = {
+        LTD: 1,
+        LIMITED: 2,
+        GROUP: 3,
+        JOINT_STOCK: 4,
+        FOUNDATION: 5,
+        CORPORATION: 6,
+        OTHER: 7,
+    };
 
     var partnerReplaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
@@ -39,6 +63,7 @@
         setButtonClickListenter(partnerAddBtnId, addPartnerOnClick);
         setButtonClickListenter(partnerUpdateBtnId, updatePartnerOnClick);
         setButtonClickListenter(partnerClearBtnId, clearPartnerOnClick);
+        companyTypeChangeListener();
         loadBusinessPartners();
     });
 
@@ -97,9 +122,7 @@
         var validated = partnerFormValidate();
         if(!validated) return;
         var data = getFormData();
-        console.log("addPartnerOnClick: ", data);
         function onSuccess(response) {
-            console.log("response: ", response);
             if(response && response.status) {
                 $.alert("保存に成功しました");
                 loadBusinessPartners();
@@ -117,18 +140,6 @@
 
     function getFormData() {
         var form = {};
-        var formFields = [
-            {type: "input", name: "name"},
-            {type: "input", name: "kanaName"},
-            {type: "input", name: "partnerCode"},
-            {type: "input", name: "domain1"},
-            {type: "input", name: "domain2"},
-            {type: "input", name: "domain3"},
-            {type: "checkbox", name: "ourCompany"},
-            {type: "radio", name: "companyType"},
-            {type: "input", name: "companySpecificType"},
-            {type: "radio", name: "stockShare"},
-        ];
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
             if(field.type == "checkbox"){
@@ -142,10 +153,38 @@
         return form;
     }
     
+    function setFormData(form) {
+        for (var i = 0; i < formFields.length; i++) {
+            var field = formFields[i];
+            if(field.type == "checkbox"){
+                $("input" + "[name='" + field.name + "']").prop('checked', form[field.name]);
+            } else if (field.type == "radio") {
+                $("input[name=" + field.name + "][value=" + form[field.name] + "]").prop('checked', true);
+            } else {
+                $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
+            }
+        }
+    }
+    
     function updatePartnerOnClick() {
         clearFormValidate();
         var validated = partnerFormValidate();
         if(!validated) return;
+        var data = getFormData();
+        function onSuccess(response) {
+            if(response && response.status) {
+                $.alert("保存に成功しました");
+                loadBusinessPartners();
+                clearPartnerOnClick();
+            } else {
+                $.alert("保存に失敗しました");
+            }
+        }
+
+        function onError(response) {
+            $.alert("保存に失敗しました");
+        }
+        updatePartner(updatingPartnerId, data, onSuccess, onError)
     }
     
     function partnerFormValidate() {
@@ -194,15 +233,22 @@
         var domain2 = $("#domain2");
         var domain3 = $("#domain3");
         if(!domain1.val() && !domain2.val() && !domain3.val()) {
-            showError.apply(domain1, ["必要"]);
+            showError.apply(domain1, ["せめて一つのドメインを入力してください"]);
             return false;
         }
         return true;
     }
     
     function clearPartnerOnClick() {
-        resetForm()
+        resetForm();
         clearFormValidate();
+        disableUpdatePartner(true);
+        updateCompanySpecificType();
+        clearUpdatingParterId();
+    }
+    
+    function clearUpdatingParterId() {
+        updatingPartnerId = null;
     }
 
     function resetForm() {
@@ -309,7 +355,29 @@
     }
     
     function doEditPartner(data) {
-        
+        updatingPartnerId = data.id;
+        disableUpdatePartner(false);
+        setFormData(data);
+        updateCompanySpecificType(data.companyType)
+    }
+    
+    function disableUpdatePartner(disable) {
+        $(partnerUpdateBtnId).prop('disabled', disable);
+    }
+    
+    function companyTypeChangeListener() {
+        $("input[name='companyType']").click(function() {
+            updateCompanySpecificType(this.value);
+        });
+    }
+
+    function updateCompanySpecificType(companyType) {
+        var input = $("#companySpecificType");
+        if(parseInt(companyType) == CompanyTypes.OTHER) {
+            input.css('visibility', 'visible');
+        } else {
+            input.css('visibility', 'hidden');
+        }
     }
 
 })(jQuery);

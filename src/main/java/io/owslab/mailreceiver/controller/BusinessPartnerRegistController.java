@@ -1,6 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.exception.DuplicatePartnerCodeException;
+import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
@@ -66,12 +66,37 @@ public class BusinessPartnerRegistController {
             partnerService.add(form);
             result.setMsg("done");
             result.setStatus(true);
-        }
-        catch (DuplicatePartnerCodeException dpce) {
+        } catch (PartnerCodeException dpce) {
             result.setMsg(dpce.getMessage());
             result.setStatus(false);
+        } catch (Exception e) {
+            logger.error("addPartner: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
         }
-        catch (Exception e) {
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/businessPartner/update/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> updatePartner(
+            @Valid @RequestBody BusinessPartner.Builder form, @PathVariable("id") long id, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+
+            partnerService.update(form, id);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (PartnerCodeException dpce) {
+            result.setMsg(dpce.getMessage());
+            result.setStatus(false);
+        } catch (Exception e) {
             logger.error("addPartner: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);

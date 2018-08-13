@@ -69,7 +69,7 @@
                                             <input type="radio" name="companyType" value="3"/>合名会社
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="4"/>株式会社
+                                            <input type="radio" name="companyType" value="4"/>合資会社
                                         </label>
                                         <br/>
                                         <label class="radio-inline">
@@ -81,7 +81,7 @@
                                         <label class="radio-inline">
                                             <input type="radio" name="companyType" value="7"/>その他
                                             <span>(</span>
-                                            <input type="text" id="companySpecificType" name="companySpecificType" style="border: none; width: 105px"/>
+                                            <input type="text" id="companySpecificType" name="companySpecificType" style="border: none; width: 105px; visibility: hidden;"/>
                                             <span>)</span>
                                         </label>
                                     </div>
@@ -110,7 +110,7 @@
                                     <div class="col-md-3">
                                         <input id="domain1" name="domain1" class="form-control" placeholder="">
                                         </input>
-                                        <span class="form-error">..</span>
+                                        <span style="white-space: nowrap;" class="form-error">..</span>
                                     </div>
                                     <div class="col-md-3">
                                         <input id="domain2" name="domain2" class="form-control" placeholder="">
