@@ -129,11 +129,11 @@
                             </div>
                         </div>
                         <div style="width: 100%">
-                            <form class="form-horizontal" action="javascript:void(0);">
+                            <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
                                 <div class="form-group row">
                                     <label for="partnerName" class="control-label col-md-2 text-left">取引先名</label>
                                     <div class="col-md-10">
-                                        <input id="partnerName" class="form-control" placeholder="全角">
+                                        <input id="partnerName" name="partnerName" class="form-control" placeholder="全角">
                                         </input>
                                         <span class="form-error">..</span>
                                     </div>
@@ -141,7 +141,7 @@
                                 <div class="form-group row">
                                     <label for="partnerKanaName" class="control-label col-md-2 text-left">カナ名称</label>
                                     <div class="col-md-10">
-                                        <input id="partnerKanaName" class="form-control" placeholder="全角カナ">
+                                        <input id="partnerKanaName" name="partnerKanaName" class="form-control" placeholder="全角カナ">
                                         </input>
                                         <span class="form-error">..</span>
                                     </div>
@@ -150,28 +150,28 @@
                                     <label class="control-label col-md-2 text-left">会社形態</label>
                                     <div class="col-md-10">
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType" checked="checked"/>株式会社
+                                            <input type="radio" name="companyType" checked="checked" value="1"/>株式会社
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>有限会社
+                                            <input type="radio" name="companyType" value="2"/>有限会社
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>合名会社
+                                            <input type="radio" name="companyType" value="3"/>合名会社
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>株式会社
+                                            <input type="radio" name="companyType" value="4"/>株式会社
                                         </label>
                                         <br/>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>財団法人
+                                            <input type="radio" name="companyType" value="5"/>財団法人
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>社団法人
+                                            <input type="radio" name="companyType" value="6"/>社団法人
                                         </label>
                                         <label class="radio-inline">
-                                            <input type="radio" name="companyType"/>その他
+                                            <input type="radio" name="companyType" value="7"/>その他
                                             <span>(</span>
-                                            <input type="text" style="border: none; width: 105px"/>
+                                            <input type="text" id="companySpecificType" name="companySpecificType" style="border: none; width: 105px"/>
                                             <span>)</span>
                                         </label>
                                     </div>
@@ -190,7 +190,7 @@
                                 <div class="form-group row">
                                     <label for="identificationId" class="control-label col-md-2 text-left">識別ID</label>
                                     <div class="col-md-2">
-                                        <input id="identificationId" class="form-control" placeholder="">
+                                        <input id="identificationId" name="identificationId" class="form-control" placeholder="">
                                         </input>
                                         <span class="form-error">..</span>
                                     </div>
@@ -198,16 +198,16 @@
                                 <div class="form-group row">
                                     <label class="control-label col-md-2 text-left">ドメイン</label>
                                     <div class="col-md-3">
-                                        <input class="form-control" placeholder="">
+                                        <input id="domain1" name="domain" class="form-control" placeholder="">
                                         </input>
                                         <span class="form-error">..</span>
                                     </div>
                                     <div class="col-md-3">
-                                        <input class="form-control" placeholder="">
+                                        <input id="domain2" name="domain" class="form-control" placeholder="">
                                         </input>
                                     </div>
                                     <div class="col-md-3">
-                                        <input class="form-control" placeholder="">
+                                        <input id="domain3" name="domain" class="form-control" placeholder="">
                                         </input>
                                     </div>
                                 </div>
