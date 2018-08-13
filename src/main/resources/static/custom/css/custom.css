@@ -1172,3 +1172,7 @@ section.sendTab.content {
 .partner .has-error span.form-error {
     display: inherit;
 }
+
+.partner table tr.highlight-selected td {
+    background-color: #ffffcc;
+}

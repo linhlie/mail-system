@@ -56,7 +56,6 @@
     
     function updatePartnerComboBox(options) {
         options.sort(comparePartner);
-        console.log("updatePartnerComboBox: ", options);
         $('#' + partnerComboBoxId).empty();
         $('#' + partnerComboBoxId).append($('<option>', {
             selected: true,
@@ -216,7 +215,6 @@
     
     function loadBusinessPartners() {
         function onSuccess(response) {
-            console.log("partners: ", response);
             if(response && response.status){
                 loadBusinessPartnersData(partnerTableId, response.list);
             }
@@ -251,7 +249,8 @@
                 var index = row.getAttribute("data");
                 var rowData = partners[index];
                 if (rowData && rowData.id) {
-
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                    doEditPartner(rowData);
                 }
             });
         }
@@ -307,6 +306,10 @@
             $.alert("取引先の削除に失敗しました。");
         }
         deletePartner(id, onSuccess, onError);
+    }
+    
+    function doEditPartner(data) {
+        
     }
 
 })(jQuery);
