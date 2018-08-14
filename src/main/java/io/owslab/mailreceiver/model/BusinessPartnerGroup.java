@@ -20,6 +20,18 @@ public class BusinessPartnerGroup {
     @JoinColumn(name = "with_partner_id", referencedColumnName = "id", nullable = false)
     private BusinessPartner withPartner;
 
+    public BusinessPartnerGroup() {
+    }
+
+    public BusinessPartnerGroup(long id) {
+        this.id = id;
+    }
+
+    public BusinessPartnerGroup(BusinessPartner partner, BusinessPartner withPartner) {
+        this.partner = partner;
+        this.withPartner = withPartner;
+    }
+
     public long getId() {
         return id;
     }

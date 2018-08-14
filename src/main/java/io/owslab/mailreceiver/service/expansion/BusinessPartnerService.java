@@ -9,6 +9,7 @@ import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,14 +27,18 @@ public class BusinessPartnerService {
         return (List<BusinessPartner>) partnerDAO.findAll();
     }
 
+    //TODO need to be transaction
     public void add(PartnerForm form) throws PartnerCodeException {
         BusinessPartner.Builder builder = form.getBuilder();
         String partnerCode = builder.getPartnerCode();
         BusinessPartner existPartner = findOneByPartnerCode(partnerCode);
         if(existPartner != null) throw new PartnerCodeException("識別IDは既に存在します。");
-        partnerDAO.save(builder.build());
+        BusinessPartner addedPartner = partnerDAO.save(builder.build());
+        List<Long> groupAddIds = form.getGroupAddIds();
+        saveGroupList(addedPartner, groupAddIds);
     }
 
+    //TODO need to be transaction
     public void update(PartnerForm form, long id) throws PartnerCodeException {
         BusinessPartner.Builder builder = form.getBuilder();
         builder.setId(id);
@@ -45,7 +50,11 @@ public class BusinessPartnerService {
             long existPartnerId = existPartner.getId();
             if(existPartnerId != id) throw new PartnerCodeException("識別IDは既に存在します。");
         }
-        partnerDAO.save(builder.build());
+        BusinessPartner updatedPartner = partnerDAO.save(builder.build());
+        List<Long> groupRemoveIds = form.getGroupRemoveIds();
+        List<Long> groupAddIds = form.getGroupAddIds();
+        deleteGroupList(updatedPartner, groupRemoveIds);
+        saveGroupList(updatedPartner, groupAddIds);
     }
 
     private BusinessPartner findOneByPartnerCode(String partnerCode){
@@ -63,5 +72,27 @@ public class BusinessPartnerService {
 
     public List<BusinessPartnerGroup> findByPartner(long partnerId){
         return partnerGroupDAO.findByPartnerId(partnerId);
+    }
+
+    private void deleteGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
+        List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
+        for(Long groupWithPartnerId : groupWithPartnerIds) {
+            List<BusinessPartnerGroup> groupWithPartners = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partner.getId(), groupWithPartnerId);
+            if(groupWithPartners.size() > 0) {
+                partnerGroups.add(groupWithPartners.get(0));
+            }
+        }
+        partnerGroupDAO.delete(partnerGroups);
+    }
+
+    private void saveGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
+        List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
+        for(Long groupWithPartnerId : groupWithPartnerIds) {
+            BusinessPartner groupWithPartner = findOne(groupWithPartnerId);
+            if(groupWithPartner != null) {
+                partnerGroups.add(new BusinessPartnerGroup(partner, groupWithPartner));
+            }
+        }
+        partnerGroupDAO.save(partnerGroups);
     }
 }
