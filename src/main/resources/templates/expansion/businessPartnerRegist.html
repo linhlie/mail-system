@@ -137,13 +137,13 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <!--<tr role="row">-->
-                                                        <!--<td rowspan="1" colspan="1" data="title"><span>123</span></td>-->
-                                                        <!--<td rowspan="1" colspan="1" data="type"><span>123</span></td>-->
-                                                        <!--<td class="fit action" rowspan="1" colspan="1" data="id">-->
-                                                            <!--<button name="removeGreeting" type="button">削除</button>-->
-                                                        <!--</td>-->
-                                                    <!--</tr>-->
+                                                    <tr role="row" class="hidden">
+                                                        <td rowspan="1" colspan="1" th:data="name"><span></span></td>
+                                                        <td rowspan="1" colspan="1" th:data="partnerCode"><span></span></td>
+                                                        <td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" th:data="id">
+                                                            <button type="button">削除</button>
+                                                        </td>
+                                                    </tr>
                                                     <tr role="row">
                                                         <td rowspan="1" colspan="1">
                                                             <select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;">

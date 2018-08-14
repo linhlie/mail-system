@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.model.BusinessPartner;
+import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import org.slf4j.Logger;
@@ -113,5 +114,22 @@ public class BusinessPartnerRegistController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping(value = { "/businessPartner/group/list/{id}" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getGroupPartners(@PathVariable("id") long id) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BusinessPartnerGroup> partners = partnerService.findByPartner(id);
+            result.setList(partners);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPartners: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }

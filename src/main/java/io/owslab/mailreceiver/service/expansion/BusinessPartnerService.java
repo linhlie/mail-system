@@ -1,8 +1,10 @@
 package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
+import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.model.BusinessPartner;
+import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ import java.util.List;
 public class BusinessPartnerService {
     @Autowired
     private BusinessPartnerDAO partnerDAO;
+
+    @Autowired
+    private BusinessPartnerGroupDAO partnerGroupDAO;
 
     public List<BusinessPartner> getAll() {
         return (List<BusinessPartner>) partnerDAO.findAll();
@@ -51,5 +56,9 @@ public class BusinessPartnerService {
 
     public void delete(long id){
         partnerDAO.delete(id);
+    }
+
+    public List<BusinessPartnerGroup> findByPartner(long partnerId){
+        return partnerGroupDAO.findByPartnerId(partnerId);
     }
 }

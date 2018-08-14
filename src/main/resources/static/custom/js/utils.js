@@ -324,9 +324,9 @@ function getFileSizeString(fileSize) {
 }
 
 function comparePartner(a,b) {
-    if (a.name < b.name)
+    if (a.kanaName < b.kanaName)
         return -1;
-    if (a.name > b.name)
+    if (a.kanaName > b.kanaName)
         return 1;
     return 0;
 }

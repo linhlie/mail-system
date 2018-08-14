@@ -151,6 +151,11 @@ function getBusinessPartners(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getBusinessPartnerGroup(partnerId, onSuccess, onError) {
+    var url = "/expansion/businessPartner/group/list/" + partnerId;
+    _get(url, onSuccess, onError);
+}
+
 function deletePartner(id, onSuccess, onError) {
     var url = "/expansion/businessPartner/delete/" + id;
     _delete(url, onSuccess, onError);

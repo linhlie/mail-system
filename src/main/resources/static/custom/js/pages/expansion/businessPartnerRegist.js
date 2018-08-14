@@ -6,6 +6,7 @@
     var partnerClearBtnId = "#partnerClear";
     var formId = "#partnerForm";
     var partnerTableId = "partner";
+    var partnerGroupTableId = "partnerGroup";
     var partners = null;
     var updatingPartnerId = null;
 
@@ -43,22 +44,16 @@
         '</td>' +
         '</tr>';
 
+    var groupReplaceRow = '<tr role="row" class="hidden">' +
+        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
+        '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">削除</button>' +
+        '</td>' +
+        '</tr>';
+
     $(function () {
         initStickyHeader();
-        updatePartnerComboBox([
-            {
-                name: "DEF",
-                code: "def",
-            },
-            {
-                name: "ABC",
-                code: "abc",
-            },
-            {
-                name: "BCD",
-                code: "bcd",
-            },
-        ]);
         partnerComboBoxListener();
         setButtonClickListenter(partnerAddBtnId, addPartnerOnClick);
         setButtonClickListenter(partnerUpdateBtnId, updatePartnerOnClick);
@@ -79,7 +74,21 @@
         });
     }
     
+    function addPartnerComboBox() {
+        var tr = '<tr role="row">' +
+            '<td rowspan="1" colspan="1">' +
+            '<select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
+            '</td>' +
+            '<td rowspan="1" colspan="1"></td>' +
+            '<td class="fit" rowspan="1" colspan="1">' +
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+            '</td>' +
+            '</tr>';
+        $("#" + partnerGroupTableId).append(tr);
+    }
+    
     function updatePartnerComboBox(options) {
+        options = options ? options.slice(0) : [];
         options.sort(comparePartner);
         $('#' + partnerComboBoxId).empty();
         $('#' + partnerComboBoxId).append($('<option>', {
@@ -90,17 +99,18 @@
         }));
         $.each(options, function (i, item) {
             $('#' + partnerComboBoxId).append($('<option>', {
-                value: item.code,
+                value: item.partnerCode,
                 text : item.name,
-            }));
+            }).attr('data-id',item.id));
         });
     }
     
     function partnerComboBoxListener() {
         $('#' + partnerComboBoxId).off('change');
         $('#' + partnerComboBoxId).change(function() {
-            console.log(this.value, );
-            var name = $(this).find("option:selected").text();
+            var selected = $(this).find("option:selected");
+            var name = selected.text();
+            var id = selected.attr("data-id");
             var code = this.value;
             addPartnerToGroup.apply(this, [name, code]);
             $('#' + partnerComboBoxId).prop('selectedIndex',0);
@@ -114,7 +124,7 @@
             '<td class="fit action" rowspan="1" colspan="1" data="id">' +
             '<button name="removeGreeting" type="button">削除</button>' +
             '</td> </tr>';
-        $(this).closest('table').find('tr:last').prev().after(tr);
+        $(this).closest('table').find('tr:last').before(tr);
     }
     
     function addPartnerOnClick() {
@@ -245,6 +255,12 @@
         disableUpdatePartner(true);
         updateCompanySpecificType();
         clearUpdatingParterId();
+        loadBusinessPartnerGroupData(partnerGroupTableId, []);
+        resetPartnerTable();
+    }
+    
+    function resetPartnerTable() {
+        $("#" + partnerTableId).find('tr.highlight-selected').removeClass('highlight-selected');
     }
     
     function clearUpdatingParterId() {
@@ -263,6 +279,7 @@
         function onSuccess(response) {
             if(response && response.status){
                 loadBusinessPartnersData(partnerTableId, response.list);
+                updatePartnerComboBox(response.list);
             }
         }
         
@@ -356,11 +373,40 @@
     
     function doEditPartner(data) {
         updatingPartnerId = data.id;
+        loadBusinessPartnerGroup(data.id);
         disableUpdatePartner(false);
         setFormData(data);
-        updateCompanySpecificType(data.companyType)
+        updateCompanySpecificType(data.companyType);
     }
     
+    function loadBusinessPartnerGroup(partnerId) {
+        function onSuccess(response) {
+            if(response && response.status) {
+                loadBusinessPartnerGroupData(partnerGroupTableId, response.list);
+            }
+        }
+        function onError() {}
+
+        getBusinessPartnerGroup(partnerId, onSuccess, onError);
+    }
+    
+    function loadBusinessPartnerGroupData(tableId, data) {
+        removeAllRow(tableId, groupReplaceRow);
+        if (data.length > 0) {
+            var html = groupReplaceRow;
+            for (var i = 0; i < data.length; i++) {
+                html = html + addRowWithData(tableId, data[i].withPartner, i);
+            }
+            $("#" + tableId + "> tbody").html(html);
+            setRowClickListener("deleteGroupPartner", function () {
+
+            });
+        }
+        addPartnerComboBox();
+        updatePartnerComboBox(partners);
+        partnerComboBoxListener();
+    }
+
     function disableUpdatePartner(disable) {
         $(partnerUpdateBtnId).prop('disabled', disable);
     }
