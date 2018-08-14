@@ -44,7 +44,7 @@
         '</td>' +
         '</tr>';
 
-    var groupReplaceRow = '<tr role="row" class="hidden">' +
+    var groupReplaceRow = '<tr name="group-partner" data-type="original" role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
         '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
@@ -112,17 +112,17 @@
             var name = selected.text();
             var id = selected.attr("data-id");
             var code = this.value;
-            addPartnerToGroup.apply(this, [name, code]);
+            addPartnerToGroup.apply(this, [id, name, code]);
             $('#' + partnerComboBoxId).prop('selectedIndex',0);
         });
     }
     
-    function addPartnerToGroup(name, code) {
-        var tr = '<tr role="row">' +
-            '<td rowspan="1" colspan="1" data="title"><span>' + name + '</span></td>' +
-            '<td rowspan="1" colspan="1" data="type"><span>' + code + '</span></td>' +
-            '<td class="fit action" rowspan="1" colspan="1" data="id">' +
-            '<button name="removeGreeting" type="button">削除</button>' +
+    function addPartnerToGroup(id, name, code) {
+        var tr = '<tr name="group-partner" data-id="' + id + '" data-type="add" role="row">' +
+            '<td rowspan="1" colspan="1" data="name"><span>' + name + '</span></td>' +
+            '<td rowspan="1" colspan="1" data="partnerCode"><span>' + code + '</span></td>' +
+            '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+            '<button type="button">削除</button>' +
             '</td> </tr>';
         $(this).closest('table').find('tr:last').before(tr);
     }
@@ -328,6 +328,7 @@
         if (!table) return "";
         var rowToClone = table.rows[1];
         var row = rowToClone.cloneNode(true);
+        row.setAttribute("data-id", data.id);
         row.setAttribute("data", index);
         row.className = undefined;
         var cells = row.cells;
@@ -399,7 +400,7 @@
             }
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("deleteGroupPartner", function () {
-
+                console.log("deleteGroupPartner: ");
             });
         }
         addPartnerComboBox();
