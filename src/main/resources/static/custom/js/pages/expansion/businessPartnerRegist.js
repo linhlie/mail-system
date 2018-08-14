@@ -23,6 +23,11 @@
         {type: "radio", name: "stockShare"},
     ];
 
+    var GroupPartnerRowTypes = {
+        ORIGINAL: "original",
+        NEW: "add",
+    }
+
     var CompanyTypes = {
         LTD: 1,
         LIMITED: 2,
@@ -125,6 +130,7 @@
             '<button type="button">削除</button>' +
             '</td> </tr>';
         $(this).closest('table').find('tr:last').before(tr);
+        setDeleteGroupPartnerListener();
     }
     
     function addPartnerOnClick() {
@@ -399,13 +405,24 @@
                 html = html + addRowWithData(tableId, data[i].withPartner, i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deleteGroupPartner", function () {
-                console.log("deleteGroupPartner: ");
-            });
+            setDeleteGroupPartnerListener();
         }
         addPartnerComboBox();
         updatePartnerComboBox(partners);
         partnerComboBoxListener();
+    }
+    
+    function setDeleteGroupPartnerListener() {
+        setRowClickListener("deleteGroupPartner", function () {
+            //TODO:
+            var tr = $(this).closest('tr');
+            var type = tr.attr("data-type");
+            if(type == GroupPartnerRowTypes.NEW) {
+                tr.remove();
+            } else if (type == GroupPartnerRowTypes.ORIGINAL) {
+                tr.addClass("hidden");
+            }
+        });
     }
 
     function disableUpdatePartner(disable) {
