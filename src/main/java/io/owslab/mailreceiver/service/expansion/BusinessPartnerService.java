@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.expansion;
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
+import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,16 @@ public class BusinessPartnerService {
         return (List<BusinessPartner>) partnerDAO.findAll();
     }
 
-    public void add(BusinessPartner.Builder builder) throws PartnerCodeException {
+    public void add(PartnerForm form) throws PartnerCodeException {
+        BusinessPartner.Builder builder = form.getBuilder();
         String partnerCode = builder.getPartnerCode();
         BusinessPartner existPartner = findOneByPartnerCode(partnerCode);
         if(existPartner != null) throw new PartnerCodeException("識別IDは既に存在します。");
         partnerDAO.save(builder.build());
     }
 
-    public void update(BusinessPartner.Builder builder, long id) throws PartnerCodeException {
+    public void update(PartnerForm form, long id) throws PartnerCodeException {
+        BusinessPartner.Builder builder = form.getBuilder();
         builder.setId(id);
         String partnerCode = builder.getPartnerCode();
         BusinessPartner partner = findOne(id);

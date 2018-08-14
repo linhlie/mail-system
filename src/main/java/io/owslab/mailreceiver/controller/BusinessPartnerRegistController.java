@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.exception.PartnerCodeException;
+import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -55,7 +56,7 @@ public class BusinessPartnerRegistController {
     @RequestMapping(value = "/businessPartner/add", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> addPartner(
-            @Valid @RequestBody BusinessPartner.Builder form, BindingResult bindingResult) {
+            @Valid @RequestBody PartnerForm form, BindingResult bindingResult) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -81,7 +82,7 @@ public class BusinessPartnerRegistController {
     @RequestMapping(value = "/businessPartner/update/{id}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> updatePartner(
-            @Valid @RequestBody BusinessPartner.Builder form, @PathVariable("id") long id, BindingResult bindingResult) {
+            @Valid @RequestBody PartnerForm form, @PathVariable("id") long id, BindingResult bindingResult) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -98,7 +99,8 @@ public class BusinessPartnerRegistController {
             result.setMsg(dpce.getMessage());
             result.setStatus(false);
         } catch (Exception e) {
-            logger.error("addPartner: " + e.getMessage());
+            e.printStackTrace();
+            logger.error("updatePartner: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
         }

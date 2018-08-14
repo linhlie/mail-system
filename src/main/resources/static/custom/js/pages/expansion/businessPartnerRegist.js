@@ -138,6 +138,7 @@
         var validated = partnerFormValidate();
         if(!validated) return;
         var data = getFormData();
+        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert("保存に成功しました");
@@ -151,7 +152,36 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        addPartner(data, onSuccess, onError)
+        addPartner({
+            builder: data,
+            groupAddIds: addRemoveGroupPartnerIds.add,
+            groupRemoveIds: addRemoveGroupPartnerIds.remove,
+        }, onSuccess, onError)
+    }
+    
+    function getAddRemoveGroupPartnerIds() {
+        var data = {
+            add: [],
+            remove: [],
+        };
+        $('#'+ partnerGroupTableId + ' > tbody  > tr').each(function(i, row) {
+            var $row = $(row)
+            var type = $row.attr("data-type");
+            var id = $row.attr("data-id");
+            id = parseInt(id);
+            if(type == GroupPartnerRowTypes.NEW) {
+                if(!isNaN(id) && data.add.indexOf(id) < 0) {
+                    data.add.push(id);
+                }
+            } else if (type == GroupPartnerRowTypes.ORIGINAL) {
+                if($row.hasClass("hidden")) {
+                    if(!isNaN(id) && data.remove.indexOf(id) < 0) {
+                        data.remove.push(id);
+                    }
+                }
+            }
+        });
+        return data;
     }
 
     function getFormData() {
@@ -187,6 +217,7 @@
         var validated = partnerFormValidate();
         if(!validated) return;
         var data = getFormData();
+        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert("保存に成功しました");
@@ -200,7 +231,17 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        updatePartner(updatingPartnerId, data, onSuccess, onError)
+
+        updatePartner(
+            updatingPartnerId,
+            {
+                builder: data,
+                groupAddIds: addRemoveGroupPartnerIds.add,
+                groupRemoveIds: addRemoveGroupPartnerIds.remove,
+            },
+            onSuccess,
+            onError
+        );
     }
     
     function partnerFormValidate() {
@@ -379,6 +420,7 @@
     }
     
     function doEditPartner(data) {
+        clearFormValidate();
         updatingPartnerId = data.id;
         loadBusinessPartnerGroup(data.id);
         disableUpdatePartner(false);
