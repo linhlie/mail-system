@@ -677,7 +677,7 @@ mark.mark-range {
     background-color:#000;
     opacity:0.2;
     position:absolute;
-    cursor: col-resize;
+    cursor: row-resize;
     z-index:999
 }
 

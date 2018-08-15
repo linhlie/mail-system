@@ -11,7 +11,7 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>取引先登録</h4>
-                        <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                        <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
@@ -29,144 +29,147 @@
                             </div>
                         </div>
                         <div style="width: 100%">
-                            <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
-                                <div class="form-group row">
-                                    <label for="name" class="control-label col-md-2 text-left">取引先名</label>
-                                    <div class="col-md-10">
-                                        <input id="name" name="name" class="form-control" placeholder="全角">
-                                        </input>
-                                        <span class="form-error">..</span>
+                            <div id="dragbar2" style="margin-top: -10px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
+                            <div style="width: 100%; margin-top: 10px;">
+                                <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
+                                    <div class="form-group row">
+                                        <label for="name" class="control-label col-md-2 text-left">取引先名</label>
+                                        <div class="col-md-10">
+                                            <input id="name" name="name" class="form-control" placeholder="全角">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="kanaName" class="control-label col-md-2 text-left">カナ名称</label>
-                                    <div class="col-md-10">
-                                        <input id="kanaName" name="kanaName" class="form-control" placeholder="全角カナ">
-                                        </input>
-                                        <span class="form-error">..</span>
+                                    <div class="form-group row">
+                                        <label for="kanaName" class="control-label col-md-2 text-left">カナ名称</label>
+                                        <div class="col-md-10">
+                                            <input id="kanaName" name="kanaName" class="form-control" placeholder="全角カナ">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-2 text-left">会社形態</label>
-                                    <div class="col-md-10">
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" checked="checked" value="1"/>株式会社
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="2"/>有限会社
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="3"/>合名会社
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="4"/>合資会社
-                                        </label>
-                                        <br/>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="5"/>財団法人
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="6"/>社団法人
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="companyType" value="7"/>その他
-                                            <span>(</span>
-                                            <input type="text" id="companySpecificType" name="companySpecificType" style="border: none; width: 105px; visibility: hidden;"/>
-                                            <span>)</span>
-                                        </label>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">会社形態</label>
+                                        <div class="col-md-10">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" checked="checked" value="1"/>株式会社
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="2"/>有限会社
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="3"/>合名会社
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="4"/>合資会社
+                                            </label>
+                                            <br/>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="5"/>財団法人
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="6"/>社団法人
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="companyType" value="7"/>その他
+                                                <span>(</span>
+                                                <input type="text" id="companySpecificType" name="companySpecificType" style="border: none; width: 105px; visibility: hidden;"/>
+                                                <span>)</span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-2 text-left">前株後株</label>
-                                    <div class="col-md-10">
-                                        <label class="radio-inline">
-                                            <input type="radio" name="stockShare" value="1" checked="checked"/>前
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="stockShare" value="2"/>後
-                                        </label>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">前株後株</label>
+                                        <div class="col-md-10">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="stockShare" value="1" checked="checked"/>前
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="stockShare" value="2"/>後
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="partnerCode" class="control-label col-md-2 text-left">識別ID</label>
-                                    <div class="col-md-2">
-                                        <input id="partnerCode" name="partnerCode" class="form-control" placeholder="">
-                                        </input>
-                                        <span class="form-error">..</span>
+                                    <div class="form-group row">
+                                        <label for="partnerCode" class="control-label col-md-2 text-left">識別ID</label>
+                                        <div class="col-md-2">
+                                            <input id="partnerCode" name="partnerCode" class="form-control" placeholder="">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-2 text-left">ドメイン</label>
-                                    <div class="col-md-3">
-                                        <input id="domain1" name="domain1" class="form-control" placeholder="">
-                                        </input>
-                                        <span style="white-space: nowrap;" class="form-error">..</span>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">ドメイン</label>
+                                        <div class="col-md-3">
+                                            <input id="domain1" name="domain1" class="form-control" placeholder="">
+                                            </input>
+                                            <span style="white-space: nowrap;" class="form-error">..</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input id="domain2" name="domain2" class="form-control" placeholder="">
+                                            </input>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input id="domain3" name="domain3" class="form-control" placeholder="">
+                                            </input>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <input id="domain2" name="domain2" class="form-control" placeholder="">
-                                        </input>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input id="domain3" name="domain3" class="form-control" placeholder="">
-                                        </input>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-2 text-left">取引グループ</label>
-                                    <div class="col-md-10">
-                                        <div class="partner-part table-container-section" style="height: 200px; position: relative">
-                                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
-                                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
-                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
-                                                <table id="partnerGroup" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
-                                                    <thead class="sticky-header">
-                                                    <tr>
-                                                        <th class="dark">取引先名</th>
-                                                        <th class="fit dark" style="text-align: center">識別ID</th>
-                                                        <th th:colspan="2"></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr role="row">
-                                                        <td rowspan="1" colspan="1">
-                                                            <select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;">
-                                                            </select>
-                                                        </td>
-                                                        <td rowspan="1" colspan="1"></td>
-                                                        <td class="fit" rowspan="1" colspan="1">
-                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">取引グループ</label>
+                                        <div class="col-md-10">
+                                            <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                                                <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                                                <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                    <table id="partnerGroup" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                                        <thead class="sticky-header">
+                                                        <tr>
+                                                            <th class="dark">取引先名</th>
+                                                            <th class="fit dark" style="text-align: center">識別ID</th>
+                                                            <th th:colspan="2"></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr role="row">
+                                                            <td rowspan="1" colspan="1">
+                                                                <select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                                </select>
+                                                            </td>
+                                                            <td rowspan="1" colspan="1"></td>
+                                                            <td class="fit" rowspan="1" colspan="1">
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="ourCompany" class="control-label col-md-2 text-left">自社</label>
-                                    <div class="col-md-10">
-                                        <label class="checkbox-inline"><input id="ourCompany" type="checkbox" name="ourCompany" value=""/>&nbsp;</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div style="width: 90%;">
-                                            <button id="partnerAdd" name="partnerAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                    <div class="form-group row">
+                                        <label for="ourCompany" class="control-label col-md-2 text-left">自社</label>
+                                        <div class="col-md-10">
+                                            <label class="checkbox-inline"><input id="ourCompany" type="checkbox" name="ourCompany" value=""/>&nbsp;</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div style="width: 90%;">
-                                            <button id="partnerUpdate" disabled="true" name="partnerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div style="width: 90%;">
+                                                <button id="partnerAdd" name="partnerAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div style="width: 90%;">
+                                                <button id="partnerUpdate" disabled="true" name="partnerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div style="width: 45%; margin: auto;">
+                                                <button id="partnerClear" name="partnerClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div style="width: 45%; margin: auto;">
-                                            <button id="partnerClear" name="partnerClear" type="button" class="btn btn-default btn-block">クリア</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <!-- /.box-body -->
