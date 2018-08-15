@@ -131,17 +131,22 @@
                 </li>
             </ul>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'businessPartnerRegist'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement'})?'treeview menu-open':'treeview'">
             <a href="#">
                 <i class="fa fa-database"></i> <span>データベース登録</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
             </a>
-            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist'})?'treeview-menu visible':'treeview-menu'">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement'})?'treeview-menu visible':'treeview-menu'">
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'businessPartnerRegist'})?'active':''">
                     <a href="#" th:href="@{/expansion/businessPartnerRegist}">
                         <i class="fa fa-handshake-o"></i> <span>取引先登録</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerManagement'})?'active':''">
+                    <a href="#" th:href="@{/expansion/engineerManagement}">
+                        <i class="fa fa-code"></i> <span>技術者管理</span>
                     </a>
                 </li>
             </ul>

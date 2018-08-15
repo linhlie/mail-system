@@ -1,0 +1,213 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>技術者管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content partner">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <h4>技術者管理</h4>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="1" checked="checked"/>すべて表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="2"/>稼働中のみ表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="3"/>非稼働中のみ表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="4"/>最終稼働月指定
+                                </label>
+                                <select>
+                                    <option>2018年1月</option>
+                                    <option>2018年2月</option>
+                                    <option>2018年3月</option>
+                                    <option>2018年4月</option>
+                                    <option>2018年5月</option>
+                                    <option>2018年6月</option>
+                                    <option>2018年7月</option>
+                                    <option>2018年8月</option>
+                                    <option>2018年9月</option>
+                                    <option>2018年10月</option>
+                                    <option>2018年11月</option>
+                                    <option th:selected="true">2018年12月</option>
+                                    <option>2019年1月</option>
+                                    <option>2019年2月</option>
+                                    <option>2019年3月</option>
+                                    <option>2019年4月</option>
+                                    <option>2019年5月</option>
+                                    <option>2019年6月</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="partner" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th class="dark">技術者名</th>
+                                        <th class="fit dark" style="text-align: center">所属会社</th>
+                                        <th class="fit dark" style="text-align: center">稼働</th>
+                                        <th class="fit dark" style="text-align: center">自動延長</th>
+                                        <th class="fit dark" style="text-align: center">休止中</th>
+                                        <th th:colspan="2"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="width: 100%">
+                            <div id="dragbar2" style="margin-top: -10px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
+                            <div style="width: 100%; margin-top: 10px;">
+                                <form id="engineerForm" class="form-horizontal" action="javascript:void(0);">
+                                    <div class="form-group row">
+                                        <label for="name" class="control-label col-md-2 text-left">技術者名</label>
+                                        <div class="col-md-10">
+                                            <input id="name" name="name" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="kanaName" class="control-label col-md-2 text-left">カナ氏名</label>
+                                        <div class="col-md-10">
+                                            <input id="kanaName" name="kanaName" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="mailAddress" class="control-label col-md-2 text-left">メールアドレス</label>
+                                        <div class="col-md-10">
+                                            <input id="mailAddress" name="mailAddress" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">会社形態</label>
+                                        <div class="col-md-10">
+                                            <select>
+                                                <option th:disabled="true" th:selected="true" value="">選んでください</option>
+                                                <option value="1">自社正社員</option>
+                                                <option value="2">自社契約社員</option>
+                                                <option value="3">自社個人事業主</option>
+                                                <option value="4">自社嘱託その他</option>
+                                                <option value="5">取引先正社員</option>
+                                                <option value="6">取引先契約社員</option>
+                                                <option value="7">取引先個人事業主</option>
+                                                <option value="8">取引先雇用形態不明</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">所属企業</label>
+                                        <div class="col-md-10">
+                                            <select>
+                                                <option th:disabled="true" th:selected="true" value="">選んでください</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="name" class="control-label col-md-2 text-left">マッチングワード</label>
+                                        <div class="col-md-10">
+                                            <textarea id="matchingWord" name="matchingWord" class="form-control" placeholder="">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="name" class="control-label col-md-2 text-left">NGワード</label>
+                                        <div class="col-md-10">
+                                            <textarea id="ngWord" name="ngWord" class="form-control" placeholder="">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="monetaryMoney" class="control-label col-md-2 text-left">単金</label>
+                                        <div class="col-md-10">
+                                            <div class="engineer-form-field">
+                                                <input id="monetaryMoney" name="monetaryMoney" class="form-control" placeholder=""/>
+                                            </div>
+                                            <div class="engineer-form-field">
+                                                <span>円&nbsp;以上</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="nearestStation" class="control-label col-md-2 text-left">最寄り駅</label>
+                                        <div class="col-md-10">
+                                            <div class="engineer-form-field">
+                                                <input id="stationLine" name="stationLine" class="form-control" placeholder=""/>
+                                            </div>
+                                            <div class="engineer-form-label">
+                                                <span>線</span>
+                                            </div>
+                                            <div class="engineer-form-field">
+                                                <input id="nearestStation" name="nearestStation" class="form-control" placeholder=""/>
+                                            </div>
+                                            <div class="engineer-form-label">
+                                                <span>駅</span>
+                                            </div>
+                                            <br/>
+                                            <div class="engineer-form-field" style="padding-top: 5px;">
+                                                <div class="engineer-form-field" style="width: 96px;">
+                                                    <span>通勤時間</span>
+                                                </div>
+                                                <div class="engineer-form-field" style="width: 50px;">
+                                                    <input id="commutingTime" name="commutingTime" class="form-control" placeholder=""/>
+                                                </div>
+                                            </div>
+                                            <div class="engineer-form-field">
+                                                <span>時間以内希望</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-12">
+                                            <label style="font-weight: 700;" class="checkbox-inline"><input id="dormant" type="checkbox" name="dormant" value=""/>休止中</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div style="width: 90%;">
+                                                <button id="partnerAdd" name="partnerAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div style="width: 90%;">
+                                                <button id="partnerUpdate" disabled="true" name="partnerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div style="width: 45%; margin: auto;">
+                                                <button id="partnerClear" name="partnerClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/expansion/engineerManagement.js"></script>
+</th:block>
+</body>
+</html>

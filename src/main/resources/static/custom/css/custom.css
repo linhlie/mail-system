@@ -1176,3 +1176,13 @@ section.sendTab.content {
 .partner table tr.highlight-selected td {
     background-color: #ffffcc;
 }
+
+.engineer-form-field {
+    display: inline-block;
+    width: 150px;
+}
+
+.engineer-form-label {
+    display: inline-block;
+    width: 30px;
+}
