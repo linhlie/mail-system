@@ -411,13 +411,30 @@
 
     function doDeletePartner(id) {
         function onSuccess() {
-            console.log("doDeletePartner success");
+            console.log("doDeletePartner success: ", id);
             loadBusinessPartners();
+            clearPartnerOnClick();
         }
         function onError() {
             $.alert("取引先の削除に失敗しました。");
         }
-        deletePartner(id, onSuccess, onError);
+        $.confirm({
+            title: '<b>【取引先の削除】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deletePartner(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
     }
     
     function doEditPartner(data) {
