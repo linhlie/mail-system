@@ -81,6 +81,10 @@ public class BusinessPartnerService {
             if(groupWithPartners.size() > 0) {
                 partnerGroups.add(groupWithPartners.get(0));
             }
+            groupWithPartners = partnerGroupDAO.findByPartnerIdAndWithPartnerId(groupWithPartnerId, partner.getId());
+            if(groupWithPartners.size() > 0) {
+                partnerGroups.add(groupWithPartners.get(0));
+            }
         }
         partnerGroupDAO.delete(partnerGroups);
     }
@@ -91,6 +95,7 @@ public class BusinessPartnerService {
             BusinessPartner groupWithPartner = findOne(groupWithPartnerId);
             if(groupWithPartner != null) {
                 partnerGroups.add(new BusinessPartnerGroup(partner, groupWithPartner));
+                partnerGroups.add(new BusinessPartnerGroup(groupWithPartner, partner));
             }
         }
         partnerGroupDAO.save(partnerGroups);
