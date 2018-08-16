@@ -116,15 +116,45 @@
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
-                                        <label for="name" class="control-label col-md-2 text-left">マッチングワード</label>
+                                        <label style="padding-top: 35px;" class="control-label col-md-2 text-left">案件期間</label>
+                                        <div class="col-md-10">
+                                            <div class="engineer-form-field">
+                                                <label for="caseTermFrom" class="control-label" style="font-weight: normal">開始</label>
+                                                <input id="caseTermFrom" name="caseTermFrom" class="form-control" placeholder=""/>
+                                            </div>
+                                            <div class="engineer-form-field" style="width: 70px; text-align: center">
+                                                <span>~</span>
+                                            </div>
+                                            <div class="engineer-form-field">
+                                                <label for="caseTermTo" class="control-label" style="font-weight: normal">終了</label>
+                                                <input id="caseTermTo" name="caseTermTo" class="form-control" placeholder=""/>
+                                            </div>
+                                            <div class="engineer-form-field" style="padding-left: 15px;">
+                                                <button type="button" class="btn btn-default">延長</button>
+                                            </div>
+                                            <br/>
+                                            <div class="engineer-form-field" style="width: 100%; padding-top: 5px;">
+                                                <span>&nbsp;自動延長&nbsp;&nbsp;&nbsp;</span>
+                                                <input type="checkbox" value=""/>
+                                                <span>&nbsp;&nbsp;&nbsp;(延長期間&nbsp;&nbsp;</span>
+                                                <div class="engineer-form-field" style="width: 50px;">
+                                                    <input type="text" value="" class="form-control"/>
+                                                </div>
+                                                <span>ケ月)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="matchingWord" class="control-label col-md-2 text-left">マッチングワード</label>
                                         <div class="col-md-10">
                                             <textarea id="matchingWord" name="matchingWord" class="form-control" placeholder="">
                                             </textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="name" class="control-label col-md-2 text-left">NGワード</label>
+                                        <label for="ngWord" class="control-label col-md-2 text-left">NGワード</label>
                                         <div class="col-md-10">
                                             <textarea id="ngWord" name="ngWord" class="form-control" placeholder="">
                                             </textarea>
