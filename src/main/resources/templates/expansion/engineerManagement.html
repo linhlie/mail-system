@@ -47,7 +47,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative">
+                        <div id="partnerBox" class="partner-part table-container-section form-inline" style="height: 200px; position: relative">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
@@ -55,7 +55,7 @@
                                     <thead class="sticky-header">
                                     <tr>
                                         <th class="dark">技術者名</th>
-                                        <th class="fit dark" style="text-align: center">所属会社</th>
+                                        <th class="dark" style="text-align: center">所属会社</th>
                                         <th class="fit dark" style="text-align: center">稼働</th>
                                         <th class="fit dark" style="text-align: center">自動延長</th>
                                         <th class="fit dark" style="text-align: center">休止中</th>
@@ -63,6 +63,33 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <tr role="row">
+                                        <td th:data="name">aaa</td>
+                                        <td th:data="affiliatedCompany">b</td>
+                                        <td class="fit" style="text-align: center">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" disabled="true"/>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="fit" style="text-align: center">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" disabled="true"/>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="fit" style="text-align: center">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" disabled="true"/>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="fit action" th:data="id"><button name="editEngineer" type="button">編集</button></td>
+                                        <td class="fit action" th:data="id"><button name="deleteEngineer" type="button">削除</button></td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
