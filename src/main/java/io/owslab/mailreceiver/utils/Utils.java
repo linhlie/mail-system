@@ -65,6 +65,11 @@ public class Utils {
         return japaneseOptimizedText.toLowerCase();
     }
 
+    public synchronized static String formatTimestamp(long ts) {
+        Date date = new Date(ts);
+        return DATE_FORMAT.format(date);
+    }
+
     public synchronized static String formatGMT(Date date){
         return GMT_FORMAT.format(date);
     }

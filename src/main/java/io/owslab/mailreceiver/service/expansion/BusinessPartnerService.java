@@ -62,7 +62,7 @@ public class BusinessPartnerService {
         return partners.size() > 0 ? partners.get(0) : null;
     }
 
-    private BusinessPartner findOne(long id){
+    public BusinessPartner findOne(long id){
         return partnerDAO.findOne(id);
     }
 
