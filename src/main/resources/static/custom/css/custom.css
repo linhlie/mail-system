@@ -771,12 +771,12 @@ mark.mark-range {
     margin-left: -20px;
 }
 
-.greeting .box-body, .user-management .box-body, .condition-management .box-body, .partner .box-body {
+.greeting .box-body, .user-management .box-body, .condition-management .box-body, .partner .box-body, .engineer .box-body {
     padding: 20px;
     padding-top: 10px;
 }
 
-.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part, .partner .partner-part {
+.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part, .partner .partner-part, .engineer .engineer-part {
     width: 100%;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -829,7 +829,7 @@ div.table-container-section {
     border-top: none !important;
 }
 
-div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper, div.partner-part .table-container-wrapper {
+div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper, div.partner-part .table-container-wrapper, div.engineer-part .table-container-wrapper {
     background-color: whitesmoke;
 }
 
@@ -1185,4 +1185,21 @@ section.sendTab.content {
 .engineer-form-label {
     display: inline-block;
     width: 30px;
+}
+
+.engineer span.form-error {
+    display: none;
+    color: #dd4b39;
+}
+
+.engineer .has-error span.form-error {
+    display: inherit;
+}
+
+.engineer table tr.highlight-selected td {
+    background-color: #ffffcc;
+}
+
+.engineer .radio-inline+.radio-inline {
+    margin-left: 30px;
 }

@@ -5,7 +5,7 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <section class="content partner">
+    <section class="content engineer">
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-default">
@@ -47,11 +47,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div id="partnerBox" class="partner-part table-container-section form-inline" style="height: 200px; position: relative">
+                        <div id="engineerBox" class="engineer-part table-container-section form-inline" style="height: 200px; position: relative">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
-                                <table id="partner" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                <table id="engineer" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
                                     <thead class="sticky-header">
                                     <tr>
                                         <th class="dark">技術者名</th>
@@ -120,9 +120,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="control-label col-md-2 text-left">会社形態</label>
+                                        <label for="employmentStatus" class="control-label col-md-2 text-left">会社形態</label>
                                         <div class="col-md-10">
-                                            <select>
+                                            <select id="employmentStatus" name="employmentStatus">
                                                 <option th:disabled="true" th:selected="true" value="">選んでください</option>
                                                 <option value="1">自社正社員</option>
                                                 <option value="2">自社契約社員</option>
@@ -136,9 +136,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="control-label col-md-2 text-left">所属企業</label>
+                                        <label for="partnerId" class="control-label col-md-2 text-left">所属企業</label>
                                         <div class="col-md-10">
-                                            <select>
+                                            <select id="partnerId" name="partnerId">
                                                 <option th:disabled="true" th:selected="true" value="">選んでください</option>
                                             </select>
                                         </div>
@@ -148,15 +148,15 @@
                                         <label style="padding-top: 35px;" class="control-label col-md-2 text-left">案件期間</label>
                                         <div class="col-md-10">
                                             <div class="engineer-form-field">
-                                                <label for="caseTermFrom" class="control-label" style="font-weight: normal">開始</label>
-                                                <input id="caseTermFrom" name="caseTermFrom" class="form-control" placeholder=""/>
+                                                <label for="projectPeriodStart" class="control-label" style="font-weight: normal">開始</label>
+                                                <input id="projectPeriodStart" name="projectPeriodStart" class="form-control" placeholder=""/>
                                             </div>
                                             <div class="engineer-form-field" style="width: 70px; text-align: center">
                                                 <span>~</span>
                                             </div>
                                             <div class="engineer-form-field">
-                                                <label for="caseTermTo" class="control-label" style="font-weight: normal">終了</label>
-                                                <input id="caseTermTo" name="caseTermTo" class="form-control" placeholder=""/>
+                                                <label for="projectPeriodEnd" class="control-label" style="font-weight: normal">終了</label>
+                                                <input id="projectPeriodEnd" name="projectPeriodEnd" class="form-control" placeholder=""/>
                                             </div>
                                             <div class="engineer-form-field" style="padding-left: 15px;">
                                                 <button type="button" class="btn btn-default">延長</button>
@@ -164,10 +164,10 @@
                                             <br/>
                                             <div class="engineer-form-field" style="width: 100%; padding-top: 5px;">
                                                 <span>&nbsp;自動延長&nbsp;&nbsp;&nbsp;</span>
-                                                <input type="checkbox" value=""/>
+                                                <input id="autoExtend" name="autoExtend" type="checkbox" value=""/>
                                                 <span>&nbsp;&nbsp;&nbsp;(延長期間&nbsp;&nbsp;</span>
                                                 <div class="engineer-form-field" style="width: 50px;">
-                                                    <input type="text" value="" class="form-control"/>
+                                                    <input id="extendMonth" name="extendMonth" type="text" value="" class="form-control"/>
                                                 </div>
                                                 <span>ケ月)</span>
                                             </div>
@@ -181,9 +181,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="ngWord" class="control-label col-md-2 text-left">NGワード</label>
+                                        <label for="notGoodWord" class="control-label col-md-2 text-left">NGワード</label>
                                         <div class="col-md-10">
-                                            <textarea id="ngWord" name="ngWord" class="form-control" placeholder="">
+                                            <textarea id="notGoodWord" name="notGoodWord" class="form-control" placeholder="">
                                             </textarea>
                                         </div>
                                     </div>
@@ -199,7 +199,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="nearestStation" class="control-label col-md-2 text-left">最寄り駅</label>
+                                        <label for="stationNearest" class="control-label col-md-2 text-left">最寄り駅</label>
                                         <div class="col-md-10">
                                             <div class="engineer-form-field">
                                                 <input id="stationLine" name="stationLine" class="form-control" placeholder=""/>
@@ -208,7 +208,7 @@
                                                 <span>線</span>
                                             </div>
                                             <div class="engineer-form-field">
-                                                <input id="nearestStation" name="nearestStation" class="form-control" placeholder=""/>
+                                                <input id="stationNearest" name="stationNearest" class="form-control" placeholder=""/>
                                             </div>
                                             <div class="engineer-form-label">
                                                 <span>駅</span>
@@ -235,17 +235,17 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div style="width: 90%;">
-                                                <button id="partnerAdd" name="partnerAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                                <button id="engineerAdd" name="engineerAdd" type="button" class="btn btn-success btn-block">登録</button>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div style="width: 90%;">
-                                                <button id="partnerUpdate" disabled="true" name="partnerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                                <button id="engineerUpdate" disabled="true" name="engineerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div style="width: 45%; margin: auto;">
-                                                <button id="partnerClear" name="partnerClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                                <button id="engineerClear" name="engineerClear" type="button" class="btn btn-default btn-block">クリア</button>
                                             </div>
                                         </div>
                                     </div>
