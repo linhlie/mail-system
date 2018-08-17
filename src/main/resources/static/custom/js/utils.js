@@ -330,3 +330,24 @@ function comparePartner(a,b) {
         return 1;
     return 0;
 }
+
+function fullWidthNumConvert(fullWidthNum){
+    return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
+        return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
+    });
+}
+
+function numberValidator(value) {
+    if (!value || value.trim().length === 0) {
+        return false;
+    } else {
+        value = fullWidthNumConvert(value);
+        value = value.replace(/，/g, ",");
+        var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+        var match = pattern.test(value);
+        if(!match){
+            return false;
+        }
+    }
+    return true;
+}

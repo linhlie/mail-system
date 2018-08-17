@@ -1,26 +1,18 @@
 
 (function () {
     var partnerComboBoxId = "partnerComboBox";
-    var partnerAddBtnId = "#partnerAdd";
-    var partnerUpdateBtnId = "#partnerUpdate";
-    var partnerClearBtnId = "#partnerClear";
-    var formId = "#partnerForm";
-    var partnerTableId = "partner";
-    var partnerGroupTableId = "partnerGroup";
-    var partners = null;
-    var updatingPartnerId = null;
+    var engineerAddBtnId = "#engineerAdd";
+    var engineerUpdateBtnId = "#engineerUpdate";
+    var engineerClearBtnId = "#engineerClear";
+    var formId = "#engineerForm";
+    var engineerTableId = "engineer";
+    var engineers = null;
+    var updatingEngineerId = null;
 
     var formFields = [
         {type: "input", name: "name"},
         {type: "input", name: "kanaName"},
-        {type: "input", name: "partnerCode"},
-        {type: "input", name: "domain1"},
-        {type: "input", name: "domain2"},
-        {type: "input", name: "domain3"},
-        {type: "checkbox", name: "ourCompany"},
-        {type: "radio", name: "companyType"},
-        {type: "input", name: "companySpecificType"},
-        {type: "radio", name: "stockShare"},
+        {type: "input", name: "mailAddress"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -39,18 +31,11 @@
         '</td>' +
         '</tr>';
 
-    var groupReplaceRow = '<tr name="group-partner" data-type="original" role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
-        '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">削除</button>' +
-        '</td>' +
-        '</tr>';
-
     $(function () {
         initStickyHeader();
-        // partnerComboBoxListener();
-        // setButtonClickListenter(partnerAddBtnIdpId, clearPartnerOnClick);
+        setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
+        // setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
+        // setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         // loadBusinessPartners();
         draggingSetup();
     });
@@ -121,17 +106,16 @@
         setDeleteGroupPartnerListener();
     }
 
-    function addPartnerOnClick() {
+    function addEngineerOnClick() {
         clearFormValidate();
-        var validated = partnerFormValidate();
+        var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
-        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert("保存に成功しました");
-                loadBusinessPartners();
-                clearPartnerOnClick();
+                loadEngineers();
+                clearEngineerOnClick();
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -140,11 +124,7 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        addPartner({
-            builder: data,
-            groupAddIds: addRemoveGroupPartnerIds.add,
-            groupRemoveIds: addRemoveGroupPartnerIds.remove,
-        }, onSuccess, onError)
+        // addPartner(data, onSuccess, onError)
     }
 
     function getAddRemoveGroupPartnerIds() {
@@ -200,17 +180,16 @@
         }
     }
 
-    function updatePartnerOnClick() {
+    function updateEngineerOnClick() {
         clearFormValidate();
-        var validated = partnerFormValidate();
+        var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
-        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert("保存に成功しました");
-                loadBusinessPartners();
-                clearPartnerOnClick();
+                loadEngineers();
+                clearEngineerOnClick();
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -221,26 +200,23 @@
         }
 
         updatePartner(
-            updatingPartnerId,
-            {
-                builder: data,
-                groupAddIds: addRemoveGroupPartnerIds.add,
-                groupRemoveIds: addRemoveGroupPartnerIds.remove,
-            },
+            updatingEngineerId,
+            data,
             onSuccess,
             onError
         );
     }
 
-    function partnerFormValidate() {
-        var validate1 = partnerNameValidate();
-        var validate2 = partnerKanaNameValidate();
-        var validate3 = partnerPartnerCodeValidate();
-        var validate4 = partnerDomainValidate();
-        return validate1 && validate2 && validate3 && validate4;
+    function engineerFormValidate() {
+        var validate1 = engineerNameValidate();
+        var validate2 = engineerKanaNameValidate();
+        var validate3 = engineerMailAddressValidate();
+        var validate4 = engineerMonetaryMoneyValidate();
+        var validate5 = engineerEmploymentStatusValidate();
+        return validate1 && validate2 && validate3 && validate4 && validate5;
     }
 
-    function partnerNameValidate() {
+    function engineerNameValidate() {
         var input = $("input[name='name']");
         if(!input.val()) {
             showError.apply(input, ["必要"]);
@@ -255,7 +231,7 @@
         container.find("span.form-error").text(error);
     }
 
-    function partnerKanaNameValidate() {
+    function engineerKanaNameValidate() {
         var input = $("input[name='kanaName']");
         if(!input.val()) {
             showError.apply(input, ["必要"]);
@@ -263,42 +239,50 @@
         }
         return true;
     }
-
-    function partnerPartnerCodeValidate() {
-        var input = $("input[name='partnerCode']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
+    
+    function engineerMailAddressValidate() {
+        var input = $("input[name='mailAddress']");
+        var email = input.val()
+        if( email && !validateEmail(email)) {
+            showError.apply(input, ["無効なメールアドレス"]);
+            return false;
+        }
+        return true;
+    }
+    
+    function engineerMonetaryMoneyValidate() {
+        var input = $("input[name='monetaryMoney']");
+        var value = input.val();
+        if(value && !numberValidator(value)) {
+            showError.apply(input, ["無効入力"]);
             return false;
         }
         return true;
     }
 
-    function partnerDomainValidate() {
-        var domain1 = $("#domain1");
-        var domain2 = $("#domain2");
-        var domain3 = $("#domain3");
-        if(!domain1.val() && !domain2.val() && !domain3.val()) {
-            showError.apply(domain1, ["せめて一つのドメインを入力してください"]);
-            return false;
+    function engineerEmploymentStatusValidate() {
+        var input = $("select[name='employmentStatus']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["選んでください"]);
         }
         return true;
     }
 
-    function clearPartnerOnClick() {
+    function clearEngineerOnClick() {
         resetForm();
         clearFormValidate();
-        disableUpdatePartner(true);
-        clearUpdatingParterId();
-        loadBusinessPartnerGroupData(partnerGroupTableId, []);
-        resetPartnerTable();
+        disableUpdateEngineer(true);
+        clearUpdatingEngineerId();
+        resetEngineeTable();
     }
 
-    function resetPartnerTable() {
-        $("#" + partnerTableId).find('tr.highlight-selected').removeClass('highlight-selected');
+    function resetEngineeTable() {
+        $("#" + engineerTableId).find('tr.highlight-selected').removeClass('highlight-selected');
     }
 
-    function clearUpdatingParterId() {
-        updatingPartnerId = null;
+    function clearUpdatingEngineerId() {
+        updatingEngineerId = null;
     }
 
     function resetForm() {
@@ -309,10 +293,10 @@
         $(formId).find(".has-error").removeClass('has-error');
     }
 
-    function loadBusinessPartners() {
+    function loadEngineers() {
         function onSuccess(response) {
             if(response && response.status){
-                loadBusinessPartnersData(partnerTableId, response.list);
+                loadEngineersData(engineerTableId, response.list);
                 updatePartnerComboBox(response.list);
             }
         }
@@ -323,12 +307,12 @@
         getBusinessPartners(onSuccess, onError);
     }
 
-    function loadBusinessPartnersData(tableId, data) {
-        partners = data;
+    function loadEngineersData(tableId, data) {
+        engineers = data;
         removeAllRow(tableId, partnerReplaceRow);
-        if (partners.length > 0) {
+        if (engineers.length > 0) {
             var html = partnerReplaceRow;
-            for (var i = 0; i < partners.length; i++) {
+            for (var i = 0; i < engineers.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
@@ -336,7 +320,7 @@
 
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                var rowData = partners[index];
+                var rowData = engineers[index];
                 if (rowData && rowData.id) {
                     doDeletePartner(rowData.id);
                 }
@@ -344,7 +328,7 @@
             setRowClickListener("editPartner", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                var rowData = partners[index];
+                var rowData = engineers[index];
                 if (rowData && rowData.id) {
                     $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                     doEditPartner(rowData);
@@ -395,11 +379,11 @@
         })
     }
 
-    function doDeletePartner(id) {
+    function doDeleteEngineer(id) {
         function onSuccess() {
-            console.log("doDeletePartner success: ", id);
-            loadBusinessPartners();
-            clearPartnerOnClick();
+            console.log("doDeleteEngineer success: ", id);
+            loadEngineers();
+            clearEngineerOnClick();
         }
         function onError() {
             $.alert("取引先の削除に失敗しました。");
@@ -425,53 +409,13 @@
 
     function doEditPartner(data) {
         clearFormValidate();
-        updatingPartnerId = data.id;
-        loadBusinessPartnerGroup(data.id);
-        disableUpdatePartner(false);
+        updatingEngineerId = data.id;
+        disableUpdateEngineer(false);
         setFormData(data);
     }
 
-    function loadBusinessPartnerGroup(partnerId) {
-        function onSuccess(response) {
-            if(response && response.status) {
-                loadBusinessPartnerGroupData(partnerGroupTableId, response.list);
-            }
-        }
-        function onError() {}
-
-        getBusinessPartnerGroup(partnerId, onSuccess, onError);
-    }
-
-    function loadBusinessPartnerGroupData(tableId, data) {
-        removeAllRow(tableId, groupReplaceRow);
-        if (data.length > 0) {
-            var html = groupReplaceRow;
-            for (var i = 0; i < data.length; i++) {
-                html = html + addRowWithData(tableId, data[i].withPartner, i);
-            }
-            $("#" + tableId + "> tbody").html(html);
-            setDeleteGroupPartnerListener();
-        }
-        addPartnerComboBox();
-        updatePartnerComboBox(partners);
-        partnerComboBoxListener();
-    }
-
-    function setDeleteGroupPartnerListener() {
-        setRowClickListener("deleteGroupPartner", function () {
-            //TODO:
-            var tr = $(this).closest('tr');
-            var type = tr.attr("data-type");
-            if(type == GroupPartnerRowTypes.NEW) {
-                tr.remove();
-            } else if (type == GroupPartnerRowTypes.ORIGINAL) {
-                tr.addClass("hidden");
-            }
-        });
-    }
-
-    function disableUpdatePartner(disable) {
-        $(partnerUpdateBtnId).prop('disabled', disable);
+    function disableUpdateEngineer(disable) {
+        $(engineerUpdateBtnId).prop('disabled', disable);
     }
 
     function draggingSetup() {
@@ -499,13 +443,12 @@
         $(document).mouseup(function(e){
             if (dragging)
             {
-                var container = $('#partnerBox');
+                var container = $('#engineerBox');
                 var topHeight = (e.pageY - container.offset().top);
-                console.log("topHeight: ", topHeight);
                 var tableHeight = Math.floor(topHeight - 10);
                 tableHeight = tableHeight > 60 ? tableHeight : 60;
                 tableHeight = tableHeight < 400 ? tableHeight : 400;
-                $('#partnerBox').css("height", tableHeight + "px");
+                $('#engineerBox').css("height", tableHeight + "px");
                 $('#ghostbar2').remove();
                 $(document).unbind('mousemove');
                 dragging = false;
