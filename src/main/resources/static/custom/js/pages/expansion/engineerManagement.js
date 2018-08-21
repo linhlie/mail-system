@@ -33,6 +33,7 @@
 
     $(function () {
         initStickyHeader();
+        setupDatePickers();
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
         // setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
         // setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
@@ -213,20 +214,27 @@
         var validate3 = engineerMailAddressValidate();
         var validate4 = engineerMonetaryMoneyValidate();
         var validate5 = engineerEmploymentStatusValidate();
-        return validate1 && validate2 && validate3 && validate4 && validate5;
+        var validate6 = engineerPartnerValidate();
+        var validate7 = engineerProjectPeriodStartValidate();
+        var validate8 = engineerProjectPeriodEndValidate();
+        var validate9 = engineerExtendMonthValidate();
+        return validate1 && validate2 && validate3 && validate4 && validate5
+            && validate6 && validate7 && validate8 && validate9;
     }
 
     function engineerNameValidate() {
         var input = $("input[name='name']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
     }
 
-    function showError(error) {
-        var container = $(this).closest("div.form-group.row");
+    function showError(error, selector) {
+        console.log("showError: ", selector);
+        selector = selector || "div.form-group.row";
+        var container = $(this).closest(selector);
         container.addClass("has-error");
         container.find("span.form-error").text(error);
     }
@@ -234,7 +242,7 @@
     function engineerKanaNameValidate() {
         var input = $("input[name='kanaName']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -267,6 +275,42 @@
             showError.apply(input, ["選んでください"]);
         }
         return true;
+    }
+
+    function engineerPartnerValidate() {
+        var input = $("select[name='partnerId']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["選んでください"]);
+        }
+        return true;
+    }
+
+    function engineerProjectPeriodStartValidate() {
+        var input = $("input[name='projectPeriodStart']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["必須", "div.engineer-form-field"]);
+        }
+        return true;
+    }
+
+    function engineerProjectPeriodEndValidate() {
+        var input = $("input[name='projectPeriodEnd']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["必須", "div.engineer-form-field"]);
+        }
+        return true;
+    }
+
+    function engineerExtendMonthValidate() {
+        var autoExtend = $('#autoExtend').is(":checked");
+        var input = $("input[name='extendMonth']");
+        var value = input.val();
+        if(autoExtend && !value) {
+            showError.apply(input, ["必須", "div.engineer-form-field"]);
+        }
     }
 
     function clearEngineerOnClick() {
@@ -452,6 +496,25 @@
                 $('#ghostbar2').remove();
                 $(document).unbind('mousemove');
                 dragging = false;
+            }
+        });
+    }
+
+    function setupDatePickers() {
+        var datepicker = $.fn.datepicker.noConflict();
+        $.fn.bootstrapDP = datepicker;
+        $('#projectPeriodStart').datepicker({
+            beforeShow: function() {
+                setTimeout(function(){
+                    $('.ui-datepicker').css('z-index', 99999999999999);
+                }, 0);
+            }
+        });
+        $('#projectPeriodEnd').datepicker({
+            beforeShow: function() {
+                setTimeout(function(){
+                    $('.ui-datepicker').css('z-index', 99999999999999);
+                }, 0);
             }
         });
     }
