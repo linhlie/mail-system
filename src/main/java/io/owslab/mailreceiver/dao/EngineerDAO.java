@@ -13,4 +13,5 @@ import java.util.List;
 @Transactional
 public interface EngineerDAO extends PagingAndSortingRepository<Engineer, Long> {
     List<Engineer> findByAutoExtend(boolean autoExtend);
+    List<Engineer> findByProjectPeriodEndBetween(long fromTime, long toTime);
 }

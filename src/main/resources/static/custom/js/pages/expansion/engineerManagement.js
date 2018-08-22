@@ -5,6 +5,8 @@
     var engineerUpdateBtnId = "#engineerUpdate";
     var manuallyExtendBtnId = "#extend";
     var engineerClearBtnId = "#engineerClear";
+    var filterEngineerBtnId = "#filterEngineerBtn";
+    var lastMonthActiveSelectorId = "#lastMonthActive";
     var formId = "#engineerForm";
     var engineerTableId = "engineer";
     var engineers = null;
@@ -55,12 +57,14 @@
         '</tr>';
 
     $(function () {
+        initlastMonthActiveSelector();
         initStickyHeader();
         setupDatePickers();
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
         setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
         setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         setButtonClickListenter(manuallyExtendBtnId, manuallyExtendOnClick);
+        setButtonClickListenter(filterEngineerBtnId, filterEngineerOnClick);
         draggingSetup();
         loadEngineers();
         loadBusinessPartner();
@@ -104,6 +108,20 @@
                 text : item.name,
             }).attr('data-id',item.id));
         });
+    }
+
+    function initlastMonthActiveSelector() {
+        $(lastMonthActiveSelectorId).empty();
+        var firstDateOfMonth = new Date();
+        firstDateOfMonth.setDate(1);
+        for(var i = -5; i < 7; i++) {
+            var date = addMonthsToDate(firstDateOfMonth, i);
+            $(lastMonthActiveSelectorId).append($('<option>', {
+                value: date.getTime(),
+                text : date.getFullYear() + "年" + (date.getMonth() + 1) + "月",
+                selected: i == 0,
+            }));
+        }
     }
 
     function partnerComboBoxListener() {
@@ -368,6 +386,7 @@
     }
 
     function loadEngineers() {
+        var form = getFilterForm();
         function onSuccess(response) {
             if(response && response.status){
                 loadEngineersData(engineerTableId, response.list);
@@ -377,7 +396,7 @@
         function onError(error) {
 
         }
-        getEngineers(onSuccess, onError);
+        getEngineers(form, onSuccess, onError);
     }
 
     function loadEngineersData(tableId, data) {
@@ -582,6 +601,20 @@
         endDate = addDaysToDate(endDate, -1);
         startInput.val(formatDate(startDate));
         endInput.val(formatDate(endDate));
+    }
+    
+    function filterEngineerOnClick() {
+        loadEngineers();
+        clearEngineerOnClick();
+    }
+    
+    function getFilterForm() {
+        var filterType = $('input[name=engineerFilter]:checked').val();
+        var filterDate = $(lastMonthActiveSelectorId).val();
+        return {
+            filterType: filterType,
+            filterDate: filterDate,
+        }
     }
 
 })(jQuery);

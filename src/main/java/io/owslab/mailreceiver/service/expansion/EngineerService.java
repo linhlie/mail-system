@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.EngineerDAO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
+import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
@@ -29,29 +30,75 @@ public class EngineerService {
     @Autowired
     private BusinessPartnerService partnerService;
 
-    public void delete(long id){
+    public void delete(long id) {
         engineerDAO.delete(id);
     }
 
     public void add(EngineerForm form) throws PartnerNotFoundException, ParseException {
         BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if(existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
+        if (existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
         Engineer engineer = form.build();
         engineerDAO.save(engineer);
     }
 
     public void update(EngineerForm form, long id) throws EngineerNotFoundException, PartnerNotFoundException, ParseException {
         Engineer existEngineer = engineerDAO.findOne(id);
-        if(existEngineer == null) throw new EngineerNotFoundException("技術者が存在しません");
+        if (existEngineer == null) throw new EngineerNotFoundException("技術者が存在しません");
         BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if(existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
+        if (existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
         Engineer engineer = form.build();
         engineer.setId(id);
         engineerDAO.save(engineer);
     }
 
+    public List<EngineerListItemDTO> filter(EngineerFilterForm form, Timestamp now) {
+        switch (form.getFilterType()) {
+            case EngineerFilterForm.FilterType.ACTIVE:
+                return getActive(now);
+            case EngineerFilterForm.FilterType.INACTIVE:
+                return getInactive(now);
+            case EngineerFilterForm.FilterType.LAST_MONTH:
+                return getByLastMonth(form, now);
+            case EngineerFilterForm.FilterType.ALL:
+            default:
+                return getAll(now);
+        }
+    }
+
+    public List<EngineerListItemDTO> getActive(Timestamp now) {
+        List<EngineerListItemDTO> listItemDTOS = getAll(now);
+        List<EngineerListItemDTO> result = new ArrayList<>();
+        for (EngineerListItemDTO item : listItemDTOS) {
+            if (item.isActive()) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    public List<EngineerListItemDTO> getInactive(Timestamp now) {
+        List<EngineerListItemDTO> listItemDTOS = getAll(now);
+        List<EngineerListItemDTO> result = new ArrayList<>();
+        for (EngineerListItemDTO item : listItemDTOS) {
+            if (!item.isActive()) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
     public List<EngineerListItemDTO> getAll(Timestamp now) {
         List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
+        return build(engineers, now);
+    }
+
+    public List<EngineerListItemDTO> getByLastMonth(EngineerFilterForm form, Timestamp now) {
+        Date startDate = new Date(form.getFilterDate());
+        startDate = Utils.atStartOfDay(startDate);
+        Date endDate = Utils.addMonthsToDate(startDate, 1);
+        endDate = Utils.addDayToDate(endDate, -1);
+        endDate = Utils.atEndOfDay(endDate);
+        List<Engineer> engineers = engineerDAO.findByProjectPeriodEndBetween(startDate.getTime(), endDate.getTime());
         return build(engineers, now);
     }
 

@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.dto.PartnerDTO;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
+import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
@@ -125,13 +126,19 @@ public class EngineerManagementController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = { "/engineer/list" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/engineer/list" }, method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> getEngineers() {
+    public ResponseEntity<?> getEngineers( @Valid @RequestBody EngineerFilterForm form, BindingResult bindingResult) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
         try {
-            List<EngineerListItemDTO> engineers = engineerService.getAll(now);
+            List<EngineerListItemDTO> engineers = engineerService.filter(form, now);
             result.setList(engineers);
             result.setMsg("done");
             result.setStatus(true);

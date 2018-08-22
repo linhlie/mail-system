@@ -25,26 +25,9 @@
                                 <label class="radio-inline">
                                     <input type="radio" name="engineerFilter" value="4"/>最終稼働月指定
                                 </label>
-                                <select>
-                                    <option>2018年1月</option>
-                                    <option>2018年2月</option>
-                                    <option>2018年3月</option>
-                                    <option>2018年4月</option>
-                                    <option>2018年5月</option>
-                                    <option>2018年6月</option>
-                                    <option>2018年7月</option>
-                                    <option>2018年8月</option>
-                                    <option>2018年9月</option>
-                                    <option>2018年10月</option>
-                                    <option>2018年11月</option>
-                                    <option th:selected="true">2018年12月</option>
-                                    <option>2019年1月</option>
-                                    <option>2019年2月</option>
-                                    <option>2019年3月</option>
-                                    <option>2019年4月</option>
-                                    <option>2019年5月</option>
-                                    <option>2019年6月</option>
+                                <select id="lastMonthActive">
                                 </select>
+                                <button id="filterEngineerBtn" style="margin-left: 30px;" type="button" class="btn btn-default">実行</button>
                             </div>
                         </div>
                         <div id="engineerBox" class="engineer-part table-container-section form-inline" style="height: 200px; position: relative">
