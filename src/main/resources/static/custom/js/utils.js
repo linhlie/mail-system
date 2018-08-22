@@ -89,6 +89,7 @@ function loadGreetingData() {
 }
 
 function updateDropzoneData(dropzone, files) {
+    files = files || [];
     var cachedIncludeAttachmentStr = localStorage.getItem("includeAttachment");
     var cachedIncludeAttachment = typeof cachedIncludeAttachmentStr !== "string" ? false : !!JSON.parse(cachedIncludeAttachmentStr);
     dropzone.removeAllFiles(true);

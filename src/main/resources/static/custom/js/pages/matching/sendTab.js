@@ -88,6 +88,20 @@
         showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo);
     }
 
+    function autoResizeHeight() {
+        var mainHeight = $('#sendDiv').height();
+        var oldHeight = $('#' + rdMailBodyId + '_ifr').height();
+        var remain = mainHeight - oldHeight;
+        var newHeight = $(window).height() - remain;
+        console.log($(window).height(), newHeight, remain, mainHeight, oldHeight);
+        newHeight = newHeight > 350 ? newHeight : 350;
+        resizeHeightEditor(newHeight);
+    }
+    
+    function resizeHeightEditor(newHeight) {
+        tinyMCE.DOM.setStyle(tinyMCE.DOM.get(rdMailBodyId + '_ifr'), 'height', newHeight + 'px');
+    }
+
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         setSendMailTitle(sendTo);
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
@@ -212,6 +226,7 @@
         } else {
             showMailContentToEditorReply(data, accounts, receiverData);
         }
+        autoResizeHeight();
     }
     
     function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
