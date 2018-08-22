@@ -151,6 +151,11 @@ function getBusinessPartners(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getBusinessPartnersForEngineer(onSuccess, onError) {
+    var url = "/expansion/engineer/partnerList";
+    _get(url, onSuccess, onError);
+}
+
 function getBusinessPartnerGroup(partnerId, onSuccess, onError) {
     var url = "/expansion/businessPartner/group/list/" + partnerId;
     _get(url, onSuccess, onError);

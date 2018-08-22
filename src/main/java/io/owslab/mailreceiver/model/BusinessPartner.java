@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 
 /**
  * Created by khanhlvb on 8/13/18.
@@ -228,6 +229,16 @@ public class BusinessPartner {
             public static final int FOUNDATION = 5;
             public static final int CORPORATION = 6;
             public static final int OTHER = 7;
+        }
+    }
+
+    public static class PartnerComparator implements Comparator<BusinessPartner> {
+        public int compare(BusinessPartner o1, BusinessPartner o2) {
+            int value1 = o1.getKanaName().compareTo(o2.getKanaName());
+            if (value1 == 0) {
+                return o1.getName().compareTo(o1.getName());
+            }
+            return value1;
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
+import io.owslab.mailreceiver.dto.PartnerDTO;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
 import io.owslab.mailreceiver.form.EngineerForm;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,6 +133,28 @@ public class EngineerManagementController {
         try {
             List<EngineerListItemDTO> engineers = engineerService.getAll(now);
             result.setList(engineers);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPartners: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = { "/engineer/partnerList" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getPartners() {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BusinessPartner> partners = partnerService.getAll();
+            Collections.sort(partners, new BusinessPartner.PartnerComparator());
+            List<PartnerDTO> partnerDTOS = new ArrayList<>();
+            for(BusinessPartner partner : partners) {
+                partnerDTOS.add(new PartnerDTO(partner));
+            }
+            result.setList(partnerDTOS);
             result.setMsg("done");
             result.setStatus(true);
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 
 (function () {
-    var partnerComboBoxId = "partnerComboBox";
+    var partnerComboBoxId = "partnerId";
     var engineerAddBtnId = "#engineerAdd";
     var engineerUpdateBtnId = "#engineerUpdate";
     var engineerClearBtnId = "#engineerClear";
@@ -39,6 +39,7 @@
         // setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         // loadBusinessPartners();
         draggingSetup();
+        loadBusinessPartner();
     });
 
     function initStickyHeader() {
@@ -52,23 +53,20 @@
                 });
         });
     }
+    
+    function loadBusinessPartner() {
+        function onSuccess(response) {
+            if(response && response.status) {
+                updatePartnerComboBox(response.list);
+            }
+        }
+        function onError() {}
 
-    function addPartnerComboBox() {
-        var tr = '<tr role="row">' +
-            '<td rowspan="1" colspan="1">' +
-            '<select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
-            '</td>' +
-            '<td rowspan="1" colspan="1"></td>' +
-            '<td class="fit" rowspan="1" colspan="1">' +
-            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-            '</td>' +
-            '</tr>';
-        $("#" + partnerGroupTableId).append(tr);
+        getBusinessPartnersForEngineer(onSuccess, onError);
     }
 
     function updatePartnerComboBox(options) {
         options = options ? options.slice(0) : [];
-        options.sort(comparePartner);
         $('#' + partnerComboBoxId).empty();
         $('#' + partnerComboBoxId).append($('<option>', {
             selected: true,
@@ -78,7 +76,7 @@
         }));
         $.each(options, function (i, item) {
             $('#' + partnerComboBoxId).append($('<option>', {
-                value: item.partnerCode,
+                value: item.id,
                 text : item.name,
             }).attr('data-id',item.id));
         });
@@ -341,7 +339,6 @@
         function onSuccess(response) {
             if(response && response.status){
                 loadEngineersData(engineerTableId, response.list);
-                updatePartnerComboBox(response.list);
             }
         }
 
