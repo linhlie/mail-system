@@ -87,7 +87,11 @@
                                 <div class="col-md-2 col-sm-3 col-xs-3">
                                     <input th:field="*{map['__keep_sent_mail_history_day_key__']}" type="number" min="0" style="text-align:right;" class="form-control" placeholder=""/>
                                 </div>
-                                <label class="col-sm-6 col-xs-5 control-label text-left">日</label>
+                                <label style="font-weight: 400;" class="col-sm-6 col-xs-5 control-label text-left">
+                                    <b>日</b>
+                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( 0は履歴を残さない。空白の場合は履歴を削除しない )</span>
+                                </label>
+
                             </div>
                             <div class="form-group">
                                 <label for="inputSkills" class="col-sm-3 col-xs-4 control-label text-left">PC起動時に常駐する</label>

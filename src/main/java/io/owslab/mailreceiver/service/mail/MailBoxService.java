@@ -21,6 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Whitelist;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,8 @@ public class MailBoxService {
     private List<Email> cachedEmailList = null;
 
     private DecimalFormat df = new DecimalFormat("#,##0");
+
+    private PrettyTime p = new PrettyTime();
 
     public long count(){
         return emailDAO.countByStatus(Email.Status.DONE);
@@ -620,7 +623,7 @@ public class MailBoxService {
             List<Email> emailList = emailDAO.findFirst1ByStatusOrderByReceivedAtDesc(Email.Status.DONE);
             if(emailList.size() > 0) {
                 Email email = emailList.get(0);
-                return Utils.formatGMT2(email.getReceivedAt());
+                return Utils.formatGMT2(email.getReceivedAt()) + " (" + p.format(email.getReceivedAt()) + ")";
             }
         } catch (Exception e) {
             ;
