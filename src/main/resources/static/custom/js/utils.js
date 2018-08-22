@@ -351,3 +351,31 @@ function numberValidator(value) {
     }
     return true;
 }
+
+function addDaysToDate(date, days) {
+    var newDate = new Date(date.getTime());
+    newDate.setDate(date.getDate() + days);
+    return newDate;
+}
+
+function addMonthsToDate(date, months) {
+    var newDate = new Date(date.getTime());
+    newDate.setMonth(date.getMonth() + months);
+    return newDate;
+}
+
+function formatDate(date) {
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    var day = date.getDate();
+
+    if (day < 10) {
+        day = '0' + day;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+
+    var formattedDate = year + '-' + month + '-' + day;
+    return formattedDate;
+}

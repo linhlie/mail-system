@@ -3,6 +3,7 @@
     var partnerComboBoxId = "partnerId";
     var engineerAddBtnId = "#engineerAdd";
     var engineerUpdateBtnId = "#engineerUpdate";
+    var manuallyExtendBtnId = "#extend";
     var engineerClearBtnId = "#engineerClear";
     var formId = "#engineerForm";
     var engineerTableId = "engineer";
@@ -59,7 +60,7 @@
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
         setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
         setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
-        // loadBusinessPartners();
+        setButtonClickListenter(manuallyExtendBtnId, manuallyExtendOnClick);
         draggingSetup();
         loadEngineers();
         loadBusinessPartner();
@@ -345,6 +346,7 @@
         resetForm();
         clearFormValidate();
         disableUpdateEngineer(true);
+        disableManuallyExtend(true);
         clearUpdatingEngineerId();
         resetEngineeTable();
     }
@@ -496,11 +498,16 @@
         clearFormValidate();
         updatingEngineerId = id;
         disableUpdateEngineer(false);
+        disableManuallyExtend(false);
         setFormData(data);
     }
 
     function disableUpdateEngineer(disable) {
         $(engineerUpdateBtnId).prop('disabled', disable);
+    }
+
+    function disableManuallyExtend(disable) {
+        $(manuallyExtendBtnId).prop('disabled', disable);
     }
 
     function draggingSetup() {
@@ -560,6 +567,21 @@
                 }, 0);
             }
         });
+    }
+    
+    function manuallyExtendOnClick() {
+        var startInput = $("input[name='projectPeriodStart']");
+        var endInput = $("input[name='projectPeriodEnd']");
+        var start = startInput.val();
+        var end = endInput.val();
+        if(!end) return;
+        var startDate = new  Date(start);
+        var endDate = new  Date(end);
+        startDate = addDaysToDate(endDate, 1);
+        endDate = addMonthsToDate(startDate, 3);
+        endDate = addDaysToDate(endDate, -1);
+        startInput.val(formatDate(startDate));
+        endInput.val(formatDate(endDate));
     }
 
 })(jQuery);
