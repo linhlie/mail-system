@@ -166,6 +166,16 @@ function deletePartner(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getEngineers(onSuccess, onError) {
+    var url = "/expansion/engineer/list";
+    _get(url, onSuccess, onError);
+}
+
+function getEngineer(id, onSuccess, onError) {
+    var url = "/expansion/engineer/info/" + id;
+    _get(url, onSuccess, onError);
+}
+
 function addEngineer(data, onSuccess, onError) {
     var url = "/expansion/engineer/add";
     _post(url, data, onSuccess, onError);

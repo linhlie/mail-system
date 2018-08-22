@@ -63,4 +63,13 @@ public class EngineerService {
         }
         return engineerDTOs;
     }
+
+    public List<EngineerForm> getById(long id) {
+        List<EngineerForm> result = new ArrayList<>();
+        Engineer engineer = engineerDAO.findOne(id);
+        if(engineer != null) {
+            result.add(new EngineerForm(engineer));
+        }
+        return result;
+    }
 }

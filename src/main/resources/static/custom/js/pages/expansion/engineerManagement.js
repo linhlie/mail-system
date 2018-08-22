@@ -33,13 +33,22 @@
         NEW: "add",
     }
 
-    var partnerReplaceRow = '<tr role="row" class="hidden">' +
+    var replaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
-        '<td name="editPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<td rowspan="1" colspan="1" data="partnerName"><span></span></td>' +
+        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
+        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '</td>' +
+        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="autoExtend">' +
+        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '</td>' +
+        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
+        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '</td>' +
+        '<td name="editEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">編集</button>' +
         '</td>' +
-        '<td name="deletePartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<td name="deleteEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
@@ -48,10 +57,11 @@
         initStickyHeader();
         setupDatePickers();
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
-        // setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
-        // setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
+        setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
+        setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         // loadBusinessPartners();
         draggingSetup();
+        loadEngineers();
         loadBusinessPartner();
     });
 
@@ -213,7 +223,7 @@
             $.alert("保存に失敗しました");
         }
 
-        updatePartner(
+        updateEngineer(
             updatingEngineerId,
             data,
             onSuccess,
@@ -365,34 +375,51 @@
         function onError(error) {
 
         }
-        getBusinessPartners(onSuccess, onError);
+        getEngineers(onSuccess, onError);
     }
 
     function loadEngineersData(tableId, data) {
         engineers = data;
-        removeAllRow(tableId, partnerReplaceRow);
+        removeAllRow(tableId, replaceRow);
         if (engineers.length > 0) {
-            var html = partnerReplaceRow;
+            var html = replaceRow;
             for (var i = 0; i < engineers.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deletePartner", function () {
+            setRowClickListener("deleteEngineer", function () {
 
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = engineers[index];
                 if (rowData && rowData.id) {
-                    doDeletePartner(rowData.id);
+                    doDeleteEngineer(rowData.id);
                 }
             });
-            setRowClickListener("editPartner", function () {
+            setRowClickListener("editEngineer", function () {
+                var $this = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = engineers[index];
                 if (rowData && rowData.id) {
-                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-                    doEditPartner(rowData);
+                    function onSuccess(response) {
+                        if(response && response.status) {
+                            if(response.list && response.list.length > 0) {
+                                var data = response.list[0];
+                                $this.closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                                doEditEngineer(rowData.id, data);
+                            } else {
+                                $.alert("技術者が存在しません。");
+                            }
+                        } else {
+                            $.alert("技術者情報のロードに失敗しました。");
+                        }
+                    }
+                    
+                    function onError() {
+                        $.alert("技術者情報のロードに失敗しました。");
+                    }
+                    getEngineer(rowData.id, onSuccess, onError);
                 }
             });
         }
@@ -413,18 +440,16 @@
         var cells = row.cells;
         for (var i = 0; i < cells.length; i++) {
             var cell = cells.item(i);
-            var cellKeysData = cell.getAttribute("data");
-            if (!cellKeysData || cellKeysData.length == 0) continue;
-            var cellKeys = cellKeysData.split(".");
+            var cellKey = cell.getAttribute("data");
+            if (!cellKey) continue;
             var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
             if (cellNode) {
-                if (cellNode.nodeName == "SPAN") {
-                    var cellData = cellKeys.length == 2 ? (data[cellKeys[0]] ? data[cellKeys[0]][cellKeys[1]] : undefined) : data[cellKeys[0]];
-                    if (Array.isArray(cellData)) {
-                        cellNode.textContent = cellData.length;
-                    } else {
-                        cellNode.textContent = cellData;
-                    }
+                if(cellNode.nodeName == "IMG") {
+                    var cellData = data[cellKey];
+                    cellNode.className = !!cellData ? undefined : cellNode.className;
+                } else if (cellNode.nodeName == "SPAN") {
+                    var cellData = data[cellKey];
+                    cellNode.textContent = cellData;
                 }
             }
         }
@@ -442,22 +467,21 @@
 
     function doDeleteEngineer(id) {
         function onSuccess() {
-            console.log("doDeleteEngineer success: ", id);
             loadEngineers();
             clearEngineerOnClick();
         }
         function onError() {
-            $.alert("取引先の削除に失敗しました。");
+            $.alert("技術者の削除に失敗しました。");
         }
         $.confirm({
-            title: '<b>【取引先の削除】</b>',
+            title: '<b>【技術者の削除】</b>',
             titleClass: 'text-center',
             content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
                     action: function(){
-                        deletePartner(id, onSuccess, onError);
+                        deleteEngineer(id, onSuccess, onError);
                     }
                 },
                 cancel: {
@@ -468,9 +492,9 @@
         });
     }
 
-    function doEditPartner(data) {
+    function doEditEngineer(id, data) {
         clearFormValidate();
-        updatingEngineerId = data.id;
+        updatingEngineerId = id;
         disableUpdateEngineer(false);
         setFormData(data);
     }
@@ -521,6 +545,7 @@
         var datepicker = $.fn.datepicker.noConflict();
         $.fn.bootstrapDP = datepicker;
         $('#projectPeriodStart').datepicker({
+            dateFormat: 'yy-mm-dd',
             beforeShow: function() {
                 setTimeout(function(){
                     $('.ui-datepicker').css('z-index', 99999999999999);
@@ -528,6 +553,7 @@
             }
         });
         $('#projectPeriodEnd').datepicker({
+            dateFormat: 'yy-mm-dd',
             beforeShow: function() {
                 setTimeout(function(){
                     $('.ui-datepicker').css('z-index', 99999999999999);

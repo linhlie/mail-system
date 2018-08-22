@@ -143,6 +143,23 @@ public class EngineerManagementController {
         return ResponseEntity.ok(result);
     }
 
+    @RequestMapping(value = "/engineer/info/{id}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getEngineer(@PathVariable("id") long id) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<EngineerForm> engineers = engineerService.getById(id);
+            result.setList(engineers);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getEngineer: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
     @RequestMapping(value = { "/engineer/partnerList" }, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getPartners() {
