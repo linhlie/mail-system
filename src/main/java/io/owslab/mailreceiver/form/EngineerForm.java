@@ -13,12 +13,8 @@ import java.util.Date;
  */
 public class EngineerForm {
 
-    private long id;
-
-    @NotNull
     private String name;
 
-    @NotNull
     private String kanaName;
 
     private String mailAddress;
@@ -27,10 +23,8 @@ public class EngineerForm {
 
     private long partnerId;
 
-    @NotNull
     private String projectPeriodStart;
 
-    @NotNull
     private String projectPeriodEnd;
 
     private boolean autoExtend;
@@ -52,7 +46,6 @@ public class EngineerForm {
     private boolean dormant;
 
     public EngineerForm(Engineer engineer) {
-        this.id = engineer.getId();
         this.name = engineer.getName();
         this.kanaName = engineer.getKanaName();
         this.mailAddress = engineer.getMailAddress();
@@ -71,9 +64,11 @@ public class EngineerForm {
         this.projectPeriodEnd = Utils.formatTimestamp(engineer.getProjectPeriodEnd());
     }
 
+    public EngineerForm() {
+    }
+
     public Engineer build() throws ParseException {
         Engineer engineer = new Engineer();
-        engineer.setId(this.getId());
         engineer.setName(this.getName());
         engineer.setKanaName(this.getKanaName());
         engineer.setMailAddress(this.getMailAddress());
@@ -93,16 +88,6 @@ public class EngineerForm {
         engineer.setCommutingTime(this.getCommutingTime());
         engineer.setDormant(this.isDormant());
         return engineer;
-    }
-
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {

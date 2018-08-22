@@ -13,6 +13,19 @@
         {type: "input", name: "name"},
         {type: "input", name: "kanaName"},
         {type: "input", name: "mailAddress"},
+        {type: "select", name: "employmentStatus"},
+        {type: "select", name: "partnerId"},
+        {type: "input", name: "projectPeriodStart"},
+        {type: "input", name: "projectPeriodEnd"},
+        {type: "checkbox", name: "autoExtend"},
+        {type: "input", name: "extendMonth"},
+        {type: "textarea", name: "matchingWord"},
+        {type: "textarea", name: "notGoodWord"},
+        {type: "input", name: "monetaryMoney"},
+        {type: "input", name: "stationLine"},
+        {type: "input", name: "stationNearest"},
+        {type: "input", name: "commutingTime"},
+        {type: "checkbox", name: "dormant"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -106,10 +119,12 @@
     }
 
     function addEngineerOnClick() {
+        console.log("addEngineerOnClick");
         clearFormValidate();
         var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
+        console.log("Add engineer: ", data);
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert("保存に成功しました");
@@ -123,7 +138,7 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        // addPartner(data, onSuccess, onError)
+        addEngineer(data, onSuccess, onError)
     }
 
     function getAddRemoveGroupPartnerIds() {
@@ -230,7 +245,6 @@
     }
 
     function showError(error, selector) {
-        console.log("showError: ", selector);
         selector = selector || "div.form-group.row";
         var container = $(this).closest(selector);
         container.addClass("has-error");
@@ -271,6 +285,7 @@
         var value = input.val();
         if(!value) {
             showError.apply(input, ["選んでください"]);
+            return false;
         }
         return true;
     }
@@ -280,6 +295,7 @@
         var value = input.val();
         if(!value) {
             showError.apply(input, ["選んでください"]);
+            return false;
         }
         return true;
     }
@@ -289,6 +305,7 @@
         var value = input.val();
         if(!value) {
             showError.apply(input, ["必須", "div.engineer-form-field"]);
+            return false;
         }
         return true;
     }
@@ -298,6 +315,7 @@
         var value = input.val();
         if(!value) {
             showError.apply(input, ["必須", "div.engineer-form-field"]);
+            return false;
         }
         return true;
     }
@@ -308,7 +326,9 @@
         var value = input.val();
         if(autoExtend && !value) {
             showError.apply(input, ["必須", "div.engineer-form-field"]);
+            return false;
         }
+        return true;
     }
 
     function clearEngineerOnClick() {

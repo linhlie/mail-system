@@ -33,18 +33,18 @@ public class EngineerService {
 
     public void add(EngineerForm form) throws PartnerNotFoundException, ParseException {
         BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if(existPartner != null) throw new PartnerNotFoundException("取引先が存在しません。");
+        if(existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
         Engineer engineer = form.build();
         engineerDAO.save(engineer);
     }
 
     public void update(EngineerForm form, long id) throws EngineerNotFoundException, PartnerNotFoundException, ParseException {
-        form.setId(id);
         Engineer existEngineer = engineerDAO.findOne(id);
         if(existEngineer == null) throw new EngineerNotFoundException("技術者が存在しません");
         BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if(existPartner != null) throw new PartnerNotFoundException("取引先が存在しません。");
+        if(existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
         Engineer engineer = form.build();
+        engineer.setId(id);
         engineerDAO.save(engineer);
     }
 

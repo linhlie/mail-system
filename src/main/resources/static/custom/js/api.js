@@ -166,6 +166,21 @@ function deletePartner(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function addEngineer(data, onSuccess, onError) {
+    var url = "/expansion/engineer/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateEngineer(id, data, onSuccess, onError) {
+    var url = "/expansion/engineer/update/" + id;
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteEngineer(id, onSuccess, onError) {
+    var url = "/expansion/engineer/delete/" + id;
+    _delete(url, onSuccess, onError);
+}
+
 function _post(url, data, onSuccess, onError) {
     $.ajax({
         type: "POST",
