@@ -44,6 +44,12 @@ public class Utils {
         c.add(Calendar.DATE, day);
         return c.getTime();
     }
+    public synchronized static Date addMonthsToDate(Date date, int months){
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, months);
+        return c.getTime();
+    }
 
     @Cacheable(key="\"Utils:parseDateStr:\"+#str")
     public synchronized static Date parseDateStr(final String str)

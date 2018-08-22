@@ -7,12 +7,14 @@ import io.owslab.mailreceiver.exception.PartnerNotFoundException;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,5 +73,24 @@ public class EngineerService {
             result.add(new EngineerForm(engineer));
         }
         return result;
+    }
+
+    public void autoExtend() {
+        List<Engineer> autoExtends = engineerDAO.findByAutoExtend(true);
+        long current = System.currentTimeMillis();
+        for(Engineer engineer: autoExtends) {
+            long projectPeriodEnd = engineer.getProjectPeriodEnd();
+            if(projectPeriodEnd < current) {
+                Date startDate = new Date(projectPeriodEnd);
+                startDate = Utils.addDayToDate(startDate, 1);
+                startDate = Utils.atStartOfDay(startDate);
+                Date endDate = Utils.addMonthsToDate(startDate, engineer.getExtendMonth());
+                endDate = Utils.addDayToDate(endDate, -1);
+                endDate = Utils.atEndOfDay(endDate);
+                engineer.setProjectPeriodStart(startDate.getTime());
+                engineer.setProjectPeriodEnd(endDate.getTime());
+                engineerDAO.save(engineer);
+            }
+        }
     }
 }

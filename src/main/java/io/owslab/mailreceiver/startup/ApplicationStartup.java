@@ -59,6 +59,9 @@ public class ApplicationStartup {
     private ReceiveMailScheduler receiveMailScheduler;
 
     @Autowired
+    private AutoExtendScheduler autoExtendScheduler;
+
+    @Autowired
     private AccountDAO accountDAO;
 
     @Autowired
@@ -125,6 +128,7 @@ public class ApplicationStartup {
         deleteOldMailsScheduler.start();
         deleteSentMailHistoryScheduler.start();
         receiveMailScheduler.start();
+        autoExtendScheduler.start();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;
 //        List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput("random cacherhhe444h", testData.toLowerCase());
 //        for(FullNumberRange range : rangeList) {
