@@ -6,7 +6,7 @@
     var manuallyExtendBtnId = "#extend";
     var engineerClearBtnId = "#engineerClear";
     var filterEngineerBtnId = "#filterEngineerBtn";
-    var lastMonthActiveSelectorId = "#lastMonthActive";
+    var lastMonthActiveId = "#lastMonthActive";
     var formId = "#engineerForm";
     var engineerTableId = "engineer";
     var engineers = null;
@@ -57,7 +57,8 @@
         '</tr>';
 
     $(function () {
-        initlastMonthActiveSelector();
+        initLastMonthActive();
+        filterTypeChangeListener();
         initStickyHeader();
         setupDatePickers();
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
@@ -69,6 +70,39 @@
         loadEngineers();
         loadBusinessPartner();
     });
+
+    function initLastMonthActive() {
+        var now = new Date();
+        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 1) + "月";
+        $(lastMonthActiveId).MonthPicker({
+            Button: false,
+            i18n: {
+                year: '年',
+                prevYear: '前年',
+                nextYear: '次年',
+                next12Years: '12年間ジャンプフォワード',
+                prev12Years: '12年間ジャンプバック',
+                nextLabel: '次',
+                prevLabel: '前',
+                buttonText: '月のセレクタを開く',
+                jumpYears: '年ジャンプ',
+                backTo: '年に戻る',
+                months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+            },
+            SelectedMonth: selectedMonth,
+            MonthFormat: 'yy年m月',
+            AltFormat: '@',
+            AltField: lastMonthActiveId + "Alt",
+            Disabled: true,
+        });
+    }
+
+    function filterTypeChangeListener() {
+        $("input[name='engineerFilter']").click(function() {
+            var disabled = this.value !== "4";
+            $(lastMonthActiveId).MonthPicker('option', 'Disabled', disabled);
+        });
+    }
 
     function initStickyHeader() {
         $(".table-container-wrapper").scroll(function () {
@@ -108,20 +142,6 @@
                 text : item.name,
             }).attr('data-id',item.id));
         });
-    }
-
-    function initlastMonthActiveSelector() {
-        $(lastMonthActiveSelectorId).empty();
-        var firstDateOfMonth = new Date();
-        firstDateOfMonth.setDate(1);
-        for(var i = -5; i < 7; i++) {
-            var date = addMonthsToDate(firstDateOfMonth, i);
-            $(lastMonthActiveSelectorId).append($('<option>', {
-                value: date.getTime(),
-                text : date.getFullYear() + "年" + (date.getMonth() + 1) + "月",
-                selected: i == 0,
-            }));
-        }
     }
 
     function partnerComboBoxListener() {
@@ -396,6 +416,7 @@
         function onError(error) {
 
         }
+
         getEngineers(form, onSuccess, onError);
     }
 
@@ -610,7 +631,7 @@
     
     function getFilterForm() {
         var filterType = $('input[name=engineerFilter]:checked').val();
-        var filterDate = $(lastMonthActiveSelectorId).val();
+        var filterDate = $(lastMonthActiveId + "Alt").val();
         return {
             filterType: filterType,
             filterDate: filterDate,

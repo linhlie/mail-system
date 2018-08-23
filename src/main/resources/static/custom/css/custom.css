@@ -1211,3 +1211,7 @@ section.sendTab.content {
 .has-error .form-control {
     border-color: #dd4b39;
 }
+
+.month-picker-month-table .ui-button {
+    padding: 0.4em;
+}
