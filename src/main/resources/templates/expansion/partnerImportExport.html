@@ -1,0 +1,54 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>取引先インポート・エキスポート</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content partnerImport">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="section-wrapper">
+                            <h4><b>取引先インポート・エキスポート</b></h4>
+                            <br/>
+                            <select>
+                                <option>インポート</option>
+                                <option>エキスポート</option>
+                            </select>
+                            <input type="checkbox"/>
+                            <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="action-wrapper">
+                                <button class="btn btn-default" type="button">実行</button>
+                            </div>
+                        </div>
+                        <div class="section-wrapper" style="margin-top: 10px;">
+                            <h4><b>取引先グループのインポート・エキスポート</b></h4>
+                            <br/>
+                            <select>
+                                <option>インポート</option>
+                                <option>エキスポート</option>
+                            </select>
+                            <input type="checkbox"/>
+                            <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="action-wrapper">
+                                <button class="btn btn-default" type="button">実行</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/expansion/businessPartnerRegist.js"></script>
+</th:block>
+</body>
+</html>
