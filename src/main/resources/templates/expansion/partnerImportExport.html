@@ -19,6 +19,17 @@
                             </select>
                             <input type="checkbox"/>
                             <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                                <div class="col-xs-10">
+                                    <input th:readonly="true" id="importPartner" type="text" class="form-control" placeholder="取引先のファイルのパス"/>
+                                    <input id="importPartnerInput" type="file" style="display:none;" accept=".csv"/>
+                                </div>
+                                <div class="col-xs-2">
+                                    <button id="importPartnerBtn" type="button" class="btn btn-default btn-file btn-block">
+                                        ・・・
+                                    </button>
+                                </div>
+                            </div>
                             <div class="action-wrapper">
                                 <button class="btn btn-default" type="button">実行</button>
                             </div>
@@ -32,6 +43,17 @@
                             </select>
                             <input type="checkbox"/>
                             <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                                <div class="col-xs-10">
+                                    <input th:readonly="true" id="importGroup" type="text" class="form-control" placeholder="取引先グループのファイルのパス"/>
+                                    <input id="importGroupInput" type="file" style="display:none;" accept=".csv"/>
+                                </div>
+                                <div class="col-xs-2">
+                                    <button id="importGroupBtn" type="button" class="btn btn-default btn-file btn-block">
+                                        ・・・
+                                    </button>
+                                </div>
+                            </div>
                             <div class="action-wrapper">
                                 <button class="btn btn-default" type="button">実行</button>
                             </div>
@@ -48,7 +70,7 @@
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>
     <script src="/custom/js/api.js"></script>
-    <script src="/custom/js/pages/expansion/businessPartnerRegist.js"></script>
+    <script src="/custom/js/pages/expansion/partnerImportExport.js"></script>
 </th:block>
 </body>
 </html>
