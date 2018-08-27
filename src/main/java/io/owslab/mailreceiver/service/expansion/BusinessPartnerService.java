@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.expansion;
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
+import io.owslab.mailreceiver.dto.CSVPartnerGroupDTO;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,6 +29,10 @@ public class BusinessPartnerService {
 
     public List<BusinessPartner> getAll() {
         return (List<BusinessPartner>) partnerDAO.findAll();
+    }
+
+    public List<BusinessPartnerGroup> getAllGroup() {
+        return (List<BusinessPartnerGroup>) partnerGroupDAO.findAll();
     }
 
     //TODO need to be transaction
@@ -116,6 +122,18 @@ public class BusinessPartnerService {
         return csvBundle;
     }
 
+    public CSVBundle<CSVPartnerGroupDTO> exportGroups() {
+        CSVBundle<CSVPartnerGroupDTO> csvBundle = new CSVBundle<CSVPartnerGroupDTO>();
+        csvBundle.setFileName("取引先グループ.csv");
+        String[] csvHeader = { "取引先名", "識別ID", "取引グループ 取引先名", "取引グループ 識別ID" };
+        String[] keys = {"partnerName", "partnerCode", "withPartnerName", "withPartnerCode" };
+        csvBundle.setHeaders(csvHeader);
+        csvBundle.setKeys(keys);
+        List<CSVPartnerGroupDTO> data = getPartnerGroupListToExport();
+        csvBundle.setData(data);
+        return csvBundle;
+    }
+
     private List<CSVPartnerDTO> getPartnerListToExport() {
         List<CSVPartnerDTO> result = new ArrayList<>();
         List<BusinessPartner> partners = getAll();
@@ -123,5 +141,28 @@ public class BusinessPartnerService {
             result.add(new CSVPartnerDTO(partner));
         }
         return result;
+    }
+
+    private List<CSVPartnerGroupDTO> getPartnerGroupListToExport() {
+        HashMap<String, CSVPartnerGroupDTO> result = new HashMap<>();
+        List<BusinessPartnerGroup> groups = getAllGroup();
+        for(BusinessPartnerGroup group : groups) {
+            String key = generateKey(group);
+            if(!result.containsKey(key)) {
+                result.put(key, new CSVPartnerGroupDTO(group));
+            }
+        }
+        return new ArrayList<CSVPartnerGroupDTO>(result.values());
+    }
+
+    private String generateKey(BusinessPartnerGroup group) {
+        BusinessPartner partner = group.getPartner();
+        BusinessPartner withPartner = group.getWithPartner();
+        long partnerId = partner.getId();
+        long withPartnerId = withPartner.getId();
+        if(partnerId < withPartnerId) {
+            return partnerId + "-" + withPartnerId;
+        }
+        return withPartnerId + "-" + partnerId;
     }
 }

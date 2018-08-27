@@ -41,7 +41,12 @@ public class PartnerImportExportController {
     @RequestMapping(value = "/exportCSV", method = RequestMethod.GET)
     public void exportPartnerCSV(HttpServletResponse response, @RequestParam(value = "header") boolean header, @RequestParam(value = "type") String type) throws IOException {
         response.setContentType("text/csv");
-        CSVBundle csvBundle = partnerService.export();
+        CSVBundle csvBundle;
+        if(type.equals("groupPartner")) {
+            csvBundle = partnerService.exportGroups();
+        } else {
+            csvBundle = partnerService.export();
+        }
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(csvBundle.getFileName(), "UTF-8"));
         response.setCharacterEncoding("UTF-8");
         ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
