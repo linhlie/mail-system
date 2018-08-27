@@ -4,6 +4,8 @@
     $(function () {
         setButtonClickListenter("#importGroupBtn", onImportGroupClick);
         setButtonClickListenter("#importPartnerBtn", onImportPartnerClick);
+        setButtonClickListenter("#partnerActions", doPartnerActions);
+        setButtonClickListenter("#groupActions", doGroupActions);
         setImportFileChangeListener()
     });
     
@@ -13,6 +15,26 @@
     
     function onImportGroupClick() {
         $("#importGroupInput").click();
+    }
+
+    function doPartnerActions() {
+        var actionType = $("#partnerActionType").val();
+        var includeHeader = $('#partnerIncludeHeader').is(":checked");
+        if(actionType == "import") {
+            //TODO: import
+        } else if(actionType == "export") {
+            getPartnerExport(includeHeader);
+        }
+    }
+    
+    function doGroupActions() {
+        var actionType = $("#groupActionType").val();
+        var includeHeader = $('#groupIncludeHeader').is(":checked");
+        if(actionType == "import") {
+            //TODO: import
+        } else if(actionType == "export") {
+            getPartnerGroupExport(includeHeader);
+        }
     }
     
     function setImportFileChangeListener() {

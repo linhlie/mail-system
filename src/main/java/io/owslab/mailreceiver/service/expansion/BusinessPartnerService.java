@@ -2,10 +2,12 @@ package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
+import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
+import io.owslab.mailreceiver.utils.CSVBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,5 +101,27 @@ public class BusinessPartnerService {
             }
         }
         partnerGroupDAO.save(partnerGroups);
+    }
+
+    public CSVBundle<CSVPartnerDTO> export() {
+        CSVBundle<CSVPartnerDTO> csvBundle = new CSVBundle<CSVPartnerDTO>();
+        csvBundle.setFileName("取引先.csv");
+        String[] csvHeader = { "取引先名称", "カナ名称", "会社形態", "前株後株",
+                "識別ID", "ドメイン", "ドメイン", "ドメイン", "自社" };
+        String[] keys = {"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
+        csvBundle.setHeaders(csvHeader);
+        csvBundle.setKeys(keys);
+        List<CSVPartnerDTO> data = getPartnerListToExport();
+        csvBundle.setData(data);
+        return csvBundle;
+    }
+
+    private List<CSVPartnerDTO> getPartnerListToExport() {
+        List<CSVPartnerDTO> result = new ArrayList<>();
+        List<BusinessPartner> partners = getAll();
+        for(BusinessPartner partner : partners) {
+            result.add(new CSVPartnerDTO(partner));
+        }
+        return result;
     }
 }

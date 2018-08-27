@@ -13,11 +13,11 @@
                         <div class="section-wrapper">
                             <h4><b>取引先インポート・エキスポート</b></h4>
                             <br/>
-                            <select>
-                                <option>インポート</option>
-                                <option>エキスポート</option>
+                            <select id="partnerActionType">
+                                <option value="import">インポート</option>
+                                <option value="export">エキスポート</option>
                             </select>
-                            <input type="checkbox"/>
+                            <input id="partnerIncludeHeader" type="checkbox"/>
                             <span>&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row" style="padding-top: 20px; padding-bottom: 20px">
                                 <div class="col-xs-10">
@@ -31,17 +31,17 @@
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <button class="btn btn-default" type="button">実行</button>
+                                <button id="partnerActions" class="btn btn-default" type="button">実行</button>
                             </div>
                         </div>
                         <div class="section-wrapper" style="margin-top: 10px;">
                             <h4><b>取引先グループのインポート・エキスポート</b></h4>
                             <br/>
-                            <select>
-                                <option>インポート</option>
-                                <option>エキスポート</option>
+                            <select id="groupActionType">
+                                <option value="import">インポート</option>
+                                <option value="export">エキスポート</option>
                             </select>
-                            <input type="checkbox"/>
+                            <input id="groupIncludeHeader" type="checkbox"/>
                             <span>&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row" style="padding-top: 20px; padding-bottom: 20px">
                                 <div class="col-xs-10">
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <button class="btn btn-default" type="button">実行</button>
+                                <button id="groupActions" class="btn btn-default" type="button">実行</button>
                             </div>
                         </div>
                     </div>

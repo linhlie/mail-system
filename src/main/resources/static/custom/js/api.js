@@ -191,6 +191,26 @@ function deleteEngineer(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getPartnerExport(includeHeader) {
+    includeHeader = !!includeHeader;
+    var url = "/expansion/exportCSV?type=partner&&header=" + includeHeader;
+    _doDownload(url);
+}
+
+function getPartnerGroupExport(includeHeader) {
+    includeHeader = !!includeHeader;
+    var url = "/expansion/exportCSV?type=groupPartner&&header=" + includeHeader;
+    _doDownload(url);
+}
+
+function _doDownload(href){
+    var a = document.createElement('A');
+    a.href = href;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 function _post(url, data, onSuccess, onError) {
     $.ajax({
         type: "POST",
