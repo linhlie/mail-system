@@ -66,21 +66,38 @@ public class IndexController {
         return "index";
     }
 
-    @RequestMapping(value="/user/dashboard/statistics", method = RequestMethod.GET)
+    @RequestMapping(value="/user/dashboard/userStatistics", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getStatistics (){
+    ResponseEntity<?> getUserStatistics (){
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        try {
+            Date now = new Date();
+            List<String> clickCount = clickHistoryService.getClickCount(now);
+            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
+            responseBody.setClickCount(clickCount);
+            responseBody.setSendPerClick(sendPerClick);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            logger.error("getStatistics: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+            return ResponseEntity.ok(responseBody);
+        }
+    }
+
+    @RequestMapping(value="/user/dashboard/mailStatistics", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getMailStatistics (){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             Date now = new Date();
             String latestReceive = mailBoxService.getLatestReceive();
-            List<String> clickCount = clickHistoryService.getClickCount(now);
             List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now);
-            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
             responseBody.setHasSystemError(ReportErrorService.hasSystemError());
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);
-            responseBody.setClickCount(clickCount);
-            responseBody.setSendPerClick(sendPerClick);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);
