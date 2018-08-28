@@ -18,6 +18,22 @@ public class CSVPartnerDTO {
     private String domain3;
     private String ourCompany;
 
+    public CSVPartnerDTO(){
+    }
+
+    public CSVPartnerDTO(String name, String kanaName, String companyType, String stockShare, String partnerCode, String domain1, String domain2, String domain3, String ourCompany) {
+        super();
+        this.name = name;
+        this.kanaName = kanaName;
+        this.companyType = companyType;
+        this.stockShare = stockShare;
+        this.partnerCode = partnerCode;
+        this.domain1 = domain1;
+        this.domain2 = domain2;
+        this.domain3 = domain3;
+        this.ourCompany = ourCompany;
+    }
+
     public CSVPartnerDTO(BusinessPartner partner) {
         this.setName(partner.getName());
         this.setKanaName(partner.getKanaName());
@@ -103,5 +119,31 @@ public class CSVPartnerDTO {
 
     public void setOurCompany(String ourCompany) {
         this.ourCompany = ourCompany;
+    }
+
+    @Override
+    public String toString() {
+        return "Partner [name=" + name + ", kanaName="
+                + kanaName + ", companyType=" + companyType + ", stockShare="
+                + stockShare + ", partnerCode=" + partnerCode + ", domain1="
+                + domain1 + ", domain2=" + domain2 + ", domain3=" + domain3 +  ", ourCompany=" + ourCompany + "]";
+    }
+
+    public BusinessPartner build(){
+        BusinessPartner partner = new BusinessPartner();
+        partner.setPartnerCode(this.partnerCode);
+        partner.setName(this.name);
+        partner.setKanaName(this.kanaName);
+        CompanyType companyType = CompanyType.fromText(this.companyType);
+        partner.setCompanyType(companyType.getValue());
+        String companySpecificType = companyType.equals(CompanyType.OTHER) ? this.companyType : null;
+        partner.setCompanySpecificType(companySpecificType);
+        StockShareType stockShare = StockShareType.fromText(this.stockShare);
+        partner.setStockShare(stockShare.getValue());
+        partner.setDomain1(this.domain1);
+        partner.setDomain2(this.domain2);
+        partner.setDomain3(this.domain3);
+        partner.setOurCompany(this.ourCompany.equalsIgnoreCase("TRUE"));
+        return partner;
     }
 }

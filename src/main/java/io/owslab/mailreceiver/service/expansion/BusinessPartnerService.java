@@ -11,9 +11,18 @@ import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.constraint.StrRegEx;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanReader;
+import org.supercsv.io.ICsvBeanReader;
+import org.supercsv.prefs.CsvPreference;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -164,5 +173,47 @@ public class BusinessPartnerService {
             return partnerId + "-" + withPartnerId;
         }
         return withPartnerId + "-" + partnerId;
+    }
+
+    public List<BusinessPartner> importPartner(MultipartFile multipartFile, boolean skipHeader) throws IOException {
+
+        File file = convertMultiPartToFile(multipartFile);
+
+        List<BusinessPartner> saveList = new ArrayList<BusinessPartner>();
+        List<BusinessPartner> partners = new ArrayList<BusinessPartner>();
+
+        try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
+        {
+            // the header elements are used to map the values to the bean
+            final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
+
+            CSVPartnerDTO partnerDTO;
+            while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
+                partners.add(partnerDTO.build());
+            }
+            if(partners.size() > 0 && skipHeader) {
+                partners.remove(0);
+            }
+            for(BusinessPartner partner : partners) {
+                BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
+                if(existPartner == null) {
+                    saveList.add(partner);
+                }
+            }
+
+            partnerDAO.save(saveList);
+        }
+
+        file.delete();
+
+        return saveList;
+    }
+
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convFile;
     }
 }

@@ -12,6 +12,16 @@ public class CSVPartnerGroupDTO {
     private String withPartnerName;
     private String withPartnerCode;
 
+    public CSVPartnerGroupDTO() {
+    }
+
+    public CSVPartnerGroupDTO(String partnerName, String partnerCode, String withPartnerName, String withPartnerCode) {
+        this.partnerName = partnerName;
+        this.partnerCode = partnerCode;
+        this.withPartnerName = withPartnerName;
+        this.withPartnerCode = withPartnerCode;
+    }
+
     public CSVPartnerGroupDTO(BusinessPartnerGroup group) {
         BusinessPartner partner = group.getPartner();
         BusinessPartner withPartner = group.getWithPartner();

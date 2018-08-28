@@ -1,17 +1,19 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.model.BusinessPartner;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
@@ -61,5 +63,21 @@ public class PartnerImportExportController {
             csvWriter.write(data.get(i), keys);
         }
         csvWriter.close();
+    }
+
+    @PostMapping("/importPartner")
+    @ResponseBody
+    public ResponseEntity<?> importPartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BusinessPartner> partners = partnerService.importPartner(file, header);
+            result.setMsg("done");
+            result.setList(partners);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("importPartner: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -88,6 +88,50 @@ public class BusinessPartner {
         return ourCompany;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPartnerCode(String partnerCode) {
+        this.partnerCode = partnerCode;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setKanaName(String kanaName) {
+        this.kanaName = kanaName;
+    }
+
+    public void setCompanyType(int companyType) {
+        this.companyType = companyType;
+    }
+
+    public void setCompanySpecificType(String companySpecificType) {
+        this.companySpecificType = companySpecificType;
+    }
+
+    public void setStockShare(int stockShare) {
+        this.stockShare = stockShare;
+    }
+
+    public void setDomain1(String domain1) {
+        this.domain1 = domain1;
+    }
+
+    public void setDomain2(String domain2) {
+        this.domain2 = domain2;
+    }
+
+    public void setDomain3(String domain3) {
+        this.domain3 = domain3;
+    }
+
+    public void setOurCompany(boolean ourCompany) {
+        this.ourCompany = ourCompany;
+    }
+
     //Builder Class
     public static class Builder{
         private long id;
