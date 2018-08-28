@@ -16,6 +16,9 @@
             <p>エラーが発生しました。 管理者に連絡してください。</p>
         </div>
         <div class="row">
+            <select id="accountSelector" style="margin-left: 100px;">
+                <option value="">全ての受信アカウント</option>
+            </select>
             <div class="stats-wrapper">
                 <span><b>最新のメール受信日時</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span id="latestReceive">&nbsp;</span>
@@ -23,8 +26,6 @@
                     <span class="dashboard-box-icon"><i class="fa fa-clock-o"></i></span>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="stats-wrapper">
                 <b>メール受信件数</b>
                 <table id="receiveMailNumber">
