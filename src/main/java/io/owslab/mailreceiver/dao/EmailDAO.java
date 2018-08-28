@@ -31,11 +31,13 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     Page<Email> findByErrorLogNotNull(Pageable pageable);
     List<Email> findByDeleted(boolean deleted);
     List<Email> findFirst1ByStatusOrderByReceivedAtDesc(int status);
+    List<Email> findFirst1ByAccountIdAndStatusOrderByReceivedAtDesc(long accountId, int status);
     List<Email> findByErrorLogIsNullOrderByReceivedAtDesc();
     List<Email> findByStatusOrderByReceivedAtDesc(int status);
     long countByDeleted(boolean deleted);
     long countByStatus(int status);
-    long countByFromIgnoreCaseNotAndReceivedAtBetweenAndStatus(String from, Date fromDate, Date toDate, int status);
+    long countByAccountIdAndReceivedAtBetweenAndStatus(long accountId, Date fromDate, Date toDate, int status);
+    long countByReceivedAtBetweenAndStatus(Date fromDate, Date toDate, int status);
 
     @Modifying(clearAutomatically = true)
     @Query(
