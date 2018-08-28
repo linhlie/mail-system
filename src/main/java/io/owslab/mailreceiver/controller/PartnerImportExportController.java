@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.model.BusinessPartner;
+import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.utils.CSVBundle;
@@ -77,6 +78,22 @@ public class PartnerImportExportController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("importPartner: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/importPartnerGroup")
+    @ResponseBody
+    public ResponseEntity<?> importPartnerGroup(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BusinessPartnerGroup> partnerGroups = partnerService.importPartnerGroup(file, header);
+            result.setMsg("done");
+            result.setList(partnerGroups);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("importPartnerGroup: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

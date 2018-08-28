@@ -21,7 +21,25 @@
         var actionType = $("#partnerActionType").val();
         var includeHeader = $('#partnerIncludeHeader').is(":checked");
         if(actionType == "import") {
-            //TODO: import
+            var file = document.getElementById("importPartnerInput").files[0];
+            if(file) {
+                var formData = new FormData();
+                formData.append('file', file);
+                function onSuccess(response) {
+                    if(response && response.status) {
+                        $.alert("取引先のインポートに成功しました");
+                    } else {
+                        $.alert("取引先のインポートに失敗しました");
+                    }
+                }
+
+                function onError(response) {
+                    $.alert("取引先のインポートに失敗しました");
+                }
+                importPartners(formData, includeHeader, onSuccess, onError)
+            } else {
+                $.alert("インポートするファイルを選択");
+            }
         } else if(actionType == "export") {
             getPartnerExport(includeHeader);
         }
@@ -31,7 +49,25 @@
         var actionType = $("#groupActionType").val();
         var includeHeader = $('#groupIncludeHeader').is(":checked");
         if(actionType == "import") {
-            //TODO: import
+            var file = document.getElementById("importGroupInput").files[0];
+            if(file) {
+                var formData = new FormData();
+                formData.append('file', file);
+                function onSuccess(response) {
+                    if(response && response.status) {
+                        $.alert("取引先グループのインポートに成功しました");
+                    } else {
+                        $.alert("取引先グループのインポートに失敗しました");
+                    }
+                }
+
+                function onError(response) {
+                    $.alert("取引先グループのインポートに失敗しました");
+                }
+                importPartnerGroups(formData, includeHeader, onSuccess, onError)
+            } else {
+                $.alert("インポートするファイルを選択");
+            }
         } else if(actionType == "export") {
             getPartnerGroupExport(includeHeader);
         }

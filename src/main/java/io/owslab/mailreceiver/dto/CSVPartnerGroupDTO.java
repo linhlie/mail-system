@@ -62,4 +62,11 @@ public class CSVPartnerGroupDTO {
     public void setWithPartnerCode(String withPartnerCode) {
         this.withPartnerCode = withPartnerCode;
     }
+
+    @Override
+    public String toString() {
+        return "PartnerGroup [partnerName=" + partnerName + ", partnerCode="
+                + partnerCode + ", withPartnerName=" + withPartnerName + ", withPartnerCode="
+                + withPartnerCode + "]";
+    }
 }

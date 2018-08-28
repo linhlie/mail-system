@@ -20,10 +20,7 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 8/13/18.
@@ -175,36 +172,95 @@ public class BusinessPartnerService {
         return withPartnerId + "-" + partnerId;
     }
 
-    public List<BusinessPartner> importPartner(MultipartFile multipartFile, boolean skipHeader) throws IOException {
+    public List<BusinessPartner> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
         File file = convertMultiPartToFile(multipartFile);
 
         List<BusinessPartner> saveList = new ArrayList<BusinessPartner>();
-        List<BusinessPartner> partners = new ArrayList<BusinessPartner>();
+        LinkedHashMap<String, BusinessPartner> partnersMap = new LinkedHashMap<>();
+        List<BusinessPartner> partners;
 
-        try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
-        {
-            // the header elements are used to map the values to the bean
-            final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
+        try {
+            try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
+            {
+                // the header elements are used to map the values to the bean
+                final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
 
-            CSVPartnerDTO partnerDTO;
-            while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
-                partners.add(partnerDTO.build());
-            }
-            if(partners.size() > 0 && skipHeader) {
-                partners.remove(0);
-            }
-            for(BusinessPartner partner : partners) {
-                BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
-                if(existPartner == null) {
-                    saveList.add(partner);
+                CSVPartnerDTO partnerDTO;
+                if(skipHeader) {
+                    beanReader.getHeader(skipHeader);
                 }
-            }
+                while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
+                    String key = partnerDTO.getPartnerCode();
+                    if(!partnersMap.containsKey(key)) {
+                        partnersMap.put(key, partnerDTO.build());
+                    }
+                }
+                partners = new ArrayList<>(partnersMap.values());
+                for(BusinessPartner partner : partners) {
+                    BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
+                    if(existPartner == null) {
+                        saveList.add(partner);
+                    }
+                }
 
-            partnerDAO.save(saveList);
+                partnerDAO.save(saveList);
+            }
+        } catch (Exception e) {
+            throw new Exception("取引先のインポートに失敗しました");
+        } finally {
+            file.delete();
         }
 
-        file.delete();
+        return saveList;
+    }
+
+    public List<BusinessPartnerGroup> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+
+        File file = convertMultiPartToFile(multipartFile);
+
+        List<BusinessPartnerGroup> saveList = new ArrayList<BusinessPartnerGroup>();
+        LinkedHashMap<String, BusinessPartnerGroup> partnerGroupsMap = new LinkedHashMap<>();
+        List<BusinessPartnerGroup> partnerGroups;
+
+        try {
+            try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
+            {
+                final String[] headers = new String[]{ "partnerName", "partnerCode", "withPartnerName", "withPartnerCode" };
+
+                CSVPartnerGroupDTO partnerGroupDTO;
+                if(skipHeader) {
+                    beanReader.getHeader(skipHeader);
+                }
+                while ((partnerGroupDTO = beanReader.read(CSVPartnerGroupDTO.class, headers)) != null) {
+                    BusinessPartner partner = findOneByPartnerCode(partnerGroupDTO.getPartnerCode());
+                    BusinessPartner withPartner = findOneByPartnerCode(partnerGroupDTO.getWithPartnerCode());
+                    if(partner != null && withPartner != null) {
+                        BusinessPartnerGroup group = new BusinessPartnerGroup(partner, withPartner);
+                        String key = generateKey(group);
+                        if(!partnerGroupsMap.containsKey(key)) {
+                            partnerGroupsMap.put(key, group);
+                        }
+                    }
+                }
+                partnerGroups = new ArrayList<>(partnerGroupsMap.values());
+                for(BusinessPartnerGroup partnerGroup : partnerGroups) {
+                    BusinessPartner partner = partnerGroup.getPartner();
+                    BusinessPartner withPartner = partnerGroup.getWithPartner();
+                    List<BusinessPartnerGroup> existPartnerGroups = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partner.getId(), withPartner.getId());
+                    if(existPartnerGroups.size() == 0) {
+                        saveList.add(new BusinessPartnerGroup(partner, withPartner));
+                        saveList.add(new BusinessPartnerGroup(withPartner, partner));
+                    }
+                }
+
+                partnerGroupDAO.save(saveList);
+            }
+        } catch (Exception e) {
+            throw new Exception("取引先グループのインポートに失敗しました");
+        } finally {
+            file.delete();
+        }
 
         return saveList;
     }

@@ -11,7 +11,10 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <div class="section-wrapper">
-                            <h4><b>取引先インポート・エキスポート</b></h4>
+                            <form enctype="multipart/form-data">
+
+                            </form>
+                            <h4><b>取引先のインポート・エキスポート</b></h4>
                             <br/>
                             <select id="partnerActionType">
                                 <option value="import">インポート</option>
@@ -22,7 +25,9 @@
                             <div class="row" style="padding-top: 20px; padding-bottom: 20px">
                                 <div class="col-xs-10">
                                     <input th:readonly="true" id="importPartner" type="text" class="form-control" placeholder="取引先のファイルのパス"/>
-                                    <input id="importPartnerInput" type="file" style="display:none;" accept=".csv"/>
+                                    <form enctype="multipart/form-data" method="post" id="importPartnerForm">
+                                        <input id="importPartnerInput" type="file" style="display:none;" accept=".csv"/>
+                                    </form>
                                 </div>
                                 <div class="col-xs-2">
                                     <button id="importPartnerBtn" type="button" class="btn btn-default btn-file btn-block">
@@ -46,7 +51,9 @@
                             <div class="row" style="padding-top: 20px; padding-bottom: 20px">
                                 <div class="col-xs-10">
                                     <input th:readonly="true" id="importGroup" type="text" class="form-control" placeholder="取引先グループのファイルのパス"/>
-                                    <input id="importGroupInput" type="file" style="display:none;" accept=".csv"/>
+                                    <form enctype="multipart/form-data" method="post" id="importGroupForm">
+                                        <input id="importGroupInput" type="file" style="display:none;" accept=".csv"/>
+                                    </form>
                                 </div>
                                 <div class="col-xs-2">
                                     <button id="importGroupBtn" type="button" class="btn btn-default btn-file btn-block">

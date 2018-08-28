@@ -203,6 +203,34 @@ function getPartnerGroupExport(includeHeader) {
     _doDownload(url);
 }
 
+function importPartners(data, includeHeader, onSuccess, onError) {
+    var url = '/expansion/importPartner?header=' + includeHeader;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function importPartnerGroups(data, includeHeader, onSuccess, onError) {
+    var url = '/expansion/importPartnerGroup?header=' + includeHeader;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
