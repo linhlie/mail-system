@@ -44,6 +44,12 @@ public class Utils {
         c.add(Calendar.DATE, day);
         return c.getTime();
     }
+    public synchronized static Date addMonthsToDate(Date date, int months){
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, months);
+        return c.getTime();
+    }
 
     @Cacheable(key="\"Utils:parseDateStr:\"+#str")
     public synchronized static Date parseDateStr(final String str)
@@ -63,6 +69,11 @@ public class Utils {
         conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
         String japaneseOptimizedText = KanaConverter.convertKana(raw, conv_op_flags);
         return japaneseOptimizedText.toLowerCase();
+    }
+
+    public synchronized static String formatTimestamp(long ts) {
+        Date date = new Date(ts);
+        return DATE_FORMAT.format(date);
     }
 
     public synchronized static String formatGMT(Date date){

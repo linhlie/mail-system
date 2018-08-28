@@ -433,10 +433,6 @@
         }
     }
 
-    function getFileSizeString(fileSize) {
-        return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
-    }
-
     function updatePreviewMailToPrint(data) {
         var printElment = document.getElementById('printElement');
         printElment.innerHTML = "";
@@ -829,40 +825,6 @@
                 jumpTo();
             }
         });
-    }
-
-    function getFileExtension(fileName) {
-        var parts = fileName.split(".");
-        var extension = "." + parts[(parts.length - 1)];
-        return extension.toLowerCase();
-    }
-
-    function getOS() {
-        var userAgent = window.navigator.userAgent,
-            platform = window.navigator.platform,
-            macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-            windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-            iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-            os = null;
-
-        if (macosPlatforms.indexOf(platform) !== -1) {
-            os = 'Mac OS';
-        } else if (iosPlatforms.indexOf(platform) !== -1) {
-            os = 'iOS';
-        } else if (windowsPlatforms.indexOf(platform) !== -1) {
-            os = 'Windows';
-        } else if (/Android/.test(userAgent)) {
-            os = 'Android';
-        } else if (!os && /Linux/.test(platform)) {
-            os = 'Linux';
-        }
-
-        return os;
-    }
-
-    function isWindows() {
-        var os = getOS();
-        return (os === "Windows");
     }
 
     function setDownloadLinkClickListener() {

@@ -38,10 +38,10 @@ function getReplyWrapper(data) {
 function getDecorateExcerpt(excerpt, sendTo) {
     if(sendTo === "moto") {
         excerpt = getExcerptWithGreeting(excerpt, "元");
-        excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング元へ送信</span></div>' + excerpt;
+        excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング元へ送信</span></div>' + excerpt;
     } else if (sendTo === "saki") {
         excerpt = getExcerptWithGreeting(excerpt, "先");
-        excerpt = '<div class="gmail_extra"><span style="color: #ff0000;">【送り先は】マッチング先へ送信</span></div>' + excerpt;
+        excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング先へ送信</span></div>' + excerpt;
     }
     return excerpt;
 }
@@ -64,7 +64,7 @@ function getExcerptWithGreeting(excerpt, type) {
 }
 
 function getExceprtLine(line) {
-    var exceprtLine = '<div class="gmail_extra"><span style="color: #ff0000;">' + line + '</span></div>';
+    var exceprtLine = '<div class="gmail_extra"><span>' + line + '</span></div>';
     return exceprtLine;
 }
 
@@ -89,6 +89,7 @@ function loadGreetingData() {
 }
 
 function updateDropzoneData(dropzone, files) {
+    files = files || [];
     var cachedIncludeAttachmentStr = localStorage.getItem("includeAttachment");
     var cachedIncludeAttachment = typeof cachedIncludeAttachmentStr !== "string" ? false : !!JSON.parse(cachedIncludeAttachmentStr);
     dropzone.removeAllFiles(true);
@@ -270,4 +271,112 @@ function checkDataLines(dataLines1, dataLines2, callback) {
     } else {
         callback(true);
     }
+}
+
+function setButtonClickListenter(id, callback) {
+    $(id).off('click');
+    $(id).click(function () {
+        if (typeof callback === "function") {
+            callback();
+        }
+    });
+}
+
+function locationReload() {
+    window.location.reload();
+}
+
+function getFileExtension(fileName) {
+    var parts = fileName.split(".");
+    var extension = "." + parts[(parts.length - 1)];
+    return extension.toLowerCase();
+}
+
+function getOS() {
+    var userAgent = window.navigator.userAgent,
+        platform = window.navigator.platform,
+        macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+        windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+        iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+        os = null;
+
+    if (macosPlatforms.indexOf(platform) !== -1) {
+        os = 'Mac OS';
+    } else if (iosPlatforms.indexOf(platform) !== -1) {
+        os = 'iOS';
+    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+        os = 'Windows';
+    } else if (/Android/.test(userAgent)) {
+        os = 'Android';
+    } else if (!os && /Linux/.test(platform)) {
+        os = 'Linux';
+    }
+
+    return os;
+}
+
+function isWindows() {
+    var os = getOS();
+    return (os === "Windows");
+}
+
+function getFileSizeString(fileSize) {
+    return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
+}
+
+function comparePartner(a,b) {
+    if (a.kanaName < b.kanaName)
+        return -1;
+    if (a.kanaName > b.kanaName)
+        return 1;
+    return 0;
+}
+
+function fullWidthNumConvert(fullWidthNum){
+    return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
+        return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
+    });
+}
+
+function numberValidator(value) {
+    if (!value || value.trim().length === 0) {
+        return false;
+    } else {
+        value = fullWidthNumConvert(value);
+        value = value.replace(/，/g, ",");
+        var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+        var match = pattern.test(value);
+        if(!match){
+            return false;
+        }
+    }
+    return true;
+}
+
+function addDaysToDate(date, days) {
+    var newDate = new Date(date.getTime());
+    newDate.setDate(date.getDate() + days);
+    return newDate;
+}
+
+function addMonthsToDate(date, months) {
+    var newDate = new Date(date.getTime());
+    newDate.setMonth(date.getMonth() + months);
+    return newDate;
+}
+
+function formatDate(date) {
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    var day = date.getDate();
+
+    if (day < 10) {
+        day = '0' + day;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+
+    var formattedDate = year + '-' + month + '-' + day;
+    return formattedDate;
 }

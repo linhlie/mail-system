@@ -72,7 +72,7 @@ public class DownloadController {
     ) throws IOException {
 
         String decodedDigest = new String(DatatypeConverter.parseHexBinary(digest));
-        String[] digestParts = decodedDigest.split("/", 2);
+        String[] digestParts = decodedDigest.split(File.separator, 2);
         if(digestParts.length == 0) return;
 
         long id = Long.parseLong(digestParts[0]);
@@ -85,14 +85,14 @@ public class DownloadController {
         String realFileName = attachmentFile.getFileName();
         MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, realFileName);
 
-        File file = new File(realPath + "/" + realFileName);
+        File file = new File(realPath);
 
         // Content-Type
         // application/pdf
         response.setContentType(mediaType.getType());
 
         // Content-Disposition
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(realFileName, "UTF-8"));
 
         // Content-Length
         response.setContentLength((int) file.length());

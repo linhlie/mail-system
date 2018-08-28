@@ -1,0 +1,83 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>取引先インポート・エキスポート</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content partnerImport">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="section-wrapper">
+                            <form enctype="multipart/form-data">
+
+                            </form>
+                            <h4><b>取引先のインポート・エキスポート</b></h4>
+                            <br/>
+                            <select id="partnerActionType">
+                                <option value="import">インポート</option>
+                                <option value="export">エキスポート</option>
+                            </select>
+                            <input id="partnerIncludeHeader" type="checkbox" th:checked="true"/>
+                            <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                                <div class="col-xs-10">
+                                    <input th:readonly="true" id="importPartner" type="text" class="form-control" placeholder="取引先のファイルのパス"/>
+                                    <form enctype="multipart/form-data" method="post" id="importPartnerForm">
+                                        <input id="importPartnerInput" type="file" style="display:none;" accept=".csv"/>
+                                    </form>
+                                </div>
+                                <div class="col-xs-2">
+                                    <button id="importPartnerBtn" type="button" class="btn btn-default btn-file btn-block">
+                                        ・・・
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="action-wrapper">
+                                <button id="partnerActions" class="btn btn-default" type="button">実行</button>
+                            </div>
+                        </div>
+                        <div class="section-wrapper" style="margin-top: 10px;">
+                            <h4><b>取引先グループのインポート・エキスポート</b></h4>
+                            <br/>
+                            <select id="groupActionType">
+                                <option value="import">インポート</option>
+                                <option value="export">エキスポート</option>
+                            </select>
+                            <input id="groupIncludeHeader" type="checkbox" th:checked="true"/>
+                            <span>&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                                <div class="col-xs-10">
+                                    <input th:readonly="true" id="importGroup" type="text" class="form-control" placeholder="取引先グループのファイルのパス"/>
+                                    <form enctype="multipart/form-data" method="post" id="importGroupForm">
+                                        <input id="importGroupInput" type="file" style="display:none;" accept=".csv"/>
+                                    </form>
+                                </div>
+                                <div class="col-xs-2">
+                                    <button id="importGroupBtn" type="button" class="btn btn-default btn-file btn-block">
+                                        ・・・
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="action-wrapper">
+                                <button id="groupActions" class="btn btn-default" type="button">実行</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/expansion/partnerImportExport.js"></script>
+</th:block>
+</body>
+</html>

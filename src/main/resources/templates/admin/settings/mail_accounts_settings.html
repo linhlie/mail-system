@@ -32,6 +32,9 @@
                                                 メールアドレス
                                             </th>
                                             <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
+                                                aria-label="Alert send: ">Alert送信
+                                            </th>
+                                            <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
                                                 aria-label="Disabled: ">休止
                                             </th>
                                             <th style="text-align: center" tabindex="0" aria-controls="example2" rowspan="1" colspan="1"
@@ -45,6 +48,13 @@
                                         <tbody>
                                         <tr role="row" class="odd" th:each="item:${list}">
                                             <td th:text="${item.account}"></td>
+                                            <td style="text-align: center">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" disabled="true" th:checked="${item.alertSend}"/>
+                                                    </label>
+                                                </div>
+                                            </td>
                                             <td style="text-align: center">
                                                 <div class="checkbox">
                                                     <label>

@@ -8,6 +8,7 @@ import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.model.ReceiveRule;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.JsonStringResponseBody;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
@@ -85,6 +86,7 @@ public class SettingsController {
         for (String key : map.keySet()) {
             enviromentSettingService.set(key, map.get(key));
         }
+        ReportErrorService.updateAdministratorMailAddress();
         redirectAttrs.addFlashAttribute("saved", true);
         return "redirect:/admin/enviromentSettings";
     }
@@ -178,6 +180,7 @@ public class SettingsController {
         EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
         newSendAccountSetting.setAccountId(emailAccount.getId());
         emailAccountSettingService.save(newSendAccountSetting);
+        ReportErrorService.updateSendAccountInfo();
         return "redirect:/admin/mailAccountSettings";
     }
 
@@ -216,6 +219,7 @@ public class SettingsController {
             SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
             EmailAccount emailAccount = listAccount.get(0);
             emailAccount.setDisabled(mailAccountForm.isDisabled());
+            emailAccount.setAlertSend(mailAccountForm.isAlertSend());
             emailAccount.setSignature(mailAccountForm.getSignature());
             mailAccountsService.save(emailAccount);
             EmailAccountSetting existReceiveAccountSetting = emailAccountSettingService.findOneReceive(id);
@@ -228,6 +232,7 @@ public class SettingsController {
             newSendAccountSetting.setAccountId(emailAccount.getId());
             if(existSendAccountSetting != null) newSendAccountSetting.setId(existSendAccountSetting.getId());
             emailAccountSettingService.save(newSendAccountSetting);
+            ReportErrorService.updateSendAccountInfo();
         }
         return "redirect:/admin/mailAccountSettings";
     }

@@ -27,9 +27,11 @@ public class EnviromentSettingService {
     public static final String START_UP_WITH_PC_KEY = "start_up_with_pc";
     public static final String DEBUG_ON_KEY = "debug_on";
     public static final String DEBUG_RECEIVE_MAIL_ADDRESS_KEY = "debug_receive_mail_address";
+    public static final String ADMINSTRATOR_MAIL_ADDRESS_KEY = "adminstrator_mail_address";
     public static final String KEEP_SENT_MAIL_HISTORY_DAY_KEY = "keep_sent_mail_history_day_key";
     public static final String RECEIVE_MAIL_TYPE_KEY = "RECEIVE_MAIL_TYPE_KEY";
     public static final String RECEIVE_MAIL_RULE_KEY = "RECEIVE_MAIL_RULE_KEY";
+    public static final String SAVE_TO_TRASH_BOX_KEY = "SAVE_TO_TRASH_BOX_KEY";
     public static final String MARK_A_CONDITIONS_KEY = "MARK_A_CONDITIONS_KEY";
     public static final String MARK_B_CONDITIONS_KEY = "MARK_B_CONDITIONS_KEY";
     public static final String MARK_REFLECTION_SCOPE_KEY = "MARK_REFLECTION_SCOPE_KEY";
@@ -42,9 +44,11 @@ public class EnviromentSettingService {
     private static final String DEFAULT_START_UP_WITH_PC = "0";
     private static final String DEFAULT_DEBUG_ON = "1";
     private static final String DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS = "ows-test@world-link-system.com";
+    private static final String DEFAULT_ADMINSTRATOR_MAIL_ADDRESS = "";
     private static final String DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY = "30";
     private static final String DEFAULT_RECEIVE_MAIL_TYPE = "1";
     private static final String DEFAULT_RECEIVE_MAIL_RULE = "";
+    private static final String DEFAULT_SAVE_TO_TRASH_BOX = "1";
     private static final String DEFAULT_MARK_A_CONDITIONS = "";
     private static final String DEFAULT_MARK_B_CONDITIONS = "";
     private static final String DEFAULT_MARK_REFLECTION_SCOPE = "1";
@@ -62,9 +66,11 @@ public class EnviromentSettingService {
         map.put(START_UP_WITH_PC_KEY, DEFAULT_START_UP_WITH_PC);
         map.put(DEBUG_ON_KEY, DEFAULT_DEBUG_ON);
         map.put(DEBUG_RECEIVE_MAIL_ADDRESS_KEY, DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS);
+        map.put(ADMINSTRATOR_MAIL_ADDRESS_KEY, DEFAULT_ADMINSTRATOR_MAIL_ADDRESS);
         map.put(KEEP_SENT_MAIL_HISTORY_DAY_KEY, DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY);
         map.put(RECEIVE_MAIL_TYPE_KEY, DEFAULT_RECEIVE_MAIL_TYPE);
         map.put(RECEIVE_MAIL_RULE_KEY, DEFAULT_RECEIVE_MAIL_RULE);
+        map.put(SAVE_TO_TRASH_BOX_KEY, DEFAULT_SAVE_TO_TRASH_BOX);
         map.put(MARK_A_CONDITIONS_KEY, DEFAULT_MARK_A_CONDITIONS);
         map.put(MARK_B_CONDITIONS_KEY, DEFAULT_MARK_B_CONDITIONS);
         map.put(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
@@ -157,6 +163,10 @@ public class EnviromentSettingService {
         return this.getSetting(DEBUG_RECEIVE_MAIL_ADDRESS_KEY, DEFAULT_DEBUG_RECEIVE_MAIL_ADDRESS);
     }
 
+    public String getAdministratorMailAddress(){
+        return this.getSetting(ADMINSTRATOR_MAIL_ADDRESS_KEY, DEFAULT_ADMINSTRATOR_MAIL_ADDRESS);
+    }
+
     public String getKeepSentMailHistoryDay(){
         return this.getSetting(KEEP_SENT_MAIL_HISTORY_DAY_KEY, DEFAULT_KEEP_SENT_MAIL_HISTORY_DAY);
     }
@@ -179,5 +189,9 @@ public class EnviromentSettingService {
 
     public String getMarkReflectionScope() {
         return this.getSetting(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
+    }
+
+    public String getSaveToTrashBox() {
+        return this.getSetting(SAVE_TO_TRASH_BOX_KEY, DEFAULT_SAVE_TO_TRASH_BOX);
     }
 }

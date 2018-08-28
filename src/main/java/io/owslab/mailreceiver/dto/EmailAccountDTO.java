@@ -13,10 +13,13 @@ public class EmailAccountDTO {
 
     private boolean disabled;
 
+    private boolean alertSend;
+
     public EmailAccountDTO(EmailAccount account) {
         this.id = account.getId();
         this.account = account.getAccount();
         this.disabled = account.isDisabled();
+        this.alertSend = account.isAlertSend();
     }
 
     public long getId() {
@@ -41,5 +44,13 @@ public class EmailAccountDTO {
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public boolean isAlertSend() {
+        return alertSend;
+    }
+
+    public void setAlertSend(boolean alertSend) {
+        this.alertSend = alertSend;
     }
 }

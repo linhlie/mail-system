@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.response.DashboardResponseBody;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
@@ -75,6 +76,7 @@ public class IndexController {
             List<String> clickCount = clickHistoryService.getClickCount(now);
             List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now);
             List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
+            responseBody.setHasSystemError(ReportErrorService.hasSystemError());
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);
             responseBody.setClickCount(clickCount);

@@ -3,12 +3,15 @@ package io.owslab.mailreceiver.dto;
 import io.owslab.mailreceiver.model.AttachmentFile;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
 import java.util.Base64;
 
 /**
  * Created by khanhlvb on 3/13/18.
  */
 public class FileDTO {
+    public static final String CHECK_SUM = "a";
+
     private long id;
     private String messageId;
     private String fileName;
@@ -22,7 +25,7 @@ public class FileDTO {
         this.setFileName(file.getFileName());
         this.setStoragePath(file.getStoragePath());
         this.setSize(file.getSize());
-        String downloadDigest = file.getId() + "/" + file.getStoragePath();
+        String downloadDigest = file.getId() + File.separator + CHECK_SUM;
         String encodedDownloadDigest = DatatypeConverter.printHexBinary(downloadDigest.getBytes());
         this.setDigest(encodedDownloadDigest);
     }

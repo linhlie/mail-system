@@ -21,6 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.safety.Whitelist;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,12 +87,22 @@ public class MailBoxService {
 
     private DecimalFormat df = new DecimalFormat("#,##0");
 
+    private PrettyTime p = new PrettyTime();
+
     public long count(){
         return emailDAO.countByStatus(Email.Status.DONE);
     }
 
     public Page<Email> list(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findByStatus(Email.Status.DONE, pageRequest);
+        return listByStatus(pageRequest, Email.Status.DONE);
+    }
+
+    public Page<Email> listTrash(PageRequest pageRequest) {
+        return listByStatus(pageRequest, Email.Status.SKIPPED);
+    }
+
+    private Page<Email> listByStatus(PageRequest pageRequest, int status) {
+        Page<Email> list = emailDAO.findByStatus(status, pageRequest);
         return list;
     }
 
@@ -106,6 +117,15 @@ public class MailBoxService {
         }
         String optimizeSearchText = optimizeText(search);
         Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.DONE, pageRequest);
+        return list;
+    }
+
+    public Page<Email> searchTrash(String search, PageRequest pageRequest) {
+        if(search == null || search.length() == 0){
+            return listTrash(pageRequest);
+        }
+        String optimizeSearchText = optimizeText(search);
+        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.SKIPPED, pageRequest);
         return list;
     }
 
@@ -233,6 +253,20 @@ public class MailBoxService {
             i++;
         }
         return commentstr;
+    }
+
+    public List<DetailMailDTO> getMailDetail(String messageId) {
+        List<DetailMailDTO> results = new ArrayList<>();
+        List<Email> emailList = emailDAO.findByMessageId(messageId);
+        if(emailList.size() == 0) return results;
+        Email email = emailList.get(0);
+        DetailMailDTO result = new DetailMailDTO(email);
+        List<AttachmentFile> files = fileDAO.findByMessageIdAndDeleted(messageId, false);
+        for(AttachmentFile file : files){
+            result.addFile(file);
+        }
+        results.add(result);
+        return results;
     }
 
     public List<DetailMailDTO> getMailDetail(String messageId, String highlightWordsStr, String matchRange, boolean spaceEffective, boolean distinguish){
@@ -394,7 +428,7 @@ public class MailBoxService {
     }
 
     private String getExceprtLine(String line) {
-        String exceprtLine = "<div class=\"gmail_extra\"><span style=\"color: #ff0000;\">" + line + "</span></div>\n";
+        String exceprtLine = "<div class=\"gmail_extra\"><span>" + line + "</span></div>\n";
         return exceprtLine;
     }
 
@@ -499,17 +533,18 @@ public class MailBoxService {
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    File file = new File(saveDirectoryPath + File.separator + fileName);
+                    saveDirectoryPath = saveDirectoryPath + File.separator + IMAPFetchMailJob.getUniqueFileName();
+                    File file = new File(saveDirectoryPath);
                     logger.info("Start Save file: " + fileName + " " + file.length());
                     part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
@@ -588,7 +623,7 @@ public class MailBoxService {
             List<Email> emailList = emailDAO.findFirst1ByStatusOrderByReceivedAtDesc(Email.Status.DONE);
             if(emailList.size() > 0) {
                 Email email = emailList.get(0);
-                return Utils.formatGMT2(email.getReceivedAt());
+                return Utils.formatGMT2(email.getReceivedAt()) + " (" + p.format(email.getReceivedAt()) + ")";
             }
         } catch (Exception e) {
             ;
@@ -624,5 +659,21 @@ public class MailBoxService {
     @Cacheable(key="\"EmailWordJobService:reverseStringWithCache:\"+#raw")
     public static String reverseStringWithCache(String raw) {
         return new StringBuilder(raw).reverse().toString();
+    }
+
+    public void emptyTrashBox() {
+        emailDAO.updateStatus(Email.Status.SKIPPED, Email.Status.DELETED);
+    }
+
+    public void deleteFromTrashBox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DELETED, msgIds);
+    }
+
+    public void moveToInbox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DONE, msgIds);
+    }
+
+    public void deleteFromInBox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.DONE, Email.Status.DELETED, msgIds);
     }
 }

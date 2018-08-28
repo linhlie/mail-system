@@ -122,7 +122,7 @@ public class IMAPFetchMailJob implements Runnable {
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
-            OwsMimeMessage messages[] = getMessages(emailFolder, msgnum,beforeDate);
+            OwsMimeMessage messages[] = getMessages(emailFolder, msgnum, beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
             mailProgress.setTotal(messages.length);
@@ -160,28 +160,17 @@ public class IMAPFetchMailJob implements Runnable {
                     return;
                 }
                 Email email = buildInitReceivedMail(message, account);
-                emailDAO.save(email);
                 try {
                     email = buildReceivedMail(message, email);
-                    boolean hasAttachments = saveFiles(message, email);
+                    List<AttachmentFile> attachmentFiles = saveFiles(message, email);
+                    boolean hasAttachments = attachmentFiles.size() > 0;
                     email.setHasAttachment(hasAttachments);
                     email = setMailContent(message, email);
                     emailDAO.save(email);
-                } catch (FolderClosedException e) {
-                    e.printStackTrace();
-                    Email errorEmail = findOne(email.getMessageId());
-                    if(errorEmail != null) {
-                        String error = ExceptionUtils.getStackTrace(e);
-                        errorEmail.setErrorLog(error);
-                        errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
-                        emailDAO.save(errorEmail);
-                    }
-                    if (!emailFolder.isOpen()) {
-                        emailFolder.open(openFolderFlag);
-                    }
+                    if(hasAttachments) fileDAO.save(attachmentFiles);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Email errorEmail = findOne(email.getMessageId());
+                    Email errorEmail = email;
                     if(errorEmail != null) {
                         String error = ExceptionUtils.getStackTrace(e);
                         errorEmail.setErrorLog(error);
@@ -192,7 +181,7 @@ public class IMAPFetchMailJob implements Runnable {
                 logger.info("[" + index + "] save email: " + message.getSubject());
                 mailProgress.increase();
             } catch (FolderClosedException ex) {
-                logger.info("[" + index + "] FolderClosedException");
+                logger.warn("[" + index + "] FolderClosedException");
                 ex.printStackTrace();
                 if (!emailFolder.isOpen()) {
                     emailFolder.open(openFolderFlag);
@@ -380,8 +369,8 @@ public class IMAPFetchMailJob implements Runnable {
         return false;
     }
 
-    private boolean saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
-        boolean hasAttachments = false;
+    private List<AttachmentFile> saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+        List<AttachmentFile> attachmentFiles = new ArrayList<>();
         String contentType = message.getContentType();
         if (contentType.contains("multipart")) {
             // content may contain attachments
@@ -401,18 +390,18 @@ public class IMAPFetchMailJob implements Runnable {
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
                     String currentDateStr = getCurrentDateStr();
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + currentDateStr;
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + "/" + email.getMessageId().hashCode();
+                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    File file = new File(saveDirectoryPath + File.separator + fileName);
-                    logger.info("Start Save file: " + fileName + " " + file.length());
+                    saveDirectoryPath = saveDirectoryPath + File.separator + getUniqueFileName();
+                    File file = new File(saveDirectoryPath);
                     part.saveFile(file);
                     AttachmentFile attachmentFile = new AttachmentFile(
                             email.getMessageId(),
@@ -423,13 +412,15 @@ public class IMAPFetchMailJob implements Runnable {
                             file.length()
                     );
                     logger.info("Save file: " + attachmentFile.toString());
-                    fileDAO.save(attachmentFile);
-                    hasAttachments = true;
+                    attachmentFiles.add(attachmentFile);
                 }
             }
         }
+        return attachmentFiles;
+    }
 
-        return hasAttachments;
+    public static String getUniqueFileName() {
+        return System.currentTimeMillis() + "" + UUID.randomUUID().toString();
     }
 
     public static String normalizeDirectoryPath(String path){
@@ -498,6 +489,12 @@ public class IMAPFetchMailJob implements Runnable {
                 boolean exist = isEmailExist(message, account);
                 if(exist) {
                     break;
+                }
+                if(beforeDate != null) {
+                    Date receivedDate = message.getReceivedDate();
+                    if (receivedDate.before(beforeDate)) {
+                        break;
+                    }
                 }
                 messages.add(0, message);
                 msgnum = msgnum - 1;

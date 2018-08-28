@@ -1,0 +1,1 @@
+ALTER TABLE `business_partners` MODIFY `partner_code` VARCHAR(20) BINARY NOT NULL;

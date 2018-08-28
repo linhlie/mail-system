@@ -37,6 +37,7 @@
     }
     
     function pushData(data) {
+        data && data.hasSystemError ? $("#hasSystemError").show() : $("#hasSystemError").hide();
         if(data && data.latestReceive){
             $("#latestReceive").text(data.latestReceive);
         }

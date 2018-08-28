@@ -5,10 +5,12 @@ import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
 import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
+import io.owslab.mailreceiver.utils.Utils;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.runtime.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,11 @@ public class SendMailService {
         String from = account.getAccount();
         String to = form.getReceiver();
         String cc = form.getCc();
+        boolean debugOn = enviromentSettingService.getDebugOn();
+        if(debugOn){
+            to = enviromentSettingService.getDebugReceiveMailAddress();
+            cc = "";
+        }
         String replyTo = email.getReplyTo();
 
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
@@ -187,7 +194,7 @@ public class SendMailService {
 
     private MimeBodyPart buildAttachmentPart(String storagePath, String fileName) throws MessagingException, UnsupportedEncodingException {
         MimeBodyPart attachmentPart = new MimeBodyPart();
-        String fullFilename = normalizeDirectoryPath(storagePath) + File.separator + fileName;
+        String fullFilename = normalizeDirectoryPath(storagePath);
         DataSource source = new FileDataSource(fullFilename);
         attachmentPart.setDataHandler(new DataHandler(source));
         String filename = MimeUtility.encodeText(fileName, "UTF-8", null);
@@ -238,5 +245,42 @@ public class SendMailService {
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;
         SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment);
         sentMailHistoryDAO.save(history);
+    }
+
+    public void sendReportMail(ReportErrorService.ReportErrorParams report) {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.host", report.getHost());
+        props.put("mail.smtp.port", report.getPort());
+
+        // Get the Session object.
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(report.getUserName(), report.getPassword());
+                    }
+                });
+        String from = report.getFrom();
+        String to = report.getTo();
+        String subject = "[e!Helper] - SYSTEM ERROR REPORT @ " + Utils.formatGMT2(new Date());
+        String content = report.getContent();
+        try {
+            String encodingOptions = "text/html; charset=UTF-8";
+            MimeMessage message = new MimeMessage(session);
+            message.setHeader("Content-Type", encodingOptions);
+            message.setFrom(new InternetAddress(from));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(to));
+            message.setSubject(subject, "UTF-8");
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(content, encodingOptions);
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            message.setContent(multipart);
+            Transport.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

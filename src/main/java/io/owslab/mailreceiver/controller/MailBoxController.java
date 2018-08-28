@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.form.TrashBoxForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
@@ -14,11 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -103,6 +103,120 @@ public class MailBoxController {
         mailBoxService.retry(messageId);
         result.setMsg("done");
         result.setStatus(true);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/admin/trashbox", method = RequestMethod.GET)
+    public String getTrashBox(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            Model model) {
+        page = page - 1;
+        List<RelativeSentAtEmail> relativeSentAtEmailList = new ArrayList<RelativeSentAtEmail>();
+        PageRequest pageRequest = new PageRequest(page, PAGE_SIZE, Sort.Direction.DESC, "sentAt");
+        Page<Email> pages = search == null || search.length() == 0? mailBoxService.listTrash(pageRequest) : mailBoxService.searchTrash(search, pageRequest);
+        List<Email> list = pages.getContent();
+        int rowsInPage = list.size();
+        PageWrapper<Email> pageWrapper = new PageWrapper<Email>(pages, "/admin/trashbox");
+        for(int i = 0; i < rowsInPage; i++){
+            Email email = list.get(i);
+            RelativeSentAtEmail relativeSentAtEmail = new RelativeSentAtEmail(email);
+            List<EmailAccount> listAccount = mailAccountsService.findById(email.getAccountId());
+            EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
+            String emailAccountAddress = emailAccount != null ? emailAccount.getAccount() : "Unknown";
+            relativeSentAtEmail.setAccount(emailAccountAddress);
+            relativeSentAtEmailList.add(relativeSentAtEmail);
+        }
+        if(search != null && search.length() > 0){
+            model.addAttribute("search", search);
+        }
+        int fromEntry = rowsInPage == 0 ? 0 : page * PAGE_SIZE + 1;
+        int toEntry = rowsInPage == 0 ? 0 : fromEntry + rowsInPage - 1;
+        model.addAttribute("list", relativeSentAtEmailList);
+        model.addAttribute("page", pageWrapper);
+        model.addAttribute("fromEntry", fromEntry);
+        model.addAttribute("toEntry", toEntry);
+        return "admin/mailbox/trashbox";
+    }
+
+    @RequestMapping(value="/admin/trashbox/empty", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> emptyTrashBox (){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.emptyTrashBox();
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping(value="/admin/trashbox/delete")
+    @ResponseBody
+    ResponseEntity<?> deleteFromTrashBox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.deleteFromTrashBox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping(value="/admin/trashbox/moveToInbox")
+    @ResponseBody
+    ResponseEntity<?> moveToInbox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.moveToInbox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping(value="/admin/mailbox/deleteFromInbox")
+    @ResponseBody
+    ResponseEntity<?> deleteFromInBox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.deleteFromInBox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value="/admin/mailbox/email", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEmailJsonAdmin (
+            @RequestParam(value = "messageId", required = true) String messageId
+    ){
+        AjaxResponseBody result = new AjaxResponseBody();
+        List<DetailMailDTO> mailDetail = mailBoxService.getMailDetail(messageId);
+        result.setMsg("done");
+        result.setStatus(true);
+        result.setList(mailDetail);
         return ResponseEntity.ok(result);
     }
 }

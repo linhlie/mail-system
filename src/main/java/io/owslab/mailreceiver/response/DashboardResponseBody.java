@@ -8,6 +8,7 @@ import java.util.List;
  * Created by khanhlvb on 7/9/18.
  */
 public class DashboardResponseBody extends AjaxResponseBody {
+    private boolean hasSystemError;
     private String latestReceive;
     private List<String> clickCount;
     private List<String> receiveMailNumber;
@@ -55,5 +56,13 @@ public class DashboardResponseBody extends AjaxResponseBody {
 
     public void setSendPerClick(List<String> sendPerClick) {
         this.sendPerClick = sendPerClick;
+    }
+
+    public boolean isHasSystemError() {
+        return hasSystemError;
+    }
+
+    public void setHasSystemError(boolean hasSystemError) {
+        this.hasSystemError = hasSystemError;
     }
 }

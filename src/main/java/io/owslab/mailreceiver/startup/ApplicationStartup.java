@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.enums.MailItemOption;
 import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.*;
@@ -56,6 +57,9 @@ public class ApplicationStartup {
 
     @Autowired
     private ReceiveMailScheduler receiveMailScheduler;
+
+    @Autowired
+    private AutoExtendScheduler autoExtendScheduler;
 
     @Autowired
     private AccountDAO accountDAO;
@@ -114,6 +118,7 @@ public class ApplicationStartup {
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         System.setProperty("mail.mime.decodetext.strict", "false");
         Utils.init();
+        ReportErrorService.init();
         initStorageDirectory();
         enviromentSettingService.init();
         addAdminAccount();
@@ -123,6 +128,7 @@ public class ApplicationStartup {
         deleteOldMailsScheduler.start();
         deleteSentMailHistoryScheduler.start();
         receiveMailScheduler.start();
+        autoExtendScheduler.start();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;
 //        List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput("random cacherhhe444h", testData.toLowerCase());
 //        for(FullNumberRange range : rangeList) {

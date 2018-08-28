@@ -6,6 +6,7 @@ package io.owslab.mailreceiver.form;
 public class ReceiveRuleBundleForm {
     private String receiveMailType;
     private String receiveMailRule;
+    private String saveToTrashBox;
 
     public String getReceiveMailType() {
         return receiveMailType;
@@ -21,5 +22,13 @@ public class ReceiveRuleBundleForm {
 
     public void setReceiveMailRule(String receiveMailRule) {
         this.receiveMailRule = receiveMailRule;
+    }
+
+    public String getSaveToTrashBox() {
+        return saveToTrashBox;
+    }
+
+    public void setSaveToTrashBox(String saveToTrashBox) {
+        this.saveToTrashBox = saveToTrashBox;
     }
 }

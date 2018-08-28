@@ -404,6 +404,7 @@ public class Email {
         public static final int DONE = 1;
         public static final int SKIPPED = 2;
         public static final int ERROR_OCCURRED = 3;
+        public static final int DELETED = 4;
     }
 
     public static class Mark {
