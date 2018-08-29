@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface ClickHistoryDAO extends PagingAndSortingRepository<ClickHistory, Long> {
     long countByTypeAndCreatedAtBetween(String type, Date fromDate, Date toDate);
+    long countByAccountIdAndTypeAndCreatedAtBetween(long accountId, String type, Date fromDate, Date toDate);
 }

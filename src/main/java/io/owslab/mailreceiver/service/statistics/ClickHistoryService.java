@@ -81,18 +81,18 @@ public class ClickHistoryService {
         }
     }
 
-    public List<String> getClickCount(Date now) {
+    public List<String> getClickCount(Date now, String accountId) {
         List<String> clickCount = new ArrayList<>();
-        List<String> clickCount1 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_SOURCE);
-        List<String> clickCount2 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_DESTINATION);
-        List<String> clickCount3 = getClickCountByType(now, ClickHistory.ClickType.MATCHING);
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_SOURCE);
+        List<String> clickCount2 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_DESTINATION);
+        List<String> clickCount3 = getClickCountByType(now, accountId, ClickHistory.ClickType.MATCHING);
         clickCount.addAll(clickCount1);
         clickCount.addAll(clickCount2);
         clickCount.addAll(clickCount3);
         return clickCount;
     }
 
-    private List<String> getClickCountByType(Date now, String type) {
+    private List<String> getClickCountByType(Date now, String accountId, String type) {
         List<String> clickCount = new ArrayList<>();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
@@ -101,22 +101,23 @@ public class ClickHistoryService {
                 fromDate = Utils.addDayToDate(fromDate, -1);
                 toDate = Utils.addDayToDate(toDate, -1);
             }
-            long clicks = clickHistoryDAO.countByTypeAndCreatedAtBetween(type, fromDate, toDate);
+            long clicks = accountId == null ? clickHistoryDAO.countByTypeAndCreatedAtBetween(type, fromDate, toDate)
+                    : clickHistoryDAO.countByAccountIdAndTypeAndCreatedAtBetween(Long.parseLong(accountId), type, fromDate, toDate);
             clickCount.add(df2.format(clicks));
         }
         return clickCount;
     }
 
-    public List<String> getTotalSentStats(Date now) {
+    public List<String> getTotalSentStats(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
-        List<String> sent1 = getClickSentCountByType(ClickSentHistory.ClickSentType.MATCHING_SOURCE);
-        List<String> click1 = getClickCountByType(now, ClickHistory.ClickType.MATCHING);
-        List<String> sent2 = getClickSentCountByType(ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
+        List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_SOURCE);
+        List<String> click1 = getClickCountByType(now, accountId, ClickHistory.ClickType.MATCHING);
+        List<String> sent2 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
         List<String> click2 = click1;
-        List<String> sent3 = getClickSentCountByType(ClickSentHistory.ClickSentType.REPLY_SOURCE);
-        List<String> click3 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_SOURCE);
-        List<String> sent4 = getClickSentCountByType(ClickSentHistory.ClickSentType.REPLY_DESTINATION);
-        List<String> click4 = getClickCountByType(now, ClickHistory.ClickType.EXTRACT_DESTINATION);
+        List<String> sent3 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_SOURCE);
+        List<String> click3 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_SOURCE);
+        List<String> sent4 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_DESTINATION);
+        List<String> click4 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_DESTINATION);
         stats.addAll(sent1);
         stats.addAll(getSentRate(sent1, click1));
         stats.addAll(sent2);
@@ -128,7 +129,7 @@ public class ClickHistoryService {
         return stats;
     }
 
-    private List<String> getClickSentCountByType(String type) {
+    private List<String> getClickSentCountByType(String accountId, String type) {
         List<String> clickSentCount = new ArrayList<>();
         Date now = new Date();
         Date fromDate = Utils.atStartOfDay(now);
@@ -138,7 +139,8 @@ public class ClickHistoryService {
                 fromDate = Utils.addDayToDate(fromDate, -1);
                 toDate = Utils.addDayToDate(toDate, -1);
             }
-            long clicks = clickSentHistoryDAO.countByTypeAndCreatedAtBetween(type, fromDate, toDate);
+            long clicks = accountId == null ? clickSentHistoryDAO.countByTypeAndCreatedAtBetween(type, fromDate, toDate)
+                    : clickSentHistoryDAO.countByAccountIdAndTypeAndCreatedAtBetween(Long.parseLong(accountId), type, fromDate, toDate);
             clickSentCount.add(df2.format(clicks));
         }
         return clickSentCount;

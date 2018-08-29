@@ -76,12 +76,12 @@ public class IndexController {
 
     @RequestMapping(value="/user/dashboard/userStatistics", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getUserStatistics (){
+    ResponseEntity<?> getUserStatistics (@RequestParam(value = "accountId", required = false) String accountId){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             Date now = new Date();
-            List<String> clickCount = clickHistoryService.getClickCount(now);
-            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
+            List<String> clickCount = clickHistoryService.getClickCount(now, accountId);
+            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now, accountId);
             List<Account> accounts = accountService.getAllUserRoleAccounts();
             List<AccountDTO> accountDTOList = new ArrayList<>();
             for(Account account : accounts) {
