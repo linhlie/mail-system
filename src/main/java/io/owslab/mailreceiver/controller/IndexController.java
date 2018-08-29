@@ -1,11 +1,14 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.AccountDTO;
+import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import org.slf4j.Logger;
@@ -45,6 +48,9 @@ public class IndexController {
     @Autowired
     private ClickHistoryService clickHistoryService;
 
+    @Autowired
+    private AccountService accountService;
+
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @RequestMapping("/default")
@@ -76,6 +82,12 @@ public class IndexController {
             Date now = new Date();
             List<String> clickCount = clickHistoryService.getClickCount(now);
             List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
+            List<Account> accounts = accountService.getAllUserRoleAccounts();
+            List<AccountDTO> accountDTOList = new ArrayList<>();
+            for(Account account : accounts) {
+                accountDTOList.add(new AccountDTO(account));
+            }
+            responseBody.setUsers(accountDTOList);
             responseBody.setClickCount(clickCount);
             responseBody.setSendPerClick(sendPerClick);
             responseBody.setMsg("done");

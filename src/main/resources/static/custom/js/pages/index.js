@@ -1,13 +1,19 @@
 
 (function () {
     var lastSelectedMailAccountId = "";
+    var lastSelectedUserAccountId = "";
     var accountSelectorId = "#accountSelector";
+    var userSelectorId = "#userSelector";
     $(function () {
         loadMailData();
         loadUserData();
         $(accountSelectorId).change(function() {
             lastSelectedMailAccountId = this.value;
             loadMailData(this.value);
+        });
+        $(userSelectorId).change(function() {
+            lastSelectedUserAccountId = this.value;
+            loadUserData(this.value);
         });
     });
     
@@ -46,7 +52,7 @@
         });
     }
 
-    function loadUserData() {
+    function loadUserData(accountId) {
         $('body').loadingModal('destroy');
         $('body').loadingModal({
             position: 'auto',
@@ -56,10 +62,14 @@
             backgroundColor: 'rgb(0,0,0)',
             animation: 'doubleBounce',
         });
+        var url = "/user/dashboard/userStatistics";
+        if(accountId && accountId.length > 0) {
+            url = url + "?accountId=" + accountId;
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/dashboard/userStatistics",
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {
@@ -109,6 +119,9 @@
     }
     
     function pushUserData(data) {
+        if(data && data.users) {
+            updateUserSelector(data.users)
+        }
         if(data && data.clickCount){
             pushDataToTable(data.clickCount, "clickCount");
         }
@@ -123,6 +136,23 @@
             var row   = Math.floor(i/8) + 2;
             $("#" + tableId + " tr:nth-child(" + row + ") td:nth-child(" + col  + ")").html(data[i]);
         }
+    }
+    
+    function updateUserSelector(users) {
+        users = users || [];
+        $(userSelectorId).empty();
+        $(userSelectorId).append($('<option>', {
+            selected: lastSelectedUserAccountId === "",
+            value: "",
+            text : "全てのユーザー",
+        }));
+        $.each(users, function (i, item) {
+            $(userSelectorId).append($('<option>', {
+                value: item.id,
+                text : item.name ? item.name : item.userName,
+                selected: (item.id.toString() === lastSelectedUserAccountId)
+            }));
+        });
     }
 
 })(jQuery);
