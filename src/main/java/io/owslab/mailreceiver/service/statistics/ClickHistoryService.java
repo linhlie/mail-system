@@ -2,8 +2,10 @@ package io.owslab.mailreceiver.service.statistics;
 
 import io.owslab.mailreceiver.dao.ClickHistoryDAO;
 import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
+import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,16 +27,21 @@ public class ClickHistoryService {
     @Autowired
     private ClickSentHistoryDAO clickSentHistoryDAO;
 
+    @Autowired
+    private AccountService accountService;
+
     private DecimalFormat df = new DecimalFormat("#,##0.00");
     private DecimalFormat df2 = new DecimalFormat("#,##0");
 
     public void save(String type) {
-        ClickHistory history = new ClickHistory(type);
+        long loggedInAccountId = accountService.getLoggedInAccountId();
+        ClickHistory history = new ClickHistory(type, loggedInAccountId);
         clickHistoryDAO.save(history);
     }
 
     public void saveSent(String type) {
-        ClickSentHistory history = new ClickSentHistory(type);
+        long loggedInAccountId = accountService.getLoggedInAccountId();
+        ClickSentHistory history = new ClickSentHistory(type, loggedInAccountId);
         clickSentHistoryDAO.save(history);
     }
 

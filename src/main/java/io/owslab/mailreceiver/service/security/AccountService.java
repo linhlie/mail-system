@@ -5,7 +5,10 @@ import io.owslab.mailreceiver.form.AdministratorSettingForm;
 import io.owslab.mailreceiver.form.RegisterAccountForm;
 import io.owslab.mailreceiver.form.UserAccountForm;
 import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.model.MyUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -105,5 +108,10 @@ public class AccountService {
             user.setUserRole(Account.Role.MEMBER);
         }
         accountDAO.save(user);
+    }
+
+    public long getLoggedInAccountId() {
+        MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user.getUserId();
     }
 }

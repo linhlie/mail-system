@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.security;
 
 import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.model.MyUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,10 +47,10 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
-        String userName = account.getName() != null ? account.getName() : account.getUserName();
-        UserDetails userDetails = (UserDetails) new User(userName, //
+        String profileName = account.getName() != null ? account.getName() : account.getUserName();
+        UserDetails userDetails = (UserDetails) new MyUser(account.getUserName(), //
                 account.getEncryptedPassword(), enabled, accountNonExpired, //
-                credentialsNonExpired, accountNonLocked, grantList);
+                credentialsNonExpired, accountNonLocked, grantList, profileName, account.getId());
 
         return userDetails;
     }

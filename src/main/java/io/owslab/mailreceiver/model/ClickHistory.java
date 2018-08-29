@@ -15,6 +15,7 @@ public class ClickHistory {
     private long id;
     private String type;
     private Date createdAt;
+    private long accountId;
 
     public ClickHistory() {
     }
@@ -23,14 +24,10 @@ public class ClickHistory {
         this.id = id;
     }
 
-    public ClickHistory(String type){
+    public ClickHistory(String type, long accountId){
         this.type = type;
         this.createdAt = new Date();
-    }
-
-    public ClickHistory(String type, Date createdAt) {
-        this.type = type;
-        this.createdAt = createdAt;
+        this.accountId = accountId;
     }
 
     public class ClickType {
