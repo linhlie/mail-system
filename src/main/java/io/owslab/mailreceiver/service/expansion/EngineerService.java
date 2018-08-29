@@ -134,7 +134,6 @@ public class EngineerService {
                 Date endDate = Utils.addMonthsToDate(startDate, engineer.getExtendMonth());
                 endDate = Utils.addDayToDate(endDate, -1);
                 endDate = Utils.atEndOfDay(endDate);
-                engineer.setProjectPeriodStart(startDate.getTime());
                 engineer.setProjectPeriodEnd(endDate.getTime());
                 engineerDAO.save(engineer);
             }
