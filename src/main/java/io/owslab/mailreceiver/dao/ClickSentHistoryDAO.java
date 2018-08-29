@@ -10,4 +10,5 @@ import java.util.Date;
  */
 public interface ClickSentHistoryDAO extends PagingAndSortingRepository<ClickSentHistory, Long> {
     long countByTypeAndCreatedAtBetween(String type, Date fromDate, Date toDate);
+    long countByAccountIdAndTypeAndCreatedAtBetween(long accountId, String type, Date fromDate, Date toDate);
 }

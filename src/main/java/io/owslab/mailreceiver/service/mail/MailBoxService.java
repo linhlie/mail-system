@@ -618,9 +618,15 @@ public class MailBoxService {
         }
     }
 
-    public String getLatestReceive() {
+    public String getLatestReceive(String accountId) {
         try {
-            List<Email> emailList = emailDAO.findFirst1ByStatusOrderByReceivedAtDesc(Email.Status.DONE);
+            List<Email> emailList;
+            if(accountId == null) {
+                emailList = emailDAO.findFirst1ByStatusOrderByReceivedAtDesc(Email.Status.DONE);
+            } else {
+                emailList = emailDAO.findFirst1ByAccountIdAndStatusOrderByReceivedAtDesc(Long.parseLong(accountId), Email.Status.DONE);
+            }
+
             if(emailList.size() > 0) {
                 Email email = emailList.get(0);
                 return Utils.formatGMT2(email.getReceivedAt()) + " (" + p.format(email.getReceivedAt()) + ")";
@@ -631,17 +637,7 @@ public class MailBoxService {
         return "不詳";
     }
 
-    public List<String> getReceiveMailNumberStats(Date now){
-        List<String> stats = new ArrayList<>();
-        List<EmailAccount> accountList = mailAccountsService.list();
-        for(EmailAccount account : accountList) {
-            List<String> statsExceptAccount = getReceiveMailNumberExceptFrom(now, account.getAccount());
-            stats.addAll(statsExceptAccount);
-        }
-        return stats;
-    }
-
-    public List<String> getReceiveMailNumberExceptFrom(Date now, String from) {
+    public List<String> getReceiveMailNumberStats(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
@@ -650,7 +646,8 @@ public class MailBoxService {
                 fromDate = Utils.addDayToDate(fromDate, -1);
                 toDate = Utils.addDayToDate(toDate, -1);
             }
-            long clicks = emailDAO.countByFromIgnoreCaseNotAndReceivedAtBetweenAndStatus(from, fromDate, toDate, Email.Status.DONE);
+            long clicks = accountId == null ? emailDAO.countByReceivedAtBetweenAndStatus(fromDate, toDate, Email.Status.DONE)
+                        : emailDAO.countByAccountIdAndReceivedAtBetweenAndStatus(Long.parseLong(accountId), fromDate, toDate, Email.Status.DONE);
             stats.add(df.format(clicks));
         }
         return stats;

@@ -1,10 +1,15 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.AccountDTO;
+import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +19,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
@@ -35,6 +37,9 @@ public class IndexController {
     private MailBoxService mailBoxService;
 
     @Autowired
+    private MailAccountsService mailAccountsService;
+
+    @Autowired
     private FetchMailsService fetchMailsService;
 
     @Autowired
@@ -42,6 +47,9 @@ public class IndexController {
 
     @Autowired
     private ClickHistoryService clickHistoryService;
+
+    @Autowired
+    private AccountService accountService;
 
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -66,21 +74,46 @@ public class IndexController {
         return "index";
     }
 
-    @RequestMapping(value="/user/dashboard/statistics", method = RequestMethod.GET)
+    @RequestMapping(value="/user/dashboard/userStatistics", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getStatistics (){
+    ResponseEntity<?> getUserStatistics (@RequestParam(value = "accountId", required = false) String accountId){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             Date now = new Date();
-            String latestReceive = mailBoxService.getLatestReceive();
-            List<String> clickCount = clickHistoryService.getClickCount(now);
-            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now);
-            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now);
+            List<String> clickCount = clickHistoryService.getClickCount(now, accountId);
+            List<String> sendPerClick = clickHistoryService.getTotalSentStats(now, accountId);
+            List<Account> accounts = accountService.getAllUserRoleAccounts();
+            List<AccountDTO> accountDTOList = new ArrayList<>();
+            for(Account account : accounts) {
+                accountDTOList.add(new AccountDTO(account));
+            }
+            responseBody.setUsers(accountDTOList);
+            responseBody.setClickCount(clickCount);
+            responseBody.setSendPerClick(sendPerClick);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            logger.error("getStatistics: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+            return ResponseEntity.ok(responseBody);
+        }
+    }
+
+    @RequestMapping(value="/user/dashboard/mailStatistics", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getMailStatistics (@RequestParam(value = "accountId", required = false) String accountId){
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        try {
+            Date now = new Date();
+            String latestReceive = mailBoxService.getLatestReceive(accountId);
+            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now, accountId);
+            List<EmailAccount> emailAccounts = mailAccountsService.list();
             responseBody.setHasSystemError(ReportErrorService.hasSystemError());
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);
-            responseBody.setClickCount(clickCount);
-            responseBody.setSendPerClick(sendPerClick);
+            responseBody.setEmailAccounts(emailAccounts);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);

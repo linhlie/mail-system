@@ -16,6 +16,9 @@
             <p>エラーが発生しました。 管理者に連絡してください。</p>
         </div>
         <div class="row">
+            <select id="accountSelector" style="margin-left: 100px;">
+                <option value="">全ての受信アカウント</option>
+            </select>
             <div class="stats-wrapper">
                 <span><b>最新のメール受信日時</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span id="latestReceive">&nbsp;</span>
@@ -23,8 +26,47 @@
                     <span class="dashboard-box-icon"><i class="fa fa-clock-o"></i></span>
                 </div>
             </div>
+            <div class="stats-wrapper">
+                <b>メール受信件数</b>
+                <table id="receiveMailNumber">
+                    <tr>
+                        <th></th>
+                        <th scope="col">本日</th>
+                        <th scope="col">前日</th>
+                        <th scope="col">2日前</th>
+                        <th scope="col">3日前</th>
+                        <th scope="col">4日前</th>
+                        <th scope="col">5日前</th>
+                        <th scope="col">6日前</th>
+                        <th scope="col">7日前</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <div class="dashboard-number-circle-wrapper-head ">
+                                <div class="dashboard-number-circle">
+                                    <span>1</span>
+                                </div>
+                            </div>
+                        </th>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+                <div class="dashboard-icon-wrapper">
+                    <span class="dashboard-box-icon"><i class="fa fa-envelope-o"></i></span>
+                </div>
+            </div>
         </div>
         <div class="row">
+            <select id="userSelector" style="margin-left: 100px; margin-top: 15px;">
+                <option value="">全てのユーザー</option>
+            </select>
             <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
                 <table id="clickCount">
@@ -44,7 +86,7 @@
                             <span>元のみ抽出</span>
                             <div class="dashboard-number-circle-wrapper-head ">
                                 <div class="dashboard-number-circle">
-                                    <span>1</span>
+                                    <span>2</span>
                                 </div>
                             </div>
                         </th>
@@ -62,7 +104,7 @@
                             <span>先のみ抽出</span>
                             <div class="dashboard-number-circle-wrapper-head ">
                                 <div class="dashboard-number-circle">
-                                    <span>2</span>
+                                    <span>3</span>
                                 </div>
                             </div>
                         </th>
@@ -80,7 +122,7 @@
                             <span>マッチング</span>
                             <div class="dashboard-number-circle-wrapper-head ">
                                 <div class="dashboard-number-circle">
-                                    <span>3</span>
+                                    <span>4</span>
                                 </div>
                             </div>
                         </th>
@@ -98,49 +140,6 @@
                     <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="stats-wrapper">
-                <b>メール受信件数</b>
-                <table id="receiveMailNumber">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <div class="dashboard-number-circle-wrapper-head ">
-                                <div class="dashboard-number-circle">
-                                    <span>4</span>
-                                </div>
-                            </div>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div style="padding-top: 10px;">
-                    <span style="padding-left: 160px">※受信アカウントに登録されているメールアドレスからの受信は含まない</span>
-                </div>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-envelope-o"></i></span>
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="stats-wrapper">
                 <b>メール送信件数<br/>1回のクリックでの送信件数</b>
                 <table id="sendPerClick">
@@ -181,7 +180,7 @@
                                 </div>
                                 <span style="font-size: 20px">÷</span>
                                 <div class="dashboard-number-circle">
-                                    <span>3</span>
+                                    <span>4</span>
                                 </div>
                             </div>
                         </th>
@@ -220,7 +219,7 @@
                                 </div>
                                 <span style="font-size: 20px">÷</span>
                                 <div class="dashboard-number-circle">
-                                    <span>3</span>
+                                    <span>4</span>
                                 </div>
                             </div>
                         </th>
@@ -259,7 +258,7 @@
                                 </div>
                                 <span style="font-size: 20px">÷</span>
                                 <div class="dashboard-number-circle">
-                                    <span>1</span>
+                                    <span>2</span>
                                 </div>
                             </div>
                         </th>
@@ -298,7 +297,7 @@
                                 </div>
                                 <span style="font-size: 20px">÷</span>
                                 <div class="dashboard-number-circle">
-                                    <span>2</span>
+                                    <span>3</span>
                                 </div>
                             </div>
                         </th>

@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.response;
 
+import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.model.EmailAccount;
 
 import java.util.List;
 
@@ -13,6 +15,8 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private List<String> clickCount;
     private List<String> receiveMailNumber;
     private List<String> sendPerClick;
+    private List<EmailAccount> emailAccounts;
+    private List<AccountDTO> users;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -64,5 +68,21 @@ public class DashboardResponseBody extends AjaxResponseBody {
 
     public void setHasSystemError(boolean hasSystemError) {
         this.hasSystemError = hasSystemError;
+    }
+
+    public List<EmailAccount> getEmailAccounts() {
+        return emailAccounts;
+    }
+
+    public void setEmailAccounts(List<EmailAccount> emailAccounts) {
+        this.emailAccounts = emailAccounts;
+    }
+
+    public List<AccountDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<AccountDTO> users) {
+        this.users = users;
     }
 }

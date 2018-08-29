@@ -1,11 +1,24 @@
 
 (function () {
-
+    var lastSelectedMailAccountId = "";
+    var lastSelectedUserAccountId = "";
+    var accountSelectorId = "#accountSelector";
+    var userSelectorId = "#userSelector";
     $(function () {
-        loadData();
+        loadMailData();
+        loadUserData();
+        $(accountSelectorId).change(function() {
+            lastSelectedMailAccountId = this.value;
+            loadMailData(this.value);
+        });
+        $(userSelectorId).change(function() {
+            lastSelectedUserAccountId = this.value;
+            loadUserData(this.value);
+        });
     });
     
-    function loadData() {
+    function loadMailData(accountId) {
+        $('body').loadingModal('destroy');
         $('body').loadingModal({
             position: 'auto',
             text: 'ローディング...',
@@ -14,17 +27,56 @@
             backgroundColor: 'rgb(0,0,0)',
             animation: 'doubleBounce',
         });
+        var url = "/user/dashboard/mailStatistics";
+        if(accountId && accountId.length > 0) {
+            url = url + "?accountId=" + accountId;
+        }
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/user/dashboard/statistics",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if (data && data.status) {
+                    pushMailData(data);
+                } else {
+                    console.error("[ERROR] dashboard load data failed: ");
+                }
+            },
+            error: function (e) {
+                $('body').loadingModal('hide');
+                console.error("[ERROR] dashboard load data error: ", e);
+            }
+        });
+    }
+
+    function loadUserData(accountId) {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        var url = "/user/dashboard/userStatistics";
+        if(accountId && accountId.length > 0) {
+            url = url + "?accountId=" + accountId;
+        }
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
             cache: false,
             timeout: 600000,
             success: function (data) {
                 $('body').loadingModal('hide');
                 if (data && data.status) {
                     console.log("[LOG] dashboard load data  success: ", data);
-                    pushData(data);
+                    pushUserData(data);
                 } else {
                     console.error("[ERROR] dashboard load data failed: ");
                 }
@@ -36,16 +88,42 @@
         });
     }
     
-    function pushData(data) {
+    function pushMailData(data) {
         data && data.hasSystemError ? $("#hasSystemError").show() : $("#hasSystemError").hide();
+        if(data && data.emailAccounts) {
+            updateMailAcountSelector(data.emailAccounts)
+        }
         if(data && data.latestReceive){
             $("#latestReceive").text(data.latestReceive);
         }
-        if(data && data.clickCount){
-            pushDataToTable(data.clickCount, "clickCount");
-        }
         if(data && data.receiveMailNumber){
             pushDataToTable(data.receiveMailNumber, "receiveMailNumber");
+        }
+    }
+
+    function updateMailAcountSelector(accounts) {
+        accounts = accounts || [];
+        $(accountSelectorId).empty();
+        $(accountSelectorId).append($('<option>', {
+            selected: lastSelectedMailAccountId === "",
+            value: "",
+            text : "全ての受信アカウント",
+        }));
+        $.each(accounts, function (i, item) {
+            $(accountSelectorId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id.toString() === lastSelectedMailAccountId)
+            }));
+        });
+    }
+    
+    function pushUserData(data) {
+        if(data && data.users) {
+            updateUserSelector(data.users)
+        }
+        if(data && data.clickCount){
+            pushDataToTable(data.clickCount, "clickCount");
         }
         if(data && data.sendPerClick){
             pushDataToTable(data.sendPerClick, "sendPerClick");
@@ -58,6 +136,23 @@
             var row   = Math.floor(i/8) + 2;
             $("#" + tableId + " tr:nth-child(" + row + ") td:nth-child(" + col  + ")").html(data[i]);
         }
+    }
+    
+    function updateUserSelector(users) {
+        users = users || [];
+        $(userSelectorId).empty();
+        $(userSelectorId).append($('<option>', {
+            selected: lastSelectedUserAccountId === "",
+            value: "",
+            text : "全てのユーザー",
+        }));
+        $.each(users, function (i, item) {
+            $(userSelectorId).append($('<option>', {
+                value: item.id,
+                text : item.name ? item.name : item.userName,
+                selected: (item.id.toString() === lastSelectedUserAccountId)
+            }));
+        });
     }
 
 })(jQuery);

@@ -946,7 +946,7 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
 }
 
 .dashboard .stats-wrapper {
-    margin-top: 15px;
+    margin-top: 5px;
     background-color: white;
     margin-left: 100px;
     margin-right: 100px;
