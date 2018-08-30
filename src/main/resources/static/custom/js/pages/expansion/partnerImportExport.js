@@ -26,6 +26,7 @@
                 var formData = new FormData();
                 formData.append('file', file);
                 function onSuccess(response) {
+                    hideloading();
                     if(response && response.status) {
                         $.alert("取引先のインポートに成功しました");
                     } else {
@@ -34,15 +35,42 @@
                 }
 
                 function onError(response) {
+                    hideloading();
                     $.alert("取引先のインポートに失敗しました");
                 }
-                importPartners(formData, includeHeader, onSuccess, onError)
+                showImportPartnerLoading();
+                importPartners(formData, includeHeader, onSuccess, onError);
             } else {
                 $.alert("インポートするファイルを選択");
             }
         } else if(actionType == "export") {
             getPartnerExport(includeHeader);
         }
+    }
+    
+    function showImportPartnerLoading() {
+        showLoading("取引先のインポート中");
+    }
+
+    function showImportGroupLoading() {
+        showLoading("取引先グループのインポート中");
+    }
+
+    function showLoading(message) {
+        hideloading();
+        $('body').loadingModal({
+            position: 'auto',
+            text: message,
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+    }
+    
+    function hideloading() {
+        $('body').loadingModal('hide');
+        $('body').loadingModal('destroy');
     }
     
     function doGroupActions() {
@@ -54,6 +82,7 @@
                 var formData = new FormData();
                 formData.append('file', file);
                 function onSuccess(response) {
+                    hideloading();
                     if(response && response.status) {
                         $.alert("取引先グループのインポートに成功しました");
                     } else {
@@ -62,8 +91,10 @@
                 }
 
                 function onError(response) {
+                    hideloading();
                     $.alert("取引先グループのインポートに失敗しました");
                 }
+                showImportGroupLoading();
                 importPartnerGroups(formData, includeHeader, onSuccess, onError)
             } else {
                 $.alert("インポートするファイルを選択");
