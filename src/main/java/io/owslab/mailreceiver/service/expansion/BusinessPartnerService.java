@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.dto.CSVPartnerGroupDTO;
+import io.owslab.mailreceiver.dto.ImportLogDTO;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
@@ -174,13 +175,12 @@ public class BusinessPartnerService {
         return withPartnerId + "-" + partnerId;
     }
 
-    public List<BusinessPartner> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
         File file = convertMultiPartToFile(multipartFile);
 
-        List<BusinessPartner> saveList = new ArrayList<BusinessPartner>();
-        LinkedHashMap<String, BusinessPartner> partnersMap = new LinkedHashMap<>();
-        List<BusinessPartner> partners;
+        List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
+        List<BusinessPartner> partners = new ArrayList<>();
 
         try {
             String encoding = UniversalDetector.detectCharset(file);
@@ -199,20 +199,22 @@ public class BusinessPartnerService {
                     beanReader.getHeader(skipHeader);
                 }
                 while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
-                    String key = partnerDTO.getPartnerCode();
-                    if(!partnersMap.containsKey(key)) {
-                        partnersMap.put(key, partnerDTO.build());
-                    }
+                    partners.add(partnerDTO.build());
                 }
-                partners = new ArrayList<>(partnersMap.values());
-                for(BusinessPartner partner : partners) {
+                for(int line = 0; line < partners.size(); line++) {
+                    BusinessPartner partner = partners.get(line);
                     BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
                     if(existPartner == null) {
-                        saveList.add(partner);
+                        partnerDAO.save(partner);
+                    } else {
+                        String type = "【取引先インポート】";
+                        int lineIndex = skipHeader ? line + 2 : line + 1;
+                        String info = "取引先名 " + partner.getName();
+                        String detail = "識別ID「" + partner.getPartnerCode() + "」は既に使用されているためインポートしません。";
+                        ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                        importLogs.add(importLog);
                     }
                 }
-
-                partnerDAO.save(saveList);
             }
         } catch (Exception e) {
             throw new Exception("取引先のインポートに失敗しました");
@@ -220,16 +222,15 @@ public class BusinessPartnerService {
             file.delete();
         }
 
-        return saveList;
+        return importLogs;
     }
 
-    public List<BusinessPartnerGroup> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
         File file = convertMultiPartToFile(multipartFile);
 
-        List<BusinessPartnerGroup> saveList = new ArrayList<BusinessPartnerGroup>();
-        LinkedHashMap<String, BusinessPartnerGroup> partnerGroupsMap = new LinkedHashMap<>();
-        List<BusinessPartnerGroup> partnerGroups;
+        List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
+        List<CSVPartnerGroupDTO> partnerGroups = new ArrayList<>();
 
         try {
             String encoding = UniversalDetector.detectCharset(file);
@@ -247,28 +248,61 @@ public class BusinessPartnerService {
                     beanReader.getHeader(skipHeader);
                 }
                 while ((partnerGroupDTO = beanReader.read(CSVPartnerGroupDTO.class, headers)) != null) {
-                    BusinessPartner partner = findOneByPartnerCode(partnerGroupDTO.getPartnerCode());
-                    BusinessPartner withPartner = findOneByPartnerCode(partnerGroupDTO.getWithPartnerCode());
-                    if(partner != null && withPartner != null) {
-                        BusinessPartnerGroup group = new BusinessPartnerGroup(partner, withPartner);
-                        String key = generateKey(group);
-                        if(!partnerGroupsMap.containsKey(key)) {
-                            partnerGroupsMap.put(key, group);
+                    partnerGroups.add(partnerGroupDTO);
+                }
+                for(int line = 0; line < partnerGroups.size(); line++) {
+                    CSVPartnerGroupDTO partnerGroup = partnerGroups.get(line);
+                    String partnerCode = partnerGroup.getPartnerCode();
+                    String withPartnerCode = partnerGroup.getWithPartnerCode();
+                    if(partnerCode == null || withPartnerCode == null) {
+                        String type = "【取引先グループインポート】";
+                        int lineIndex = skipHeader ? line + 2 : line + 1;
+                        String info = "取引先名 " + partnerGroup.getPartnerName();
+                        String detail;
+                        if(partnerCode == null && withPartnerCode != null) {
+                            detail = "識別IDがありません。";
+                        } else if (partnerCode != null && withPartnerCode == null) {
+                            detail = "取引グループ識別IDがありません。";
+                        } else {
+                            detail = "識別IDがありません、取引グループ識別IDがありません。";
                         }
+                        ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
+                    BusinessPartner partner = findOneByPartnerCode(partnerGroup.getPartnerCode());
+                    BusinessPartner withPartner = findOneByPartnerCode(partnerGroup.getWithPartnerCode());
+                    if(partner != null && withPartner != null) {
+                        List<BusinessPartnerGroup> existPartnerGroups = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partner.getId(), withPartner.getId());
+                        if(existPartnerGroups.size() == 0) {
+                            List<BusinessPartnerGroup> saveList = new ArrayList<>();
+                            saveList.add(new BusinessPartnerGroup(partner, withPartner));
+                            saveList.add(new BusinessPartnerGroup(withPartner, partner));
+                            partnerGroupDAO.save(saveList);
+                        } else {
+                            String type = "【取引先グループインポート】";
+                            int lineIndex = skipHeader ? line + 2 : line + 1;
+                            String info = "取引先名 " + partnerGroup.getPartnerName();
+                            String detail = "識別ID「" + partnerGroup.getPartnerCode() + "」- 取引グループ 識別ID「" + partnerGroup.getWithPartnerCode() + "」は既に使用されているためインポートしません。";
+                            ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                            importLogs.add(importLog);
+                        }
+                    } else {
+                        String type = "【取引先グループインポート】";
+                        int lineIndex = skipHeader ? line + 2 : line + 1;
+                        String info = "取引先名 " + partnerGroup.getPartnerName();
+                        String detail;
+                        if(partner == null && withPartner != null) {
+                            detail = "識別は存在しません。";
+                        } else if (partner != null && withPartner == null) {
+                            detail = "取引グループは存在しません。";
+                        } else {
+                            detail = "識別は存在しません、取引グループは存在しません。";
+                        }
+                        ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                        importLogs.add(importLog);
                     }
                 }
-                partnerGroups = new ArrayList<>(partnerGroupsMap.values());
-                for(BusinessPartnerGroup partnerGroup : partnerGroups) {
-                    BusinessPartner partner = partnerGroup.getPartner();
-                    BusinessPartner withPartner = partnerGroup.getWithPartner();
-                    List<BusinessPartnerGroup> existPartnerGroups = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partner.getId(), withPartner.getId());
-                    if(existPartnerGroups.size() == 0) {
-                        saveList.add(new BusinessPartnerGroup(partner, withPartner));
-                        saveList.add(new BusinessPartnerGroup(withPartner, partner));
-                    }
-                }
-
-                partnerGroupDAO.save(saveList);
             }
         } catch (Exception e) {
             throw new Exception("取引先グループのインポートに失敗しました");
@@ -276,7 +310,7 @@ public class BusinessPartnerService {
             file.delete();
         }
 
-        return saveList;
+        return importLogs;
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {

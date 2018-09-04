@@ -28,6 +28,7 @@
                 function onSuccess(response) {
                     hideloading();
                     if(response && response.status) {
+                        updateImportLogs(response.list);
                         $.alert("取引先のインポートに成功しました");
                     } else {
                         $.alert("取引先のインポートに失敗しました");
@@ -38,6 +39,7 @@
                     hideloading();
                     $.alert("取引先のインポートに失敗しました");
                 }
+                clearImportLogs();
                 showImportPartnerLoading();
                 importPartners(formData, includeHeader, onSuccess, onError);
             } else {
@@ -84,6 +86,7 @@
                 function onSuccess(response) {
                     hideloading();
                     if(response && response.status) {
+                        updateImportLogs(response.list);
                         $.alert("取引先グループのインポートに成功しました");
                     } else {
                         $.alert("取引先グループのインポートに失敗しました");
@@ -94,6 +97,7 @@
                     hideloading();
                     $.alert("取引先グループのインポートに失敗しました");
                 }
+                clearImportLogs();
                 showImportGroupLoading();
                 importPartnerGroups(formData, includeHeader, onSuccess, onError)
             } else {
@@ -115,6 +119,24 @@
             fileName = fileName.replace(/C:\\fakepath\\/i, '');
             $("#importGroup").val(fileName);
         });
+    }
+    
+    function updateImportLogs(logs) {
+        logs = logs || [];
+        var innerHTML = "";
+        for(var i = 0; i < logs.length; i++) {
+            innerHTML = innerHTML + buildLogLine(logs[i]);
+        }
+        $("#importLogs").html(innerHTML);
+    }
+    
+    function buildLogLine(log) {
+        var line = "<p><b>" + log.type + " " + log.line +"行目:</b>" + log.info + " ・・・・ <span>" + log.detail + "</span></p>"
+        return line;
+    }
+    
+    function clearImportLogs() {
+        $("#importLogs").html("");
     }
 
 
