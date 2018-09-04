@@ -9,6 +9,7 @@ import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.utils.CSVBundle;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -181,7 +183,13 @@ public class BusinessPartnerService {
         List<BusinessPartner> partners;
 
         try {
-            try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
+            String encoding = UniversalDetector.detectCharset(file);
+            if(encoding == null) {
+                encoding = "Shift-JIS";
+            }
+            try(ICsvBeanReader beanReader = new CsvBeanReader(new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file),
+                            Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
                 final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
