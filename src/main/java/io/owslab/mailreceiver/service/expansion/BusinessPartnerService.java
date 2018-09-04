@@ -311,7 +311,7 @@ public class BusinessPartnerService {
                         } else {
                             String type = "【取引先グループインポート】";
                             int lineIndex = skipHeader ? line + 2 : line + 1;
-                            String info = "取引先名 " + partnerGroup.getPartnerName();
+                            String info = "取引先名 " + Objects.toString(partnerGroup.getPartnerName());
                             String detail = "識別ID「" + partnerGroup.getPartnerCode() + "」- 取引グループ 識別ID「" + partnerGroup.getWithPartnerCode() + "」は既に使用されているためインポートしません。";
                             ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
                             importLogs.add(importLog);
@@ -319,7 +319,7 @@ public class BusinessPartnerService {
                     } else {
                         String type = "【取引先グループインポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;
-                        String info = "取引先名 " + partnerGroup.getPartnerName();
+                        String info = "取引先名 " + Objects.toString(partnerGroup.getPartnerName());
                         String detail;
                         if(partner == null && withPartner != null) {
                             detail = "識別は存在しません。";
