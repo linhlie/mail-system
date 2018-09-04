@@ -232,7 +232,13 @@ public class BusinessPartnerService {
         List<BusinessPartnerGroup> partnerGroups;
 
         try {
-            try(ICsvBeanReader beanReader = new CsvBeanReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE))
+            String encoding = UniversalDetector.detectCharset(file);
+            if(encoding == null) {
+                encoding = "Shift-JIS";
+            }
+            try(ICsvBeanReader beanReader = new CsvBeanReader(new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file),
+                            Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 final String[] headers = new String[]{ "partnerName", "partnerCode", "withPartnerName", "withPartnerCode" };
 
