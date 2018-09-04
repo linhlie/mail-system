@@ -1,0 +1,1 @@
+ALTER TABLE `business_partners` MODIFY `domain1` TEXT DEFAULT NULL;

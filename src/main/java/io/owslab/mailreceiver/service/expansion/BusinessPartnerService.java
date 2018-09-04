@@ -203,6 +203,35 @@ public class BusinessPartnerService {
                 }
                 for(int line = 0; line < partners.size(); line++) {
                     BusinessPartner partner = partners.get(line);
+                    String partnerName = partner.getName();
+                    String partnerKanaName = partner.getKanaName();
+                    String partnerCode = partner.getPartnerCode();
+                    String domain1 = partner.getDomain1();
+                    String domain2 = partner.getDomain2();
+                    String domain3 = partner.getDomain3();
+                    if(partnerName == null || partnerKanaName == null || partnerCode == null
+                        || (domain1 == null && domain2 == null && domain3 == null)) {
+                        String type = "【取引先インポート】";
+                        int lineIndex = skipHeader ? line + 2 : line + 1;
+                        String info = "取引先名 " + Objects.toString(partnerName, "");
+                        List<String> missingList = new ArrayList<>();
+                        if(partnerName == null) {
+                            missingList.add("取引先名称がありません");
+                        }
+                        if(partnerKanaName == null) {
+                            missingList.add("カナ名称がありません");
+                        }
+                        if(partnerCode == null) {
+                            missingList.add("識別IDがありません");
+                        }
+                        if(domain1 == null && domain2 == null && domain3 == null) {
+                            missingList.add("ドメインがありません");
+                        }
+                        String detail = String.join("、", missingList) + "。";
+                        ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
                     BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
                     if(existPartner == null) {
                         partnerDAO.save(partner);

@@ -28,7 +28,6 @@ public class BusinessPartner {
 
     private int stockShare;
 
-    @NotNull
     private String domain1;
 
     private String domain2;
