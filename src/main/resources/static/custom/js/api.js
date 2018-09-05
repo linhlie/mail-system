@@ -203,8 +203,28 @@ function getPartnerGroupExport(includeHeader) {
     _doDownload(url);
 }
 
+function getEngineerExport(includeHeader) {
+    includeHeader = !!includeHeader;
+    var url = "/expansion/exportCSV?type=engineer&&header=" + includeHeader;
+    _doDownload(url);
+}
+
 function importPartners(data, includeHeader, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function importEngineers(data, includeHeader, onSuccess, onError) {
+    var url = '/expansion/importEngineer?header=' + includeHeader;
     $.ajax({
         url: url,
         type: 'POST',
