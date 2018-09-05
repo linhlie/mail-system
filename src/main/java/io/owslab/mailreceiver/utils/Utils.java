@@ -18,12 +18,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class Utils {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat DATE_FORMAT_2 = new SimpleDateFormat("yyyy/MM/dd");
 
     public static final SimpleDateFormat GMT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
     public static final SimpleDateFormat GMT_FORMAT_2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void init(){
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+        DATE_FORMAT_2.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
         GMT_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+9"));
         GMT_FORMAT_2.setTimeZone(TimeZone.getTimeZone("GMT+9"));
     }
@@ -71,9 +73,9 @@ public class Utils {
         return japaneseOptimizedText.toLowerCase();
     }
 
-    public synchronized static String formatTimestamp(long ts) {
+    public synchronized static String formatTimestamp(SimpleDateFormat sdf, long ts) {
         Date date = new Date(ts);
-        return DATE_FORMAT.format(date);
+        return sdf.format(date);
     }
 
     public synchronized static String formatGMT(Date date){

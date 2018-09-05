@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
+import io.owslab.mailreceiver.service.expansion.EngineerService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,9 @@ public class PartnerImportExportController {
     @Autowired
     private BusinessPartnerService partnerService;
 
+    @Autowired
+    private EngineerService engineerService;
+
     @RequestMapping(value = { "/partnerImportExport" }, method = RequestMethod.GET)
     public String getPartnerImportExport(Model model, HttpServletRequest request) {
         return "expansion/partnerImportExport";
@@ -48,7 +52,9 @@ public class PartnerImportExportController {
         CSVBundle csvBundle;
         if(type.equals("groupPartner")) {
             csvBundle = partnerService.exportGroups();
-        } else {
+        } if (type.equals("engineer")) {
+            csvBundle = engineerService.export();
+        }else {
             csvBundle = partnerService.export();
         }
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(csvBundle.getFileName(), "UTF-8"));

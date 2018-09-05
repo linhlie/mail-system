@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.EngineerDAO;
+import io.owslab.mailreceiver.dto.CSVEngineerDTO;
+import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
@@ -8,6 +10,7 @@ import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.utils.CSVBundle;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,6 +95,11 @@ public class EngineerService {
         return build(engineers, now);
     }
 
+    public List<Engineer> getList() {
+        List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
+        return engineers;
+    }
+
     public List<EngineerListItemDTO> getByLastMonth(EngineerFilterForm form, Timestamp now) {
         Date startDate = new Date(form.getFilterDate());
         startDate = Utils.atStartOfDay(startDate);
@@ -138,5 +146,30 @@ public class EngineerService {
                 engineerDAO.save(engineer);
             }
         }
+    }
+
+    public CSVBundle<CSVEngineerDTO> export() {
+        CSVBundle<CSVEngineerDTO> csvBundle = new CSVBundle<CSVEngineerDTO>();
+        csvBundle.setFileName("技術者.csv");
+        String[] csvHeader = { "技術者名", "カナ氏名", "メールアドレス", "雇用形態",
+                "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間" };
+        String[] keys = { "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime"};
+        csvBundle.setHeaders(csvHeader);
+        csvBundle.setKeys(keys);
+        List<CSVEngineerDTO> data = getEngineerListToExport();
+        csvBundle.setData(data);
+        return csvBundle;
+    }
+
+    private List<CSVEngineerDTO> getEngineerListToExport() {
+        List<CSVEngineerDTO> result = new ArrayList<>();
+        List<Engineer> engineers = getList();
+        for(Engineer engineer : engineers) {
+            BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
+            if(partner != null) {
+                result.add(new CSVEngineerDTO(engineer, partner));
+            }
+        }
+        return result;
     }
 }
