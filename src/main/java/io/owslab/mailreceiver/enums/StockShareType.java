@@ -37,14 +37,14 @@ public enum StockShareType {
     }
 
     public static StockShareType fromText(String text) {
-        switch(text) {
+        switch(String.valueOf(text)) {
             case "前":
                 return BEFORE;
             case "後":
                 return AFTER;
             case "無し":
-                return UNKNOWN;
+            default:
+                    return UNKNOWN;
         }
-        return UNKNOWN;
     }
 }

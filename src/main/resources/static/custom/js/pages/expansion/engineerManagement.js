@@ -620,7 +620,7 @@
         startDate = addDaysToDate(endDate, 1);
         endDate = addMonthsToDate(startDate, 3);
         endDate = addDaysToDate(endDate, -1);
-        startInput.val(formatDate(startDate));
+        // startInput.val(formatDate(startDate));
         endInput.val(formatDate(endDate));
     }
     

@@ -1241,3 +1241,14 @@ section.sendTab.content {
     height: 100%;
     width: 100px;
 }
+
+.partnerImport div.import-log {
+    margin-top: 10px;
+    height: 250px;
+    overflow: scroll;
+    background-color: #ececec
+}
+
+.partnerImport div.import-log span {
+    color: red;
+}

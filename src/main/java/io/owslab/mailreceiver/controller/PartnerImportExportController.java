@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.ImportLogDTO;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -71,9 +72,9 @@ public class PartnerImportExportController {
     public ResponseEntity<?> importPartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<BusinessPartner> partners = partnerService.importPartner(file, header);
+            List<ImportLogDTO> importLogs = partnerService.importPartner(file, header);
             result.setMsg("done");
-            result.setList(partners);
+            result.setList(importLogs);
             result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -87,9 +88,9 @@ public class PartnerImportExportController {
     public ResponseEntity<?> importPartnerGroup(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<BusinessPartnerGroup> partnerGroups = partnerService.importPartnerGroup(file, header);
+            List<ImportLogDTO> importLogs = partnerService.importPartnerGroup(file, header);
             result.setMsg("done");
-            result.setList(partnerGroups);
+            result.setList(importLogs);
             result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

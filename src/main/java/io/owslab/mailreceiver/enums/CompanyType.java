@@ -49,7 +49,7 @@ public enum CompanyType {
     }
 
     public static CompanyType fromText(String text) {
-        switch(text) {
+        switch(String.valueOf(text)) {
             case "株式会社":
                 return LTD;
             case "有限会社":
@@ -63,8 +63,8 @@ public enum CompanyType {
             case "社団法人":
                 return CORPORATION;
             case "その他":
+            default:
                 return OTHER;
         }
-        return OTHER;
     }
 }

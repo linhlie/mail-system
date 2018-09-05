@@ -162,7 +162,7 @@ public class IMAPFetchMailJob implements Runnable {
                 Email email = buildInitReceivedMail(message, account);
                 try {
                     email = buildReceivedMail(message, email);
-                    List<AttachmentFile> attachmentFiles = saveFiles(message, email);
+                    List<AttachmentFile> attachmentFiles = saveAttachments(message, email);
                     boolean hasAttachments = attachmentFiles.size() > 0;
                     email.setHasAttachment(hasAttachments);
                     email = setMailContent(message, email);
@@ -369,54 +369,75 @@ public class IMAPFetchMailJob implements Runnable {
         return false;
     }
 
-    private List<AttachmentFile> saveFiles(MimeMessage message, Email email) throws MessagingException, IOException {
+    public List<AttachmentFile> saveAttachments(Part part, Email email) throws Exception {
         List<AttachmentFile> attachmentFiles = new ArrayList<>();
-        String contentType = message.getContentType();
-        if (contentType.contains("multipart")) {
-            // content may contain attachments
-            Multipart multiPart = (Multipart) message.getContent();
-            int numberOfParts = multiPart.getCount();
-            for (int partCount = 0; partCount < numberOfParts; partCount++) {
-                //TODO: try catch if fails or transaction
-                MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(partCount);
-                if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || Part.INLINE.equalsIgnoreCase(part.getDisposition())) {
-                    // this part is attachment
-                    String fileName = part.getFileName();
-                    if(fileName == null) continue;
-                    if(fileName.indexOf("=?") == -1) {
-                        fileName = new String(fileName.getBytes("ISO-8859-1"));
-                    } else {
-                        fileName = MimeUtility.decodeText(part.getFileName());
+        if (part.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart) part.getContent();
+            for (int i = 0; i < mp.getCount(); i++) {
+                MimeBodyPart mpart = (MimeBodyPart)mp.getBodyPart(i);
+                String disposition = mpart.getDisposition();
+                List<AttachmentFile> partFiles = new ArrayList<>();
+                if ((disposition != null)
+                        && ((disposition.equals(Part.ATTACHMENT)) || (disposition
+                        .equals(Part.INLINE)))) {
+                    AttachmentFile attachmentFile = saveFile(mpart, email);
+                    if(attachmentFile != null) {
+                        partFiles.add(attachmentFile);
                     }
-                    String saveDirectoryPath = enviromentSettingService.getStoragePath();
-                    String currentDateStr = getCurrentDateStr();
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
-                    File saveDirectory = new File(saveDirectoryPath);
-                    if (!saveDirectory.exists()){
-                        saveDirectory.mkdir();
+                } else if (mpart.isMimeType("multipart/*")) {
+                    partFiles = saveAttachments(mpart, email);
+                } else {
+                    String contentType = mpart.getContentType();
+                    if (contentType.indexOf("name") != -1 || contentType.indexOf("application") != -1) {
+                        AttachmentFile attachmentFile = saveFile(mpart, email);
+                        if(attachmentFile != null) {
+                            partFiles.add(attachmentFile);
+                        }
                     }
-                    saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
-                    saveDirectory = new File(saveDirectoryPath);
-                    if (!saveDirectory.exists()){
-                        saveDirectory.mkdir();
-                    }
-                    saveDirectoryPath = saveDirectoryPath + File.separator + getUniqueFileName();
-                    File file = new File(saveDirectoryPath);
-                    part.saveFile(file);
-                    AttachmentFile attachmentFile = new AttachmentFile(
-                            email.getMessageId(),
-                            fileName,
-                            saveDirectoryPath,
-                            new Date(),
-                            null,
-                            file.length()
-                    );
-                    logger.info("Save file: " + attachmentFile.toString());
-                    attachmentFiles.add(attachmentFile);
                 }
+                attachmentFiles.addAll(partFiles);
             }
+        } else if (part.isMimeType("message/rfc822")) {
+            attachmentFiles = saveAttachments((Part) part.getContent(), email);
         }
+
         return attachmentFiles;
+    }
+
+    private AttachmentFile saveFile(MimeBodyPart mpart, Email email) throws MessagingException, IOException {
+        String fileName = mpart.getFileName();
+        if(fileName == null) return null;
+        if(fileName.indexOf("=?") == -1) {
+            fileName = new String(fileName.getBytes("ISO-8859-1"));
+        } else {
+            fileName = MimeUtility.decodeText(fileName);
+        }
+
+        String saveDirectoryPath = enviromentSettingService.getStoragePath();
+        String currentDateStr = getCurrentDateStr();
+        saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
+        File saveDirectory = new File(saveDirectoryPath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
+        saveDirectoryPath = normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
+        saveDirectory = new File(saveDirectoryPath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
+        saveDirectoryPath = saveDirectoryPath + File.separator + getUniqueFileName();
+        File file = new File(saveDirectoryPath);
+        mpart.saveFile(file);
+        AttachmentFile attachmentFile = new AttachmentFile(
+                email.getMessageId(),
+                fileName,
+                saveDirectoryPath,
+                new Date(),
+                null,
+                file.length()
+        );
+        logger.info("Save file: " + attachmentFile.toString());
+        return  attachmentFile;
     }
 
     public static String getUniqueFileName() {
