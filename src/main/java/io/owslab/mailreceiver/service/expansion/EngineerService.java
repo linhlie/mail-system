@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.dto.CSVEngineerDTO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.dto.ImportLogDTO;
+import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
@@ -225,8 +226,17 @@ public class EngineerService {
                     }
                     BusinessPartner existPartner = partnerService.findOneByPartnerCode(partnerCode);
                     if(existPartner != null) {
-                        Engineer engineer = csvEngineerDTO.build(existPartner);
-                        engineerDAO.save(engineer);
+                        try {
+                            Engineer engineer = csvEngineerDTO.build(existPartner);
+                            engineerDAO.save(engineer);
+                        } catch (EngineerFieldValidationException efve) {
+                            String type = "【技術者インポート】";
+                            int lineIndex = skipHeader ? line + 2 : line + 1;
+                            String info = "技術者名 " + Objects.toString(name, "");
+                            String detail = efve.getMessage();
+                            ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                            importLogs.add(importLog);
+                        }
                     } else {
                         String type = "【技術者インポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;

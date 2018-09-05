@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.enums.StockShareType;
+import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.utils.Utils;
@@ -210,28 +211,43 @@ public class CSVEngineerDTO {
         return sb.toString();
     }
 
-    public Engineer build(BusinessPartner partner) throws NumberFormatException, ParseException {
+    public Engineer build(BusinessPartner partner) throws EngineerFieldValidationException {
         Engineer engineer = new Engineer();
         engineer.setName(this.name);
         engineer.setKanaName(this.kanaName);
         engineer.setMailAddress(this.mailAddress);
-        //TODO: handle exception
-        int employmentStatus = Integer.parseInt(this.employmentStatus);
+        int employmentStatus;
+        try {
+            employmentStatus = Integer.parseInt(this.employmentStatus);
+        } catch (NumberFormatException nfe) {
+            throw new EngineerFieldValidationException("雇用形態の値が一致しません");
+        }
         employmentStatus = employmentStatus >= 1 && employmentStatus <= 8 ? employmentStatus : Engineer.EmploymentStatus.BP_UNKNOWN;
         engineer.setEmploymentStatus(employmentStatus);
         engineer.setPartnerId(partner.getId());
-        //TODO: handle exception
-        Date from = Utils.parseDateStr(this.projectPeriodStart);
-        //TODO: handle exception
-        Date to = Utils.parseDateStr(this.projectPeriodEnd);
+        Date from;
+        Date to;
+        try {
+            from = Utils.parseDateStr(this.projectPeriodStart);
+        } catch (ParseException pe) {
+            throw new EngineerFieldValidationException("案件期間「開始」の値が一致しません");
+        }
+        try {
+            to = Utils.parseDateStr(this.projectPeriodEnd);
+        } catch (ParseException pe) {
+            throw new EngineerFieldValidationException("案件期間「終了」の値が一致しません");
+        }
         engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
         engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
         boolean autoExtend = this.autoExtend.equalsIgnoreCase("TRUE");
         engineer.setAutoExtend(autoExtend);
         if(autoExtend) {
-            //TODO: handle exception
-            int extendMonth = Integer.parseInt(this.extendMonth);
-            engineer.setExtendMonth(extendMonth);
+            try {
+                int extendMonth = Integer.parseInt(this.extendMonth);
+                engineer.setExtendMonth(extendMonth);
+            } catch (NumberFormatException nfe) {
+                throw new EngineerFieldValidationException("延長期間の値が一致しません");
+            }
         }
         engineer.setMatchingWord(this.matchingWord);
         engineer.setNotGoodWord(this.notGoodWord);
@@ -240,16 +256,18 @@ public class CSVEngineerDTO {
             if(match) {
                 engineer.setMonetaryMoney(this.monetaryMoney);
             } else {
-                //TODO: throw format exception of monetaryMoney;
+                throw new EngineerFieldValidationException("単金の値が一致しません");
             }
         }
-        //TODO: validate monetaryMoney
         engineer.setStationLine(this.stationLine);
         engineer.setStationNearest(this.stationNearest);
         if(this.commutingTime != null) {
-            //TODO: handle exception
-            double commutingTime = Double.parseDouble(this.commutingTime);
-            engineer.setCommutingTime(commutingTime);
+            try {
+                double commutingTime = Double.parseDouble(this.commutingTime);
+                engineer.setCommutingTime(commutingTime);
+            } catch (NumberFormatException nfe) {
+                throw new EngineerFieldValidationException("通勤時間の値が一致しません");
+            }
         }
         engineer.setDormant(false);
         return engineer;

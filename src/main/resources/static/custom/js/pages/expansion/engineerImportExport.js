@@ -22,7 +22,7 @@
                 function onSuccess(response) {
                     hideloading();
                     if(response && response.status) {
-                        // updateImportLogs(response.list);
+                        updateImportLogs(response.list);
                         $.alert("取引先のインポートに成功しました");
                     } else {
                         $.alert("取引先のインポートに失敗しました");
