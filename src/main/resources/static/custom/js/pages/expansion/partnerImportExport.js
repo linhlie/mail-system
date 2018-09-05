@@ -46,6 +46,7 @@
                 $.alert("インポートするファイルを選択");
             }
         } else if(actionType == "export") {
+            clearImportLogs();
             getPartnerExport(includeHeader);
         }
     }
@@ -104,6 +105,7 @@
                 $.alert("インポートするファイルを選択");
             }
         } else if(actionType == "export") {
+            clearImportLogs();
             getPartnerGroupExport(includeHeader);
         }
     }
