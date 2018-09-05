@@ -7,6 +7,8 @@ import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.utils.Utils;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by khanhlvb on 9/5/18.
@@ -206,5 +208,50 @@ public class CSVEngineerDTO {
             sb.append(", ");
         }
         return sb.toString();
+    }
+
+    public Engineer build(BusinessPartner partner) throws NumberFormatException, ParseException {
+        Engineer engineer = new Engineer();
+        engineer.setName(this.name);
+        engineer.setKanaName(this.kanaName);
+        engineer.setMailAddress(this.mailAddress);
+        //TODO: handle exception
+        int employmentStatus = Integer.parseInt(this.employmentStatus);
+        employmentStatus = employmentStatus >= 1 && employmentStatus <= 8 ? employmentStatus : Engineer.EmploymentStatus.BP_UNKNOWN;
+        engineer.setEmploymentStatus(employmentStatus);
+        engineer.setPartnerId(partner.getId());
+        //TODO: handle exception
+        Date from = Utils.parseDateStr(this.projectPeriodStart);
+        //TODO: handle exception
+        Date to = Utils.parseDateStr(this.projectPeriodEnd);
+        engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
+        engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
+        boolean autoExtend = this.autoExtend.equalsIgnoreCase("TRUE");
+        engineer.setAutoExtend(autoExtend);
+        if(autoExtend) {
+            //TODO: handle exception
+            int extendMonth = Integer.parseInt(this.extendMonth);
+            engineer.setExtendMonth(extendMonth);
+        }
+        engineer.setMatchingWord(this.matchingWord);
+        engineer.setNotGoodWord(this.notGoodWord);
+        if(this.monetaryMoney != null) {
+            boolean match = Utils.matchingNumber(this.monetaryMoney);
+            if(match) {
+                engineer.setMonetaryMoney(this.monetaryMoney);
+            } else {
+                //TODO: throw format exception of monetaryMoney;
+            }
+        }
+        //TODO: validate monetaryMoney
+        engineer.setStationLine(this.stationLine);
+        engineer.setStationNearest(this.stationNearest);
+        if(this.commutingTime != null) {
+            //TODO: handle exception
+            double commutingTime = Double.parseDouble(this.commutingTime);
+            engineer.setCommutingTime(commutingTime);
+        }
+        engineer.setDormant(false);
+        return engineer;
     }
 }

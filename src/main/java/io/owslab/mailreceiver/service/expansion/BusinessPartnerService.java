@@ -10,6 +10,7 @@ import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.utils.CSVBundle;
+import io.owslab.mailreceiver.utils.Utils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,7 @@ public class BusinessPartnerService {
         saveGroupList(updatedPartner, groupAddIds);
     }
 
-    private BusinessPartner findOneByPartnerCode(String partnerCode){
+    public BusinessPartner findOneByPartnerCode(String partnerCode){
         List<BusinessPartner> partners = partnerDAO.findByPartnerCode(partnerCode);
         return partners.size() > 0 ? partners.get(0) : null;
     }
@@ -177,7 +178,7 @@ public class BusinessPartnerService {
 
     public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
-        File file = convertMultiPartToFile(multipartFile);
+        File file = Utils.convertMultiPartToFile(multipartFile);
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<BusinessPartner> partners = new ArrayList<>();
@@ -256,7 +257,7 @@ public class BusinessPartnerService {
 
     public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
-        File file = convertMultiPartToFile(multipartFile);
+        File file = Utils.convertMultiPartToFile(multipartFile);
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<CSVPartnerGroupDTO> partnerGroups = new ArrayList<>();
@@ -340,13 +341,5 @@ public class BusinessPartnerService {
         }
 
         return importLogs;
-    }
-
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
     }
 }

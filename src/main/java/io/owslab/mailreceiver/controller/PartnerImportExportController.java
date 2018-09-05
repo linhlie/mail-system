@@ -104,4 +104,20 @@ public class PartnerImportExportController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/importEngineer")
+    @ResponseBody
+    public ResponseEntity<?> importEngineer(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<ImportLogDTO> importLogs = engineerService.importEngineer(file, header);
+            result.setMsg("done");
+            result.setList(importLogs);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("importEngineer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
