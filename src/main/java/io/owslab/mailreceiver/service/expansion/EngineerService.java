@@ -12,9 +12,13 @@ import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import io.owslab.mailreceiver.utils.Utils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,12 +43,16 @@ import java.util.Objects;
  */
 @Service
 public class EngineerService {
+    private static final Logger logger = LoggerFactory.getLogger(EngineerService.class);
 
     @Autowired
     private EngineerDAO engineerDAO;
 
     @Autowired
     private BusinessPartnerService partnerService;
+
+    @Autowired
+    private UploadFileService uploadFileService;
 
     public void delete(long id) {
         engineerDAO.delete(id);
@@ -163,12 +171,13 @@ public class EngineerService {
 
     public List<ImportLogDTO> importEngineer(MultipartFile multipartFile, boolean skipHeader) throws Exception {
 
-        File file = Utils.convertMultiPartToFile(multipartFile);
+        File file = null;
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<CSVEngineerDTO> engineerDTOS = new ArrayList<>();
 
         try {
+            file = uploadFileService.saveToUpload(multipartFile);
             String encoding = UniversalDetector.detectCharset(file);
             if(encoding == null) {
                 encoding = "Shift-JIS";
@@ -248,8 +257,13 @@ public class EngineerService {
                 }
             }
         } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+            if(file != null) {
+                file.delete();
+            }
             throw new Exception("技術者のインポートに失敗しました");
-        } finally {
+        }
+        if(file != null) {
             file.delete();
         }
 
