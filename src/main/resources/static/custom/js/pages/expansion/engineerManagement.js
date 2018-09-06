@@ -9,10 +9,12 @@
     var engineerClearBtnId = "#engineerClear";
     var filterEngineerBtnId = "#filterEngineerBtn";
     var lastMonthActiveId = "#lastMonthActive";
+    var employmentStatusSelectId = "#employmentStatus";
     var formId = "#engineerForm";
     var engineerTableId = "engineer";
     var engineers = null;
     var updatingEngineerId = null;
+    var partners = null;
 
     var formFields = [
         {type: "input", name: "name"},
@@ -74,6 +76,9 @@
         $(autoExtendCheckboxId).change(function() {
             updateExtendFields();
         });
+        $(employmentStatusSelectId).change(function() {
+            updatePartnerComboBox(partners);
+        });
     });
 
     function updateExtendFields() {
@@ -130,6 +135,7 @@
     function loadBusinessPartner() {
         function onSuccess(response) {
             if(response && response.status) {
+                partners = response.list;
                 updatePartnerComboBox(response.list);
             }
         }
@@ -140,6 +146,9 @@
 
     function updatePartnerComboBox(options) {
         options = options ? options.slice(0) : [];
+        var lastSelectedId = $('#' + partnerComboBoxId).val();
+        var employmentStatus = $(employmentStatusSelectId).val();
+        employmentStatus = parseInt(employmentStatus);
         $('#' + partnerComboBoxId).empty();
         $('#' + partnerComboBoxId).append($('<option>', {
             selected: true,
@@ -148,34 +157,14 @@
             text : "選んでください",
         }));
         $.each(options, function (i, item) {
+            if(isNaN(employmentStatus) || (employmentStatus >= 1 && employmentStatus <= 4 && item.ourCompany)
+                || (employmentStatus >= 5 && employmentStatus <= 8 && !item.ourCompany))
             $('#' + partnerComboBoxId).append($('<option>', {
                 value: item.id,
                 text : item.name,
+                selected: item.id.toString() === lastSelectedId
             }).attr('data-id',item.id));
         });
-    }
-
-    function partnerComboBoxListener() {
-        $('#' + partnerComboBoxId).off('change');
-        $('#' + partnerComboBoxId).change(function() {
-            var selected = $(this).find("option:selected");
-            var name = selected.text();
-            var id = selected.attr("data-id");
-            var code = this.value;
-            addPartnerToGroup.apply(this, [id, name, code]);
-            $('#' + partnerComboBoxId).prop('selectedIndex',0);
-        });
-    }
-
-    function addPartnerToGroup(id, name, code) {
-        var tr = '<tr name="group-partner" data-id="' + id + '" data-type="add" role="row">' +
-            '<td rowspan="1" colspan="1" data="name"><span>' + name + '</span></td>' +
-            '<td rowspan="1" colspan="1" data="partnerCode"><span>' + code + '</span></td>' +
-            '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
-            '<button type="button">削除</button>' +
-            '</td> </tr>';
-        $(this).closest('table').find('tr:last').before(tr);
-        setDeleteGroupPartnerListener();
     }
 
     function addEngineerOnClick() {
@@ -399,6 +388,7 @@
         $(extendMonthInputId).attr('readonly', true);
         clearUpdatingEngineerId();
         resetEngineeTable();
+        updatePartnerComboBox(partners);
     }
 
     function resetEngineeTable() {
@@ -551,6 +541,8 @@
         updatingEngineerId = id;
         setFormData(data);
         updateExtendFields();
+        updatePartnerComboBox(partners);
+        disableUpdateEngineer(false);
     }
 
     function disableUpdateEngineer(disable) {
