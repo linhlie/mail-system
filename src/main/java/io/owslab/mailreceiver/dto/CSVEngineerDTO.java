@@ -10,6 +10,7 @@ import io.owslab.mailreceiver.utils.Utils;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by khanhlvb on 9/5/18.
@@ -64,13 +65,13 @@ public class CSVEngineerDTO {
         this.setProjectPeriodStart(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodStart()));
         this.setProjectPeriodEnd(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodEnd()));
         this.setAutoExtend(Boolean.toString(engineer.isAutoExtend()).toUpperCase());
-        this.setExtendMonth(Integer.toString(engineer.getExtendMonth()));
+        this.setExtendMonth(Objects.toString(engineer.getExtendMonth(), null));
         this.setMatchingWord(engineer.getMatchingWord());
         this.setNotGoodWord(engineer.getNotGoodWord());
         this.setMonetaryMoney(engineer.getMonetaryMoney());
         this.setStationLine(engineer.getStationLine());
         this.setStationNearest(engineer.getStationNearest());
-        this.setCommutingTime(Double.toString(engineer.getCommutingTime()));
+        this.setCommutingTime(Objects.toString(engineer.getCommutingTime(), null));
     }
 
     public String getName() {
