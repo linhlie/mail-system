@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by khanhlvb on 5/10/18.
@@ -27,6 +28,28 @@ public class UploadFileService {
     private EnviromentSettingService enviromentSettingService;
     @Autowired
     private UploadFileDAO uploadFileDAO;
+
+    public File saveToUpload(MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            throw new Exception("Please select a file to upload");
+        }
+        byte[] bytes = file.getBytes();
+        String storagePath = enviromentSettingService.getStoragePath();
+        storagePath = normalizeDirectoryPath(storagePath) + File.separator + "upload";
+        File saveDirectory = new File(storagePath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
+        storagePath = normalizeDirectoryPath(storagePath) + File.separator + getRandomFolderName();
+        saveDirectory = new File(storagePath);
+        if (!saveDirectory.exists()){
+            saveDirectory.mkdir();
+        }
+        String fileName = getUniqueFileName();
+        Path path = Paths.get(storagePath + File.separator + fileName);
+        Path savePath = Files.write(path, bytes);
+        return savePath.toFile();
+    }
 
     public List<UploadFile> upload(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
@@ -103,5 +126,9 @@ public class UploadFileService {
     {
         int range = (max - min) + 1;
         return (int)(Math.random() * range) + min;
+    }
+
+    public static String getUniqueFileName() {
+        return System.currentTimeMillis() + "" + UUID.randomUUID().toString();
     }
 }

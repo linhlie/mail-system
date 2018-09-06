@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class ReceiveMailScheduler extends AbstractScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(ReceiveMailScheduler.class);
-    private static final long INTERVAL_IN_SECOND = 120L;
+    private static final long INTERVAL_IN_SECOND = 60L;
     private static final int DELAY_IN_SECOND = 10;
 
     @Autowired

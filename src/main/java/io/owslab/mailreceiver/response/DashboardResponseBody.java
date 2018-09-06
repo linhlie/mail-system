@@ -17,6 +17,7 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private List<String> sendPerClick;
     private List<EmailAccount> emailAccounts;
     private List<AccountDTO> users;
+    private int checkMailInterval;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -84,5 +85,13 @@ public class DashboardResponseBody extends AjaxResponseBody {
 
     public void setUsers(List<AccountDTO> users) {
         this.users = users;
+    }
+
+    public int getCheckMailInterval() {
+        return checkMailInterval;
+    }
+
+    public void setCheckMailInterval(int checkMailInterval) {
+        this.checkMailInterval = checkMailInterval;
     }
 }

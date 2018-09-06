@@ -20,8 +20,16 @@
                 <option value="">全ての受信アカウント</option>
             </select>
             <div class="stats-wrapper">
-                <span><b>最新のメール受信日時</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span id="latestReceive">&nbsp;</span>
+                <div class="row">
+                    <div class="col-md-8">
+                        <span><b>最新のメール受信日時</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <span id="latestReceive">&nbsp;</span>
+                        <span id="checkMailInterval" style="margin-left: 30px;"></span>
+                    </div>
+                    <div class="col-md-4" style="text-align: right">
+                        <button id="forceFetchMailBtn" style="padding: 1px 15px;" type="button" class="btn btn-default btn-xs">最新のメールを受信</button>
+                    </div>
+                </div>
                 <div class="dashboard-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-clock-o"></i></span>
                 </div>
@@ -320,6 +328,8 @@
     </section>
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/index.js"></script>
 </th:block>
 </body>
