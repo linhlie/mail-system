@@ -4,6 +4,8 @@
     var engineerAddBtnId = "#engineerAdd";
     var engineerUpdateBtnId = "#engineerUpdate";
     var manuallyExtendBtnId = "#extend";
+    var autoExtendCheckboxId = "#autoExtend";
+    var extendMonthInputId = "#extendMonth";
     var engineerClearBtnId = "#engineerClear";
     var filterEngineerBtnId = "#filterEngineerBtn";
     var lastMonthActiveId = "#lastMonthActive";
@@ -69,7 +71,16 @@
         draggingSetup();
         loadEngineers();
         loadBusinessPartner();
+        $(autoExtendCheckboxId).change(function() {
+            updateExtendFields();
+        });
     });
+
+    function updateExtendFields() {
+        var enable = $(autoExtendCheckboxId).is(":checked");
+        disableManuallyExtend(!enable || updatingEngineerId == null);
+        $(extendMonthInputId).attr('readonly', !enable);
+    }
 
     function initLastMonthActive() {
         var now = new Date();
@@ -370,8 +381,8 @@
     }
 
     function engineerExtendMonthValidate() {
-        var autoExtend = $('#autoExtend').is(":checked");
-        var input = $("input[name='extendMonth']");
+        var autoExtend = $(autoExtendCheckboxId).is(":checked");
+        var input = $(extendMonthInputId);
         var value = input.val();
         if(autoExtend && !value) {
             showError.apply(input, ["必須", "div.engineer-form-field"]);
@@ -385,6 +396,7 @@
         clearFormValidate();
         disableUpdateEngineer(true);
         disableManuallyExtend(true);
+        $(extendMonthInputId).attr('readonly', true);
         clearUpdatingEngineerId();
         resetEngineeTable();
     }
@@ -537,9 +549,8 @@
     function doEditEngineer(id, data) {
         clearFormValidate();
         updatingEngineerId = id;
-        disableUpdateEngineer(false);
-        disableManuallyExtend(false);
         setFormData(data);
+        updateExtendFields();
     }
 
     function disableUpdateEngineer(disable) {
