@@ -15,6 +15,7 @@
             lastSelectedUserAccountId = this.value;
             loadUserData(this.value);
         });
+        setButtonClickListenter("#forceFetchMailBtn", doForceFetchMail);
     });
     
     function loadMailData(accountId) {
@@ -96,6 +97,9 @@
         if(data && data.latestReceive){
             $("#latestReceive").text(data.latestReceive);
         }
+        if(data && data.checkMailInterval){
+            $("#checkMailInterval").text(data.checkMailInterval + "分間隔で新着メール受信中");
+        }
         if(data && data.receiveMailNumber){
             pushDataToTable(data.receiveMailNumber, "receiveMailNumber");
         }
@@ -153,6 +157,46 @@
                 selected: (item.id.toString() === lastSelectedUserAccountId)
             }));
         });
+    }
+    
+    function doForceFetchMail() {
+        function onSuccess(response) {
+            hideloading();
+            if(response && response.status) {
+                loadMailData(lastSelectedMailAccountId);
+                loadUserData(lastSelectedUserAccountId);
+            } else {
+                $.alert("受信に失敗しました");
+            }
+        }
+
+        function onError(response) {
+            hideloading();
+            $.alert("受信に失敗しました");
+        }
+        showFetchMailLoading();
+        forceFetchMail(onSuccess, onError);
+    }
+
+    function showFetchMailLoading() {
+        showLoading("最新のメールを受信中");
+    }
+
+    function showLoading(message) {
+        hideloading();
+        $('body').loadingModal({
+            position: 'auto',
+            text: message,
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+    }
+
+    function hideloading() {
+        $('body').loadingModal('hide');
+        $('body').loadingModal('destroy');
     }
 
 })(jQuery);

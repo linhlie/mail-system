@@ -209,6 +209,11 @@ function getEngineerExport(includeHeader) {
     _doDownload(url);
 }
 
+function forceFetchMail(onSuccess, onError) {
+    var url ="/user/dashboard/forceFetchMail";
+    _get(url, onSuccess, onError);
+}
+
 function importPartners(data, includeHeader, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader;
     $.ajax({

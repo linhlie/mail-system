@@ -3,13 +3,16 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.EmailAccount;
+import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.settings.MailReceiveRuleService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +53,12 @@ public class IndexController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private MailReceiveRuleService mrrs;
 
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -110,15 +119,35 @@ public class IndexController {
             String latestReceive = mailBoxService.getLatestReceive(accountId);
             List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now, accountId);
             List<EmailAccount> emailAccounts = mailAccountsService.list();
+            int checkMailInterval = enviromentSettingService.getCheckMailTimeInterval();
             responseBody.setHasSystemError(ReportErrorService.hasSystemError());
             responseBody.setLatestReceive(latestReceive);
             responseBody.setReceiveMailNumber(receiveMailNumber);
             responseBody.setEmailAccounts(emailAccounts);
+            responseBody.setCheckMailInterval(checkMailInterval);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
             logger.error("getStatistics: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+            return ResponseEntity.ok(responseBody);
+        }
+    }
+
+    @RequestMapping(value="/user/dashboard/forceFetchMail", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> forceFetchMail (){
+        AjaxResponseBody responseBody = new AjaxResponseBody();
+        try {
+            fetchMailsService.start();
+            mrrs.checkMailStatus();
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            logger.error("forceFetchMail: " + e.getMessage());
             responseBody.setMsg(e.getMessage());
             responseBody.setStatus(false);
             return ResponseEntity.ok(responseBody);
