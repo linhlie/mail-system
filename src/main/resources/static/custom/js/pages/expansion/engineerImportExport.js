@@ -14,6 +14,7 @@
     function doEngineerActions() {
         var actionType = $("#engineerActionType").val();
         var includeHeader = $('#engineerIncludeHeader').is(":checked");
+        var deleteOld = $('#engineerDeleteOld').is(":checked");
         if(actionType == "import") {
             var file = document.getElementById("importEngineerInput").files[0];
             if(file) {
@@ -35,7 +36,7 @@
                 }
                 clearImportLogs();
                 showImportEngineerLoading();
-                importEngineers(formData, includeHeader, onSuccess, onError)
+                importEngineers(formData, includeHeader, deleteOld, onSuccess, onError)
             } else {
                 $.alert("インポートするファイルを選択");
             }

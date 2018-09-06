@@ -186,7 +186,7 @@ public class BusinessPartnerService {
         return withPartnerId + "-" + partnerId;
     }
 
-    public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<BusinessPartner> partners = new ArrayList<>();
@@ -210,6 +210,9 @@ public class BusinessPartnerService {
                 }
                 while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
                     partners.add(partnerDTO.build());
+                }
+                if(deleteOld) {
+                    partnerDAO.deleteAll();
                 }
                 for(int line = 0; line < partners.size(); line++) {
                     BusinessPartner partner = partners.get(line);
@@ -269,7 +272,7 @@ public class BusinessPartnerService {
         return importLogs;
     }
 
-    public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         File file = null;
 
@@ -294,6 +297,9 @@ public class BusinessPartnerService {
                 }
                 while ((partnerGroupDTO = beanReader.read(CSVPartnerGroupDTO.class, headers)) != null) {
                     partnerGroups.add(partnerGroupDTO);
+                }
+                if(deleteOld) {
+                    partnerGroupDAO.deleteAll();
                 }
                 for(int line = 0; line < partnerGroups.size(); line++) {
                     CSVPartnerGroupDTO partnerGroup = partnerGroups.get(line);

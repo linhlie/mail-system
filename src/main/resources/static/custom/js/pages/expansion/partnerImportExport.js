@@ -20,6 +20,7 @@
     function doPartnerActions() {
         var actionType = $("#partnerActionType").val();
         var includeHeader = $('#partnerIncludeHeader').is(":checked");
+        var deleteOld = $('#partnerDeleteOld').is(":checked");
         if(actionType == "import") {
             var file = document.getElementById("importPartnerInput").files[0];
             if(file) {
@@ -41,7 +42,7 @@
                 }
                 clearImportLogs();
                 showImportPartnerLoading();
-                importPartners(formData, includeHeader, onSuccess, onError);
+                importPartners(formData, includeHeader, deleteOld, onSuccess, onError);
             } else {
                 $.alert("インポートするファイルを選択");
             }
@@ -79,6 +80,7 @@
     function doGroupActions() {
         var actionType = $("#groupActionType").val();
         var includeHeader = $('#groupIncludeHeader').is(":checked");
+        var deleteOld = $('#groupDeleteOld').is(":checked");
         if(actionType == "import") {
             var file = document.getElementById("importGroupInput").files[0];
             if(file) {
@@ -100,7 +102,7 @@
                 }
                 clearImportLogs();
                 showImportGroupLoading();
-                importPartnerGroups(formData, includeHeader, onSuccess, onError)
+                importPartnerGroups(formData, includeHeader, deleteOld, onSuccess, onError)
             } else {
                 $.alert("インポートするファイルを選択");
             }

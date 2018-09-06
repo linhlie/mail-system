@@ -169,7 +169,7 @@ public class EngineerService {
         }
     }
 
-    public List<ImportLogDTO> importEngineer(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importEngineer(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         File file = null;
 
@@ -195,6 +195,9 @@ public class EngineerService {
                 }
                 while ((engineerDTO = beanReader.read(CSVEngineerDTO.class, headers)) != null) {
                     engineerDTOS.add(engineerDTO);
+                }
+                if(deleteOld) {
+                    engineerDAO.deleteAll();
                 }
                 for(int line = 0; line < engineerDTOS.size(); line++) {
                     CSVEngineerDTO csvEngineerDTO = engineerDTOS.get(line);

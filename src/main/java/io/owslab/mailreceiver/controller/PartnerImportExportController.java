@@ -75,10 +75,10 @@ public class PartnerImportExportController {
 
     @PostMapping("/importPartner")
     @ResponseBody
-    public ResponseEntity<?> importPartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+    public ResponseEntity<?> importPartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header, @RequestParam(value = "deleteOld") boolean deleteOld) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<ImportLogDTO> importLogs = partnerService.importPartner(file, header);
+            List<ImportLogDTO> importLogs = partnerService.importPartner(file, header, deleteOld);
             result.setMsg("done");
             result.setList(importLogs);
             result.setStatus(true);
@@ -91,10 +91,10 @@ public class PartnerImportExportController {
 
     @PostMapping("/importPartnerGroup")
     @ResponseBody
-    public ResponseEntity<?> importPartnerGroup(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+    public ResponseEntity<?> importPartnerGroup(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header, @RequestParam(value = "deleteOld") boolean deleteOld) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<ImportLogDTO> importLogs = partnerService.importPartnerGroup(file, header);
+            List<ImportLogDTO> importLogs = partnerService.importPartnerGroup(file, header, deleteOld);
             result.setMsg("done");
             result.setList(importLogs);
             result.setStatus(true);
@@ -107,10 +107,10 @@ public class PartnerImportExportController {
 
     @PostMapping("/importEngineer")
     @ResponseBody
-    public ResponseEntity<?> importEngineer(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header) {
+    public ResponseEntity<?> importEngineer(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header, @RequestParam(value = "deleteOld") boolean deleteOld) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<ImportLogDTO> importLogs = engineerService.importEngineer(file, header);
+            List<ImportLogDTO> importLogs = engineerService.importEngineer(file, header, deleteOld);
             result.setMsg("done");
             result.setList(importLogs);
             result.setStatus(true);
