@@ -11,9 +11,11 @@
     var lastMonthActiveId = "#lastMonthActive";
     var employmentStatusSelectId = "#employmentStatus";
     var formId = "#engineerForm";
+    var checkboxNextSelectId = "#checkboxNext"
     var engineerTableId = "engineer";
     var engineers = null;
     var updatingEngineerId = null;
+    var selectedSourceTableRow=-1;
     var partners = null;
 
     var formFields = [
@@ -176,9 +178,14 @@
         console.log("Add engineer: ", data);
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("保存に成功しました");
-                loadEngineers();
-                clearEngineerOnClick();
+                $.alert({
+                    title: "",
+                    content: "保存に成功しました",
+                    onClose: function () {
+                        loadEngineers();
+                        clearEngineerOnClick();
+                    }
+                });
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -250,9 +257,13 @@
         var data = getFormData();
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("保存に成功しました");
-                loadEngineers();
-                clearEngineerOnClick();
+                $.alert({
+                    title: "",
+                    content: "保存に成功しました",
+                    onClose: function () {
+                        loadEngineers(selectNextRow);
+                    }
+                });
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -407,16 +418,19 @@
         $(formId).find(".has-error").removeClass('has-error');
     }
 
-    function loadEngineers() {
+    function loadEngineers(callback) {
         var form = getFilterForm();
         function onSuccess(response) {
             if(response && response.status){
                 loadEngineersData(engineerTableId, response.list);
             }
+            
+            if(typeof callback == 'function'){
+            	callback(response.list);
+            }
         }
 
         function onError(error) {
-
         }
 
         getEngineers(form, onSuccess, onError);
@@ -444,13 +458,14 @@
                 var $this = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
+                selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = engineers[index];
                 if (rowData && rowData.id) {
                     function onSuccess(response) {
                         if(response && response.status) {
                             if(response.list && response.list.length > 0) {
                                 var data = response.list[0];
-                                $this.closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                                selectedRow($('#' + engineerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                                 doEditEngineer(rowData.id, data);
                             } else {
                                 $.alert("技術者が存在しません。");
@@ -639,6 +654,50 @@
             filterType: filterType,
             filterDate: filterDate,
         }
+    }
+    
+    function selectNextRow(data){
+    	if ($(checkboxNextSelectId).is(":checked")){
+    		selectedSourceTableRow = selectedSourceTableRow+1;
+    		selectNext(selectedSourceTableRow, data);
+    	}else{
+    		clearEngineerOnClick();
+    	}
+    }
+    
+    function selectNext(index, data) {
+    	console.log(index+" "+data.length);
+        if(index>data.length) {
+        	$.alert("最終行まで更新しました");
+        	clearEngineerOnClick();
+        } else {
+        	var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
+            selectedRow(row);
+            var rowData = data[index-1];
+            
+            function onSuccess(response) {
+                if(response && response.status) {
+                    if(response.list && response.list.length > 0) {
+                        var data = response.list[0];
+                        doEditEngineer(rowData.id, data);
+                    } else {
+                        $.alert("技術者が存在しません。");
+                    }
+                } else {
+                    $.alert("技術者情報のロードに失敗しました。");
+                }
+            }
+            
+            function onError() {
+                $.alert("技術者情報のロードに失敗しました。");
+            }
+            getEngineer(rowData.id, onSuccess, onError);
+            
+        }
+    }
+    
+    function selectedRow(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
     }
 
 })(jQuery);
