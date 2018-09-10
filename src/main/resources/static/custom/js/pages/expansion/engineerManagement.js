@@ -178,9 +178,14 @@
         console.log("Add engineer: ", data);
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("保存に成功しました");
-                loadEngineers();
-                clearEngineerOnClick();
+                $.alert({
+                    title: "",
+                    content: "保存に成功しました",
+                    onClose: function () {
+                        loadEngineers();
+                        clearEngineerOnClick();
+                    }
+                });
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -252,8 +257,13 @@
         var data = getFormData();
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("保存に成功しました");
-                loadEngineers(selectNextRow);
+                $.alert({
+                    title: "",
+                    content: "保存に成功しました",
+                    onClose: function () {
+                        loadEngineers(selectNextRow);
+                    }
+                });
             } else {
                 $.alert("保存に失敗しました");
             }
