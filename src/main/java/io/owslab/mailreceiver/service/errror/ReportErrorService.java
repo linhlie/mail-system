@@ -118,7 +118,7 @@ public class ReportErrorService {
 
     private static boolean shouldSendReportToAdmin(){
         if(lastReportSentAt == null) return true;
-        return (System.currentTimeMillis() - lastReportSentAt.getTime()) >= LEAST_TIME_BETWEEN_TO_REPORT_IN_MINUTE * 1000;
+        return (System.currentTimeMillis() - lastReportSentAt.getTime()) >= LEAST_TIME_BETWEEN_TO_REPORT_IN_MINUTE  * 60 * 1000;
     }
 
     public static class ReportErrorParams {
