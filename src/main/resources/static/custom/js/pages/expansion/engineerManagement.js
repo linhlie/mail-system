@@ -252,9 +252,8 @@
         var data = getFormData();
         function onSuccess(response) {
             if(response && response.status) {
-//                $.alert("保存に成功しました");
+                $.alert("保存に成功しました");
                 loadEngineers(selectNextRow);
-//                clearEngineerOnClick();
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -422,9 +421,6 @@
         }
 
         function onError(error) {
-//        if(typeof callback == 'function'){
-//        	callback(response.list);
-//        }
         }
 
         getEngineers(form, onSuccess, onError);
@@ -655,24 +651,19 @@
     		selectedSourceTableRow = selectedSourceTableRow+1;
     		selectNext(selectedSourceTableRow, data);
     	}else{
-    		clearPartnerOnClick();
+    		clearEngineerOnClick();
     	}
     }
     
     function selectNext(index, data) {
     	console.log(index+" "+data.length);
         if(index>data.length) {
-        	$.alert("保存に成功しました\n最終行まで更新しました");
+        	$.alert("最終行まで更新しました");
         	clearEngineerOnClick();
         } else {
-            $.alert("保存に成功しました");
         	var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
             var rowData = data[index-1];
-//            doEditEngineer(rowData.id, rowData);
-//            console.log(rowData.id);
-//            console.log(rowData);
-            
             
             function onSuccess(response) {
                 if(response && response.status) {

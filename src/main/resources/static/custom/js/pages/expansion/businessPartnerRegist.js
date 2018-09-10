@@ -223,9 +223,8 @@
         var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
+                $.alert("保存に成功しました");
                 loadBusinessPartners(selectNextRow);
-//                selectNextRow();
-//                clearPartnerOnClick();
     
             } else {
                 $.alert("保存に失敗しました");
@@ -338,9 +337,7 @@
         }
         
         function onError(error) {
-//        	if(typeof callback == 'function'){
-//            	callback(response.list);
-//            }
+
         }
         getBusinessPartners(onSuccess, onError);
     }
@@ -563,12 +560,10 @@
     }
     
     function selectNext(index, data) {
-//    	console.log(index+" "+data.length);
         if(index>data.length) {
-        	$.alert("保存に成功しました \n 最終行まで更新しました");
+        	$.alert("最終行まで更新しました");
         	clearPartnerOnClick();
         } else {
-            $.alert("保存に成功しました");
         	var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
             var rowData = data[index-1];
