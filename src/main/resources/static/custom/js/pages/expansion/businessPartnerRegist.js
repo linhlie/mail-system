@@ -5,10 +5,12 @@
     var partnerUpdateBtnId = "#partnerUpdate";
     var partnerClearBtnId = "#partnerClear";
     var formId = "#partnerForm";
+    var checkboxNextSelectId = "#checkboxNext"
     var partnerTableId = "partner";
     var partnerGroupTableId = "partnerGroup";
     var partners = null;
     var updatingPartnerId = null;
+    var selectedSourceTableRow=-1;
 
     var formFields = [
         {type: "input", name: "name"},
@@ -221,9 +223,10 @@
         var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("保存に成功しました");
-                loadBusinessPartners();
-                clearPartnerOnClick();
+                loadBusinessPartners(selectNextRow);
+//                selectNextRow();
+//                clearPartnerOnClick();
+    
             } else {
                 $.alert("保存に失敗しました");
             }
@@ -323,16 +326,21 @@
         $(formId).find(".has-error").removeClass('has-error');
     }
     
-    function loadBusinessPartners() {
+    function loadBusinessPartners(callback) {
         function onSuccess(response) {
             if(response && response.status){
                 loadBusinessPartnersData(partnerTableId, response.list);
                 updatePartnerComboBox(response.list);
             }
+            if(typeof callback == 'function'){
+            	callback(response.list);
+            }
         }
         
         function onError(error) {
-            
+//        	if(typeof callback == 'function'){
+//            	callback(response.list);
+//            }
         }
         getBusinessPartners(onSuccess, onError);
     }
@@ -358,9 +366,10 @@
             setRowClickListener("editPartner", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
+                selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = partners[index];
                 if (rowData && rowData.id) {
-                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                	selectedRow($('#' + partnerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                     doEditPartner(rowData);
                 }
             });
@@ -444,6 +453,7 @@
         disableUpdatePartner(false);
         setFormData(data);
         updateCompanySpecificType(data.companyType);
+        
     }
     
     function loadBusinessPartnerGroup(partnerId) {
@@ -541,6 +551,33 @@
                 dragging = false;
             }
         });
+    }
+    
+    function selectNextRow(data){
+    	if ($(checkboxNextSelectId).is(":checked")){
+    		selectedSourceTableRow = selectedSourceTableRow+1;
+    		selectNext(selectedSourceTableRow, data);
+    	}else{
+    		clearPartnerOnClick();
+    	}
+    }
+    
+    function selectNext(index, data) {
+//    	console.log(index+" "+data.length);
+        if(index>data.length) {
+        	$.alert("保存に成功しました \n 最終行まで更新しました");
+        	clearPartnerOnClick();
+        } else {
+            $.alert("保存に成功しました");
+        	var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
+            selectedRow(row);
+            var rowData = data[index-1];
+            doEditPartner(rowData);
+        }
+    }
+    
+    function selectedRow(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
     }
 
 })(jQuery);
