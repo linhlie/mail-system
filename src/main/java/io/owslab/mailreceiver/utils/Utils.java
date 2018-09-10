@@ -2,7 +2,11 @@ package io.owslab.mailreceiver.utils;
 
 import com.mariten.kanatools.KanaConverter;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,18 +16,22 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by khanhlvb on 3/7/18.
  */
 public class Utils {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat DATE_FORMAT_2 = new SimpleDateFormat("yyyy/MM/dd");
 
     public static final SimpleDateFormat GMT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
     public static final SimpleDateFormat GMT_FORMAT_2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void init(){
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+        DATE_FORMAT_2.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
         GMT_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT+9"));
         GMT_FORMAT_2.setTimeZone(TimeZone.getTimeZone("GMT+9"));
     }
@@ -71,9 +79,9 @@ public class Utils {
         return japaneseOptimizedText.toLowerCase();
     }
 
-    public synchronized static String formatTimestamp(long ts) {
+    public synchronized static String formatTimestamp(SimpleDateFormat sdf, long ts) {
         Date date = new Date(ts);
-        return DATE_FORMAT.format(date);
+        return sdf.format(date);
     }
 
     public synchronized static String formatGMT(Date date){
@@ -101,5 +109,19 @@ public class Utils {
 
     private static Date localDateTimeToDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.of("GMT+9")).toInstant());
+    }
+
+    public synchronized static File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convFile;
+    }
+
+    public synchronized static boolean matchingNumber(String content) {
+        Pattern p = Pattern.compile("^\\d+(,\\d{3})*(\\.\\d+)?$");
+        Matcher m = p.matcher(content);
+        return m.matches();
     }
 }

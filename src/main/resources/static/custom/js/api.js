@@ -203,8 +203,19 @@ function getPartnerGroupExport(includeHeader) {
     _doDownload(url);
 }
 
-function importPartners(data, includeHeader, onSuccess, onError) {
-    var url = '/expansion/importPartner?header=' + includeHeader;
+function getEngineerExport(includeHeader) {
+    includeHeader = !!includeHeader;
+    var url = "/expansion/exportCSV?type=engineer&&header=" + includeHeader;
+    _doDownload(url);
+}
+
+function forceFetchMail(onSuccess, onError) {
+    var url ="/user/dashboard/forceFetchMail";
+    _get(url, onSuccess, onError);
+}
+
+function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
+    var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
     $.ajax({
         url: url,
         type: 'POST',
@@ -217,8 +228,22 @@ function importPartners(data, includeHeader, onSuccess, onError) {
     });
 }
 
-function importPartnerGroups(data, includeHeader, onSuccess, onError) {
-    var url = '/expansion/importPartnerGroup?header=' + includeHeader;
+function importEngineers(data, includeHeader, deleteOld, onSuccess, onError) {
+    var url = '/expansion/importEngineer?header=' + includeHeader + "&deleteOld=" + deleteOld;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
+    var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
     $.ajax({
         url: url,
         type: 'POST',

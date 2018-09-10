@@ -131,14 +131,14 @@
                 </li>
             </ul>
         </li>
-        <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport'})?'treeview menu-open':'treeview'">
+        <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport' || currentMenu == 'engineerImportExport'})?'treeview menu-open':'treeview'">
             <a href="#">
                 <i class="fa fa-database"></i> <span>データベース登録</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
             </a>
-            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport'})?'treeview-menu visible':'treeview-menu'">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport' || currentMenu == 'engineerImportExport'})?'treeview-menu visible':'treeview-menu'">
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'businessPartnerRegist'})?'active':''">
                     <a href="#" th:href="@{/expansion/businessPartnerRegist}">
                         <i class="fa fa-handshake-o"></i> <span>取引先登録</span>
@@ -152,6 +152,11 @@
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'partnerImportExport'})?'active':''">
                     <a href="#" th:href="@{/expansion/partnerImportExport}">
                         <i class="fa fa-share-square-o"></i> <span>取引先ｲﾝﾎﾟｰﾄ・ｴｷｽﾎﾟｰﾄ</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerImportExport'})?'active':''">
+                    <a href="#" th:href="@{/expansion/engineerImportExport}">
+                        <i class="fa fa-share-square-o"></i> <span>技術者ｲﾝﾎﾟｰﾄ・ｴｷｽﾎﾟｰﾄ</span>
                     </a>
                 </li>
             </ul>

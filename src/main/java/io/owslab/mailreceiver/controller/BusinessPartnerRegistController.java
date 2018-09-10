@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,7 @@ public class BusinessPartnerRegistController {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
             List<BusinessPartner> partners = partnerService.getAll();
+            Collections.sort(partners, new BusinessPartnerComparator());
             result.setList(partners);
             result.setMsg("done");
             result.setStatus(true);
@@ -133,5 +136,22 @@ public class BusinessPartnerRegistController {
             result.setStatus(false);
         }
         return ResponseEntity.ok(result);
+    }
+
+    public class BusinessPartnerComparator implements Comparator<BusinessPartner> {
+        public int compare(BusinessPartner o1, BusinessPartner o2) {
+            if(o1.isOurCompany() == o2.isOurCompany()) {
+                int value1 = o1.getKanaName().compareTo(o2.getKanaName());
+                if (value1 == 0) {
+                    int value2 = o1.getName().compareTo(o2.getName());
+                    return value2;
+                }
+                return value1;
+            } else if (o1.isOurCompany() && !o2.isOurCompany()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
     }
 }

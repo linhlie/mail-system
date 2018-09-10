@@ -60,8 +60,8 @@ public class EngineerForm {
         this.stationNearest = engineer.getStationNearest();
         this.commutingTime = engineer.getCommutingTime();
         this.dormant = engineer.isDormant();
-        this.projectPeriodStart = Utils.formatTimestamp(engineer.getProjectPeriodStart());
-        this.projectPeriodEnd = Utils.formatTimestamp(engineer.getProjectPeriodEnd());
+        this.projectPeriodStart = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodStart());
+        this.projectPeriodEnd = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodEnd());
     }
 
     public EngineerForm() {

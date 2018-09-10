@@ -324,12 +324,18 @@ function getFileSizeString(fileSize) {
     return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
 }
 
-function comparePartner(a,b) {
-    if (a.kanaName < b.kanaName)
+function comparePartner(a, b) {
+    if(a.ourCompany == b.ourCompany) {
+        if (a.kanaName < b.kanaName)
+            return -1;
+        if (a.kanaName > b.kanaName)
+            return 1;
+        return a.name.localeCompare(b.name);
+    } else if (a.ourCompany && !b.ourCompany) {
         return -1;
-    if (a.kanaName > b.kanaName)
+    } else {
         return 1;
-    return 0;
+    }
 }
 
 function fullWidthNumConvert(fullWidthNum){

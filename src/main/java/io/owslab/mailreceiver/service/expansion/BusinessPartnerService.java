@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.expansion;
 
+import io.owslab.mailreceiver.controller.PartnerImportExportController;
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
@@ -9,8 +10,13 @@ import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
+import io.owslab.mailreceiver.utils.Utils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,11 +36,16 @@ import java.util.*;
  */
 @Service
 public class BusinessPartnerService {
+    private static final Logger logger = LoggerFactory.getLogger(BusinessPartnerService.class);
+
     @Autowired
     private BusinessPartnerDAO partnerDAO;
 
     @Autowired
     private BusinessPartnerGroupDAO partnerGroupDAO;
+
+    @Autowired
+    private UploadFileService uploadFileService;
 
     public List<BusinessPartner> getAll() {
         return (List<BusinessPartner>) partnerDAO.findAll();
@@ -74,7 +85,7 @@ public class BusinessPartnerService {
         saveGroupList(updatedPartner, groupAddIds);
     }
 
-    private BusinessPartner findOneByPartnerCode(String partnerCode){
+    public BusinessPartner findOneByPartnerCode(String partnerCode){
         List<BusinessPartner> partners = partnerDAO.findByPartnerCode(partnerCode);
         return partners.size() > 0 ? partners.get(0) : null;
     }
@@ -175,14 +186,13 @@ public class BusinessPartnerService {
         return withPartnerId + "-" + partnerId;
     }
 
-    public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader) throws Exception {
-
-        File file = convertMultiPartToFile(multipartFile);
+    public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<BusinessPartner> partners = new ArrayList<>();
-
+        File file = null;
         try {
+            file = uploadFileService.saveToUpload(multipartFile);
             String encoding = UniversalDetector.detectCharset(file);
             if(encoding == null) {
                 encoding = "Shift-JIS";
@@ -200,6 +210,9 @@ public class BusinessPartnerService {
                 }
                 while ((partnerDTO = beanReader.read(CSVPartnerDTO.class, headers)) != null) {
                     partners.add(partnerDTO.build());
+                }
+                if(deleteOld) {
+                    partnerDAO.deleteAll();
                 }
                 for(int line = 0; line < partners.size(); line++) {
                     BusinessPartner partner = partners.get(line);
@@ -246,22 +259,28 @@ public class BusinessPartnerService {
                 }
             }
         } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+            if(file != null) {
+                file.delete();
+            }
             throw new Exception("取引先のインポートに失敗しました");
-        } finally {
+        }
+        if(file != null) {
             file.delete();
         }
 
         return importLogs;
     }
 
-    public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader) throws Exception {
+    public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
-        File file = convertMultiPartToFile(multipartFile);
+        File file = null;
 
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<CSVPartnerGroupDTO> partnerGroups = new ArrayList<>();
 
         try {
+            file = uploadFileService.saveToUpload(multipartFile);
             String encoding = UniversalDetector.detectCharset(file);
             if(encoding == null) {
                 encoding = "Shift-JIS";
@@ -278,6 +297,9 @@ public class BusinessPartnerService {
                 }
                 while ((partnerGroupDTO = beanReader.read(CSVPartnerGroupDTO.class, headers)) != null) {
                     partnerGroups.add(partnerGroupDTO);
+                }
+                if(deleteOld) {
+                    partnerGroupDAO.deleteAll();
                 }
                 for(int line = 0; line < partnerGroups.size(); line++) {
                     CSVPartnerGroupDTO partnerGroup = partnerGroups.get(line);
@@ -334,19 +356,16 @@ public class BusinessPartnerService {
                 }
             }
         } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+            if(file != null) {
+                file.delete();
+            }
             throw new Exception("取引先グループのインポートに失敗しました");
-        } finally {
+        }
+        if(file != null) {
             file.delete();
         }
 
         return importLogs;
-    }
-
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
     }
 }
