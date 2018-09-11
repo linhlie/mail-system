@@ -4,8 +4,11 @@ import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
+import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
+import io.owslab.mailreceiver.service.expansion.DomainService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +36,9 @@ public class BusinessPartnerRegistController {
 
     @Autowired
     private BusinessPartnerService partnerService;
+    
+    @Autowired
+    private DomainService domainService;
 
     @RequestMapping(value = { "/businessPartnerRegist" }, method = RequestMethod.GET)
     public String getBusinessPartnerRegist(Model model, HttpServletRequest request) {
@@ -69,6 +76,7 @@ public class BusinessPartnerRegistController {
         }
         try {
             partnerService.add(form);
+            domainService.deleteDomainByDomain(form.getBuilder().getDomain1(), form.getBuilder().getDomain2(), form.getBuilder().getDomain3());
             result.setMsg("done");
             result.setStatus(true);
         } catch (PartnerCodeException dpce) {
@@ -94,8 +102,8 @@ public class BusinessPartnerRegistController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-
             partnerService.update(form, id);
+            domainService.deleteDomainByDomain(form.getBuilder().getDomain1(), form.getBuilder().getDomain2(), form.getBuilder().getDomain3());
             result.setMsg("done");
             result.setStatus(true);
         } catch (PartnerCodeException dpce) {
@@ -136,6 +144,33 @@ public class BusinessPartnerRegistController {
             result.setStatus(false);
         }
         return ResponseEntity.ok(result);
+    }
+    
+    @RequestMapping(value = { "/domain/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getDomainUnregister() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<DomainUnregister> listDomain = domainService.getAll();
+            result.setList(listDomain);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPartners: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+    
+    @RequestMapping(value = "/domain/delete/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteDomain(@PathVariable("id") long id) {
+        try {
+            domainService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     public class BusinessPartnerComparator implements Comparator<BusinessPartner> {

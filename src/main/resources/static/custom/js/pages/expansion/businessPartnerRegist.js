@@ -7,10 +7,14 @@
     var formId = "#partnerForm";
     var checkboxNextSelectId = "#checkboxNext"
     var partnerTableId = "partner";
+    var styleShowTableId = "#styleShowTable";
+    var countDomain = "#countDomain";
     var partnerGroupTableId = "partnerGroup";
     var partners = null;
+    var domains = null;
     var updatingPartnerId = null;
     var selectedSourceTableRow=-1;
+    var updatingDomainId = null;
 
     var formFields = [
         {type: "input", name: "name"},
@@ -39,6 +43,12 @@
         CORPORATION: 6,
         OTHER: 7,
     };
+    
+	var partnerReplaceHead = '<tr>' +
+		'<th class="dark">取引先名</th>' +
+		'<th class="fit dark" style="text-align: center">識別ID</th>' +
+		'<th colspan="2"></th>' +
+		'</tr>';
 
     var partnerReplaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
@@ -50,6 +60,21 @@
         '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
+    
+	var domainReplaceHead = '<tr>' +
+		'<th class="dark">Domain</th>' +
+		'<th colspan="2"></th>' +
+		'</tr>';
+	
+    var domainReplaceRow = '<tr role="row" class="hidden">' +
+    	'<td rowspan="1" colspan="1" data="domain"><span></span></td>' +
+    	'<td name="editDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
+    	'<button type="button">編集</button>' +
+    	'</td>' +
+    	'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
+    	'<button type="button">削除</button>' +
+    	'</td>' +
+    	'</tr>';
 
     var groupReplaceRow = '<tr name="group-partner" data-type="original" role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
@@ -63,11 +88,13 @@
         initStickyHeader();
         partnerComboBoxListener();
         setButtonClickListenter(partnerAddBtnId, addPartnerOnClick);
-        setButtonClickListenter(partnerUpdateBtnId, updatePartnerOnClick);
+        setButtonClickListenter(partnerUpdateBtnId, updateBtnOnClick);
         setButtonClickListenter(partnerClearBtnId, clearPartnerOnClick);
         companyTypeChangeListener();
+        styleShowTableChangeListener();
         loadBusinessPartners();
         draggingSetup();
+        setVisibleCountDomain("hidden")
     });
 
     function initStickyHeader() {
@@ -166,6 +193,37 @@
         }, onSuccess, onError)
     }
     
+    function addPartnerFromDomain() {
+        clearFormValidate();
+        var validated = partnerFormValidate();
+        if(!validated) return;
+        var data = getFormData();
+        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
+        function onSuccess(response) {
+            if(response && response.status) {
+                $.alert({
+                	title: '',
+                    content: "保存に成功しました",
+                    onClose: function () {
+                    	loadDomainUnregisters(selectNextRow);
+                        clearPartnerOnClick();
+                    }
+                });
+            } else {
+                $.alert("Update false");
+            }
+        }
+        
+        function onError(response) {
+        	$.alert("Update false");
+        }
+        addPartner({
+            builder: data,
+            groupAddIds: addRemoveGroupPartnerIds.add,
+            groupRemoveIds: addRemoveGroupPartnerIds.remove,
+        }, onSuccess, onError)
+    }
+    
     function getAddRemoveGroupPartnerIds() {
         var data = {
             add: [],
@@ -217,6 +275,23 @@
                 $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
             }
         }
+    }
+    
+    function setFormDomainUpdate(form) {
+    	$('#domain1').val(form.domain);
+    }
+    
+    function updateBtnOnClick(){
+    	var type = $(styleShowTableId + ' option:selected').text();
+		//Update Partner
+		if(type == '取引先一覧'){
+			updatePartnerOnClick();
+		}
+		
+		//Add new Partner
+		if(type == '未登録取引先一覧'){
+			addPartnerFromDomain();
+		}
     }
     
     function updatePartnerOnClick() {
@@ -358,6 +433,7 @@
             for (var i = 0; i < partners.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
+            $("#" + tableId + "> thead").html(partnerReplaceHead);
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("deletePartner", function () {
 
@@ -425,7 +501,6 @@
 
     function doDeletePartner(id) {
         function onSuccess() {
-            console.log("doDeletePartner success: ", id);
             loadBusinessPartners();
             clearPartnerOnClick();
         }
@@ -459,6 +534,13 @@
         setFormData(data);
         updateCompanySpecificType(data.companyType);
         
+    }
+    
+    function doEditDomain(data) {
+        clearFormValidate();
+        updatingDomainId = data.id;
+        disableUpdatePartner(false);
+        setFormDomainUpdate(data);
     }
     
     function loadBusinessPartnerGroup(partnerId) {
@@ -504,6 +586,10 @@
         $(partnerUpdateBtnId).prop('disabled', disable);
     }
     
+    function disableAddPartner(disable) {
+        $(partnerAddBtnId).prop('disabled', disable);
+    }
+    
     function companyTypeChangeListener() {
         $("input[name='companyType']").click(function() {
             updateCompanySpecificType(this.value);
@@ -546,7 +632,6 @@
             {
                 var container = $('#partnerBox');
                 var topHeight = (e.pageY - container.offset().top);
-                console.log("topHeight: ", topHeight);
                 var tableHeight = Math.floor(topHeight - 10);
                 tableHeight = tableHeight > 60 ? tableHeight : 60;
                 tableHeight = tableHeight < 400 ? tableHeight : 400;
@@ -560,7 +645,10 @@
     
     function selectNextRow(data){
     	if ($(checkboxNextSelectId).is(":checked")){
-    		selectedSourceTableRow = selectedSourceTableRow+1;
+    		var type = $(styleShowTableId + ' option:selected').text();
+    		if(type == '取引先一覧'){
+    			selectedSourceTableRow = selectedSourceTableRow+1;
+    		}
     		selectNext(selectedSourceTableRow, data);
     	}else{
     		clearPartnerOnClick();
@@ -575,12 +663,133 @@
         	var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
             var rowData = data[index-1];
-            doEditPartner(rowData);
+           
+            var type = $(styleShowTableId + ' option:selected').text();
+    		if(type == '取引先一覧'){
+    			 doEditPartner(rowData);
+    		}
+    		
+    		if(type == '未登録取引先一覧'){
+    			doEditDomain(rowData);
+    		}
         }
     }
     
     function selectedRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+    
+    function styleShowTableChangeListener(){
+    	$(styleShowTableId).change(function(){
+    		var type = $(styleShowTableId + ' option:selected').text();
+    		//Show list partner table
+    		if(type == '取引先一覧'){
+    			disableAddPartner(false);
+    			loadBusinessPartners();
+    			clearPartnerOnClick();
+    			setVisibleCountDomain("hidden")
+    		}
+    		
+    		//Show list domainUnregister table
+    		if(type == '未登録取引先一覧'){
+    			disableAddPartner(true);
+    			loadDomainUnregisters();
+    			clearPartnerOnClick();
+    		}
+    		
+    	});
+    }
+    
+    function setVisibleCountDomain(visibility){
+    	$(countDomain).css('visibility', visibility);
+    }
+    
+    function loadDomainUnregisters(callback) {
+        function onSuccess(response) {
+            if(response && response.status){
+            	loadDomainUnregisterData(partnerTableId, response.list); 
+            }
+        	if(typeof callback == 'function'){
+            	callback(response.list);
+            }
+        }
+        
+        function onError(error) {
+
+        }
+        getDomainUnregisters(onSuccess, onError);
+        
+        
+        function onSuccessPartner(response) {
+            if(response && response.status){
+                updatePartnerComboBox(response.list);
+            }
+        }
+        
+        function onErrorPartner(error) {
+
+        }
+        getBusinessPartners(onSuccessPartner, onErrorPartner);
+    }
+    
+    function loadDomainUnregisterData(tableId, data) {
+        domains = data;
+        $(countDomain).html("<u>未登録の取引先が"+data.length+"件あります</u>");
+        setVisibleCountDomain("visible")
+        removeAllRow(tableId, domainReplaceRow);
+        if (domains.length > 0) {
+            var html = partnerReplaceRow;
+            for (var i = 0; i < domains.length; i++) {
+                html = html + addRowWithData(tableId, data[i], i);
+            }
+            $("#" + tableId + "> thead").html(domainReplaceHead);
+            $("#" + tableId + "> tbody").html(html);
+            setRowClickListener("deleteDomain", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = domains[index];
+                if (rowData && rowData.id) {
+                	doDeleteDomain(rowData.id);
+                }
+            });
+            setRowClickListener("editDomain", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                selectedSourceTableRow = parseInt(index) + 1;
+                var rowData = domains[index];
+                if (rowData && rowData.id) {
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                    doEditDomain(rowData);
+                }
+            });
+        }
+    }
+    
+    function doDeleteDomain(id) {
+        function onSuccess() {
+            loadDomainUnregisters()
+            clearPartnerOnClick();
+        }
+        function onError() {
+            $.alert("取引先の削除に失敗しました。");
+        }
+        $.confirm({
+            title: '',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                    	deleteDomain(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
     }
 
 })(jQuery);
