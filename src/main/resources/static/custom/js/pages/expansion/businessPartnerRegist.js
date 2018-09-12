@@ -1,6 +1,7 @@
 
 (function () {
     var partnerComboBoxId = "partnerComboBox";
+    var partnerIdComboBoxId = "partnerIdComboBox";
     var partnerAddBtnId = "#partnerAdd";
     var partnerUpdateBtnId = "#partnerUpdate";
     var partnerClearBtnId = "#partnerClear";
@@ -62,6 +63,7 @@
     $(function () {
         initStickyHeader();
         partnerComboBoxListener();
+        partnerIdComboBoxListener();
         setButtonClickListenter(partnerAddBtnId, addPartnerOnClick);
         setButtonClickListenter(partnerUpdateBtnId, updatePartnerOnClick);
         setButtonClickListenter(partnerClearBtnId, clearPartnerOnClick);
@@ -87,7 +89,9 @@
             '<td rowspan="1" colspan="1">' +
             '<select id="partnerComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
             '</td>' +
-            '<td rowspan="1" colspan="1"></td>' +
+            '<td rowspan="1" colspan="1">'+
+            '<select id="partnerIdComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
+            '</td>' +
             '<td class="fit" rowspan="1" colspan="1">' +
             '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
             '</td>' +
@@ -96,19 +100,33 @@
     }
     
     function updatePartnerComboBox(options) {
+    	console.log("updatePartnerComboBox");
         options = options ? options.slice(0) : [];
         options.sort(comparePartner);
         $('#' + partnerComboBoxId).empty();
+        $('#' + partnerIdComboBoxId).empty();
         $('#' + partnerComboBoxId).append($('<option>', {
             selected: true,
             disabled: true,
             value: "",
             text : "選んでください",
         }));
+        
+        $('#' + partnerIdComboBoxId).append($('<option>', {
+            selected: true,
+            disabled: true,
+            value: "",
+            text : "識別ID",
+        }));
         $.each(options, function (i, item) {
             $('#' + partnerComboBoxId).append($('<option>', {
                 value: item.partnerCode,
                 text : item.name,
+            }).attr('data-id',item.id));
+            
+            $('#' + partnerIdComboBoxId).append($('<option>', {
+                value: item.name,
+                text : item.partnerCode,
             }).attr('data-id',item.id));
         });
     }
@@ -122,6 +140,18 @@
             var code = this.value;
             addPartnerToGroup.apply(this, [id, name, code]);
             $('#' + partnerComboBoxId).prop('selectedIndex',0);
+        });
+    }
+    
+    function partnerIdComboBoxListener() {
+        $('#' + partnerIdComboBoxId).off('change');
+        $('#' + partnerIdComboBoxId).change(function() {
+            var selected = $(this).find("option:selected");
+            var name = selected.text();
+            var id = selected.attr("data-id");
+            var code = this.value;
+            addPartnerToGroup.apply(this, [id, code, name]);
+            $('#' + partnerIdComboBoxId).prop('selectedIndex',0);
         });
     }
     
@@ -485,6 +515,7 @@
         addPartnerComboBox();
         updatePartnerComboBox(partners);
         partnerComboBoxListener();
+        partnerIdComboBoxListener();
     }
     
     function setDeleteGroupPartnerListener() {
