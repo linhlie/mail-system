@@ -2,14 +2,12 @@ package io.owslab.mailreceiver.service.mail;
 
 import com.sun.mail.imap.IMAPFolder;
 import com.vdurmont.emoji.EmojiParser;
-
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.job.IMAPFetchMailJob;
 import io.owslab.mailreceiver.model.*;
-import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -18,7 +16,6 @@ import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.Utils;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -40,7 +37,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.MessageNumberTerm;
 import javax.mail.search.SearchTerm;
-
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -61,9 +57,6 @@ public class MailBoxService {
     public static final int USE_UPPER_LIMIT = 2;
     @Autowired
     private EmailDAO emailDAO;
-    
-    @Autowired
-    private DomainService domainService;
 
     @Autowired
     private FileDAO fileDAO;
@@ -673,14 +666,8 @@ public class MailBoxService {
         emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DELETED, msgIds);
     }
 
-    public void moveToInbox(List<String> msgIds) {
+    public void moveToInbox(Collection<String> msgIds) {
         emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DONE, msgIds);
-        List<Email> listEmailToCheckDomain = new ArrayList<Email>();
-       for(String s : msgIds){
-    	   Email  m = emailDAO.findOne(s);
-    	   listEmailToCheckDomain.add(m);
-       }
-       domainService.saveDomainUnregistered(listEmailToCheckDomain);
     }
 
     public void deleteFromInBox(Collection<String> msgIds) {
