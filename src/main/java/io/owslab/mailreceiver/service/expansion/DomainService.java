@@ -60,6 +60,17 @@ public class DomainService {
 		domainDAO.save(mapDomain.values());
 	}
 	
+	public void startUpdateDomainUnregister(){
+		List<DomainUnregister> listDomainUnregister = getAll();
+		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
+		LinkedHashMap<String, DomainUnregister> mapDomainRegister = getDomainFromPartner(listPartner);
+		for(DomainUnregister domain : listDomainUnregister){
+			if(mapDomainRegister.containsKey(domain.getDomain())){
+				domainDAO.deleteByDomain(domain.getDomain());
+			}
+		}
+	}
+	
     public void deleteDomainByDomain(String domain1, String domain2, String domain3){
     	if(domain1!=null && !domain1.equals("")){
     		deleteByDomain(domain1.toLowerCase());
@@ -79,6 +90,31 @@ public class DomainService {
 			int index = mail.getFrom().indexOf("@");
 			domain.setDomain(mail.getFrom().substring(index+1).toLowerCase());
 			hashMap.put(domain.getDomain(), domain);
+		}
+		return hashMap;
+	}
+	
+	public LinkedHashMap<String, DomainUnregister> getDomainFromPartner(List<BusinessPartner> listPartner){
+		LinkedHashMap<String, DomainUnregister> hashMap = new LinkedHashMap<String, DomainUnregister>();
+		for(BusinessPartner partner : listPartner){
+			String domain1 =partner.getDomain1();
+			String domain2 =partner.getDomain2();
+			String domain3 =partner.getDomain3();
+			if(domain1!=null && !domain1.equals("")){
+				DomainUnregister domain = new DomainUnregister();
+				domain.setDomain(domain1.toLowerCase());
+				hashMap.put(domain.getDomain(), domain);
+	    	}
+	    	if(domain2!=null && !domain2.equals("")){
+	    		DomainUnregister domain = new DomainUnregister();
+				domain.setDomain(domain2.toLowerCase());
+				hashMap.put(domain.getDomain(), domain);
+	    	}
+	    	if(domain3!=null && !domain3.equals("")){
+	    		DomainUnregister domain = new DomainUnregister();
+				domain.setDomain(domain3.toLowerCase());
+				hashMap.put(domain.getDomain(), domain);
+	    	}
 		}
 		return hashMap;
 	}
