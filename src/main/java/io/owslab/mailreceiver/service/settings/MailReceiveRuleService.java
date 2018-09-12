@@ -1,7 +1,6 @@
 package io.owslab.mailreceiver.service.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.ReceiveRuleDAO;
 import io.owslab.mailreceiver.dto.ReceiveRuleDTO;
@@ -11,10 +10,8 @@ import io.owslab.mailreceiver.form.ReceiveRuleForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveRule;
 import io.owslab.mailreceiver.response.JsonStringResponseBody;
-import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.FilterRule;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,9 +48,6 @@ public class MailReceiveRuleService {
     private EnviromentSettingService ess;
 
     @Autowired
-    private DomainService domainService;
-    
-    @Autowired
     private MatchingConditionService mcs;
 
     @Autowired
@@ -64,7 +58,7 @@ public class MailReceiveRuleService {
     @Autowired
     private EmailDAO emailDAO;
 
-    public JSONObject getReceiveRuleSettings() throws JSONException {
+    public JSONObject getReceiveRuleSettings() {
         JSONObject obj = new JSONObject();
 
         String receiveMailType = ess.getReceiveMailType();
@@ -152,7 +146,6 @@ public class MailReceiveRuleService {
 
     public synchronized void checkMailStatus() {
         List<Email> emailList = emailDAO.findByStatus(Email.Status.NEW);
-        List<Email> listEmailToCheckDomain = new ArrayList<Email>();
         if(emailList.size() == 0) return;
         String receiveMailType = ess.getReceiveMailType();
         String receiveMailRule = ess.getReceiveMailRule();
@@ -170,7 +163,6 @@ public class MailReceiveRuleService {
             for(Email email : emailList) {
                 if(matchIdList.contains(email.getMessageId())) {
                     email.setStatus(Email.Status.DONE);
-                    listEmailToCheckDomain.add(email);
                     String mark = getMark(markAIdList, markBIdList, email);
                     email.setMark(mark);
                 } else {
@@ -180,12 +172,10 @@ public class MailReceiveRuleService {
         } else {
             for(Email email : emailList) {
                 email.setStatus(Email.Status.DONE);
-                listEmailToCheckDomain.add(email);
                 String mark = getMark(markAIdList, markBIdList, email);
                 email.setMark(mark);
             }
         }
-        domainService.saveDomainUnregistered(listEmailToCheckDomain);
         emailDAO.save(emailList);
     }
 
@@ -206,14 +196,14 @@ public class MailReceiveRuleService {
         return filterRule;
     }
 
-    private JSONObject buildGroupDataFromRaw(JSONObject data) throws JSONException {
+    private JSONObject buildGroupDataFromRaw(JSONObject data) {
         JSONObject result = new JSONObject();
         result.put("condition", data.get("condition"));
         result.put("rules", buildRulesDataFromRaw(data));
         return result;
     }
 
-    private JSONArray buildRulesDataFromRaw(JSONObject data) throws JSONException {
+    private JSONArray buildRulesDataFromRaw(JSONObject data) {
         JSONArray result = new JSONArray();
         JSONArray rules = data.getJSONArray("rules");
         for(int i = 0 ; i < rules.length(); i++){

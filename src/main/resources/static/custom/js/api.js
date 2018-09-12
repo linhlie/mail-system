@@ -166,16 +166,6 @@ function deletePartner(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
-function getDomainUnregisters(onSuccess, onError) {
-    var url = "/expansion/domain/list";
-    _get(url, onSuccess, onError);
-}
-
-function deleteDomain(id, onSuccess, onError) {
-    var url = "/expansion/domain/delete/" + id;
-    _delete(url, onSuccess, onError);
-}
-
 function getEngineers(data, onSuccess, onError) {
     var url = "/expansion/engineer/list";
     _post(url, data, onSuccess, onError);

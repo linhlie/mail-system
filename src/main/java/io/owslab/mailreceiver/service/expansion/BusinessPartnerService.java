@@ -10,11 +10,9 @@ import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
-import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import io.owslab.mailreceiver.utils.Utils;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
@@ -48,9 +46,6 @@ public class BusinessPartnerService {
 
     @Autowired
     private UploadFileService uploadFileService;
-    
-    @Autowired
-    private DomainService domainService;
 
     public List<BusinessPartner> getAll() {
         return (List<BusinessPartner>) partnerDAO.findAll();
@@ -253,7 +248,6 @@ public class BusinessPartnerService {
                     BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
                     if(existPartner == null) {
                         partnerDAO.save(partner);
-                        domainService.deleteDomainByDomain(partner.getDomain1(), partner.getDomain2(), partner.getDomain3());
                     } else {
                         String type = "【取引先インポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;
@@ -374,5 +368,4 @@ public class BusinessPartnerService {
 
         return importLogs;
     }
-   
 }

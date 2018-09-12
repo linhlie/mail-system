@@ -35,7 +35,6 @@ public class EnviromentSettingService {
     public static final String MARK_A_CONDITIONS_KEY = "MARK_A_CONDITIONS_KEY";
     public static final String MARK_B_CONDITIONS_KEY = "MARK_B_CONDITIONS_KEY";
     public static final String MARK_REFLECTION_SCOPE_KEY = "MARK_REFLECTION_SCOPE_KEY";
-    public static final String UPDATE_DOMAIN_UNREGISTER_INTERVAL= "update_domain_unregister_interval";
 
     private static final String DEFAULT_STORAGE_PATH = ApplicationStartup.DEFAULT_STORAGE_PATH;
     private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
@@ -53,7 +52,6 @@ public class EnviromentSettingService {
     private static final String DEFAULT_MARK_A_CONDITIONS = "";
     private static final String DEFAULT_MARK_B_CONDITIONS = "";
     private static final String DEFAULT_MARK_REFLECTION_SCOPE = "1";
-    private static final String DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL = "1";
 
     public static final HashMap<String, String> defaultKVStore = createMap();
 
@@ -76,7 +74,6 @@ public class EnviromentSettingService {
         map.put(MARK_A_CONDITIONS_KEY, DEFAULT_MARK_A_CONDITIONS);
         map.put(MARK_B_CONDITIONS_KEY, DEFAULT_MARK_B_CONDITIONS);
         map.put(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
-        map.put(UPDATE_DOMAIN_UNREGISTER_INTERVAL, DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL);
         return map;
     }
 
@@ -196,10 +193,5 @@ public class EnviromentSettingService {
 
     public String getSaveToTrashBox() {
         return this.getSetting(SAVE_TO_TRASH_BOX_KEY, DEFAULT_SAVE_TO_TRASH_BOX);
-    }
-    
-    public int getUpdateDomainTimeInterval(){
-        String timeIntervalStr = this.getSetting(UPDATE_DOMAIN_UNREGISTER_INTERVAL, DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL);
-        return Integer.parseInt(timeIntervalStr);
     }
 }
