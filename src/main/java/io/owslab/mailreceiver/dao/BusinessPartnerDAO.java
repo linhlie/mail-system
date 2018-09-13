@@ -17,7 +17,4 @@ import javax.persistence.LockModeType;
 public interface BusinessPartnerDAO extends PagingAndSortingRepository<BusinessPartner, Long> {
     List<BusinessPartner> findByPartnerCode(String partnerCode);
     
-    @Lock(LockModeType.PESSIMISTIC_READ)
-    @Override
-    public Iterable<BusinessPartner> findAll();
 }

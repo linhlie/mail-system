@@ -30,11 +30,18 @@ public class DomainService {
 		domainDAO.delete(id);
 	}
 	
+    public void deleteDomainByListDomain(List<String> listDomain){
+    	domainDAO.deleteByDomainIn(listDomain);
+    }
+	
 	public void deleteByDomain(String domain) {
 		domainDAO.deleteByDomain(domain);
 	}
 	
 	public void saveDomainUnregistered(List<Email> listEmail){
+		if(listEmail.size()==0){
+			return;
+		}
 		LinkedHashMap<String, DomainUnregister> mapDomain = getDomain(listEmail);
 		List<DomainUnregister> listDomainUnregister = domainDAO.findAll();
 		
@@ -46,17 +53,20 @@ public class DomainService {
 		
 		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
 		for(BusinessPartner partner : listPartner){
-			if(mapDomain.containsKey(partner.getDomain1())){
-				mapDomain.remove(partner.getDomain1());
+			String domain1 = partner.getDomain1();
+			String domain2 = partner.getDomain2();
+			String domain3 = partner.getDomain3();
+			
+			if(domain1 != null && !domain1.equals("") && mapDomain.containsKey(domain1.toLowerCase())){
+				mapDomain.remove(domain1);
 			}
-			if(mapDomain.containsKey(partner.getDomain2())){
-				mapDomain.remove(partner.getDomain2());
+			if(domain2 != null && !domain2.equals("") && mapDomain.containsKey(domain2.toLowerCase())){
+				mapDomain.remove(domain2);
 			}
-			if(mapDomain.containsKey(partner.getDomain3())){
-				mapDomain.remove(partner.getDomain3());
+			if(domain3 != null && !domain3.equals("") && mapDomain.containsKey(domain3.toLowerCase())){
+				mapDomain.remove(domain3);
 			}
 		}
-		
 		domainDAO.save(mapDomain.values());
 	}
 	
@@ -86,10 +96,13 @@ public class DomainService {
 	public LinkedHashMap<String, DomainUnregister> getDomain(List<Email> listEmail){
 		LinkedHashMap<String, DomainUnregister> hashMap = new LinkedHashMap<String, DomainUnregister>();
 		for(Email mail : listEmail){
-			DomainUnregister domain = new DomainUnregister();
-			int index = mail.getFrom().indexOf("@");
-			domain.setDomain(mail.getFrom().substring(index+1).toLowerCase());
-			hashMap.put(domain.getDomain(), domain);
+			String from = mail.getFrom();
+			if(from!=null && !from.equals("")){
+				DomainUnregister domain = new DomainUnregister();
+				int index = from.indexOf("@");
+				domain.setDomain(from.substring(index+1).toLowerCase());
+				hashMap.put(domain.getDomain(), domain);
+			}
 		}
 		return hashMap;
 	}

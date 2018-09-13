@@ -192,7 +192,7 @@ public class BusinessPartnerService {
     }
 
     public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
-
+    	List<String> listDomain = new ArrayList<String>();
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
         List<BusinessPartner> partners = new ArrayList<>();
         File file = null;
@@ -253,7 +253,15 @@ public class BusinessPartnerService {
                     BusinessPartner existPartner = findOneByPartnerCode(partner.getPartnerCode());
                     if(existPartner == null) {
                         partnerDAO.save(partner);
-                        domainService.deleteDomainByDomain(partner.getDomain1(), partner.getDomain2(), partner.getDomain3());
+                        if(partner.getDomain1()!=null && !partner.getDomain1().equals("")){
+                            listDomain.add(partner.getDomain1());
+                        }
+                        if(partner.getDomain2()!=null && !partner.getDomain2().equals("")){
+                            listDomain.add(partner.getDomain2());
+                        }
+                        if(partner.getDomain3()!=null && !partner.getDomain3().equals("")){
+                            listDomain.add(partner.getDomain3());
+                        }
                     } else {
                         String type = "【取引先インポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;
@@ -274,7 +282,7 @@ public class BusinessPartnerService {
         if(file != null) {
             file.delete();
         }
-
+        domainService.deleteDomainByListDomain(listDomain);
         return importLogs;
     }
 
