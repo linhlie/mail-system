@@ -69,13 +69,14 @@ public class DomainService {
 		}
 		domainDAO.save(mapDomain.values());
 	}
-	
+
 	public void startUpdateDomainUnregister(){
 		List<DomainUnregister> listDomainUnregister = getAll();
+		if(listDomainUnregister.size() == 0) return;
 		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
-		LinkedHashMap<String, DomainUnregister> mapDomainRegister = getDomainFromPartner(listPartner);
+		List<String> listDomainRegister = getDomainFromPartner(listPartner);
 		for(DomainUnregister domain : listDomainUnregister){
-			if(mapDomainRegister.containsKey(domain.getDomain())){
+			if(listDomainRegister.contains(domain.getDomain())){
 				domainDAO.deleteByDomain(domain.getDomain());
 			}
 		}
@@ -107,29 +108,23 @@ public class DomainService {
 		return hashMap;
 	}
 	
-	public LinkedHashMap<String, DomainUnregister> getDomainFromPartner(List<BusinessPartner> listPartner){
-		LinkedHashMap<String, DomainUnregister> hashMap = new LinkedHashMap<String, DomainUnregister>();
+	public List<String> getDomainFromPartner(List<BusinessPartner> listPartner){
+		List<String> domainList = new ArrayList<String>();
 		for(BusinessPartner partner : listPartner){
 			String domain1 =partner.getDomain1();
 			String domain2 =partner.getDomain2();
 			String domain3 =partner.getDomain3();
 			if(domain1!=null && !domain1.equals("")){
-				DomainUnregister domain = new DomainUnregister();
-				domain.setDomain(domain1.toLowerCase());
-				hashMap.put(domain.getDomain(), domain);
+				domainList.add(domain1.toLowerCase());
 	    	}
 	    	if(domain2!=null && !domain2.equals("")){
-	    		DomainUnregister domain = new DomainUnregister();
-				domain.setDomain(domain2.toLowerCase());
-				hashMap.put(domain.getDomain(), domain);
+				domainList.add(domain2.toLowerCase());
 	    	}
 	    	if(domain3!=null && !domain3.equals("")){
-	    		DomainUnregister domain = new DomainUnregister();
-				domain.setDomain(domain3.toLowerCase());
-				hashMap.put(domain.getDomain(), domain);
+				domainList.add(domain3.toLowerCase());
 	    	}
 		}
-		return hashMap;
+		return domainList;
 	}
 
 }
