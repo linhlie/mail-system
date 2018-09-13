@@ -712,6 +712,7 @@
     
     function styleShowTableChangeListener(){
     	$(styleShowTableId).change(function(){
+    	    $("#" + partnerTableId).parent().scrollTop(0);
     		var type = $(styleShowTableId + ' option:selected').text();
     		//Show list partner table
     		if(type == '取引先一覧'){
