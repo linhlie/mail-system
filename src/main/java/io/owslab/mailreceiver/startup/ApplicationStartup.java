@@ -186,7 +186,6 @@ public class ApplicationStartup {
     
     public void getDomain(){
     	List<Email> listEmail = emailDAO.findByStatusGroupByFrom(Email.Status.DONE);
-    	System.out.println("getDomain  "+listEmail.size());
     	domainService.saveDomainUnregistered(listEmail);
     }
 }

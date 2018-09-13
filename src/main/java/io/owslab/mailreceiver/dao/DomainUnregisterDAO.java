@@ -16,7 +16,6 @@ public interface DomainUnregisterDAO extends JpaRepository<DomainUnregister, Lon
 	 @Transactional
 	public Long deleteByDomain(String domain);
 	 
-	 @Lock(LockModeType.PESSIMISTIC_READ)
-	 @Override
-	public List<DomainUnregister> findAll();
+	 @Transactional
+	public void deleteByDomainIn(List<String> domains);
 }

@@ -675,12 +675,8 @@ public class MailBoxService {
 
     public void moveToInbox(List<String> msgIds) {
         emailDAO.updateStatusByMessageIdIn(Email.Status.SKIPPED, Email.Status.DONE, msgIds);
-        List<Email> listEmailToCheckDomain = new ArrayList<Email>();
-       for(String s : msgIds){
-    	   Email  m = emailDAO.findOne(s);
-    	   listEmailToCheckDomain.add(m);
-       }
-       domainService.saveDomainUnregistered(listEmailToCheckDomain);
+        List<Email> listEmailToCheckDomain = emailDAO.findByMessageIdIn(msgIds);
+        domainService.saveDomainUnregistered(listEmailToCheckDomain);
     }
 
     public void deleteFromInBox(Collection<String> msgIds) {

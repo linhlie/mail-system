@@ -185,8 +185,8 @@ public class MailReceiveRuleService {
                 email.setMark(mark);
             }
         }
-        domainService.saveDomainUnregistered(listEmailToCheckDomain);
         emailDAO.save(emailList);
+        domainService.saveDomainUnregistered(listEmailToCheckDomain);
     }
 
     public FilterRule getFilterRule(String ruleStr) {

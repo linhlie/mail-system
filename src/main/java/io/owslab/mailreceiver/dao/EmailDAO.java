@@ -20,7 +20,7 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findByAccountIdOrderByReceivedAt(long accountId);
     List<Email> findByAccountIdOrderByMessageNumberDesc(long accountId);
     List<Email> findByMessageId(String messageId);
-    List<Email> findByMessageId(List<String> messageIds);
+    List<Email> findByMessageIdIn(List<String> messageIds);
     List<Email> findByMessageIdAndDeleted(String messageId, boolean deleted);
     List<Email> findBySentAtBeforeOrderBySentAtAsc(Date sentAt);
     Page<Email> findByOptimizedBodyIgnoreCaseContainingAndStatus(String content, int status, Pageable pageable);
