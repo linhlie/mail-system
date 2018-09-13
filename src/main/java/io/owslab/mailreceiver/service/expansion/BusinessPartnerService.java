@@ -254,13 +254,13 @@ public class BusinessPartnerService {
                     if(existPartner == null) {
                         partnerDAO.save(partner);
                         if(partner.getDomain1()!=null && !partner.getDomain1().equals("")){
-                            listDomain.add(partner.getDomain1());
+                            listDomain.add(partner.getDomain1().toLowerCase());
                         }
                         if(partner.getDomain2()!=null && !partner.getDomain2().equals("")){
-                            listDomain.add(partner.getDomain2());
+                            listDomain.add(partner.getDomain2().toLowerCase());
                         }
                         if(partner.getDomain3()!=null && !partner.getDomain3().equals("")){
-                            listDomain.add(partner.getDomain3());
+                            listDomain.add(partner.getDomain3().toLowerCase());
                         }
                     } else {
                         String type = "【取引先インポート】";
