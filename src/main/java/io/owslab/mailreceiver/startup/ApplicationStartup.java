@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.startup;
 
 import io.owslab.mailreceiver.dao.AccountDAO;
+import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.enums.CombineOption;
 import io.owslab.mailreceiver.enums.ConditionOption;
 import io.owslab.mailreceiver.enums.MailItemOption;
@@ -8,6 +9,7 @@ import io.owslab.mailreceiver.enums.MatchingItemOption;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
+import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.*;
@@ -17,6 +19,7 @@ import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SelectOption;
 import io.owslab.mailreceiver.utils.Utils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +72,12 @@ public class ApplicationStartup {
 
     @Autowired
     private AccountService accountService;
+    
+    @Autowired
+    private EmailDAO emailDAO;
+    
+    @Autowired
+    private DomainService domainService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -133,6 +142,7 @@ public class ApplicationStartup {
         receiveMailScheduler.start();
         autoExtendScheduler.start();
         updateDomainUnregisterScheduler.start();
+        getDomain();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;
 //        List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput("random cacherhhe444h", testData.toLowerCase());
 //        for(FullNumberRange range : rangeList) {
@@ -172,5 +182,11 @@ public class ApplicationStartup {
         if (! directory.exists()){
             directory.mkdirs();
         }
+    }
+    
+    public void getDomain(){
+    	List<Email> listEmail = emailDAO.findByStatusGroupByFrom(Email.Status.DONE);
+    	System.out.println("getDomain  "+listEmail.size());
+    	domainService.saveDomainUnregistered(listEmail);
     }
 }
