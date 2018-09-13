@@ -10,11 +10,16 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DomainService {
+
+	private static final Logger logger = LoggerFactory.getLogger(DomainService.class);
 	
     @Autowired
     private BusinessPartnerDAO partnerDAO;
@@ -67,31 +72,42 @@ public class DomainService {
 				mapDomain.remove(domain3);
 			}
 		}
-		domainDAO.save(mapDomain.values());
+		try {
+			for(DomainUnregister domainUnregister : mapDomain.values()) {
+				domainDAO.save(domainUnregister);
+			}
+		} catch (Exception e) {
+			String error = ExceptionUtils.getStackTrace(e);
+			logger.error("saveDomainUnregistered failed: " + error);
+		}
 	}
 
 	public void startUpdateDomainUnregister(){
 		List<DomainUnregister> listDomainUnregister = getAll();
 		if(listDomainUnregister.size() == 0) return;
+		List<String> mustDeletedDomains = new ArrayList<>();
 		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
 		List<String> listDomainRegister = getDomainFromPartner(listPartner);
 		for(DomainUnregister domain : listDomainUnregister){
 			if(listDomainRegister.contains(domain.getDomain())){
-				domainDAO.deleteByDomain(domain.getDomain());
+				mustDeletedDomains.add(domain.getDomain());
 			}
 		}
+		domainDAO.deleteByDomainIn(mustDeletedDomains);
 	}
 	
     public void deleteDomainByDomain(String domain1, String domain2, String domain3){
+		List<String> mustDeletedDomains = new ArrayList<>();
     	if(domain1!=null && !domain1.equals("")){
-    		deleteByDomain(domain1.toLowerCase());
+			mustDeletedDomains.add(domain1.toLowerCase());
     	}
     	if(domain2!=null && !domain2.equals("")){
-    		deleteByDomain(domain2.toLowerCase());
+			mustDeletedDomains.add(domain2.toLowerCase());
     	}
     	if(domain3!=null && !domain3.equals("")){
-    		deleteByDomain(domain3.toLowerCase());
+			mustDeletedDomains.add(domain3.toLowerCase());
     	}
+    	domainDAO.deleteByDomainIn(mustDeletedDomains);
     }
 	
 	public LinkedHashMap<String, DomainUnregister> getDomain(List<Email> listEmail){
