@@ -47,21 +47,32 @@ public class DomainService {
 		if(listEmail.size()==0){
 			return;
 		}
-		LinkedHashMap<String, DomainUnregister> mapDomain = getDomain(listEmail);
+		List<String> mailAddressList = new ArrayList<>();
+		for(Email mail : listEmail){
+			mailAddressList.add(mail.getFrom());
+		}
+		saveDomainUnregisteredWithMailAddresses(mailAddressList);
+	}
+
+	public void saveDomainUnregisteredWithMailAddresses(List<String> listEmail){
+		if(listEmail.size()==0){
+			return;
+		}
+		LinkedHashMap<String, DomainUnregister> mapDomain = getDomainFromMailAddresses(listEmail);
 		List<DomainUnregister> listDomainUnregister = domainDAO.findAll();
-		
+
 		for(DomainUnregister domain : listDomainUnregister){
 			if(mapDomain.containsKey(domain.getDomain())){
 				mapDomain.remove(domain.getDomain());
 			}
 		}
-		
+
 		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
 		for(BusinessPartner partner : listPartner){
 			String domain1 = partner.getDomain1();
 			String domain2 = partner.getDomain2();
 			String domain3 = partner.getDomain3();
-			
+
 			if(domain1 != null && !domain1.equals("") && mapDomain.containsKey(domain1.toLowerCase())){
 				mapDomain.remove(domain1);
 			}
@@ -109,11 +120,18 @@ public class DomainService {
     	}
     	domainDAO.deleteByDomainIn(mustDeletedDomains);
     }
-	
+
 	public LinkedHashMap<String, DomainUnregister> getDomain(List<Email> listEmail){
+		List<String> mailAddressList = new ArrayList<>();
+    	for(Email mail : listEmail){
+			mailAddressList.add(mail.getFrom());
+		}
+		return getDomainFromMailAddresses(mailAddressList);
+	}
+
+	public LinkedHashMap<String, DomainUnregister> getDomainFromMailAddresses(List<String> listEmail){
 		LinkedHashMap<String, DomainUnregister> hashMap = new LinkedHashMap<String, DomainUnregister>();
-		for(Email mail : listEmail){
-			String from = mail.getFrom();
+		for(String from : listEmail){
 			if(from!=null && !from.equals("")){
 				DomainUnregister domain = new DomainUnregister();
 				int index = from.indexOf("@");

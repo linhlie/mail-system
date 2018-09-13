@@ -185,7 +185,7 @@ public class ApplicationStartup {
     }
     
     public void getDomain(){
-    	List<Email> listEmail = emailDAO.findByStatusGroupByFrom(Email.Status.DONE);
-    	domainService.saveDomainUnregistered(listEmail);
+    	List<String> listEmail = emailDAO.findByStatusGroupByFrom(Email.Status.DONE);
+    	domainService.saveDomainUnregisteredWithMailAddresses(listEmail);
     }
 }

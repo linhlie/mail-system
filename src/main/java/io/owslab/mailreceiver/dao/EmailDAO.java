@@ -56,8 +56,8 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     
     @Modifying(clearAutomatically = true)
     @Query(
-            value = "SELECT  * FROM emails e  WHERE e.status = :status GROUP BY e.from",
+            value = "SELECT e.from FROM emails e  WHERE e.status = :status GROUP BY e.from",
             nativeQuery = true
     )
-    List<Email> findByStatusGroupByFrom(@Param("status") int status);
+    List<String> findByStatusGroupByFrom(@Param("status") int status);
 }
