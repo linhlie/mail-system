@@ -144,6 +144,41 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">NG企業</label>
+                                        <div class="col-md-10" >
+                                            <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                                                <div style="overflow-y: scroll; height: 100%; border-style: ridge; border-color: black; border-width:1px;" class="table-container-wrapper" >
+                                                    <table id="partnerTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                                        <thead class="sticky-header">
+                                                        <tr>
+                                                            <th class="dark">取引先名</th>
+                                                            <th class="fit dark" style="text-align: center">
+                                                            	識別ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </th>
+                                                            <th th:colspan="2"></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr role="row">
+                                                            <td rowspan="1" colspan="1">
+                                                                <select id="partnerNameComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                                </select>
+                                                            </td>
+                                                            <td rowspan="1" colspan="1">
+                                                            	<select id="partnerIdComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                                </select>
+                                                            </td>
+                                                            <td class="fit" rowspan="1" colspan="1">
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="monetaryMoney" class="control-label col-md-2 text-left">単金</label>
                                         <div class="col-md-10">
                                             <div class="engineer-form-field">
@@ -187,6 +222,20 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                                    	<label for="monetaryMoney" class="control-label col-md-2 text-left">スキルシートのフォルダー</label>
+                                		<div class="col-xs-9">
+                                    		<input th:readonly="true" id="skillSheetEngineer" type="text" name="skillSheet" class="form-control" placeholder="取引先のファイルのパス"/>
+                                    		<form enctype="multipart/form-data" method="post" id="importEngineerForm">
+                                        		<input id="skillSheetEngineerInput" type="file" style="display:none;"  webkitdirectory="webkitdirectory"/>
+                                    		</form>
+                                		</div>
+                                		<div class="col-xs-1">
+                                    		<button id="skillSheetEngineerBtn" type="button" class="btn btn-default btn-file btn-block">
+                                        		・・・
+                                    		</button>
+                                		</div>
+                            		</div>
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label style="font-weight: 700;" class="checkbox-inline"><input id="dormant" type="checkbox" name="dormant" value=""/>休止中</label>

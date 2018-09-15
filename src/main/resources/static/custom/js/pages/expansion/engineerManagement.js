@@ -1,6 +1,9 @@
 
 (function () {
     var partnerComboBoxId = "partnerId";
+    var partnerNameComboBoxId = "partnerNameComboBox";
+    var partnerIdComboBoxId = "partnerIdComboBox";
+    var partnerTableNotGoodId = "partnerTable";
     var engineerAddBtnId = "#engineerAdd";
     var engineerUpdateBtnId = "#engineerUpdate";
     var manuallyExtendBtnId = "#extend";
@@ -11,8 +14,11 @@
     var lastMonthActiveId = "#lastMonthActive";
     var employmentStatusSelectId = "#employmentStatus";
     var formId = "#engineerForm";
-    var checkboxNextSelectId = "#checkboxNext"
+    var checkboxNextSelectId = "#checkboxNext";
     var engineerTableId = "engineer";
+    var skillSheetInputId = "#skillSheetEngineerInput";
+    var skillSheetBtnId = "#skillSheetEngineerBtn";
+    var skillSheetTxtId = "#skillSheetEngineer";
     var engineers = null;
     var updatingEngineerId = null;
     var selectedSourceTableRow=-1;
@@ -35,6 +41,7 @@
         {type: "input", name: "stationNearest"},
         {type: "input", name: "commutingTime"},
         {type: "checkbox", name: "dormant"},
+        {type: "input", name: "skillSheet"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -61,20 +68,32 @@
         '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
+    
+    var partnerReplaceRow = '<tr name="group-partner" data-type="original" role="row" class="hidden">' +
+    	'<td rowspan="1" colspan="1" data="name"><span></span></td>' +
+    	'<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
+    	'<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+    	'<button type="button">削除</button>' +
+    	'</td>' +
+    	'</tr>';
 
     $(function () {
         initLastMonthActive();
         filterTypeChangeListener();
         initStickyHeader();
+        partnerNameComboBoxListener();
+        partnerIdComboBoxListener();
         setupDatePickers();
         setButtonClickListenter(engineerAddBtnId, addEngineerOnClick);
         setButtonClickListenter(engineerUpdateBtnId, updateEngineerOnClick);
         setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         setButtonClickListenter(manuallyExtendBtnId, manuallyExtendOnClick);
         setButtonClickListenter(filterEngineerBtnId, filterEngineerOnClick);
+        setButtonClickListenter(skillSheetBtnId, onSkillSheetEngineerClick);
         draggingSetup();
         loadEngineers();
         loadBusinessPartner();
+        setSkillSheetChangeListener();
         $(autoExtendCheckboxId).change(function() {
             updateExtendFields();
         });
@@ -139,11 +158,12 @@
             if(response && response.status) {
                 partners = response.list;
                 updatePartnerComboBox(response.list);
+                updatePartnerComboBoxTable(response.list);
             }
         }
         function onError() {}
 
-        getBusinessPartnersForEngineer(onSuccess, onError);
+        getBusinessPartners(onSuccess, onError);
     }
 
     function updatePartnerComboBox(options) {
@@ -175,7 +195,7 @@
         var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
-        console.log("Add engineer: ", data);
+        var addRemovePartnerNotGoodIds = getAddRemovePartnerNotGoodIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
@@ -194,15 +214,23 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        addEngineer(data, onSuccess, onError)
+        addEngineer(
+            {
+                builder: data,
+                groupAddIds: addRemovePartnerNotGoodIds.add,
+                groupRemoveIds: addRemovePartnerNotGoodIds.remove,
+            },
+            onSuccess,
+            onError
+        );
     }
 
-    function getAddRemoveGroupPartnerIds() {
+    function getAddRemovePartnerNotGoodIds() {
         var data = {
             add: [],
             remove: [],
         };
-        $('#'+ partnerGroupTableId + ' > tbody  > tr').each(function(i, row) {
+        $('#'+ partnerTableNotGoodId + ' > tbody  > tr').each(function(i, row) {
             var $row = $(row)
             var type = $row.attr("data-type");
             var id = $row.attr("data-id");
@@ -255,6 +283,7 @@
         var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
+        var addRemovePartnerNotGoodIds = getAddRemovePartnerNotGoodIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
@@ -275,7 +304,11 @@
 
         updateEngineer(
             updatingEngineerId,
-            data,
+            {
+                builder: data,
+                groupAddIds: addRemovePartnerNotGoodIds.add,
+                groupRemoveIds: addRemovePartnerNotGoodIds.remove,
+            },
             onSuccess,
             onError
         );
@@ -400,6 +433,7 @@
         clearUpdatingEngineerId();
         resetEngineeTable();
         updatePartnerComboBox(partners);
+        loadBusinessPartnerNotGoodData(partnerTableNotGoodId, []);
     }
 
     function resetEngineeTable() {
@@ -556,6 +590,7 @@
         updatingEngineerId = id;
         setFormData(data);
         updateExtendFields();
+        loadBusinessPartnerData(id);
         updatePartnerComboBox(partners);
         disableUpdateEngineer(false);
     }
@@ -698,6 +733,142 @@
     
     function selectedRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+    
+    function updatePartnerComboBoxTable(options) {
+        options = options ? options.slice(0) : [];
+        options.sort(comparePartner);
+        $('#' + partnerNameComboBoxId).empty();
+        $('#' + partnerIdComboBoxId).empty();
+        
+        $('#' + partnerNameComboBoxId).append($('<option>', {
+            selected: true,
+            disabled: true,
+            value: "",
+            text : "選んでください",
+        }));
+        $('#' + partnerIdComboBoxId).append($('<option>', {
+            selected: true,
+            disabled: true,
+            value: "",
+            text : "識別ID",
+        }));
+        
+        $.each(options, function (i, item) {
+            $('#' + partnerNameComboBoxId).append($('<option>', {
+                value: item.partnerCode,
+                text : item.name,
+            }).attr('data-id',item.id));
+            
+            $('#' + partnerIdComboBoxId).append($('<option>', {
+                value: item.name,
+                text : item.partnerCode,
+            }).attr('data-id',item.id));
+        });
+    }
+    
+    function partnerNameComboBoxListener() {
+        $('#' + partnerNameComboBoxId).off('change');
+        $('#' + partnerNameComboBoxId).change(function() {
+            var selected = $(this).find("option:selected");
+            var name = selected.text();
+            var id = selected.attr("data-id");
+            var code = this.value;
+            addPartnerToGroup.apply(this, [id, name, code]);
+            $('#' + partnerNameComboBoxId).prop('selectedIndex',0);
+        });
+    }
+    
+    function partnerIdComboBoxListener() {
+        $('#' + partnerIdComboBoxId).off('change');
+        $('#' + partnerIdComboBoxId).change(function() {
+            var selected = $(this).find("option:selected");
+            var name = selected.text();
+            var id = selected.attr("data-id");
+            var code = this.value;
+            addPartnerToGroup.apply(this, [id, code, name]);
+            $('#' + partnerIdComboBoxId).prop('selectedIndex',0);
+        });
+    }
+    
+    function addPartnerToGroup(id, name, code) {
+        var tr = '<tr name="group-partner" data-id="' + id + '" data-type="add" role="row">' +
+            '<td rowspan="1" colspan="1" data="name"><span>' + name + '</span></td>' +
+            '<td rowspan="1" colspan="1" data="partnerCode"><span>' + code + '</span></td>' +
+            '<td name="deleteGroupPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+            '<button type="button">削除</button>' +
+            '</td> </tr>';
+        $(this).closest('table').find('tr:last').before(tr);
+        setDeletePartnerNotGoodListener();
+    }
+    
+    function addPartnerComboBox() {
+        var tr = '<tr role="row">' +
+            '<td rowspan="1" colspan="1">' +
+            '<select id="partnerNameComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
+            '</td>' +
+            '<td rowspan="1" colspan="1">'+
+            '<select id="partnerIdComboBox" style="width: 100%; border: none; padding: 2px;"></select>' +
+            '</td>' +
+            '<td class="fit" rowspan="1" colspan="1">' +
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+            '</td>' +
+            '</tr>';
+        $("#" + partnerTableNotGoodId).append(tr);
+    }
+    
+    function setDeletePartnerNotGoodListener() {
+        setRowClickListener("deleteGroupPartner", function () {
+            //TODO:
+            var tr = $(this).closest('tr');
+            var type = tr.attr("data-type");
+            if(type == GroupPartnerRowTypes.NEW) {
+                tr.remove();
+            } else if (type == GroupPartnerRowTypes.ORIGINAL) {
+                tr.addClass("hidden");
+            }
+        });
+    }
+    
+    function loadBusinessPartnerData(engineerId) {
+        function onSuccess(response) {
+            if(response && response.status) {
+            	loadBusinessPartnerNotGoodData(partnerTableNotGoodId, response.list);
+            }
+        }
+        function onError() {}
+
+        getBusinessPartnersNotGood(engineerId, onSuccess, onError);
+    }
+    
+    function loadBusinessPartnerNotGoodData(tableId, data) {
+        removeAllRow(tableId, partnerReplaceRow);
+        if (data.length > 0) {
+            var html = partnerReplaceRow;
+            for (var i = 0; i < data.length; i++) {
+                html = html + addRowWithData(tableId, data[i].partner, i);
+            }
+            $("#" + tableId + "> tbody").html(html);
+            setDeletePartnerNotGoodListener();
+        }
+        addPartnerComboBox();
+        updatePartnerComboBoxTable(partners);
+        partnerNameComboBoxListener();
+        partnerIdComboBoxListener();
+    }
+    
+    function onSkillSheetEngineerClick() {
+        $(skillSheetInputId).click();
+    }
+    
+    function setSkillSheetChangeListener() {
+        $(skillSheetInputId).change(function (){
+            var fileName = $(this).val();
+            var sourceVal = this.files[0].path;
+            fileName = fileName.replace(/C:\\fakepath\\/i, '');
+            $(skillSheetTxtId).val(fileName);
+            console.log(sourceVal);
+        });
     }
 
 })(jQuery);
