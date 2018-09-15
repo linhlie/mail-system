@@ -16,8 +16,6 @@
     var formId = "#engineerForm";
     var checkboxNextSelectId = "#checkboxNext";
     var engineerTableId = "engineer";
-    var skillSheetInputId = "#skillSheetEngineerInput";
-    var skillSheetBtnId = "#skillSheetEngineerBtn";
     var skillSheetTxtId = "#skillSheetEngineer";
     var engineers = null;
     var updatingEngineerId = null;
@@ -89,11 +87,9 @@
         setButtonClickListenter(engineerClearBtnId, clearEngineerOnClick);
         setButtonClickListenter(manuallyExtendBtnId, manuallyExtendOnClick);
         setButtonClickListenter(filterEngineerBtnId, filterEngineerOnClick);
-        setButtonClickListenter(skillSheetBtnId, onSkillSheetEngineerClick);
         draggingSetup();
         loadEngineers();
         loadBusinessPartner();
-        setSkillSheetChangeListener();
         $(autoExtendCheckboxId).change(function() {
             updateExtendFields();
         });
@@ -855,20 +851,6 @@
         updatePartnerComboBoxTable(partners);
         partnerNameComboBoxListener();
         partnerIdComboBoxListener();
-    }
-    
-    function onSkillSheetEngineerClick() {
-        $(skillSheetInputId).click();
-    }
-    
-    function setSkillSheetChangeListener() {
-        $(skillSheetInputId).change(function (){
-            var fileName = $(this).val();
-            var sourceVal = this.files[0].path;
-            fileName = fileName.replace(/C:\\fakepath\\/i, '');
-            $(skillSheetTxtId).val(fileName);
-            console.log(sourceVal);
-        });
     }
 
 })(jQuery);

@@ -222,20 +222,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" style="padding-top: 20px; padding-bottom: 20px">
-                                    	<label for="monetaryMoney" class="control-label col-md-2 text-left">スキルシートのフォルダー</label>
-                                		<div class="col-xs-9">
-                                    		<input th:readonly="true" id="skillSheetEngineer" type="text" name="skillSheet" class="form-control" placeholder="取引先のファイルのパス"/>
-                                    		<form enctype="multipart/form-data" method="post" id="importEngineerForm">
-                                        		<input id="skillSheetEngineerInput" type="file" style="display:none;"  webkitdirectory="webkitdirectory"/>
-                                    		</form>
-                                		</div>
-                                		<div class="col-xs-1">
-                                    		<button id="skillSheetEngineerBtn" type="button" class="btn btn-default btn-file btn-block">
-                                        		・・・
-                                    		</button>
-                                		</div>
-                            		</div>
+                                    <div class="form-group row">
+                                        <label for="kanaName" class="control-label col-md-2 text-left">スキルシートのフォルダー</label>
+                                        <div class="col-md-10">
+                                            <input id="skillSheetEngineer" name="skillSheet" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label style="font-weight: 700;" class="checkbox-inline"><input id="dormant" type="checkbox" name="dormant" value=""/>休止中</label>
