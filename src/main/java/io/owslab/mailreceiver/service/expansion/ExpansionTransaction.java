@@ -30,7 +30,7 @@ public class ExpansionTransaction {
     private BusinessPartnerService partnerService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW,  rollbackFor = Exception.class)
-    public void UpdateEngineerAndRelation(Engineer engineer, List<Long> addPartnerIds, List<Long> removePartnerIds)  throws EngineerNotFoundException, PartnerNotFoundException {
+    public void updateEngineerAndRelation(Engineer engineer, List<Long> addPartnerIds, List<Long> removePartnerIds)  throws EngineerNotFoundException, PartnerNotFoundException {
         updateEngineer(engineer);
         addPartners(engineer, addPartnerIds);
         removePartners(engineer.getId(), removePartnerIds);
@@ -67,7 +67,6 @@ public class ExpansionTransaction {
     @Transactional(propagation = Propagation.REQUIRES_NEW,  rollbackFor = Exception.class)
     public void addEngineerAndRelation(EngineerForm form)  throws PartnerNotFoundException, ParseException {
     	Engineer engineer  = 	addEngineer(form.getBuilder().build());
-    	System.out.println("End Id : "+engineer.getId());
         addPartners(engineer, form.getGroupAddIds());
     }
     

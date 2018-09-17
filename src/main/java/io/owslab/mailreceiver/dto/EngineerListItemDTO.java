@@ -15,14 +15,12 @@ public class EngineerListItemDTO {
     private boolean active;
     private boolean autoExtend;
     private boolean dormant;
-    private String skillSheet;
 
     public EngineerListItemDTO(Engineer engineer, String partnerName, Timestamp now) {
         this.setId(engineer.getId());
         this.setName(engineer.getName());
         this.setAutoExtend(engineer.isAutoExtend());
         this.setDormant(engineer.isDormant());
-        this.setSkillSheet(engineer.getSkillSheet());
         this.setPartnerName(partnerName);
         boolean dormant = engineer.isDormant();
         Timestamp from = new Timestamp(engineer.getProjectPeriodStart());
@@ -78,12 +76,4 @@ public class EngineerListItemDTO {
     public void setDormant(boolean dormant) {
         this.dormant = dormant;
     }
-
-	public String getSkillSheet() {
-		return skillSheet;
-	}
-
-	public void setSkillSheet(String skillSheet) {
-		this.skillSheet = skillSheet;
-	}
 }
