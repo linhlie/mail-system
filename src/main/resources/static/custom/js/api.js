@@ -201,6 +201,11 @@ function deleteEngineer(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getBusinessPartnersNotGood(engineerId, onSuccess, onError) {
+    var url = "/expansion/engineer/partnerNotGood/list/" + engineerId;
+    _get(url, onSuccess, onError);
+}
+
 function getPartnerExport(includeHeader) {
     includeHeader = !!includeHeader;
     var url = "/expansion/exportCSV?type=partner&&header=" + includeHeader;

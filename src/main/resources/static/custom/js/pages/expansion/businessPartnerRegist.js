@@ -127,7 +127,6 @@
     }
     
     function updatePartnerComboBox(options) {
-    	console.log("updatePartnerComboBox");
         options = options ? options.slice(0) : [];
         options.sort(comparePartner);
         $('#' + partnerComboBoxId).empty();

@@ -144,6 +144,41 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">NG企業</label>
+                                        <div class="col-md-10" >
+                                            <div class="partner-part table-container-section" style="height: 200px; position: relative">
+                                                <div style="overflow-y: scroll; height: 100%; border-style: ridge; border-color: black; border-width:1px;" class="table-container-wrapper" >
+                                                    <table id="partnerTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                                        <thead class="sticky-header">
+                                                        <tr>
+                                                            <th class="dark">取引先名</th>
+                                                            <th class="fit dark" style="text-align: center">
+                                                            	識別ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </th>
+                                                            <th th:colspan="2"></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr role="row">
+                                                            <td rowspan="1" colspan="1">
+                                                                <select id="partnerNameComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                                </select>
+                                                            </td>
+                                                            <td rowspan="1" colspan="1">
+                                                            	<select id="partnerIdComboBox" style="width: 100%; border: none; padding: 2px;">
+                                                                </select>
+                                                            </td>
+                                                            <td class="fit" rowspan="1" colspan="1">
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="monetaryMoney" class="control-label col-md-2 text-left">単金</label>
                                         <div class="col-md-10">
                                             <div class="engineer-form-field">
@@ -185,6 +220,13 @@
                                             <div class="engineer-form-field">
                                                 <span>時間以内希望</span>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="skillSheetEngineer" class="control-label col-md-2 text-left">スキルシートのフォルダー</label>
+                                        <div class="col-md-10">
+                                            <input id="skillSheetEngineer" name="skillSheet" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">

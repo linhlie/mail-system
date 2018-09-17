@@ -31,6 +31,7 @@ public class CSVEngineerDTO {
     private String stationLine;
     private String stationNearest;
     private String commutingTime;
+    private String skillSheet;
 
     public CSVEngineerDTO(){
     }
@@ -38,7 +39,7 @@ public class CSVEngineerDTO {
     public CSVEngineerDTO(String name, String kanaName, String mailAddress, String employmentStatus, String partnerCode,
                           String projectPeriodStart, String projectPeriodEnd, String autoExtend, String extendMonth,
                           String matchingWord, String notGoodWord, String monetaryMoney, String stationLine,
-                          String stationNearest, String commutingTime) {
+                          String stationNearest, String commutingTime, String skillSheet) {
         this.name = name;
         this.kanaName = kanaName;
         this.mailAddress = mailAddress;
@@ -54,6 +55,7 @@ public class CSVEngineerDTO {
         this.stationLine = stationLine;
         this.stationNearest = stationNearest;
         this.commutingTime = commutingTime;
+        this.skillSheet = skillSheet;
     }
 
     public CSVEngineerDTO(Engineer engineer, BusinessPartner partner) {
@@ -72,6 +74,7 @@ public class CSVEngineerDTO {
         this.setStationLine(engineer.getStationLine());
         this.setStationNearest(engineer.getStationNearest());
         this.setCommutingTime(Objects.toString(engineer.getCommutingTime(), null));
+        this.setSkillSheet(engineer.getSkillSheet());
     }
 
     public String getName() {
@@ -193,8 +196,16 @@ public class CSVEngineerDTO {
     public void setPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
     }
+    
+    public String getSkillSheet() {
+		return skillSheet;
+	}
 
-    @Override
+	public void setSkillSheet(String skillSheet) {
+		this.skillSheet = skillSheet;
+	}
+
+	@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getName());
@@ -271,6 +282,7 @@ public class CSVEngineerDTO {
             }
         }
         engineer.setDormant(false);
+        engineer.setSkillSheet(this.skillSheet);
         return engineer;
     }
 }

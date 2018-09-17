@@ -1,8 +1,8 @@
 package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.EngineerDAO;
+import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
 import io.owslab.mailreceiver.dto.CSVEngineerDTO;
-import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.dto.ImportLogDTO;
 import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
@@ -12,19 +12,10 @@ import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.EngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import io.owslab.mailreceiver.utils.Utils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.mozilla.universalchardet.UniversalDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.io.CsvBeanReader;
-import org.supercsv.io.ICsvBeanReader;
-import org.supercsv.prefs.CsvPreference;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +29,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.mozilla.universalchardet.UniversalDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.io.CsvBeanReader;
+import org.supercsv.io.ICsvBeanReader;
+import org.supercsv.prefs.CsvPreference;
+
 /**
  * Created by khanhlvb on 8/17/18.
  */
@@ -47,32 +49,37 @@ public class EngineerService {
 
     @Autowired
     private EngineerDAO engineerDAO;
+    
+    @Autowired
+    private RelationshipEngineerPartnerDAO relationshipEngineerPartnerDAO;
 
     @Autowired
     private BusinessPartnerService partnerService;
 
     @Autowired
     private UploadFileService uploadFileService;
+    
+    @Autowired
+    private ExpansionTransaction expansionTransaction;
 
     public void delete(long id) {
         engineerDAO.delete(id);
+//        relationshipEngineerPartnerDAO.deleteByEngineerId(id);
+    }
+    
+    public List<RelationshipEngineerPartner> getRelationshipEngineerPartner(long EngineerId){
+    	List<RelationshipEngineerPartner> result = relationshipEngineerPartnerDAO.findByEngineerId(EngineerId);
+    	return result;
     }
 
-    public void add(EngineerForm form) throws PartnerNotFoundException, ParseException {
-        BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if (existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
-        Engineer engineer = form.build();
-        engineerDAO.save(engineer);
+    public void add(EngineerForm form) throws PartnerNotFoundException, ParseException{
+        expansionTransaction.addEngineerAndRelation(form);
     }
 
     public void update(EngineerForm form, long id) throws EngineerNotFoundException, PartnerNotFoundException, ParseException {
-        Engineer existEngineer = engineerDAO.findOne(id);
-        if (existEngineer == null) throw new EngineerNotFoundException("技術者が存在しません");
-        BusinessPartner existPartner = partnerService.findOne(form.getPartnerId());
-        if (existPartner == null) throw new PartnerNotFoundException("取引先が存在しません。");
-        Engineer engineer = form.build();
+        Engineer engineer = form.getBuilder().build();
         engineer.setId(id);
-        engineerDAO.save(engineer);
+        expansionTransaction.updateEngineerAndRelation(engineer, form.getGroupAddIds(), form.getGroupRemoveIds());
     }
 
     public List<EngineerListItemDTO> filter(EngineerFilterForm form, Timestamp now) {
@@ -142,11 +149,11 @@ public class EngineerService {
         return engineerDTOs;
     }
 
-    public List<EngineerForm> getById(long id) {
-        List<EngineerForm> result = new ArrayList<>();
+    public List<Engineer.Builder> getById(long id) {
+        List<Engineer.Builder> result = new ArrayList<>();
         Engineer engineer = engineerDAO.findOne(id);
         if(engineer != null) {
-            result.add(new EngineerForm(engineer));
+            result.add(new Engineer.Builder(engineer));
         }
         return result;
     }
@@ -187,7 +194,7 @@ public class EngineerService {
                             Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
-                final String[] headers = new String[]{ "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime" };
+                final String[] headers = new String[]{ "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet" };
 
                 CSVEngineerDTO engineerDTO;
                 if(skipHeader) {
@@ -207,6 +214,7 @@ public class EngineerService {
                     String partnerCode = csvEngineerDTO.getPartnerCode();
                     String projectPeriodStart = csvEngineerDTO.getProjectPeriodStart();
                     String projectPeriodEnd = csvEngineerDTO.getProjectPeriodEnd();
+                    String skillSheet = csvEngineerDTO.getSkillSheet();
                     if(name == null || kanaName == null || employmentStatus == null
                             || partnerCode == null || projectPeriodStart == null || projectPeriodEnd == null) {
                         String type = "【技術者インポート】";
@@ -277,8 +285,8 @@ public class EngineerService {
         CSVBundle<CSVEngineerDTO> csvBundle = new CSVBundle<CSVEngineerDTO>();
         csvBundle.setFileName("技術者.csv");
         String[] csvHeader = { "技術者名", "カナ氏名", "メールアドレス", "雇用形態",
-                "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間" };
-        String[] keys = { "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime" };
+                "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間", "スキルシートのフォルダー" };
+        String[] keys = { "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet" };
         csvBundle.setHeaders(csvHeader);
         csvBundle.setKeys(keys);
         List<CSVEngineerDTO> data = getEngineerListToExport();
