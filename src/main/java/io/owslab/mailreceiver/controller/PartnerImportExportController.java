@@ -52,7 +52,7 @@ public class PartnerImportExportController {
         CSVBundle csvBundle;
         if(type.equals("groupPartner")) {
             csvBundle = partnerService.exportGroups();
-        } if (type.equals("engineer")) {
+        } else if (type.equals("engineer")) {
             csvBundle = engineerService.export();
         }else {
             csvBundle = partnerService.export();
