@@ -1,0 +1,226 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>DB⇔ メ ー ル マ ッ チ ン グ</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content engineer">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body ">
+                        <div  class="matching-section-wrapper"  style="padding: 10px;">
+                            <h4>対象技術者の選択</h4>
+                        <div class="form-group row ">
+                            <div class="col-md-12">
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="1" checked="checked"/>すべて表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="2"/>稼働中のみ表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="3"/>非稼働中のみ表示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="engineerFilter" value="4"/>最終稼働月指定
+                                </label>
+                                <input id="lastMonthActive" type="text" style="width: 100px;"/>
+                                <input id="lastMonthActiveAlt" style="display: none" type="text"/>
+                                <button id="filterEngineerBtn" style="margin-left: 30px;" type="button" class="btn btn-default">実行</button>
+                            </div>
+                        </div>
+                        <div id="engineerBox" class="engineer-part table-container-section form-inline" style="height: 200px; position: relative">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="engineerTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th class="dark">技術者名</th>
+                                        <th class="dark" style="text-align: center">所属会社</th>
+                                        <th class="fit dark" style="text-align: center">稼働</th>
+                                        <th class="fit dark" style="text-align: center">自動延長</th>
+                                        <th class="fit dark" style="text-align: center">休止中</th>
+                                        <th th:colspan="2"></th>
+                                        <th class="fit dark" style="text-align: center">マッチング&nbsp;<input type="checkbox" id="selectall" checked="checked"/></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="width: 100%">
+                            <div id="dragbar2" style="margin-top: -10px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
+                            <div style="width: 100%; margin-top: 10px;">
+                                <form id="engineerForm" class="form-horizontal" action="javascript:void(0);">
+                                	<div class="form-group row">
+                                        <div class="col-md-12">
+                                            <input id="engineerId" name="engineerId" class="form-control" placeholder="" style="display: none;"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="name" class="control-label col-md-2 text-left">技術者名</label>
+                                        <div class="col-md-10">
+                                            <input id="name" name="name" class="form-control" placeholder=""/>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="matchingWord" class="control-label col-md-2 text-left">マッチングワード</label>
+                                        <div class="col-md-10">
+                                            <textarea id="matchingWord" name="matchingWord" class="form-control" placeholder="" type="text"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="notGoodWord" class="control-label col-md-2 text-left">NGワード</label>
+                                        <div class="col-md-10">
+                                            <textarea id="notGoodWord" name="notGoodWord" class="form-control" placeholder="" type="text"></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+                                <div class="col-xs-12" style="margin-top: 10px; padding-bottom: 10px;">
+                                    <div class="builder-wrapper-header">
+                                        <span>比較メール先抽出条件</span>
+                                        <button name="builder-ec" data="#hourlyMoney-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
+                                    </div>
+                                    <div class="builder-wrapper">
+                                        <div id="hourlyMoney-builder"></div>
+                                        <div id="hourlyMoney-builder-collapse-view-email-matching-engineer" class="builder-collapse-view">
+                                            <span>非表示</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="row">
+                                    	<div class="col-md-3">                        
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div style="width: 90%;">
+                                                <button id="applyConditionEngineer" name="applyConditionEngineer" type="button" class="btn btn-primary btn-block">適用</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                           	<label class="checkbox-inline"><input id="checkboxNext" type="checkbox" value=""/>更新後、次の行を編集;</label>
+                                       	</div>
+                                        <div class="col-md-3">
+                                            <div style="width: 90%; margin: auto;">
+                                                <button id="clearConditionEngineer" name="clearConditionEngineer" type="button" class="btn btn-default btn-block">キャンセル</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
+                            <datalist id="itemlist">
+                                <option data-value="送信者" value="送信者"></option>
+                                <option data-value="受信者" value="受信者"></option>
+                                <option data-value="件名" value="件名"></option>
+                                <option data-value="本文" value="本文"></option>
+                            </datalist>
+                            <datalist id="itemlist2">
+                                <option data-value="数値" value="数値"></option>
+                                <option data-value="数値(上代)" value="数値(上代)"></option>
+                                <option data-value="数値(下代)" value="数値(下代)"></option>
+                            </datalist>
+                            <div class="matching-section-wrapper">
+                                <div class="form-group"></div>
+                                <div class="col-xs-12">
+                                    <div class="builder-wrapper-header">
+                                        <span>比較メール先抽出条件</span>
+                                        <button name="builder-ec" data="#destination-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
+                                        <div class="builder-condition-name">
+                                            <label>条件名&nbsp;</label>
+                                            <input id="destination-condition-name" type="text" value=""/>
+                                        </div>
+                                    </div>
+                                    <div class="builder-wrapper">
+                                        <div id="destination-builder"></div>
+                                        <div id="destination-builder-collapse-view-email-matching-engineer" class="builder-collapse-view">
+                                            <span>非表示</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button style="background-color: #ffe837;" id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う(F4)</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                </div>
+                                <div class="form-group"></div>
+                            </div>
+                            <div style="width: 100%; height: 50px;">
+                                <div class="col-md-6" style="font-size: 13px; padding-top: 28px; position: relative;">
+                                    <div class="duplicate-control-container">
+                                        <label class="duplicate-control">
+                                            <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
+                                        </label>
+                                        <label class="duplicate-control duplicate-control-option option-padding">重複の判定（&nbsp;</label>
+                                        <label class="duplicate-control duplicate-control-option">
+                                            <input id="duplicate-sender" type="checkbox"/> 送信者
+                                        </label>
+                                        <label class="duplicate-control duplicate-control-option option-padding">
+                                            <input id="duplicate-subject" type="checkbox"/> 件名
+                                        </label>
+                                        <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button style="background-color: #ffe837; z-index: 1;margin-left: 90px; width: calc(100% - 90px); margin-top: 28px" id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block">マッチング(F5)</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+     <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">保存された名前を入力してください</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-sm-8 col-sm-offset-1">
+                            <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                        <div class="col-sm-2">
+                            <button th:disabled="true" type="button" id="dataRemoveItem" class="btn btn-danger">削除</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/emailMatchingEngineer/setting.js"></script>
+</th:block>
+</body>
+</html>
