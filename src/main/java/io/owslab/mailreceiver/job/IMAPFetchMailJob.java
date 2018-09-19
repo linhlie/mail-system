@@ -145,7 +145,7 @@ public class IMAPFetchMailJob implements Runnable {
         } catch (Exception e) {
             String errorDetail = account.getAccount() + ": " + ExceptionUtils.getStackTrace(e);
             logger.error(errorDetail);
-            ReportErrorService.sendReportError(errorDetail);
+//            ReportErrorService.sendReportError(errorDetail, false);
         }
     }
 

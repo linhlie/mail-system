@@ -91,7 +91,13 @@ public class ReportErrorService {
     }
 
     public static void sendReportError(String error) {
-        setCurrentError(error);
+        sendReportError(error, true);
+    }
+
+    public static void sendReportError(String error, boolean notice) {
+        if(notice == true) {
+            setCurrentError(error);
+        }
         if(shouldSendReportToAdmin()){
             report(error);
         }
