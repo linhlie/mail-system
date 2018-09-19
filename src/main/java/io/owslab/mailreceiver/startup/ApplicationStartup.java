@@ -56,9 +56,6 @@ public class ApplicationStartup {
     private DeleteSentMailHistoryScheduler deleteSentMailHistoryScheduler;
 
     @Autowired
-    private BuildMatchEmailWordScheduler buildMatchEmailWordScheduler;
-
-    @Autowired
     private ReceiveMailScheduler receiveMailScheduler;
 
     @Autowired

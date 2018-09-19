@@ -1,9 +1,6 @@
 package io.owslab.mailreceiver.service.word;
 
-import io.owslab.mailreceiver.dao.EmailWordJobDAO;
 import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.EmailWord;
-import io.owslab.mailreceiver.model.EmailWordJob;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
 import io.owslab.mailreceiver.utils.MatchingWordResult;
@@ -27,8 +24,6 @@ import java.util.regex.Pattern;
 @Service
 public class EmailWordJobService {
     private static final Logger logger = LoggerFactory.getLogger(EmailWordJobService.class);
-    @Autowired
-    private EmailWordJobDAO emailWordJobDAO;
 
     @Autowired
     private WordService wordService;
@@ -37,38 +32,7 @@ public class EmailWordJobService {
     private EmailService emailService;
 
     @Autowired
-    private EmailWordService emailWordService;
-
-    @Autowired
     private FuzzyWordService fuzzyWordService;
-
-    public void buildMatchData(){
-//        List<EmailWordJob> emailWordJobList = (List<EmailWordJob>) emailWordJobDAO.findAll();
-//        for(EmailWordJob emailWordJob : emailWordJobList){
-//            build(emailWordJob);
-//        }
-    }
-
-    private void build(EmailWordJob emailWordJob){
-        String messageId = emailWordJob.getMessageId();
-        long wordId = emailWordJob.getWordId();
-        Email email = emailService.findOne(messageId);
-        if(email == null) return;
-        Word word = wordService.findById(wordId);
-        if(word == null) return;
-//        ArrayList<Integer> result = find(email.getMessageId(), email.getOptimizedBody(), word.getWord());
-//        if(result.size() > 0){
-//            String resultStr = result.toString();
-//            resultStr = resultStr.substring(1, resultStr.length()-1);
-//            resultStr = resultStr.replaceAll("\\s","");
-//            EmailWord emailWord = new EmailWord();
-//            emailWord.setMessageId(messageId);
-//            emailWord.setWordId(wordId);
-//            emailWord.setAppearIndexs(resultStr);
-//            emailWordService.save(emailWord);
-//        }
-        emailWordJobDAO.delete(emailWordJob.getId());
-    }
 
     @Cacheable(key="\"EmailWordJobService:find:\"+#cacheId+'-'+toFind+'-'+spaceEffective")
     private ArrayList<Integer> find(String cacheId, String toSearch, String toFind, boolean spaceEffective){

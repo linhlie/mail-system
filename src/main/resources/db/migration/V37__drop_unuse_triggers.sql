@@ -1,0 +1,4 @@
+DROP TRIGGER IF EXISTS ins_email;
+DROP TRIGGER IF EXISTS ins_word;
+DROP TABLE IF EXISTS `email_word_jobs`;
+DROP TABLE IF EXISTS `emails_words`;
