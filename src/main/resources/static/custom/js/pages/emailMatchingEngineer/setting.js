@@ -11,6 +11,7 @@
     var checkboxNextSelectId = "#checkboxNext";
     var filterEngineerBtnId = "#filterEngineerBtn";
     var removeDatalistItemBtnId = "#dataRemoveItem";
+    var submitFormBtnId = '#submitFormBtn';
     var lastMonthActiveId = "#lastMonthActive";
     var formId = "#engineerForm";
     var destinationBuilderId = '#destination-builder';
@@ -21,17 +22,21 @@
     var partners = null;
     var engineerCondition = null;
     var hourlyMonneyCondition = null;
+    var listEngineerCondition = [];
     
     var collapsedPrefixKey = "/user/emailMatchingEngineer/collapsed";
     var destinationListKey = "/user/emailMatchingEngineer/listDestinationKey";
     var destinationPrefixUrlKey = "/user/emailMatchingEngineer/destination";
     var destinationConditionKey = "destinationCondition-email-matching-engineer";
     var destinationConditionNameKey = "destinationConditionName-email-matching-engineer";
+    var matchingConditionEmailMatchingEngineerKey = "matchingConditionData-email-matching-engineer";
+    var distinguishEmailMatchingEngineerKey = "distinguish-email-matching-engineer";
+    var spaceEffectiveEmailMatchingEngineerKey = "spaceEffective-email-matching-engineer";
     
     var collapseViewPostfix = "-collapse-view-email-matching-engineer";
 
     var formFields = [
-        {type: "input", name: "engineerId"},
+        {type: "input", name: "id"},
         {type: "input", name: "name"},
         {type: "textarea", name: "matchingWord"},
         {type: "textarea", name: "notGoodWord"},
@@ -60,7 +65,7 @@
         '<td name="deleteEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
-        '<td align="center"><input type="checkbox" class="case" name="case" checked/></td>' +
+        '<td align="center"><input type="checkbox" class="case" name="case" checked data="id"/></td>' +
         '</tr>';
     
     var default_destination_rules = {
@@ -224,7 +229,12 @@
     	       validation: {
     	          callback: numberValidator
     	       },  	 
-    	 }];    	
+    	 }];
+    	 
+ 		var default_rules_houtlyMoney = {
+    			"condition":"AND",
+    			"rules":[],
+    			"valid":true};
 
     	 var default_destination_configs = {
     	    plugins: default_plugins,
@@ -257,6 +267,7 @@
         setButtonClickListenter(saveDestinationBtnId, saveDestinationListData);
         setButtonClickListenter(getDestinationBtnId, getDestinationListData);
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
+        setButtonClickListenter(submitFormBtnId, submit);
         draggingSetup();
         loadDefaultSettings();
         loadEngineers();
@@ -371,8 +382,8 @@
     function setFormData(id, form) {
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
-            if(field.name=="engineerId"){
-            	$("input[name='engineerId']").val(id);
+            if(field.name=="id"){
+            	$("input[name='id']").val(id);
             }else if(field.type == "checkbox"){
                 $("input" + "[name='" + field.name + "']").prop('checked', form[field.name]);
             } else if (field.type == "radio") {
@@ -382,14 +393,118 @@
             }
         }
     }
+    
+    function setHourlyMoneyBuilder(data){
+    	console.log(data);
+    	console.log(data.moneyCondition);
+    	if(data.moneyCondition == null){
+        	var money = data.monetaryMoney;
+        	console.log(data.monetaryMoney);
+    		if(money==null){
+        		var rules = {
+        			"condition":"AND",
+        			"rules":[],
+        			"valid":true};
+             	$(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
+        	}else{
+           		var rules = {
+           			"condition":"AND",
+           			"rules":[{
+           				"id":"1",
+           				"field":"1",
+           				"type":"string",
+           				"input":"text",
+           				"operator":"equal",
+           				"value":money
+           					}],
+           			"valid":true};
+           		$(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
+        	}
+    	}else{
+    		$(hourlyMoneyBuilderId).queryBuilder('setRules', data.moneyCondition);
+    	}
+    }
+    
+    function getListEngineerMatching(){
+        $(".case:checked").each(function () {
+            var engineerId = $(this).attr("data");
+            console.log(engineerId);
+        });
+        return engineers;
+    }
+    
+    function submit() {
+        var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
+        if(!destinationConditionData) return;
+        var spaceEffective = false;
+        var distinguish = false;
+        var listEngineerCondition = getListEngineerMatching();
+        const duplicateSettingData = getCachedDuplicationSettingData();
+        var form = {
+            "destinationConditionData" : destinationConditionData,
+            "listEngineerMatchingDTO": listEngineerCondition,
+            "distinguish": distinguish,
+            "spaceEffective": spaceEffective,
+            "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
+            "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
+            "handleSameDomain": getCachedSameDomainSettingData(),
+        };
+        sessionStorage.setItem("distinguish-email-matching-engineer", distinguish);
+        sessionStorage.setItem("spaceEffective-email-matching-engineer", spaceEffective);
+        sessionStorage.setItem(matchingConditionEmailMatchingEngineerKey, JSON.stringify(form));
+        console.log(form);
+        saveDefaultSettings();
+        var win = window.open('/user/emailMatchingEngineerResult', '_blank');
+        if (win) {
+            //Browser has allowed it to be opened
+            win.focus();
+        } else {
+            //Browser has blocked it
+            alert('Please allow popups for this website');
+        }
+    }
+    
+    function getCachedSameDomainSettingData() {
+        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle-email-matching-engineer");
+        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        return enableSameDomainHandle;
+    }
+    
+    function updateListEngineer(engineerCondition){
+    	if(engineerCondition==null) return;   	
+    	for(var i=0;i<engineers.length;i++){
+    		if(engineers[i]!=null){
+    			if(engineerCondition.id == engineers[i].id){
+    				engineers[i].matchingWord = engineerCondition.matchingWord;
+    				engineers[i].notGoodWord = engineerCondition.notGoodWord;
+    		        var monneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
+    				engineers[i].moneyCondition = monneyCondition;
+    		        console.log(engineers[i]);
+    			}
+    		}
+    	}
+    }
+    
+    function deleteListEngineer(id){
+    	if(id==null) return;
+    	for(var i=engineers.length;i>=0;i--){
+    		if(engineers[i]!=null){
+    			if(engineers[i].id == id){
+    				engineers.splice(i, 1);
+    			}
+    		}
+    	}
+    	loadEngineersData(engineerTableId, engineers);
+    }
 
     function applyConditionOnClick() {
         clearFormValidate();
         var validated = engineerFormValidate();
         if(!validated) return;
         engineerCondition = getFormData();
-        hourlyMonneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
-        loadEngineers(selectNextRow);
+        updateListEngineer(engineerCondition);
+        clearEngineerOnClick();
+        selectNextRow(engineers);
     }
     
     function disableApplyConditionEnginer(disable) {
@@ -431,6 +546,7 @@
 
     function resetForm() {
         $(formId).trigger("reset");
+        $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
     }
 
     function clearFormValidate() {
@@ -443,6 +559,7 @@
             if(response && response.status){
                 loadEngineersData(engineerTableId, response.list);
                 setupSelectBoxes();
+                console.log(response.list);
             }
             
             if(typeof callback == 'function'){
@@ -453,7 +570,7 @@
         function onError(error) {
         }
 
-        getEngineers(form, onSuccess, onError);
+        getEngineersToMatching(form, onSuccess, onError);
     }
 
     function loadEngineersData(tableId, data) {
@@ -481,24 +598,8 @@
                 selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = engineers[index];
                 if (rowData && rowData.id) {
-                    function onSuccess(response) {
-                        if(response && response.status) {
-                            if(response.list && response.list.length > 0) {
-                                var data = response.list[0];
-                                selectedRow($('#' + engineerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
-                                setEngineer(rowData.id, data);
-                            } else {
-                                $.alert("技術者が存在しません。");
-                            }
-                        } else {
-                            $.alert("技術者情報のロードに失敗しました。");
-                        }
-                    }
-                    
-                    function onError() {
-                        $.alert("技術者情報のロードに失敗しました。");
-                    }
-                    getEngineer(rowData.id, onSuccess, onError);
+                    selectedRow($('#' + engineerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                    setEngineer(rowData.id, rowData);
                 }
             });
         }
@@ -545,13 +646,6 @@
     }
 
     function doDeleteEngineer(id) {
-        function onSuccess() {
-            loadEngineers();
-            clearEngineerOnClick();
-        }
-        function onError() {
-            $.alert("技術者の削除に失敗しました。");
-        }
         $.confirm({
             title: '<b>【技術者の削除】</b>',
             titleClass: 'text-center',
@@ -560,7 +654,7 @@
                 confirm: {
                     text: 'はい',
                     action: function(){
-                        deleteEngineer(id, onSuccess, onError);
+                        deleteListEngineer(id);
                     }
                 },
                 cancel: {
@@ -574,6 +668,7 @@
     function setEngineer(id, data) {
         clearFormValidate();
         setFormData(id, data);
+        setHourlyMoneyBuilder(data);
     }
 
     function draggingSetup() {
@@ -649,42 +744,24 @@
         }
     }
     
-    function selectNextRow(data){
+    function selectNextRow(){
     	if ($(checkboxNextSelectId).is(":checked")){
     		selectedSourceTableRow = selectedSourceTableRow+1;
-    		selectNext(selectedSourceTableRow, data);
+    		selectNext(selectedSourceTableRow);
     	}else{
     		clearEngineerOnClick();
     	}
     }
     
-    function selectNext(index, data) {
-        if(index>data.length) {
+    function selectNext(index) {
+        if(index>engineers.length) {
         	$.alert("最終行まで更新しました");
         	clearEngineerOnClick();
         } else {
         	var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
-            var rowData = data[index-1];
-            
-            function onSuccess(response) {
-                if(response && response.status) {
-                    if(response.list && response.list.length > 0) {
-                        var data = response.list[0];
-                        setEngineer(rowData.id, data);
-                    } else {
-                        $.alert("技術者が存在しません。");
-                    }
-                } else {
-                    $.alert("技術者情報のロードに失敗しました。");
-                }
-            }
-            
-            function onError() {
-                $.alert("技術者情報のロードに失敗しました。");
-            }
-            getEngineer(rowData.id, onSuccess, onError);
-            
+            var rowData = engineers[index-1];
+            setEngineer(rowData.id, rowData);  
         }
     }
     
@@ -699,7 +776,7 @@
         var destinationConditionsStr = localStorage.getItem(destinationConditionKey);
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
-        console.log("destinationConditions: ", destinationConditions);
+        $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
         
         var destinationConditionName = localStorage.getItem(destinationConditionNameKey) || "未登録の条件";
         setInputValue(destinationConditionNameId, destinationConditionName);
