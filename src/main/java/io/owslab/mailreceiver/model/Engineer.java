@@ -55,6 +55,10 @@ public class Engineer {
     
     private String skillSheet;
 
+    private String initial;
+
+    private String introduction;
+
     public Engineer() {
     }
 
@@ -206,7 +210,23 @@ public class Engineer {
 		this.skillSheet = skillSheet;
 	}
 
-	public static class EmploymentStatus {
+    public String getInitial() {
+        return initial;
+    }
+
+    public void setInitial(String initial) {
+        this.initial = initial;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
+
+    public static class EmploymentStatus {
         public static final int REGULAR = 1;
         public static final int CONTRACT = 2;
         public static final int SOLE_PROPROETORSHIP = 3;
@@ -252,6 +272,10 @@ public class Engineer {
         
         private String skillSheet;
 
+        private String initial;
+
+        private String introduction;
+
         public Builder(Engineer engineer) {
             this.name = engineer.getName();
             this.kanaName = engineer.getKanaName();
@@ -270,6 +294,8 @@ public class Engineer {
             this.skillSheet = engineer.getSkillSheet();
             this.projectPeriodStart = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodStart());
             this.projectPeriodEnd = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodEnd());
+            this.initial = engineer.getInitial();
+            this.introduction = engineer.getIntroduction();
         }
 
         public Builder() {
@@ -296,6 +322,8 @@ public class Engineer {
             engineer.setCommutingTime(this.getCommutingTime());
             engineer.setDormant(this.isDormant());
             engineer.setSkillSheet(this.getSkillSheet());
+            engineer.setInitial(this.getInitial());
+            engineer.setIntroduction(this.getIntroduction());
             return engineer;
         }
 
@@ -434,5 +462,21 @@ public class Engineer {
 		public void setSkillSheet(String skillSheet) {
 			this.skillSheet = skillSheet;
 		}
+
+        public String getInitial() {
+            return initial;
+        }
+
+        public void setInitial(String initial) {
+            this.initial = initial;
+        }
+
+        public String getIntroduction() {
+            return introduction;
+        }
+
+        public void setIntroduction(String introduction) {
+            this.introduction = introduction;
+        }
     }
 }

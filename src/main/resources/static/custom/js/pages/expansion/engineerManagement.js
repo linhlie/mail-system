@@ -21,6 +21,7 @@
     var updatingEngineerId = null;
     var selectedSourceTableRow=-1;
     var partners = null;
+    var introductionId = "introduction";
 
     var formFields = [
         {type: "input", name: "name"},
@@ -40,6 +41,8 @@
         {type: "input", name: "commutingTime"},
         {type: "checkbox", name: "dormant"},
         {type: "input", name: "skillSheet"},
+        {type: "input", name: "initial"},
+        {type: "tinymce", name: "introduction"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -76,6 +79,7 @@
     	'</tr>';
 
     $(function () {
+        initIntroductionEditor();
         initLastMonthActive();
         filterTypeChangeListener();
         initStickyHeader();
@@ -97,6 +101,31 @@
             updatePartnerComboBox(partners);
         });
     });
+    
+    function initIntroductionEditor() {
+        tinymce.init({
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block : '',
+            selector: '#' + introductionId,
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 150,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            init_instance_callback: function (editor) {
+                editor.on('Change', function (e) {
+
+                });
+            }
+        });
+    }
 
     function updateExtendFields() {
         var enable = $(autoExtendCheckboxId).is(":checked");
@@ -254,6 +283,8 @@
                 form[field.name] = $("input" + "[name='" + field.name + "']").is(':checked');
             } else if (field.type == "radio") {
                 form[field.name] = $('input[name=' + field.name + ']:checked', formId).val()
+            } else if (field.type == "tinymce") {
+                form[field.name] = getTinymceEditorContent(field.name);
             } else {
                 form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
             }
@@ -268,6 +299,8 @@
                 $("input" + "[name='" + field.name + "']").prop('checked', form[field.name]);
             } else if (field.type == "radio") {
                 $("input[name=" + field.name + "][value=" + form[field.name] + "]").prop('checked', true);
+            } else if (field.type == "tinymce") {
+                setTinymceEditorContent(field.name, form[field.name]);
             } else {
                 $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
             }
@@ -851,6 +884,19 @@
         updatePartnerComboBoxTable(partners);
         partnerNameComboBoxListener();
         partnerIdComboBoxListener();
+    }
+
+    function getTinymceEditorContent(id) {
+        var editor = tinymce.get(id);
+        return editor.getContent();
+    }
+
+    function setTinymceEditorContent(id, content) {
+        content = content || "";
+        var editor = tinymce.get(id);
+        editor.setContent(content);
+        editor.undoManager.clear();
+        editor.undoManager.add();
     }
 
 })(jQuery);

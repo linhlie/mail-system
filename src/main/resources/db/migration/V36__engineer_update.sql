@@ -1,0 +1,3 @@
+ALTER TABLE `engineers`
+   ADD COLUMN  `initial` VARCHAR(255) DEFAULT NULL,
+   ADD COLUMN  `introduction` TEXT DEFAULT NULL;
