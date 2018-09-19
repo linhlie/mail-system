@@ -18,6 +18,7 @@ import java.util.Objects;
 public class CSVEngineerDTO {
     private String name;
     private String kanaName;
+    private String initial;
     private String mailAddress;
     private String employmentStatus;
     private String partnerCode;
@@ -32,16 +33,15 @@ public class CSVEngineerDTO {
     private String stationNearest;
     private String commutingTime;
     private String skillSheet;
+    private String introduction;
 
     public CSVEngineerDTO(){
     }
 
-    public CSVEngineerDTO(String name, String kanaName, String mailAddress, String employmentStatus, String partnerCode,
-                          String projectPeriodStart, String projectPeriodEnd, String autoExtend, String extendMonth,
-                          String matchingWord, String notGoodWord, String monetaryMoney, String stationLine,
-                          String stationNearest, String commutingTime, String skillSheet) {
+    public CSVEngineerDTO(String name, String kanaName, String initial, String mailAddress, String employmentStatus, String partnerCode, String projectPeriodStart, String projectPeriodEnd, String autoExtend, String extendMonth, String matchingWord, String notGoodWord, String monetaryMoney, String stationLine, String stationNearest, String commutingTime, String skillSheet, String introduction) {
         this.name = name;
         this.kanaName = kanaName;
+        this.initial = initial;
         this.mailAddress = mailAddress;
         this.employmentStatus = employmentStatus;
         this.partnerCode = partnerCode;
@@ -56,11 +56,13 @@ public class CSVEngineerDTO {
         this.stationNearest = stationNearest;
         this.commutingTime = commutingTime;
         this.skillSheet = skillSheet;
+        this.introduction = introduction;
     }
 
     public CSVEngineerDTO(Engineer engineer, BusinessPartner partner) {
         this.setName(engineer.getName());
         this.setKanaName(engineer.getKanaName());
+        this.setInitial(engineer.getInitial());
         this.setMailAddress(engineer.getMailAddress());
         this.setEmploymentStatus(Integer.toString(engineer.getEmploymentStatus()));
         this.setPartnerCode(partner.getPartnerCode());
@@ -75,6 +77,7 @@ public class CSVEngineerDTO {
         this.setStationNearest(engineer.getStationNearest());
         this.setCommutingTime(Objects.toString(engineer.getCommutingTime(), null));
         this.setSkillSheet(engineer.getSkillSheet());
+        this.setIntroduction(engineer.getIntroduction());
     }
 
     public String getName() {
@@ -205,7 +208,23 @@ public class CSVEngineerDTO {
 		this.skillSheet = skillSheet;
 	}
 
-	@Override
+    public String getInitial() {
+        return initial;
+    }
+
+    public void setInitial(String initial) {
+        this.initial = initial;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getName());
@@ -227,6 +246,7 @@ public class CSVEngineerDTO {
         Engineer engineer = new Engineer();
         engineer.setName(this.name);
         engineer.setKanaName(this.kanaName);
+        engineer.setInitial(this.initial);
         engineer.setMailAddress(this.mailAddress);
         int employmentStatus;
         try {
@@ -283,6 +303,7 @@ public class CSVEngineerDTO {
         }
         engineer.setDormant(false);
         engineer.setSkillSheet(this.skillSheet);
+        engineer.setIntroduction(this.introduction);
         return engineer;
     }
 }

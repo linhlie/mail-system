@@ -194,7 +194,7 @@ public class EngineerService {
                             Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
-                final String[] headers = new String[]{ "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet" };
+                final String[] headers = new String[]{ "name", "kanaName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet",  "introduction"};
 
                 CSVEngineerDTO engineerDTO;
                 if(skipHeader) {
@@ -284,9 +284,9 @@ public class EngineerService {
     public CSVBundle<CSVEngineerDTO> export() {
         CSVBundle<CSVEngineerDTO> csvBundle = new CSVBundle<CSVEngineerDTO>();
         csvBundle.setFileName("技術者.csv");
-        String[] csvHeader = { "技術者名", "カナ氏名", "メールアドレス", "雇用形態",
-                "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間", "スキルシートのフォルダー" };
-        String[] keys = { "name", "kanaName", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet" };
+        String[] csvHeader = { "技術者名", "カナ氏名", "イニシャル", "メールアドレス", "雇用形態",
+                "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間", "スキルシートのフォルダー", "技術者紹介文" };
+        String[] keys = { "name", "kanaName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet", "introduction" };
         csvBundle.setHeaders(csvHeader);
         csvBundle.setKeys(keys);
         List<CSVEngineerDTO> data = getEngineerListToExport();
