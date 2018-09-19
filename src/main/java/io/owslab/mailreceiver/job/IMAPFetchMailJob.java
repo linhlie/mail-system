@@ -13,6 +13,7 @@ import io.owslab.mailreceiver.dao.FetchMailErroDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.BeanUtil;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -141,13 +142,10 @@ public class IMAPFetchMailJob implements Runnable {
             logger.info("start close mail folder");
             emailFolder.close(true);
             store.close();
-
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            String errorDetail = account.getAccount() + ": " + ExceptionUtils.getStackTrace(e);
+            logger.error(errorDetail);
+            ReportErrorService.sendReportError(errorDetail);
         }
     }
 

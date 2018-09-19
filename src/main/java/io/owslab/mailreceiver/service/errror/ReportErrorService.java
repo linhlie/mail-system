@@ -17,7 +17,7 @@ public class ReportErrorService {
 
     private static String currentError;
     private static Date lastReportSentAt;
-    private static final long LEAST_TIME_BETWEEN_TO_REPORT_IN_MINUTE = 10L;
+    private static final long LEAST_TIME_BETWEEN_TO_REPORT_IN_MINUTE = 30L;
 
     //Services
     private static EnviromentSettingService ess;
@@ -98,7 +98,6 @@ public class ReportErrorService {
     }
 
     private static void report(String error) {
-        System.out.println("report: " + error);
         lastReportSentAt = new Date();
         try {
             ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
