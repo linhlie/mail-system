@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.EngineerDAO;
 import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
 import io.owslab.mailreceiver.dto.CSVEngineerDTO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
+import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
 import io.owslab.mailreceiver.dto.ImportLogDTO;
 import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
@@ -95,11 +96,36 @@ public class EngineerService {
                 return getAll(now);
         }
     }
+    
+    public List<EngineerMatchingDTO> filterEngineerMatching(EngineerFilterForm form, Timestamp now) {
+        switch (form.getFilterType()) {
+            case EngineerFilterForm.FilterType.ACTIVE:
+                return getActiveEngineerMatching(now);
+            case EngineerFilterForm.FilterType.INACTIVE:
+                return getInactiveEngineerMatching(now);
+            case EngineerFilterForm.FilterType.LAST_MONTH:
+                return getByLastMonthEngineerMatching(form, now);
+            case EngineerFilterForm.FilterType.ALL:
+            default:
+                return getAllEngineerMatching(now);
+        }
+    }
 
     public List<EngineerListItemDTO> getActive(Timestamp now) {
         List<EngineerListItemDTO> listItemDTOS = getAll(now);
         List<EngineerListItemDTO> result = new ArrayList<>();
         for (EngineerListItemDTO item : listItemDTOS) {
+            if (item.isActive()) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+    
+    public List<EngineerMatchingDTO> getActiveEngineerMatching(Timestamp now) {
+        List<EngineerMatchingDTO> listEngineerDTO = getAllEngineerMatching(now);
+        List<EngineerMatchingDTO> result = new ArrayList<>();
+        for (EngineerMatchingDTO item : listEngineerDTO) {
             if (item.isActive()) {
                 result.add(item);
             }
@@ -117,10 +143,26 @@ public class EngineerService {
         }
         return result;
     }
+    
+    public List<EngineerMatchingDTO> getInactiveEngineerMatching(Timestamp now) {
+        List<EngineerMatchingDTO> listEngineerDTO = getAllEngineerMatching(now);
+        List<EngineerMatchingDTO> result = new ArrayList<>();
+        for (EngineerMatchingDTO item : listEngineerDTO) {
+            if (!item.isActive()) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
 
     public List<EngineerListItemDTO> getAll(Timestamp now) {
         List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
         return build(engineers, now);
+    }
+    
+    public List<EngineerMatchingDTO> getAllEngineerMatching(Timestamp now) {
+        List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
+        return buildEngineerMatching(engineers, now);
     }
 
     public List<Engineer> getList() {
@@ -137,6 +179,16 @@ public class EngineerService {
         List<Engineer> engineers = engineerDAO.findByProjectPeriodEndBetween(startDate.getTime(), endDate.getTime());
         return build(engineers, now);
     }
+    
+    public List<EngineerMatchingDTO> getByLastMonthEngineerMatching(EngineerFilterForm form, Timestamp now) {
+        Date startDate = new Date(form.getFilterDate());
+        startDate = Utils.atStartOfDay(startDate);
+        Date endDate = Utils.addMonthsToDate(startDate, 1);
+        endDate = Utils.addDayToDate(endDate, -1);
+        endDate = Utils.atEndOfDay(endDate);
+        List<Engineer> engineers = engineerDAO.findByProjectPeriodEndBetween(startDate.getTime(), endDate.getTime());
+        return buildEngineerMatching(engineers, now);
+    }
 
     private List<EngineerListItemDTO> build(List<Engineer> engineers, Timestamp now) {
         List<EngineerListItemDTO> engineerDTOs = new ArrayList<>();
@@ -144,6 +196,17 @@ public class EngineerService {
             BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
             if(partner != null) {
                 engineerDTOs.add(new EngineerListItemDTO(engineer, partner.getName(), now));
+            }
+        }
+        return engineerDTOs;
+    }
+    
+    private List<EngineerMatchingDTO> buildEngineerMatching(List<Engineer> engineers, Timestamp now) {
+        List<EngineerMatchingDTO> engineerDTOs = new ArrayList<>();
+        for(Engineer engineer : engineers){
+            BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
+            if(partner != null) {
+                engineerDTOs.add(new EngineerMatchingDTO(engineer, partner.getName(), now));
             }
         }
         return engineerDTOs;
@@ -305,4 +368,5 @@ public class EngineerService {
         }
         return result;
     }
+    
 }

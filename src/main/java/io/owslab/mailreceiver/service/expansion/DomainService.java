@@ -2,9 +2,11 @@ package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.DomainUnregisterDAO;
+import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,6 +28,9 @@ public class DomainService {
     
     @Autowired
     private DomainUnregisterDAO domainDAO;
+    
+    @Autowired
+    private RelationshipEngineerPartnerDAO relationshipEngineerPartnerDAO;
     
 	public List<DomainUnregister> getAll() {
 		return domainDAO.findAll();
@@ -159,6 +164,39 @@ public class DomainService {
 	    	}
 		}
 		return domainList;
+	}
+	
+	public boolean checkDomainCurrent(String emailFrom, Long partnerId){
+		BusinessPartner partner = partnerDAO.findOne(partnerId);
+		if(partner==null) return false;
+		
+		int index = emailFrom.indexOf("@");
+		if(index<=0) return false;
+		
+		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
+		if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean checkDomainPartnerNotGood(String emailFrom, Long engineerId){
+		List<RelationshipEngineerPartner> partnerNotGood = relationshipEngineerPartnerDAO.findByEngineerId(engineerId);
+		if(partnerNotGood==null) return false;
+
+		int index = emailFrom.indexOf("@");
+		if(index<=0) return false;
+		
+		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
+		for(RelationshipEngineerPartner relationship : partnerNotGood){
+			BusinessPartner partner = relationship.getPartner();
+			if(partner!=null){
+				if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
+					return true;
+				}
+			}
+		}	
+		return false;
 	}
 
 }

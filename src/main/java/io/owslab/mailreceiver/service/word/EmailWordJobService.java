@@ -155,4 +155,14 @@ public class EmailWordJobService {
         }
         return result;
     }
+    
+    public boolean matchingWordEngineer(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
+        boolean matching = false;
+        for(String word : words){
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            	return true;
+            }
+        }
+        return matching;
+    }
 }

@@ -242,7 +242,7 @@ public class MatchingConditionService {
         }
         matchDestinationList = mailBoxService.filterDuplicate(matchDestinationList, filterSender, filterSubject);
         logger.info("filter condition done: " + matchSourceList.size() + " " + matchDestinationList.size());
-        List<String> matchingWords = getWordList(matchingConditionForm);
+        List<String> matchingWords = getWordList(matchingConditionForm.getMatchingWords());
         List<MatchingWordResult> matchWordSource = findMatchWithWord(matchingWords, matchSourceList, spaceEffective, distinguish);
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective, distinguish);
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
@@ -318,7 +318,7 @@ public class MatchingConditionService {
         return  someEmail.substring(someEmail.indexOf("@") + 1);
     }
 
-    private void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+    public void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
         if(filterRule.isGroup()){
             for(FilterRule rule : filterRule.getRules()){
                 findMailMatching(emailList, rule, distinguish, spaceEffective);
@@ -937,8 +937,7 @@ public class MatchingConditionService {
         return result;
     }
 
-    private List<String> getWordList(MatchingConditionForm matchingConditionForm){
-        String matchingWprdsStr = matchingConditionForm.getMatchingWords();
+    public  List<String> getWordList(String matchingWprdsStr){
         List<String> normalizedMatchingWords = new ArrayList<>();
         Pattern p = Pattern.compile("\"([^\"]*)\"");
         Matcher m = p.matcher(matchingWprdsStr);
@@ -962,7 +961,7 @@ public class MatchingConditionService {
         return normalizedMatchingWords;
     }
 
-    private MatchingPartResult hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, FilterRule condition) {
+    public  MatchingPartResult hasMatchRange(List<FullNumberRange> sourceRanges, List<FullNumberRange> targetRanges, FilterRule condition) {
         MatchingPartResult result = new MatchingPartResult();
         if(targetRanges.size() == 0) {
             if(sourceRanges.size() > 0) {
@@ -1035,7 +1034,7 @@ public class MatchingConditionService {
         return new Date(System.currentTimeMillis() - (daysago * DAY_IN_MS));
     }
 
-    private List<FullNumberRange> getMailRanges(Email email, String cacheId, String input) {
+    public List<FullNumberRange> getMailRanges(Email email, String cacheId, String input) {
         List<FullNumberRange> mailRanges = email.getRangeList();
         return mailRanges != null && mailRanges.size() > 0 ? mailRanges : numberRangeService.buildNumberRangeForInput(cacheId, input);
     }
