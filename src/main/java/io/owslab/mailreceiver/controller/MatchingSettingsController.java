@@ -18,6 +18,8 @@ import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -245,7 +248,7 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/envSettings", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getEnvSettingsInJSON (){
+    ResponseEntity<?> getEnvSettingsInJSON () throws JSONException{
         AjaxResponseBody result = new AjaxResponseBody();
         JSONObject obj = new JSONObject();
         obj.put("debug_on", enviromentSettingService.getDebugOn());

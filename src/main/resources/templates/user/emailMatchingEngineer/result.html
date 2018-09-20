@@ -1,0 +1,262 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>メールマッチング結果</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>メールマッチング結果</h1>
+    </section>
+    <section class="content matching-result">
+        <div class="row matching-result-container" style="position: relative">
+            <div style="position: absolute; right: 25px; top: 15px; z-index: 1000;">
+                <span><b>元送信時置換:</b></span>
+                <select id="motoReplaceSelector" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true">
+                    <option value="3">元の数値</option>
+                    <option value="5">元の上代</option>
+                    <option value="4">元の下代</option>
+                    <option value="0">先の数値</option>
+                    <option value="2">先の上代</option>
+                    <option value="1">先の下代</option>
+                </select>
+                <span><b>先送信時置換:</b></span>
+                <select id="sakiReplaceSelector" style="margin-left: 10px;" aria-hidden="true">
+                    <option value="0">元の数値</option>
+                    <option value="2">元の上代</option>
+                    <option value="1">元の下代</option>
+                    <option value="3">先の数値</option>
+                    <option value="5">先の上代</option>
+                    <option value="4">先の下代</option>
+                </select>
+            </div>
+            <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
+                <div class="col-sm-12">
+                    <h4 id="totalSourceMatching">絞り込み元</h4>
+                </div>
+                <div class="col-sm-12" style="padding-top: 0px;" id="table-section">
+                    <div class="main-left">
+                        <div class="table-container table-container-wrapper">
+                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                                <thead class="sticky-header">
+                                <tr>
+                                    <th class="dark">技術者名</th>
+                                    <th class="dark" style="text-align: center">所属会社</th>
+                                    <th class="fit dark" style="text-align: center">稼働</th>
+                                    <th class="fit dark" style="text-align: center">自動延長</th>
+                                    <th class="fit dark" style="text-align: center">休止中</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr role="row" class="hidden">
+                                    <td class="clickable" name="sourceRow" th:data="engineerMatchingDTO.name"><span></span></td>
+                                    <td class="clickable" name="sourceRow" th:data="engineerMatchingDTO.partnerName"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="engineerMatchingDTO.active"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="engineerMatchingDTO.autoExtend"><span></span></td>
+                                    <td class="clickable fit" name="sourceRow" th:data="engineerMatchingDTO.dormant"><span></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-name-container">
+                            <h4 id="totalDestinationMatching">絞り込み先</h4>
+                        </div>
+                        <div class="table-container table-container-wrapper">
+                            <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                                <thead class="sticky-header">
+                                <tr>
+                                    <th class="fit">ワード</th>
+                                    <th class="fit">元数値</th>
+                                    <th class="fit">先数値</th>
+                                    <th class="fit">受信日時</th>
+                                    <th class="fit">送信者</th>
+                                    <th>件名</th>
+                                    <th class="fit"></th>
+                                    <th class="fit"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr role="row" class="hidden">
+                                    <td class="clickable fit" name="showDestinationMail" th:data="word"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="range"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="matchRange"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="receivedAt"><span></span></td>
+                                    <td class="clickable fit" name="showDestinationMail" th:data="from"><span></span></td>
+                                    <td class="clickable" name="showDestinationMail" th:data="subject"><span></span></td>
+                                    <td class="clickable text-center fit" name="sendToMoto">
+                                        <button type="button" class="btn btn-xs btn-default">元へ</button>
+                                    </td>
+                                    <td class="clickable text-center fit" name="sendToSaki">
+                                        <button type="button" class="btn btn-xs btn-default">先へ</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="dragbar2" style="margin-top: 5px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
+                </div>
+                <div class="col-sm-12" style="padding-top: 5px;">
+                    <div class="clearfix" id="preview-section">
+                        <div id="moto-preview-wrapper" style="position: relative;">
+                            <div id="moto-preview-content-wrapper" style="width: 100%; padding-right: 8px">
+                                <div style="width: 100%;">
+                                    <span>プレビュー元</span>
+                                    <div id="source-control" class="select-row-control-container" style="display: inline-block;padding-right: 0;">
+                                        <div class="btn-group">
+                                            <button id="source-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-backward"></span>
+                                                (SHIFT+F2)
+                                            </button>
+                                            <button id="source-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-left"></span>
+                                                前ページ(F2)
+                                            </button>
+                                            <button id="source-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-right"></span>
+                                                次ページ(F4)
+                                            </button>
+                                            <button id="source-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-forward"></span>
+                                                (SHIFT+F4)
+                                            </button>
+                                            <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                                    data-toggle="tooltip" title="" data-original-title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="main-right">
+                                    <div id="mailSubject" class="mail-subject"></div>
+                                    <div class="mail-body-container">
+                                        <div class="mark-search-header">
+                                            検索:
+                                            <input type="search" data-search="mailBody" placeholder="単語"/>
+                                            <button type="button" data-search="moto-next">&darr;</button>
+                                            <button type="button" data-search="moto-prev">&uarr;</button>
+                                            <button type="button" data-search="moto-clear">✖</button>
+                                        </div>
+                                        <div id="mailBody" class="mail-body">
+
+                                        </div>
+                                    </div>
+                                    <div id="mailAttachment" class="mail-attachment"></div>
+                                </div>
+                                <div style="display: none" id="printElement">
+                                </div>
+                            </div>
+                            <div id="moto-preview-content-keeper" style="width: 3px; display: none"></div>
+                            <div id="dragbar"></div>
+                        </div>
+                        <div id="saki-preview-wrapper" style="padding-left: 5px">
+                            <div id="saki-preview-content-wrapper" style="width: 100%;">
+                                <div style="width: 100%;">
+                                    <span>プレビュー先</span>
+                                    <div id="destination-control" class="select-row-control-container" style="display: inline-block;">
+                                        <div class="btn-group">
+                                            <button id="des-first" name="first" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-backward"></span>
+                                                (SHIFT+F8)
+                                            </button>
+                                            <button id="des-prev" name="prev" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-left"></span>
+                                                前ページ(F8)
+                                            </button>
+                                            <button id="des-next" name="next" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-right"></span>
+                                                次ページ(F9)
+                                            </button>
+                                            <button id="des-last" name="last" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-forward"></span>
+                                                (SHIFT+F9)
+                                            </button>
+                                            <button style="min-width: 60px;" id="printSakiBtn" th:disabled="true" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="saki-preview-container" style="width: 100%; display: none;">
+                                    <div class="main-right">
+                                        <div id="mailSakiSubject" class="mail-subject"></div>
+                                        <div class="mail-body-container">
+                                            <div class="mark-search-header">
+                                                検索:
+                                                <input type="search" data-search="mailSakiBody" placeholder="単語"/>
+                                                <button type="button" data-search="saki-next">&darr;</button>
+                                                <button type="button" data-search="saki-rev">&uarr;</button>
+                                                <button type="button" data-search="saki-clear">✖</button>
+                                            </div>
+                                            <div id="mailSakiBody" class="mail-body">
+
+                                            </div>
+                                        </div>
+                                        <div id="mailSakiAttachment" class="mail-attachment"></div>
+                                    </div>
+                                    <div style="display: none" id="printSakiElement">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="strip-el" class="row" style="display: none;"></div>
+    </section>
+    <div id="sendMailModal" class="modal fade" tabindex="-1" data-keyboard="false" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 95%; margin-top: 5px; margin-bottom: 5px;">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 10px 15px;">
+                    <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="sendSuggestMailTitle" class="modal-title">マッチング【元】へメール送信</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="rdMailSender" class="control-label col-md-1 text-lef">送信者:</label>
+                            <div class="col-md-5">
+                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
+                                </select>
+                            </div>
+
+                            <div id="rdMailReceiver-container">
+                                <label for="rdMailReceiver" class="control-label col-md-1 text-lef">受信者:</label>
+                                <div class="col-md-5">
+                                    <input id="rdMailReceiver" class="form-control" placeholder="受信者:"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="rdMailCC-container" class="form-group row">
+                            <label for="rdMailCC" class="control-label col-md-1 text-lef">CC:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailCC" class="tags form-control" placeholder="user@example.com, user2@example.com"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="rdMailSubject" class="control-label col-md-1 text-lef">件名:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                            </div>
+                        </div>
+                    </form>
+                    <textarea id="rdMailBody"></textarea>
+                    <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="attachment-dropzone"></div>
+                </div>
+                <div class="modal-footer" style="padding: 10px 15px">
+                    <button type="button" id="cancelSendSuggestMail" name="sendSuggestMailClose" class="btn btn-default" data-loading-text="終了中...">終了</button>
+                    <button type="button" id="sendSuggestMail" class="btn btn-primary" data-loading-text="送信中...">送信</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/storage/sendTabSetting.js"></script>
+    <script src="/custom/js/pages/emailMatchingEngineer/result.js"></script>
+</th:block>
+</body>
+</html>

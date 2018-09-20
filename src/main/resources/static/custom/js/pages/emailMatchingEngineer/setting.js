@@ -101,7 +101,7 @@
             condition: "AND",
             rules: [
                 {
-                    id: "1",
+                    id: "4",
                     operator: "greater_or_equal",
                     type: "String",
                     value: "",
@@ -222,10 +222,10 @@
     	
 
     	 var default_filters_houtlyMoney = [{
-    	    id: '1',
+    	    id: '4',
     	    label: '数値',
     	    type: 'string',
-    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less'],
     	       validation: {
     	          callback: numberValidator
     	       },  	 
@@ -410,7 +410,7 @@
            		var rules = {
            			"condition":"AND",
            			"rules":[{
-           				"id":"1",
+           				"id":"4",
            				"field":"1",
            				"type":"string",
            				"input":"text",

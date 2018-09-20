@@ -369,11 +369,51 @@ public class MatchingConditionService {
         finalMatchingPartResult.setRange(firstRange);
         return finalMatchingPartResult;
     }
+    
+    public MatchingPartResult isMailMatchingEngineer(Email destinationResult,
+            FilterRule matchingRule,
+            boolean distinguish){
+    	MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
+    	FullNumberRange firstMatchRange = null;
+    	FullNumberRange firstRange = null;
+    	Email targetEmail = destinationResult;
+    	if(matchingRule.isGroup()){
+    		if(matchingRule.hasSubRules()) {
+    			for(FilterRule rule : matchingRule.getRules()){
+    				MatchingPartResult matchingPartResult = isMailMatchingEngineer(destinationResult, rule, distinguish);
+    				if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+    					firstMatchRange = matchingPartResult.getMatchRange();
+    					firstRange = matchingPartResult.getRange();
+    				}
+    			}
+    		} else {
+    			matchingRule.add(targetEmail);
+    		}
+    	} else {
+    		System.out.println("isMatchAllRange1");
+    		MatchingPartResult matchingPartResult = isMatchAllRange(targetEmail, matchingRule, distinguish);
+    		if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+    			firstMatchRange = matchingPartResult.getMatchRange();
+    			firstRange = matchingPartResult.getRange();
+    		}
+    		if(matchingPartResult.isMatch()){
+    			matchingRule.add(targetEmail);
+    		}		
+    	}
+
+    	List<Email> matching = matchingRule.getMatchEmails();
+    	finalMatchingPartResult.setMatch(matching.size() > 0);
+    	finalMatchingPartResult.setMatchRange(firstMatchRange);
+    	finalMatchingPartResult.setRange(firstRange);
+    	return finalMatchingPartResult;
+    }
 
     private MatchingPartResult isMatch(Email source, Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         boolean match = false;
+        System.out.println("isMatch1");
         MailItemOption option = condition.getMailItemOption();
+        System.out.println(option);
         switch (option){
             case SENDER:
                 match = isMatchingPart(source.getFrom(), target, condition, distinguish);
@@ -405,6 +445,7 @@ public class MatchingConditionService {
 
     private boolean isMatch(Email email, FilterRule condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
+        System.out.println("isMatch2");
         MailItemOption option = condition.getMailItemOption();
         ConditionOption conditionOption;
         switch (option){
@@ -472,6 +513,7 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
+            	System.out.println("isMatchAllRange2");
                 MatchingPartResult matchingPartResult = isMatchAllRange(email, condition, distinguish);
                 match = matchingPartResult.isMatch();
                 break;
@@ -628,7 +670,7 @@ public class MatchingConditionService {
         return match;
     }
 
-    private String getOptimizedText(String text, boolean distinguish){
+    public String getOptimizedText(String text, boolean distinguish){
         if(text == null) {
             text = "";
         }
@@ -760,6 +802,7 @@ public class MatchingConditionService {
     private MatchingPartResult isMatchRange(Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         try {
+        	 System.out.println("isMatch4");
             MailItemOption mailItemOption = condition.getMailItemOption();
             ConditionOption conditionOption = condition.getConditionOption();
             String conditionValue = condition.getValue();
@@ -846,6 +889,9 @@ public class MatchingConditionService {
     private MatchingPartResult isMatchAllRange(Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         try {
+        	System.out.println("isMatchAllRange "+condition.toString());
+        	System.out.println("isMatchAllRange ID "+condition.getId());
+       	 	System.out.println("isMatch3");
             MailItemOption mailItemOption = condition.getMailItemOption();
             ConditionOption conditionOption = condition.getConditionOption();
             String conditionValue = condition.getValue();
@@ -977,6 +1023,7 @@ public class MatchingConditionService {
             result.setMatch(true);
             return result;
         }
+        System.out.println("hasMatchRange");
         MailItemOption mailItemOption = condition.getMailItemOption();
         ConditionOption conditionOption = condition.getConditionOption();
         MatchingItemOption matchingOption = MatchingItemOption.fromText(condition.getValue());

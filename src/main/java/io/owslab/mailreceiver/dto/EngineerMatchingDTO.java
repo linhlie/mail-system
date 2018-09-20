@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.utils.FilterRule;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class EngineerMatchingDTO {
     private boolean active;
     private boolean autoExtend;
     private boolean dormant;
-    
+    FilterRule moneyCondition;
     public EngineerMatchingDTO(){
     	
     }
@@ -123,5 +124,17 @@ public class EngineerMatchingDTO {
 	public void setMonetaryMoney(String monetaryMoney) {
 		this.monetaryMoney = monetaryMoney;
 	}
-	
+
+	public FilterRule getMoneyCondition() {
+		return moneyCondition;
+	}
+
+	public void setMoneyCondition(FilterRule moneyCondition) {
+		this.moneyCondition = moneyCondition;
+	}
+
+	public void setPartnerId(Long partnerId) {
+		this.partnerId = partnerId;
+	}
+
 }
