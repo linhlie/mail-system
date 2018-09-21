@@ -48,21 +48,18 @@
     }
 
     var replaceRow = '<tr role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="partnerName"><span></span></td>' +
-        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
+        '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="name" name="engineerRow"><span></span></td>' +
+        '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="partnerName" name="engineerRow"><span></span></td>' +
+        '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="autoExtend">' +
+        '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="autoExtend" name="engineerRow">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
+        '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant" name="engineerRow">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="case" name="case" checked value="id"/></td>' +
-        '<td name="setEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">編集</button>' +
-        '</td>' +
+        '<td style= "cursor: pointer;" align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="case" name="case" checked value="id"/></td>' +
         '</tr>';
     
     var default_destination_rules = {
@@ -534,6 +531,8 @@
         clearFormValidate();
         var validated = engineerFormValidate();
         if(!validated) return;
+        var validatedRule = $(hourlyMoneyBuilderId).queryBuilder('getRules');
+        if(!validatedRule) return;
         engineerCondition = getFormData();
         updateListEngineer(engineerCondition);
         clearEngineerOnClick();
@@ -615,8 +614,8 @@
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("setEngineer", function () {
-                var $this = $(this);
+            setRowClickListener("engineerRow", function () {
+            	var $this = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 selectedSourceTableRow = parseInt(index) + 1;
@@ -1068,6 +1067,21 @@
     
     function getInputValue(inputId) {
         return $(inputId).val();
+    }
+    
+    function numberValidator(value, rule) {
+        if (!value || value.trim().length === 0) {
+            return "Value can not be empty!";
+        } else if (rule.operator.type !== 'in') {
+            value = fullWidthNumConvert(value);
+            value = value.replace(/，/g, ",");
+            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
+            var match = pattern.test(value);
+            if(!match){
+                return "Value must be a number greater than or equal to 0";
+            }
+        }
+        return true;
     }
     
 })(jQuery);

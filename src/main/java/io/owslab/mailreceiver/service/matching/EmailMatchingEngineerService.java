@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -115,9 +116,8 @@ public class EmailMatchingEngineerService {
  
     		FilterRule moneyCondition = engineerDTO.getMoneyCondition();
        		result.setEngineerMatchingDTO(engineerDTO);
-    		result.setListMatchingWord(listMatchingWord);
+    		result.setListMatchingWord(getListWordMatchingToHighLight(listMatchingWord));
     		result.getEngineerMatchingDTO().setMoneyCondition(null);
-    		System.out.println("----------------------------------------------------------------------------------------");
     		for(Email email : listEmailMatching){
     			if(handleDomainPartnerCurrent && domainService.checkDomainPartnerCurrent(email.getFrom(), engineerDTO.getPartnerId())){
     				continue;
@@ -137,7 +137,6 @@ public class EmailMatchingEngineerService {
         				if(matchingPartResult.isMatch()){
         					 FullNumberRange matchRange = matchingPartResult.getMatchRange();
         	                 FullNumberRange range = matchingPartResult.getRange();
-        	                 System.out.println(range+"    "+matchRange);
         	                 result.addEmailDTO(email, matchRange, range);
         	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email));
         				 }
@@ -153,6 +152,20 @@ public class EmailMatchingEngineerService {
 		FinalEmailMatchingEngineerResult result = new FinalEmailMatchingEngineerResult(listResult, previewMailDTOList);
 		
     	return result;
+    }
+    
+    public List<String> getListWordMatchingToHighLight(List<String> listWord){
+    	List<String> listMatchingWord = new ArrayList<String>();
+    	for(String word : listWord){
+            StringTokenizer st = new StringTokenizer(word," ,\"!!");
+            while(st.hasMoreTokens()){
+                String s = st.nextToken().trim();
+                if(!s.equals("")){
+                	listMatchingWord.add(word);
+                }
+            }
+    	}
+    	return listMatchingWord;
     }
     
 }
