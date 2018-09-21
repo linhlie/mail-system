@@ -10,26 +10,6 @@
     </section>
     <section class="content matching-result">
         <div class="row matching-result-container" style="position: relative">
-            <div style="position: absolute; right: 25px; top: 15px; z-index: 1000;">
-                <span><b>元送信時置換:</b></span>
-                <select id="motoReplaceSelector" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true">
-                    <option value="3">元の数値</option>
-                    <option value="5">元の上代</option>
-                    <option value="4">元の下代</option>
-                    <option value="0">先の数値</option>
-                    <option value="2">先の上代</option>
-                    <option value="1">先の下代</option>
-                </select>
-                <span><b>先送信時置換:</b></span>
-                <select id="sakiReplaceSelector" style="margin-left: 10px;" aria-hidden="true">
-                    <option value="0">元の数値</option>
-                    <option value="2">元の上代</option>
-                    <option value="1">元の下代</option>
-                    <option value="3">先の数値</option>
-                    <option value="5">先の上代</option>
-                    <option value="4">先の下代</option>
-                </select>
-            </div>
             <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
                 <div class="col-sm-12">
                     <h4 id="totalSourceMatching">絞り込み元</h4>
@@ -37,7 +17,7 @@
                 <div class="col-sm-12" style="padding-top: 0px;" id="table-section">
                     <div class="main-left">
                         <div class="table-container table-container-wrapper">
-                            <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                            <table id="enginnerTable" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
                                     <th class="dark">技術者名</th>
@@ -59,8 +39,12 @@
                             </table>
                         </div>
                         <div class="table-name-container">
-                            <h4 id="totalDestinationMatching">絞り込み先</h4>
-                        </div>
+                			<span><b>所属会社:</b></span>
+                			<input id="engineerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true"/>
+                			<span><b>所属会社:</b></span>
+                			<input id="partnerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true"/>
+                			<button class="btn">Open</button>	
+            			</div>
                         <div class="table-container table-container-wrapper">
                             <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
@@ -97,8 +81,8 @@
                     <div id="dragbar2" style="margin-top: 5px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
                 </div>
                 <div class="col-sm-12" style="padding-top: 5px;">
-                    <div class="clearfix" id="preview-section">
-                        <div id="moto-preview-wrapper" style="position: relative;">
+                    <div class="clearfix">
+                        <div>
                             <div id="moto-preview-content-wrapper" style="width: 100%; padding-right: 8px">
                                 <div style="width: 100%;">
                                     <span>プレビュー元</span>
@@ -148,56 +132,6 @@
                             </div>
                             <div id="moto-preview-content-keeper" style="width: 3px; display: none"></div>
                             <div id="dragbar"></div>
-                        </div>
-                        <div id="saki-preview-wrapper" style="padding-left: 5px">
-                            <div id="saki-preview-content-wrapper" style="width: 100%;">
-                                <div style="width: 100%;">
-                                    <span>プレビュー先</span>
-                                    <div id="destination-control" class="select-row-control-container" style="display: inline-block;">
-                                        <div class="btn-group">
-                                            <button id="des-first" name="first" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-step-backward"></span>
-                                                (SHIFT+F8)
-                                            </button>
-                                            <button id="des-prev" name="prev" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-triangle-left"></span>
-                                                前ページ(F8)
-                                            </button>
-                                            <button id="des-next" name="next" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-triangle-right"></span>
-                                                次ページ(F9)
-                                            </button>
-                                            <button id="des-last" name="last" th:data="destination" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-step-forward"></span>
-                                                (SHIFT+F9)
-                                            </button>
-                                            <button style="min-width: 60px;" id="printSakiBtn" th:disabled="true" type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="" data-original-title="Print">
-                                                <i class="fa fa-print"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="saki-preview-container" style="width: 100%; display: none;">
-                                    <div class="main-right">
-                                        <div id="mailSakiSubject" class="mail-subject"></div>
-                                        <div class="mail-body-container">
-                                            <div class="mark-search-header">
-                                                検索:
-                                                <input type="search" data-search="mailSakiBody" placeholder="単語"/>
-                                                <button type="button" data-search="saki-next">&darr;</button>
-                                                <button type="button" data-search="saki-rev">&uarr;</button>
-                                                <button type="button" data-search="saki-clear">✖</button>
-                                            </div>
-                                            <div id="mailSakiBody" class="mail-body">
-
-                                            </div>
-                                        </div>
-                                        <div id="mailSakiAttachment" class="mail-attachment"></div>
-                                    </div>
-                                    <div style="display: none" id="printSakiElement">
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

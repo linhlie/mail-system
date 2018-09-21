@@ -120,12 +120,8 @@ public class FilterRule {
     }
 
     public MailItemOption getMailItemOption() {
-        if(mailItemOption == null){
-        	if(this.getId()==null){
-        		System.out.println("MailItemOption "+this.toString());
-        	}
+        if(mailItemOption == null)
             mailItemOption = MailItemOption.fromValue(Integer.parseInt(this.getId()));
-        }
         return mailItemOption;
     }
 

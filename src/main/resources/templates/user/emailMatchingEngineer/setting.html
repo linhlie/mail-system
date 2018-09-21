@@ -43,8 +43,8 @@
                                         <th class="fit dark" style="text-align: center">稼働</th>
                                         <th class="fit dark" style="text-align: center">自動延長</th>
                                         <th class="fit dark" style="text-align: center">休止中</th>
-                                        <th th:colspan="2"></th>
                                         <th class="fit dark" style="text-align: center">マッチング&nbsp;<input type="checkbox" id="selectall" checked="checked"/></th>
+                                        <th th:colspan="1"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -178,6 +178,16 @@
                                             <input id="duplicate-subject" type="checkbox"/> 件名
                                         </label>
                                         <label class="duplicate-control duplicate-control-option">&nbsp;)</label>
+                                    </div>
+                                    <div class="domain-control-container">
+                                        <label class="domain-control">
+                                            <input id="domain-partner-current" type="checkbox"/> 所属企業とはマッチングしない
+                                        </label>
+                                        <label class="domain-control domain-control-option option-padding">（&nbsp;</label>
+                                        <label class="domain-control domain-control-option">
+                                            <input id="domain-partner-group" type="checkbox"/> 所属企業の取引グループもマッチングしない
+                                        </label>
+                                        <label class="domain-control domain-control-option">&nbsp;)</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

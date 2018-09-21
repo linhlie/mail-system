@@ -390,7 +390,6 @@ public class MatchingConditionService {
     			matchingRule.add(targetEmail);
     		}
     	} else {
-    		System.out.println("isMatchAllRange1");
     		MatchingPartResult matchingPartResult = isMatchAllRange(targetEmail, matchingRule, distinguish);
     		if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
     			firstMatchRange = matchingPartResult.getMatchRange();
@@ -411,7 +410,6 @@ public class MatchingConditionService {
     private MatchingPartResult isMatch(Email source, Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         boolean match = false;
-        System.out.println("isMatch1");
         MailItemOption option = condition.getMailItemOption();
         System.out.println(option);
         switch (option){
@@ -445,7 +443,6 @@ public class MatchingConditionService {
 
     private boolean isMatch(Email email, FilterRule condition, boolean distinguish, boolean spaceEffective){
         boolean match = false;
-        System.out.println("isMatch2");
         MailItemOption option = condition.getMailItemOption();
         ConditionOption conditionOption;
         switch (option){
@@ -802,7 +799,6 @@ public class MatchingConditionService {
     private MatchingPartResult isMatchRange(Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         try {
-        	 System.out.println("isMatch4");
             MailItemOption mailItemOption = condition.getMailItemOption();
             ConditionOption conditionOption = condition.getConditionOption();
             String conditionValue = condition.getValue();
@@ -889,9 +885,6 @@ public class MatchingConditionService {
     private MatchingPartResult isMatchAllRange(Email target, FilterRule condition, boolean distinguish){
         MatchingPartResult result = new MatchingPartResult();
         try {
-        	System.out.println("isMatchAllRange "+condition.toString());
-        	System.out.println("isMatchAllRange ID "+condition.getId());
-       	 	System.out.println("isMatch3");
             MailItemOption mailItemOption = condition.getMailItemOption();
             ConditionOption conditionOption = condition.getConditionOption();
             String conditionValue = condition.getValue();
@@ -1023,7 +1016,6 @@ public class MatchingConditionService {
             result.setMatch(true);
             return result;
         }
-        System.out.println("hasMatchRange");
         MailItemOption mailItemOption = condition.getMailItemOption();
         ConditionOption conditionOption = condition.getConditionOption();
         MatchingItemOption matchingOption = MatchingItemOption.fromText(condition.getValue());

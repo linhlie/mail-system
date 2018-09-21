@@ -1,9 +1,11 @@
 package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
+import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dao.DomainUnregisterDAO;
 import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
 import io.owslab.mailreceiver.model.BusinessPartner;
+import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
@@ -25,6 +27,9 @@ public class DomainService {
 	
     @Autowired
     private BusinessPartnerDAO partnerDAO;
+    
+    @Autowired
+    private BusinessPartnerGroupDAO partnerGroupDAO;
     
     @Autowired
     private DomainUnregisterDAO domainDAO;
@@ -166,7 +171,7 @@ public class DomainService {
 		return domainList;
 	}
 	
-	public boolean checkDomainCurrent(String emailFrom, Long partnerId){
+	public boolean checkDomainPartnerCurrent(String emailFrom, Long partnerId){
 		BusinessPartner partner = partnerDAO.findOne(partnerId);
 		if(partner==null) return false;
 		
@@ -176,6 +181,23 @@ public class DomainService {
 		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
 		if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
 			return true;
+		}
+		return false;
+	}
+	
+	public boolean checkDomainPartnerGroup(String emailFrom, Long partnerId){
+		List<BusinessPartnerGroup> listPartner = partnerGroupDAO.findByPartnerId(partnerId);
+		if(listPartner==null || listPartner.size()==0) return false;
+		
+		int index = emailFrom.indexOf("@");
+		if(index<=0) return false;
+		
+		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
+		for(BusinessPartnerGroup partnerGroup : listPartner){
+			BusinessPartner partner = partnerGroup.getWithPartner();
+			if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
+				return true;
+			}
 		}
 		return false;
 	}

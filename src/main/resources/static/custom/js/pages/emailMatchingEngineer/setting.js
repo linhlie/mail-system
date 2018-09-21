@@ -59,13 +59,10 @@
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
+        '<td align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="case" name="case" checked value="id"/></td>' +
         '<td name="setEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">編集</button>' +
         '</td>' +
-        '<td name="deleteEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">削除</button>' +
-        '</td>' +
-        '<td align="center"><input type="checkbox" class="case" name="case" checked data="id"/></td>' +
         '</tr>';
     
     var default_destination_rules = {
@@ -257,6 +254,7 @@
     	    
         initLastMonthActive();
         initDuplicateHandle();
+        initDomainHandle();
         filterTypeChangeListener();
         initStickyHeader();
         setupDatePickers();
@@ -293,6 +291,24 @@
         $('#duplicate-subject').change(function() {
             var subjectEnable = $(this).is(":checked");
             localStorage.setItem("handleDuplicateSubject-email-matching-engineer", subjectEnable);
+        });
+    }
+    
+    function initDomainHandle() {
+        const domainSettingData = getCachedDomainSettingData();
+        $('#domain-partner-current').prop('checked', domainSettingData.handleDomainPartnerCurrent);
+        domainSettingData.handleDomainPartnerCurrent ? $('.domain-control.domain-control-option').show() : $('.domain-control.domain-control-option').hide();
+        $('#domain-partner-group').prop('checked', domainSettingData.handleDomainPartnerGroup);
+        
+        $('#domain-partner-current').change(function() {
+            var enable = $(this).is(":checked");
+            enable ? $('.domain-control.domain-control-option').show() : $('.domain-control.domain-control-option').hide();
+            localStorage.setItem("handleDomainPartnerCurrent-email-matching-engineer", enable);
+        });
+
+        $('#domain-partner-group').change(function() {
+            var enable = $(this).is(":checked");
+            localStorage.setItem("handleDomainPartnerGroup-email-matching-engineer", enable);
         });
     }
     
@@ -395,11 +411,10 @@
     }
     
     function setHourlyMoneyBuilder(data){
-    	console.log(data);
-    	console.log(data.moneyCondition);
+//    	console.log(data);
+//    	console.log(data.moneyCondition);
     	if(data.moneyCondition == null){
         	var money = data.monetaryMoney;
-        	console.log(data.monetaryMoney);
     		if(money==null){
         		var rules = {
         			"condition":"AND",
@@ -425,12 +440,39 @@
     	}
     }
     
+    function setMoneyCondition(listData){
+    	for(var i=0;i<listData.length;i++){
+        	if(listData[i].moneyCondition == null){
+            	var money = listData[i].monetaryMoney;
+        		if(money!=null){
+               		var rules = {
+               			"condition":"AND",
+               			"rules":[{
+               				"id":"4",
+               				"field":"1",
+               				"type":"string",
+               				"input":"text",
+               				"operator":"equal",
+               				"value":money
+               					}],
+               			"valid":true};
+               		listData[i].moneyCondition = rules;
+            	}
+        	}
+    	}
+    }
+    
     function getListEngineerMatching(){
+    	var listEng = [];
         $(".case:checked").each(function () {
-            var engineerId = $(this).attr("data");
-            console.log(engineerId);
+            var engineerId = $(this).attr("value");
+            for(var i=0;i<engineers.length;i++){
+            	if(engineerId == engineers[i].id){
+            		listEng.push(engineers[i]);
+            	}
+            }
         });
-        return engineers;
+        return listEng;
     }
     
     function submit() {
@@ -440,6 +482,7 @@
         var distinguish = false;
         var listEngineerCondition = getListEngineerMatching();
         const duplicateSettingData = getCachedDuplicationSettingData();
+        const domainSettingData = getCachedDomainSettingData();
         var form = {
             "destinationConditionData" : destinationConditionData,
             "listEngineerMatchingDTO": listEngineerCondition,
@@ -448,6 +491,8 @@
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "handleSameDomain": getCachedSameDomainSettingData(),
+            "handleDomainPartnerCurrent": domainSettingData.handleDomainPartnerCurrent,
+            "handleDomainPartnerGroup": domainSettingData.handleDomainPartnerGroup,
         };
         sessionStorage.setItem("distinguish-email-matching-engineer", distinguish);
         sessionStorage.setItem("spaceEffective-email-matching-engineer", spaceEffective);
@@ -483,18 +528,6 @@
     			}
     		}
     	}
-    }
-    
-    function deleteListEngineer(id){
-    	if(id==null) return;
-    	for(var i=engineers.length;i>=0;i--){
-    		if(engineers[i]!=null){
-    			if(engineers[i].id == id){
-    				engineers.splice(i, 1);
-    			}
-    		}
-    	}
-    	loadEngineersData(engineerTableId, engineers);
     }
 
     function applyConditionOnClick() {
@@ -559,7 +592,7 @@
             if(response && response.status){
                 loadEngineersData(engineerTableId, response.list);
                 setupSelectBoxes();
-                console.log(response.list);
+                setMoneyCondition(response.list);
             }
             
             if(typeof callback == 'function'){
@@ -582,15 +615,6 @@
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deleteEngineer", function () {
-
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                var rowData = engineers[index];
-                if (rowData && rowData.id) {
-                    doDeleteEngineer(rowData.id);
-                }
-            });
             setRowClickListener("setEngineer", function () {
                 var $this = $(this);
                 var row = $(this)[0].parentNode;
@@ -630,6 +654,9 @@
                 } else if (cellNode.nodeName == "SPAN") {
                     var cellData = data[cellKey];
                     cellNode.textContent = cellData;
+                }else if (cellNode.nodeName == "INPUT") {
+                    var cellData = data[cellKey];
+                    cellNode.value = cellData;
                 }
             }
         }
@@ -643,26 +670,6 @@
                 callback.apply(this);
             }
         })
-    }
-
-    function doDeleteEngineer(id) {
-        $.confirm({
-            title: '<b>【技術者の削除】</b>',
-            titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
-            buttons: {
-                confirm: {
-                    text: 'はい',
-                    action: function(){
-                        deleteListEngineer(id);
-                    }
-                },
-                cancel: {
-                    text: 'いいえ',
-                    action: function(){}
-                },
-            }
-        });
     }
 
     function setEngineer(id, data) {
@@ -993,6 +1000,18 @@
             handleDuplicateSender: enableDuplicateHandle && handleDuplicateSender,
             subject: handleDuplicateSubject,
             handleDuplicateSubject: enableDuplicateHandle && handleDuplicateSubject,
+        }
+    }
+    
+    function getCachedDomainSettingData() {
+        let handleDomainPartnerCurrentData = localStorage.getItem("handleDomainPartnerCurrent-email-matching-engineer");
+        let handleDomainPartnerCurrent = typeof handleDomainPartnerCurrentData !== "string" ? false : !!JSON.parse(handleDomainPartnerCurrentData);
+        let handleDomainPartnerGroupData = localStorage.getItem("handleDomainPartnerGroup-email-matching-engineer");
+        let handleDomainPartnerGroup = typeof handleDomainPartnerGroupData !== "string" ? false : !!JSON.parse(handleDomainPartnerGroupData);
+        return {
+            enable: handleDomainPartnerCurrent,
+            handleDomainPartnerCurrent: handleDomainPartnerCurrent,
+            handleDomainPartnerGroup: handleDomainPartnerCurrent && handleDomainPartnerGroup,
         }
     }
     

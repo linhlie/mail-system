@@ -13,6 +13,8 @@ public class EmailMatchingEngineerForm {
     private boolean handleDuplicateSender;
     private boolean handleDuplicateSubject;
     private boolean handleSameDomain;
+    private boolean handleDomainPartnerCurrent;
+    private boolean handleDomainPartnerGroup;
     private List<EngineerMatchingDTO> listEngineerMatchingDTO;
 
     public EmailMatchingEngineerForm() {
@@ -73,6 +75,22 @@ public class EmailMatchingEngineerForm {
 	public void setListEngineerMatchingDTO(
 			List<EngineerMatchingDTO> listEngineerMatchingDTO) {
 		this.listEngineerMatchingDTO = listEngineerMatchingDTO;
+	}
+
+	public boolean isHandleDomainPartnerCurrent() {
+		return handleDomainPartnerCurrent;
+	}
+
+	public void setHandleDomainPartnerCurrent(boolean handleDomainPartnerCurrent) {
+		this.handleDomainPartnerCurrent = handleDomainPartnerCurrent;
+	}
+
+	public boolean isHandleDomainPartnerGroup() {
+		return handleDomainPartnerGroup;
+	}
+
+	public void setHandleDomainPartnerGroup(boolean handleDomainPartnerGroup) {
+		this.handleDomainPartnerGroup = handleDomainPartnerGroup;
 	}
 
 }

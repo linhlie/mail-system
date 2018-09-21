@@ -1,7 +1,6 @@
-
 (function () {
     "use strict";
-    var sourceTableId = 'sourceMatch';
+    var engineerTableId = 'enginnerTable';
     var destinationTableId = 'destinationMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
@@ -31,7 +30,9 @@
     var motoReplaceSelectorId = "#motoReplaceSelector";
     var sakiReplaceSelectorId = "#sakiReplaceSelector";
     var totalSourceMatchingContainId = "totalSourceMatching";
-    var totalDestinationMatchingContainId = "totalDestinationMatching";
+    
+    var engineerNameId = "#engineerNameSelect";
+    var partnerNameId = "#partnerNameSelect";
 
     var attachmentDropzoneId = "#attachment-dropzone";
     var attachmentDropzone;
@@ -47,10 +48,6 @@
     var sourceLastBtnId = "source-last";
     var sourcePrevBtnId = "source-prev";
     var sourceNextBtnId = "source-next";
-    var desFirstBtnId = "des-first";
-    var desLastBtnId = "des-last";
-    var desPrevBtnId = "des-prev";
-    var desNextBtnId = "des-next";
 
     var originalContentWrapId = "ows-mail-body";
 
@@ -62,7 +59,7 @@
 
     var externalCCGlobal = [];
     var senderGlobal = "";
-    var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+    var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId-email-matching-engineer");
     var lastReceiver;
     var lastMessageId;
     var lastTextRange;
@@ -159,14 +156,10 @@
         setButtonClickListenter(printSakiBtnId, function () {
             printPreviewEmail(printSakiElementId);
         });
-        setButtonClickListenter(sourceFirstBtnId, sourceFirst);
-        setButtonClickListenter(sourceLastBtnId, sourceLast);
-        setButtonClickListenter(sourcePrevBtnId, sourcePrev);
-        setButtonClickListenter(sourceNextBtnId, sourceNext);
-        setButtonClickListenter(desFirstBtnId, destinationFirst);
-        setButtonClickListenter(desLastBtnId, destinationLast);
-        setButtonClickListenter(desPrevBtnId, destinationPrev);
-        setButtonClickListenter(desNextBtnId, destinationNext);
+        setButtonClickListenter(sourceFirstBtnId, destinationFirst);
+        setButtonClickListenter(sourceLastBtnId, destinationLast);
+        setButtonClickListenter(sourcePrevBtnId, destinationPrev);
+        setButtonClickListenter(sourceNextBtnId, destinationNext);
 
         getEnvSettings();
         fixingForTinyMCEOnModal();
@@ -255,18 +248,6 @@
         } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
             button = $("#" + sourceNextBtnId);
-        } else if(e.shiftKey && (e.which || e.keyCode) == 119) {
-            e.preventDefault();
-            button = $("#" + desFirstBtnId);
-        } else if(e.shiftKey && (e.which || e.keyCode) == 120) {
-            e.preventDefault();
-            button = $("#" + desLastBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 119) {
-            e.preventDefault();
-            button = $("#" + desPrevBtnId);
-        } else if(!e.shiftKey && (e.which || e.keyCode) == 120) {
-            e.preventDefault();
-            button = $("#" + desNextBtnId);
         }
         if(button && !button.is(":disabled")) {
             button.click();
@@ -274,8 +255,8 @@
     }
 
     function initReplaceSelector() {
-        var motoSelectedValue = localStorage.getItem("motoSelectedValue");
-        var sakiSelectedValue = localStorage.getItem("sakiSelectedValue");
+        var motoSelectedValue = localStorage.getItem("motoSelectedValue-email-matching-engineer");
+        var sakiSelectedValue = localStorage.getItem("sakiSelectedValue-email-matching-engineer");
         if(!!motoSelectedValue) {
             $(motoReplaceSelectorId).val(motoSelectedValue);
         }
@@ -283,10 +264,10 @@
             $(sakiReplaceSelectorId).val(sakiSelectedValue);
         }
         $(motoReplaceSelectorId).change(function() {
-            localStorage.setItem("motoSelectedValue", $(motoReplaceSelectorId).val());
+            localStorage.setItem("motoSelectedValue-email-matching-engineer", $(motoReplaceSelectorId).val());
         });
         $(sakiReplaceSelectorId).change(function() {
-            localStorage.setItem("sakiSelectedValue", $(sakiReplaceSelectorId).val());
+            localStorage.setItem("sakiSelectedValue-email-matching-engineer", $(sakiReplaceSelectorId).val());
         });
     }
 
@@ -336,7 +317,7 @@
     }
     
     function enableResizeSourceColumns() {
-        enableResizeColums(sourceTableId);
+        enableResizeColums(engineerTableId);
     }
 
     function enableResizeDestinationColumns() {
@@ -374,7 +355,7 @@
     }
     
     function updateData() {
-        showSourceData(sourceTableId, matchingResult);
+        showSourceData(engineerTableId, matchingResult);
     }
 
     function showSourceData(tableId, data) {
@@ -450,7 +431,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId){
-                            lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+                            lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId-email-matching-engineer");
                             showMailEditor(lastSelectedSendMailAccountId, rowData.messageId, selectedRowData.source, rowData.matchRange, rowData.range, replaceType, "moto")
                         }
                     });
@@ -462,7 +443,7 @@
                         var rowData = currentDestinationResult[index];
                         if(rowData){
                             if(selectedRowData && selectedRowData.source && selectedRowData.source.messageId){
-                                lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+                                lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId-email-matching-engineer");
                                 showMailEditor(lastSelectedSendMailAccountId, selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType, "saki")
                             }
                         }
@@ -552,19 +533,6 @@
         })
     }
     
-    function showSourceMail(index) {
-        var rowData = matchingResult[index];
-        if(rowData && rowData.source && rowData.source.messageId){
-            $('#' + sakiPreviewContainerId).hide();
-            $('#' + printSakiBtnId).prop("disabled", true);
-            selectedDestinationTableRow = undefined;
-            showMail(rowData.source.messageId, rowData.word, function (result) {
-                showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
-                updatePreviewMailToPrint(result, printElementId);
-            });
-        }
-    }
-
     function showDestinationMail(row) {
         selectedDestinationTableRow = row;
         updateDestinationControls(row.index(), currentDestinationResult.length);
@@ -573,21 +541,19 @@
         var rowData = currentDestinationResult[index];
         if(rowData && rowData.messageId){
             showMail(rowData.messageId, rowData.word, function (result) {
-                showMailContent(result, [mailSakiSubjectDivId, mailSakiBodyDivId, mailSakiAttachmentDivId]);
-                updatePreviewMailToPrint(result, printSakiElementId);
-                $('#' + sakiPreviewContainerId).show();
-                $('#' + printSakiBtnId).prop("disabled", false);
+                showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
+                updatePreviewMailToPrint(result, printElementId);
             }, rowData.matchRange);
         }
     }
     
     function selectFirstRow() {
         if(matchingResult && matchingResult.length > 0){
-            var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
+            var firstTr = $('#' + engineerTableId).find(' tbody tr:first');
             if(!firstTr[0]) return;
             var index = firstTr[0].getAttribute("data");
             if(index == null){
-                $('#' + sourceTableId).find(' tbody tr:first').remove();
+                $('#' + engineerTableId).find(' tbody tr:first').remove();
                 selectFirstRow();
                 return;
             }
@@ -602,8 +568,17 @@
         var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
         selectedRowData = rowData;
-        showSourceMail(index);
+        setEngineerInfo(rowData);
         showDestinationData(destinationTableId, rowData);
+    }
+    
+    function setEngineerInfo(rowData){
+    	var engineer = rowData.engineerMatchingDTO;
+    	console.log(engineer);
+    	if(engineer != null){
+        	$(engineerNameId).val(engineer.name);
+        	$(partnerNameId).val(engineer.partnerName);
+    	}
     }
 
     function removeAllRow(tableId, replaceHtml) { //Except header row
@@ -1000,10 +975,6 @@
         $('#' + totalSourceMatchingContainId).text("絞り込み元: " + total + "件")
     }
 
-    function updateTotalDestinationMatching(total) {
-        $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
-    }
-
     function setInputChangeListener(id, acceptEmpty, callback) {
         $('#' + id).on('input', function() {
             var valid = validateEmailListInput(id);
@@ -1281,42 +1252,6 @@
             });
 
         });
-
-        $(document).mouseup(function(e){
-            if (dragging)
-            {
-                var container = $('#preview-section');
-                var leftWidth = (e.pageX - container.offset().left);
-                leftWidth = leftWidth <= (container.width()/4) ? 3 : leftWidth;
-                if(leftWidth == 3) {
-                    var keeperHeight = $('#saki-preview-content-wrapper').outerHeight();
-                    keeperHeight = keeperHeight > 0 ? keeperHeight : 600;
-                    console.log("keeperHeight: ", keeperHeight);
-                    $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
-                    $('#moto-preview-content-keeper').show();
-                    $('#moto-preview-content-wrapper').hide();
-                } else {
-                    console.log("hide keeperHeight: ");
-                    $('#moto-preview-content-keeper').hide();
-                    $('#moto-preview-content-wrapper').show();
-                }
-                var percentage = (leftWidth / container.width()) * 100;
-                percentage = percentage > 75 ? 100 : percentage;
-                var mainPercentage = 100-percentage;
-                console.log("percentage: ", percentage, mainPercentage);
-                if(mainPercentage == 0) {
-                    $('#saki-preview-content-wrapper').hide();
-                } else {
-                    $('#saki-preview-content-wrapper').show();
-                }
-
-                $('#moto-preview-wrapper').css("width",percentage + "%");
-                $('#saki-preview-wrapper').css("width",mainPercentage + "%");
-                $('#ghostbar').remove();
-                $(document).unbind('mousemove');
-                dragging = false;
-            }
-        });
     }
 
     function previewDraggingSetup2() {
@@ -1340,24 +1275,6 @@
             });
 
         });
-
-        $(document).mouseup(function(e){
-            if (dragging)
-            {
-                var container = $('#table-section');
-                var topHeight = (e.pageY - container.offset().top);
-                var tableHeight = Math.floor((topHeight - 78) / 2);
-                tableHeight = tableHeight > 60 ? tableHeight : 60;
-                tableHeight = tableHeight < 420 ? tableHeight : 420;
-                var previewHeightChange = 500 - tableHeight * 2;
-                var previewHeight = 444 + previewHeightChange;
-                $('.matching-result .table-container').css("height", tableHeight + "px");
-                $('.matching-result .mail-body').css("height", previewHeight + "px");
-                $('#ghostbar2').remove();
-                $(document).unbind('mousemove');
-                dragging = false;
-            }
-        });
     }
 
     function initStickyHeader() {
@@ -1374,32 +1291,6 @@
 
     function wrapperWithRed(text) {
         return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
-    }
-    
-    function sourceFirst() {
-        var firstTr = $('#' + sourceTableId).find(' tbody tr:first');
-        selectedRow(firstTr);
-    }
-
-    function sourcePrev() {
-        if(!selectedSourceTableRow) {
-            sourceLast();
-        } else {
-            selectedRow(selectedSourceTableRow.prev());
-        }
-    }
-
-    function sourceNext() {
-        if(!selectedSourceTableRow) {
-            sourceNext();
-        } else {
-            selectedRow(selectedSourceTableRow.next());
-        }
-    }
-
-    function sourceLast() {
-        var lastTr = $('#' + sourceTableId).find(' tbody tr:last');
-        selectedRow(lastTr.prev());
     }
 
     function destinationFirst() {

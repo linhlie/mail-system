@@ -96,6 +96,8 @@ public class EmailMatchingEngineerService {
     	List<Email> listEmailMatching = getEmailFromDestinationCondition(form);
     	boolean spaceEffective = form.isSpaceEffective();
     	boolean distinguish = form.isDistinguish();
+    	boolean handleDomainPartnerCurrent = form.isHandleDomainPartnerCurrent();
+    	boolean handleDomainPartnerGroup = form.isHandleDomainPartnerGroup();
     	for(EngineerMatchingDTO engineerDTO : listEngineerMatchingDTO){
     		if(engineerDTO==null) continue;
     		
@@ -110,12 +112,17 @@ public class EmailMatchingEngineerService {
     		if(engineerDTO.getNotGoodWord()!=null && !engineerDTO.getNotGoodWord().trim().equals("")){
     			listNotGoodWord = matchingConditionService.getWordList(engineerDTO.getNotGoodWord().trim());
     		}
-    		result.setEngineerMatchingDTO(engineerDTO);
-    		result.setListMatchingWord(listMatchingWord);
+ 
     		FilterRule moneyCondition = engineerDTO.getMoneyCondition();
-    		
+       		result.setEngineerMatchingDTO(engineerDTO);
+    		result.setListMatchingWord(listMatchingWord);
+    		result.getEngineerMatchingDTO().setMoneyCondition(null);
+    		System.out.println("----------------------------------------------------------------------------------------");
     		for(Email email : listEmailMatching){
-    			if(domainService.checkDomainCurrent(email.getFrom(), engineerDTO.getPartnerId())){
+    			if(handleDomainPartnerCurrent && domainService.checkDomainPartnerCurrent(email.getFrom(), engineerDTO.getPartnerId())){
+    				continue;
+    			}
+    			if(handleDomainPartnerGroup && domainService.checkDomainPartnerGroup(email.getFrom(), engineerDTO.getPartnerId())){
     				continue;
     			}
     			if(domainService.checkDomainPartnerNotGood(email.getFrom(), engineerDTO.getId())){
@@ -130,6 +137,7 @@ public class EmailMatchingEngineerService {
         				if(matchingPartResult.isMatch()){
         					 FullNumberRange matchRange = matchingPartResult.getMatchRange();
         	                 FullNumberRange range = matchingPartResult.getRange();
+        	                 System.out.println(range+"    "+matchRange);
         	                 result.addEmailDTO(email, matchRange, range);
         	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email));
         				 }
@@ -143,47 +151,8 @@ public class EmailMatchingEngineerService {
     		listResult.add(result);
     	}
 		FinalEmailMatchingEngineerResult result = new FinalEmailMatchingEngineerResult(listResult, previewMailDTOList);
+		
     	return result;
     }
-    
-//    public MatchingPartResult checkMatchingRange(List<FullNumberRange> rangeCondition , Email email, boolean distinguish){
-//    	FullNumberRange ranges =  new FullNumberRange(new SimpleNumberRange(700000L));
-//    	String optimizedSourcePart = email.getOptimizedText(false);
-//    	List<FullNumberRange> listFullRange = matchingConditionService.getMailRanges(email, email.getMessageId(), optimizedSourcePart);
-//    	for(FullNumberRange range : listFullRange){
-//    		if(range.match(ranges, 1)){
-//    			
-//    		}
-//    		System.out.println(range.getLeft()+"  "+range.getRight()+ "  "+email.getMessageId());
-//    	}
-////    	MatchingPartResult result = matchingConditionService.hasMatchRange(rangeCondition, listFullRange, condition);
-//    	return null;
-//    }
-    
-//    public List<FullNumberRange> getListFullRange(FilterRule rule, List<FullNumberRange> rangeCondition){
-//    	if(rule.getCondition() != null){
-//    		if(rule.getCondition().equals("AND")){
-//    			
-//    		}else{
-//    			
-//    		}
-//    	}else{
-//    		
-//    	}
-//    	return null;
-//    }
-    
-//    public void getFuleRange(FilterRule condition){
-//    	MailItemOption mailItemOption = condition.getMailItemOption();
-//        ConditionOption conditionOption = condition.getConditionOption();
-//    	String conditionValue = condition.getValue();
-//    	String optimizedValue = matchingConditionService.getOptimizedText(conditionValue, false);
-//    	optimizedValue = optimizedValue.replaceAll(",", "");
-//        Double numberCondition = Double.parseDouble(optimizedValue);
-//        NumberCompare compare = NumberCompare.fromConditionOption(conditionOption);
-//        SimpleNumberRange simpleRange = new SimpleNumberRange(compare, numberCondition);
-//        FullNumberRange findRange = new FullNumberRange(simpleRange);
-//        System.out.println("Get Range "+findRange.getLeft()+"  "+findRange.getRight());
-//    }
     
 }
