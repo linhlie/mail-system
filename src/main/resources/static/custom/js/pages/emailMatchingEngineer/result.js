@@ -131,7 +131,6 @@
         '</tr>';
 
     $(function () {
-        previewDraggingSetup();
         previewDraggingSetup2();
         initSearch(mailBodyDivId, "moto");
         initDropzone();
@@ -1173,58 +1172,6 @@
         document.body.removeChild(a);
     }
     
-    function previewDraggingSetup() {
-        var i = 0;
-        var dragging = false;
-        $('#dragbar').mousedown(function(e){
-            e.preventDefault();
-            	
-            dragging = true;
-            var main = $('#moto-preview-content-wrapper');
-            var dragbar = $('#dragbar');
-            var ghostbar = $('<div>',
-                {id:'ghostbar',
-                    css: {
-                        height: dragbar.outerHeight(),
-                        top: dragbar.offset().top,
-                        left: dragbar.offset().left
-                    }
-                }).appendTo('body');
-
-            $(document).mousemove(function(e){
-                ghostbar.css("left",e.pageX+2);
-            });
-
-        });
-
-        $(document).mouseup(function(e){
-            if (dragging)
-            {
-                var container = $('#preview-section');
-                var leftWidth = (e.pageX - container.offset().left);
-                leftWidth = leftWidth <= (container.width()/4) ? 3 : leftWidth;
-                if(leftWidth == 3) {
-                    keeperHeight = 600;
-                    $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
-                    $('#moto-preview-content-keeper').show();
-                    $('#moto-preview-content-wrapper').hide();
-                } else {
-                    console.log("hide keeperHeight: ");
-                    $('#moto-preview-content-keeper').hide();
-                    $('#moto-preview-content-wrapper').show();
-                }
-                var percentage = (leftWidth / container.width()) * 100;
-                percentage = percentage > 75 ? 100 : percentage;
-                var mainPercentage = 100-percentage;
-
-                $('#moto-preview-wrapper').css("width",percentage + "%");
-                $('#ghostbar').remove();
-                $(document).unbind('mousemove');
-                dragging = false;
-            }
-        });
-    }
-
     function previewDraggingSetup2() {
         var dragging = false;
         $('#dragbar2').mousedown(function(e){
