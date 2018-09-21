@@ -28,17 +28,17 @@
     var attachmentDropzoneId = "#attachment-dropzone";
     var attachmentDropzone;
 
-    var selectedSourceTableRow;
+    var selectedEngineerTableRow;
     var selectedDestinationTableRow;
     
     var matchingConditionEmailMatchingEngineerKey = "matchingConditionData-email-matching-engineer";
     var distinguishEmailMatchingEngineerKey = "distinguish-email-matching-engineer";
     var spaceEffectiveEmailMatchingEngineerKey = "spaceEffective-email-matching-engineer";
 
-    var sourceFirstBtnId = "source-first";
-    var sourceLastBtnId = "source-last";
-    var sourcePrevBtnId = "source-prev";
-    var sourceNextBtnId = "source-next";
+    var emailFirstBtnId = "email-first";
+    var emailLastBtnId = "email-last";
+    var emailPrevBtnId = "email-prev";
+    var emailNextBtnId = "email-next";
 
     var originalContentWrapId = "ows-mail-body";
 
@@ -103,7 +103,7 @@
         ".pptx": "ms-powerpoint:ofv|u|",
     }
 
-    var replaceSourceHTML = '<tr role="row" class="hidden">'+
+    var replaceEngineerHTML = '<tr role="row" class="hidden">'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.name"><span></span></td>'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.partnerName"><span></span></td>'+
         '<td align="center" class="clickable fit" name="sourceRow" data="engineerMatchingDTO.active">'+
@@ -139,10 +139,10 @@
         setButtonClickListenter(printBtnId, function () {
             printPreviewEmail(printElementId);
         });
-        setButtonClickListenter(sourceFirstBtnId, destinationFirst);
-        setButtonClickListenter(sourceLastBtnId, destinationLast);
-        setButtonClickListenter(sourcePrevBtnId, destinationPrev);
-        setButtonClickListenter(sourceNextBtnId, destinationNext);
+        setButtonClickListenter(emailFirstBtnId, emailMoveToFirst);
+        setButtonClickListenter(emailLastBtnId, emailMoveToLast);
+        setButtonClickListenter(emailPrevBtnId, emailMoveToPrev);
+        setButtonClickListenter(emailNextBtnId, emailMoveToNext);
 
         getEnvSettings();
         fixingForTinyMCEOnModal();
@@ -221,16 +221,16 @@
         console.log("keydownHandler: ", e.shiftKey, e.keyCode);
         if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
-            button = $("#" + sourceFirstBtnId);
+            button = $("#" + emailFirstBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
-            button = $("#" + sourceLastBtnId);
+            button = $("#" + emailLastBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
-            button = $("#" + sourcePrevBtnId);
+            button = $("#" + emailPrevBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
-            button = $("#" + sourceNextBtnId);
+            button = $("#" + emailNextBtnId);
         }
         if(button && !button.is(":disabled")) {
             button.click();
@@ -325,10 +325,10 @@
     }
 
     function showSourceData(tableId, data) {
-        removeAllRow(tableId, replaceSourceHTML);
+        removeAllRow(tableId, replaceEngineerHTML);
         var sourceMatchingCounter = 0;
         if(data.length > 0){
-            var html = replaceSourceHTML;
+            var html = replaceEngineerHTML;
             for(var i = 0; i < data.length; i ++){
                 if(onlyDisplayNonZeroRow && data[i]
                     && data[i].listEmailDTO && data[i].listEmailDTO.length == 0){
@@ -510,8 +510,7 @@
     }
     
     function selectedRow(row) {
-    	console.log(row);
-        selectedSourceTableRow = row;
+        selectedEngineerTableRow = row;
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
@@ -552,7 +551,6 @@
         if(matchRange && matchRange.length > 0) {
             url = url + "&matchRange=" + matchRange
         }
-        console.log(url);
         $.ajax({
             type: "GET",
             contentType: "application/json",
@@ -580,7 +578,6 @@
     }
 
     function showMailContent(data, elementIds) {
-    	console.log(data);
         var mailSubjectDiv = document.getElementById(elementIds[0]);
         var mailAttachmentDiv = document.getElementById(elementIds[2]);
         mailSubjectDiv.innerHTML = "";
@@ -723,13 +720,15 @@
     function showMailEditorNew(messageId, accountId, receiver, engineer) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-//            showMailEditorInNewTabNew(messageId, accountId, receiver, engineer);
+            showMailEditorInNewTabNew(messageId, accountId, receiver, engineer);
         } else {
             showMailEditorInTabNew(messageId, accountId, receiver, engineer);
         }
     }
     
     function showMailEditorInNewTabNew(messageId, accountId, receiver, engineer) {
+    	receiver.replyTo = engineer.mailAddress;
+    	receiver.from = engineer.mailAddress;
         var data = {
             "accountId" : accountId,
             "messageId" : messageId,
@@ -1199,7 +1198,6 @@
         });
 
         $(document).mouseup(function(e){
-        	console.log("mouseup ", dragging);
             if (dragging)
             {
                 var container = $('#preview-section');
@@ -1284,28 +1282,28 @@
         return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
     }
 
-    function destinationFirst() {
+    function emailMoveToFirst() {
         var firstTr = $('#' + destinationTableId).find(' tbody tr:first');
         showDestinationMail(firstTr);
     }
 
-    function destinationPrev() {
+    function emailMoveToPrev() {
         if(!selectedDestinationTableRow) {
-            destinationLast();
+            emailMoveToLast();
         } else {
             showDestinationMail(selectedDestinationTableRow.prev());
         }
     }
 
-    function destinationNext() {
+    function emailMoveToNext() {
         if(!selectedDestinationTableRow) {
-            destinationFirst();
+            emailMoveToFirst();
         } else {
             showDestinationMail(selectedDestinationTableRow.next());
         }
     }
 
-    function destinationLast() {
+    function emailMoveToLast() {
         var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
         showDestinationMail(lastTr.prev());
     }
