@@ -1179,9 +1179,9 @@
         var dragging = false;
         $('#dragbar').mousedown(function(e){
             e.preventDefault();
-
+            	
             dragging = true;
-            var main = $('#saki-preview-wrapper');
+            var main = $('#moto-preview-content-wrapper');
             var dragbar = $('#dragbar');
             var ghostbar = $('<div>',
                 {id:'ghostbar',
@@ -1196,6 +1196,34 @@
                 ghostbar.css("left",e.pageX+2);
             });
 
+        });
+
+        $(document).mouseup(function(e){
+        	console.log("mouseup ", dragging);
+            if (dragging)
+            {
+                var container = $('#preview-section');
+                var leftWidth = (e.pageX - container.offset().left);
+                leftWidth = leftWidth <= (container.width()/4) ? 3 : leftWidth;
+                if(leftWidth == 3) {
+                    keeperHeight = 600;
+                    $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
+                    $('#moto-preview-content-keeper').show();
+                    $('#moto-preview-content-wrapper').hide();
+                } else {
+                    console.log("hide keeperHeight: ");
+                    $('#moto-preview-content-keeper').hide();
+                    $('#moto-preview-content-wrapper').show();
+                }
+                var percentage = (leftWidth / container.width()) * 100;
+                percentage = percentage > 75 ? 100 : percentage;
+                var mainPercentage = 100-percentage;
+
+                $('#moto-preview-wrapper').css("width",percentage + "%");
+                $('#ghostbar').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
         });
     }
 
@@ -1219,6 +1247,24 @@
                 ghostbar.css("top",e.pageY);
             });
 
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#table-section');
+                var topHeight = (e.pageY - container.offset().top);
+                var tableHeight = Math.floor((topHeight - 78) / 2);
+                tableHeight = tableHeight > 60 ? tableHeight : 60;
+                tableHeight = tableHeight < 420 ? tableHeight : 420;
+                var previewHeightChange = 500 - tableHeight * 2;
+                var previewHeight = 444 + previewHeightChange;
+                $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('.matching-result .mail-body').css("height", previewHeight + "px");
+                $('#ghostbar2').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
         });
     }
 
