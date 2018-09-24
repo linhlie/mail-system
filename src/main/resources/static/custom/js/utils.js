@@ -172,6 +172,11 @@ function updateSourceControls(index, total) {
     updateControls(container, index, total);
 }
 
+function updateEngineerControls(index, total) {
+    var container = $("#engineer-control");
+    updateControls(container, index, total);
+}
+
 function updateDestinationControls(index, total) {
     var container = $("#destination-control");
     updateControls(container, index, total);

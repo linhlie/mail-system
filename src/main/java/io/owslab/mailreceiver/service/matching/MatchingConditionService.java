@@ -411,7 +411,6 @@ public class MatchingConditionService {
         MatchingPartResult result = new MatchingPartResult();
         boolean match = false;
         MailItemOption option = condition.getMailItemOption();
-        System.out.println(option);
         switch (option){
             case SENDER:
                 match = isMatchingPart(source.getFrom(), target, condition, distinguish);
@@ -510,7 +509,6 @@ public class MatchingConditionService {
             case NUMBER:
             case NUMBER_UPPER:
             case NUMBER_LOWER:
-            	System.out.println("isMatchAllRange2");
                 MatchingPartResult matchingPartResult = isMatchAllRange(email, condition, distinguish);
                 match = matchingPartResult.isMatch();
                 break;

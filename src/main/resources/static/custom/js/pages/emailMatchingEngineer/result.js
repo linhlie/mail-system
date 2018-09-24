@@ -35,6 +35,11 @@
     var distinguishEmailMatchingEngineerKey = "distinguish-email-matching-engineer";
     var spaceEffectiveEmailMatchingEngineerKey = "spaceEffective-email-matching-engineer";
 
+    
+    var engineerFirstBtnId = "engineer-first";
+    var engineerLastBtnId = "engineer-last";
+    var engineerPrevBtnId = "engineer-prev";
+    var engineerNextBtnId = "engineer-next";
     var emailFirstBtnId = "email-first";
     var emailLastBtnId = "email-last";
     var emailPrevBtnId = "email-prev";
@@ -119,8 +124,6 @@
     
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
         '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
@@ -142,6 +145,10 @@
         setButtonClickListenter(emailLastBtnId, emailMoveToLast);
         setButtonClickListenter(emailPrevBtnId, emailMoveToPrev);
         setButtonClickListenter(emailNextBtnId, emailMoveToNext);
+        setButtonClickListenter(engineerFirstBtnId, engineerMoveToFirst);
+        setButtonClickListenter(engineerLastBtnId, engineerMoveToLast);
+        setButtonClickListenter(engineerPrevBtnId, engineerMoveToPrev);
+        setButtonClickListenter(engineerNextBtnId, engineerMoveToNext);
 
         getEnvSettings();
         fixingForTinyMCEOnModal();
@@ -196,7 +203,6 @@
                     if(data && data.status){
                         matchingResult = data.list;
                         mailList = data.mailList || {};
-                        console.log(matchingResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -217,17 +223,28 @@
 
     function keydownHandler(e) {
         var button = undefined;
-        console.log("keydownHandler: ", e.shiftKey, e.keyCode);
         if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
-            button = $("#" + emailFirstBtnId);
+            button = $("#" + engineerFirstBtnId);
         } else if(e.shiftKey && (e.which || e.keyCode) == 115) {
             e.preventDefault();
-            button = $("#" + emailLastBtnId);
+            button = $("#" + engineerLastBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
-            button = $("#" + emailPrevBtnId);
+            button = $("#" + engineerPrevBtnId);
         } else if(!e.shiftKey && (e.which || e.keyCode) == 115) {
+            e.preventDefault();
+            button = $("#" + engineerNextBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 119) {
+            e.preventDefault();
+            button = $("#" + emailFirstBtnId);
+        } else if(e.shiftKey && (e.which || e.keyCode) == 120) {
+            e.preventDefault();
+            button = $("#" + emailLastBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 119) {
+            e.preventDefault();
+            button = $("#" + emailPrevBtnId);
+        } else if(!e.shiftKey && (e.which || e.keyCode) == 120) {
             e.preventDefault();
             button = $("#" + emailNextBtnId);
         }
@@ -348,13 +365,16 @@
     }
     
     function initSortSource() {
-        $("#sourceMatch").tablesorter(
+        $("#enginnerTable").tablesorter(
             {
                 theme : 'default',
                 sortList: [[2,1], [3,0]]
             })
             .bind("sortEnd",function() {
+                console.log(index+"  "+total);
+            	var index = selectedEngineerTableRow ? selectedEngineerTableRow.index() : -1;
                 var total = matchingResult ? matchingResult.length : 0;
+                updateEngineerControls(index, total);
             });
 
     }
@@ -412,7 +432,7 @@
     }
 
     function initSortDestination() {
-        $("#destinationMatch").tablesorter(
+        $("#"+destinationTableId).tablesorter(
             {
                 theme : 'default',
                 headers: {
@@ -428,12 +448,12 @@
             .bind("sortEnd",function() {
                 var index = selectedDestinationTableRow ? selectedDestinationTableRow.index() : -1;
                 var total = currentDestinationResult ? currentDestinationResult.length : 0;
-                updateSourceControls(index, total);
+                updateDestinationControls(index, total);
             });
     }
     
     function updateDestinationDataTrigger() {
-        $("#destinationMatch").trigger("updateAll", [ true, function () {
+        $("#"+destinationTableId).trigger("updateAll", [ true, function () {
             
         } ]);
     }
@@ -482,7 +502,7 @@
     
     function showDestinationMail(row) {
         selectedDestinationTableRow = row;
-        updateSourceControls(row.index(), currentDestinationResult.length);
+        updateDestinationControls(row.index(), currentDestinationResult.length);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = currentDestinationResult[index];
@@ -510,6 +530,7 @@
     
     function selectedRow(row) {
         selectedEngineerTableRow = row;
+        updateEngineerControls(row.index(), matchingResult.length);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
@@ -1254,6 +1275,33 @@
         var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
         showDestinationMail(lastTr.prev());
     }
+    
+    function engineerMoveToFirst() {
+        var firstTr = $('#' + engineerTableId).find(' tbody tr:first');
+        selectedRow(firstTr);
+    }
+
+    function engineerMoveToPrev() {
+        if(!selectedEngineerTableRow) {
+            sourceLast();
+        } else {
+            selectedRow(selectedEngineerTableRow.prev());
+        }
+    }
+
+    function engineerMoveToNext() {
+        if(!selectedEngineerTableRow) {
+            sourceNext();
+        } else {
+            selectedRow(selectedEngineerTableRow.next());
+        }
+    }
+
+    function engineerMoveToLast() {
+        var lastTr = $('#' + engineerTableId).find(' tbody tr:last');
+        selectedRow(lastTr.prev());
+    }
+
 
     function getHistoryType() {
         return lastSendTo === "moto" ? 1 : 2;

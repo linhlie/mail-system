@@ -408,8 +408,6 @@
     }
     
     function setHourlyMoneyBuilder(data){
-//    	console.log(data);
-//    	console.log(data.moneyCondition);
     	if(data.moneyCondition == null){
         	var money = data.monetaryMoney;
     		if(money==null){

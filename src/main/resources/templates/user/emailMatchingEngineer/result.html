@@ -17,7 +17,7 @@
                 <div class="col-sm-12" style="padding-top: 0px;" id="table-section">
                     <div class="main-left">
                         <div class="table-container table-container-wrapper">
-                            <table id="enginnerTable" class="table table-bordered table-hover tablesorter sticky-header-table">
+                            <table id="enginnerTable" class="table tablesorter table-bordered table-hover sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
                                     <th class="dark">技術者名</th>
@@ -39,18 +39,32 @@
                             </table>
                         </div>
                         <div class="table-name-container">
+                			<span><b>技術者氏名:</b></span>
+                			<input id="engineerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px; width: 30%;" aria-hidden="true" disabled="disabled"/>
                 			<span><b>所属会社:</b></span>
-                			<input id="engineerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true" disabled="disabled"/>
-                			<span><b>所属会社:</b></span>
-                			<input id="partnerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px;" aria-hidden="true" disabled="disabled"/>
-                			<button class="btn">Open</button>	
+                			<input id="partnerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px; width: 30%;" aria-hidden="true" disabled="disabled"/>
+                			<button class="btn  pull-right" >OPEN</button>	
             			</div>
+            			<div id="engineer-control" class="select-row-control-container" style="display: inline-block;padding-right: 0; margin-bottom: 10px;">
+                            <div class="btn-group">
+                                <button id="engineer-first" name="first" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-step-backward"></span>(SHIFT+F2)
+                                </button>
+                                <button id="engineer-prev" name="prev" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-triangle-left"></span>前ページ(F2)
+                                </button>
+                                <button id="engineer-next" name="next" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-triangle-right"></span>次ページ(F4)
+                                </button>
+                                <button id="engineer-last" name="last" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                    <span class="glyphicon glyphicon-step-forward"></span>(SHIFT+F4)
+                                </button>
+                              </div>
+                           </div>
                         <div class="table-container table-container-wrapper">
                             <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
-                                    <th class="fit">ワード</th>
-                                    <th class="fit">元数値</th>
                                     <th class="fit">先数値</th>
                                     <th class="fit">受信日時</th>
                                     <th class="fit">送信者</th>
@@ -60,8 +74,6 @@
                                 </thead>
                                 <tbody>
                                 <tr role="row" class="hidden">
-                                    <td class="clickable fit" name="showDestinationMail" th:data="word"><span></span></td>
-                                    <td class="clickable fit" name="showDestinationMail" th:data="range"><span></span></td>
                                     <td class="clickable fit" name="showDestinationMail" th:data="matchRange"><span></span></td>
                                     <td class="clickable fit" name="showDestinationMail" th:data="receivedAt"><span></span></td>
                                     <td class="clickable fit" name="showDestinationMail" th:data="from"><span></span></td>
@@ -82,30 +94,6 @@
                             <div id="moto-preview-content-wrapper" style="width: 100%; padding-right: 8px">
                                 <div style="width: 100%;">
                                     <span>プレビュー元</span>
-                                    <div id="source-control" class="select-row-control-container" style="display: inline-block;padding-right: 0;">
-                                        <div class="btn-group">
-                                            <button id="email-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-step-backward"></span>
-                                                (SHIFT+F2)
-                                            </button>
-                                            <button id="email-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-triangle-left"></span>
-                                                前ページ(F2)
-                                            </button>
-                                            <button id="email-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-triangle-right"></span>
-                                                次ページ(F4)
-                                            </button>
-                                            <button id="email-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
-                                                <span class="glyphicon glyphicon-step-forward"></span>
-                                                (SHIFT+F4)
-                                            </button>
-                                            <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
-                                                    data-toggle="tooltip" title="" data-original-title="Print">
-                                                <i class="fa fa-print"></i>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="main-right">
                                     <div id="mailSubject" class="mail-subject"></div>
@@ -122,6 +110,26 @@
                                         </div>
                                     </div>
                                     <div id="mailAttachment" class="mail-attachment"></div>
+                                    <div id="destination-control" class="select-row-control-container" style="display: inline-block;padding-right: 0; margin-top: 10px;">
+                                        <div class="btn-group">
+                                            <button id="email-first" name="first" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-backward"></span>(SHIFT+F8)
+                                            </button>
+                                            <button id="email-prev" name="prev" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-left"></span>前ページ(F8)
+                                            </button>
+                                            <button id="email-next" name="next" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-triangle-right"></span> 次ページ(F9)
+                                            </button>
+                                            <button id="email-last" name="last" th:data="source" th:disabled="true" type="button" class="btn btn-default btn-sm">
+                                                <span class="glyphicon glyphicon-step-forward"></span>(SHIFT+F9)
+                                            </button>
+                                            <button style="min-width: 60px;" id="printBtn" type="button" class="btn btn-default btn-sm"
+                                                    data-toggle="tooltip" title="" data-original-title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div style="display: none" id="printElement">
                                 </div>
