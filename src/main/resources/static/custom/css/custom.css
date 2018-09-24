@@ -1106,6 +1106,10 @@ div.select-row-control-container div.btn-group button.btn {
     font-size: 10px;
 }
 
+#source-control, #destination-control {
+    float: right;
+}
+
 #source-control:after, #destination-control:after {
     clear: both;
 }

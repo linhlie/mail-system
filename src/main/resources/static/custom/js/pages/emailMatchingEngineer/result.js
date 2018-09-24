@@ -448,7 +448,7 @@
             .bind("sortEnd",function() {
                 var index = selectedDestinationTableRow ? selectedDestinationTableRow.index() : -1;
                 var total = currentDestinationResult ? currentDestinationResult.length : 0;
-                updateDestinationControls(index, total);
+                updateEmailControls(index, total);
             });
     }
     
@@ -502,7 +502,7 @@
     
     function showDestinationMail(row) {
         selectedDestinationTableRow = row;
-        updateDestinationControls(row.index(), currentDestinationResult.length);
+        updateEmailControls(row.index(), currentDestinationResult.length);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var index = row[0].getAttribute("data");
         var rowData = currentDestinationResult[index];

@@ -182,6 +182,11 @@ function updateDestinationControls(index, total) {
     updateControls(container, index, total);
 }
 
+function updateEmailControls(index, total) {
+    var container = $("#email-control");
+    updateControls(container, index, total);
+}
+
 function updateControls(container, index, total) {
     var firstDisable = (total <= 1 || index == 0);
     var lastDisable = (total <= 1 || index == (total - 1));
