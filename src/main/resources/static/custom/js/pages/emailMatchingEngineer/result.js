@@ -413,7 +413,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.messageId) {
-                            showMailEditorNew(rowData.messageId, lastSelectedSendMailAccountId, rowData, selectedRowData.engineerMatchingDTO);
+                            showMailEditorNew(rowData.messageId, lastSelectedSendMailAccountId, rowData);
                         }
                     });
                 }
@@ -737,18 +737,16 @@
         }
     }
     
-    function showMailEditorNew(messageId, accountId, receiver, engineer) {
+    function showMailEditorNew(messageId, accountId, receiver) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-            showMailEditorInNewTabNew(messageId, accountId, receiver, engineer);
+            showMailEditorInNewTabNew(messageId, accountId, receiver);
         } else {
-            showMailEditorInTabNew(messageId, accountId, receiver, engineer);
+            showMailEditorInTabNew(messageId, accountId, receiver);
         }
     }
     
-    function showMailEditorInNewTabNew(messageId, accountId, receiver, engineer) {
-    	receiver.replyTo = engineer.mailAddress;
-    	receiver.from = engineer.mailAddress;
+    function showMailEditorInNewTabNew(messageId, accountId, receiver) {
         var data = {
             "accountId" : accountId,
             "messageId" : messageId,
@@ -764,18 +762,18 @@
         }
     }
 
-    function showMailEditorInTabNew(messageId, accountId, receiver, engineer) {
+    function showMailEditorInTabNew(messageId, accountId, receiver) {
         $('#sendMailModal').modal();
         lastReceiver = receiver;
         lastMessageId = messageId;
         showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver, engineer)
+            showMailContentToEditor(email, accounts, receiver)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
             showMailWithReplacedRangeNew(lastMessageId, this.value, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver, engineer)
+                showMailContentToEditor(email, accounts, lastReceiver)
             });
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -1341,10 +1339,7 @@
     }
     
     function showMailContentToEditor(data, accounts, receiverData, engineer) {
-        var receiverListStr;
-    	if(engineer){
-    		receiverListStr = engineer.mailAddress;
-    	}
+    	var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");

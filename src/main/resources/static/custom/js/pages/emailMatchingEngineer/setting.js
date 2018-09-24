@@ -410,7 +410,7 @@
     function setHourlyMoneyBuilder(data){
     	if(data.moneyCondition == null){
         	var money = data.monetaryMoney;
-    		if(money==null || money==""){
+    		if(money==null || money.trim()==""){
         		var rules = {
         			"condition":"AND",
         			"rules":[],
@@ -439,7 +439,7 @@
     	for(var i=0;i<listData.length;i++){
         	if(listData[i].moneyCondition == null){
             	var money = listData[i].monetaryMoney;
-        		if(money!=null){
+        		if(money!=null && money.trim()!=""){
                		var rules = {
                			"condition":"AND",
                			"rules":[{
@@ -447,7 +447,7 @@
                				"field":"1",
                				"type":"string",
                				"input":"text",
-               				"operator":"equal",
+               				"operator":"greater_or_equal",
                				"value":money
                					}],
                			"valid":true};
