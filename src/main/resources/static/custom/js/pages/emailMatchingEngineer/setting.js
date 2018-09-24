@@ -1,7 +1,7 @@
 
 (function () {
     var engineerTableId = "engineerTable";
-    var selectAllCheckBoxId = "#selectall";
+    var selectAllCheckBoxId = "#selectAll";
     var extendMonthInputId = "#extendMonth";
     var applyConditionBtnId = "#applyConditionEngineer"
     var engineerClearBtnId = "#clearConditionEngineer";
@@ -53,13 +53,13 @@
         '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="autoExtend" name="engineerRow">' +
+        '<td class="fit" style="text-align: center; cursor: pointer;" rowspan="1" colspan="1" data="autoExtend" name="engineerRow">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td style= "cursor: pointer;" class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant" name="engineerRow">' +
+        '<td class="fit" style="text-align: center; cursor: pointer;" rowspan="1" colspan="1" data="dormant" name="engineerRow">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td style= "cursor: pointer;" align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="case" name="case" checked value="id"/></td>' +
+        '<td style= "cursor: pointer;" align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="selectEngineer" name="selectEngineer" checked value="id"/></td>' +
         '</tr>';
     
     var default_destination_rules = {
@@ -320,11 +320,11 @@
     
     function setupSelectBoxes() {
         $(selectAllCheckBoxId).click(function () {
-            $('.case').prop('checked', this.checked);
+            $('input[name="caseSelect"]').prop('checked', this.checked);
         });
 
-        $(".case").click(function(){
-            if($(".case").length == $(".case:checked").length) {
+        $('input[name=caseSelect]').click(function(){
+            if($("input[name=caseSelect]").length == $("input[name=caseSelect]:checked").length) {
                 $(selectAllCheckBoxId).prop("checked", true);
             } else {
                 $(selectAllCheckBoxId).prop("checked", false);
@@ -461,7 +461,7 @@
     
     function getListEngineerMatching(){
     	var listEng = [];
-        $(".case:checked").each(function () {
+        $("input[name=caseSelect]:checked").each(function () {
             var engineerId = $(this).attr("value");
             for(var i=0;i<engineers.length;i++){
             	if(engineerId == engineers[i].id){
@@ -656,6 +656,7 @@
                 }else if (cellNode.nodeName == "INPUT") {
                     var cellData = data[cellKey];
                     cellNode.value = cellData;
+                    cellNode.name = "caseSelect";
                 }
             }
         }

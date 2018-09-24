@@ -118,6 +118,7 @@ public class EmailMatchingEngineerService {
        		result.setEngineerMatchingDTO(engineerDTO);
     		result.setListMatchingWord(getListWordMatchingToHighLight(listMatchingWord));
     		result.getEngineerMatchingDTO().setMoneyCondition(null);
+    		System.out.println("------------------------------------------------------------------------------------");
     		for(Email email : listEmailMatching){
     			if(handleDomainPartnerCurrent && domainService.checkDomainPartnerCurrent(email.getFrom(), engineerDTO.getPartnerId())){
     				continue;
@@ -137,6 +138,7 @@ public class EmailMatchingEngineerService {
         				if(matchingPartResult.isMatch()){
         					 FullNumberRange matchRange = matchingPartResult.getMatchRange();
         	                 FullNumberRange range = matchingPartResult.getRange();
+        	                 System.out.println(email.getMessageId()+"  : "+matchRange+"   -   "+range);
         	                 result.addEmailDTO(email, matchRange, range);
         	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email));
         				 }
@@ -157,7 +159,7 @@ public class EmailMatchingEngineerService {
     public List<String> getListWordMatchingToHighLight(List<String> listWord){
     	List<String> listMatchingWord = new ArrayList<String>();
     	for(String word : listWord){
-            StringTokenizer st = new StringTokenizer(word," ,\"!!");
+            StringTokenizer st = new StringTokenizer(word,",\"!!");
             while(st.hasMoreTokens()){
                 String s = st.nextToken().trim();
                 if(!s.equals("")){

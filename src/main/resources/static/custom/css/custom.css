@@ -690,6 +690,10 @@ mark.mark-range {
     height: 18px;
 }
 
+.domain-control-container .domain-control {
+    font-weight: normal;
+}
+
 .duplicate-control-container .duplicate-control {
     font-weight: normal;
 }

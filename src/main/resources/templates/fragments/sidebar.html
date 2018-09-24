@@ -10,15 +10,16 @@
                     <a href="#">
                         <i class="fa fa-circle-o"></i> <span>受信メール分析</span>
                         <span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                </span>
+                    		<i class="fa fa-angle-left pull-right"></i>
+                		</span>
                     </a>
-                    <ul class="treeview-menu visible">
+                    <ul class="treeview-menu visible" style="padding-left: 0px;">
+                    	<ul class="treeview-menu visible">
                         <li class="treeview menu-open">
                             <a href="#"><i class="fa fa-circle-o"></i>メールマッチング
                                 <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                            		<i class="fa fa-angle-left pull-right"></i>
+                        		</span>
                             </a>
                             <ul class="treeview-menu visible">
                                 <li th:class="(${currentMenu == 'matchingSettings'})?'active':''"><a href="#"
@@ -29,13 +30,13 @@
                                         class="fa fa-circle-o"></i>結果表示</a></li>
                             </ul>
                         </li>
-                    </ul>
-                    <ul class="treeview-menu visible">
+                        </ul>
+                        <ul class="treeview-menu visible">
                         <li class="treeview menu-open">
-                            <a href="#"><i class="fa fa-circle-o"></i>DB⇔ メ ー ル マ ッ チ ン グ
+                            <a href="#"><i class="fa fa-circle-o"></i>DB⇔メールマッチング
                                 <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                            		<i class="fa fa-angle-left pull-right"></i>
+                        		</span>
                             </a>
                             <ul class="treeview-menu visible">
                                 <li th:class="(${currentMenu == 'emailMatchingEngineerSetting'})?'active':''"><a href="#"
@@ -46,6 +47,7 @@
                                         class="fa fa-circle-o"></i>結果表示</a></li>
                             </ul>
                         </li>
+                        </ul>
                     </ul>
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendMailHistory'})?'active':''">
