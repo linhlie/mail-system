@@ -410,7 +410,7 @@
     function setHourlyMoneyBuilder(data){
     	if(data.moneyCondition == null){
         	var money = data.monetaryMoney;
-    		if(money==null){
+    		if(money==null || money==""){
         		var rules = {
         			"condition":"AND",
         			"rules":[],
@@ -424,7 +424,7 @@
            				"field":"1",
            				"type":"string",
            				"input":"text",
-           				"operator":"equal",
+           				"operator":"greater_or_equal",
            				"value":money
            					}],
            			"valid":true};
@@ -519,7 +519,6 @@
     				engineers[i].notGoodWord = engineerCondition.notGoodWord;
     		        var monneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
     				engineers[i].moneyCondition = monneyCondition;
-    		        console.log(engineers[i]);
     			}
     		}
     	}

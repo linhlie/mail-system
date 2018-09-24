@@ -147,7 +147,9 @@ public class EmailMatchingEngineerService {
     				}
     			}
     		}
-    		listResult.add(result);
+    		if(result.getListEmailDTO().size()>0){
+        		listResult.add(result);
+    		}
     	}
 		FinalEmailMatchingEngineerResult result = new FinalEmailMatchingEngineerResult(listResult, previewMailDTOList);
 		
