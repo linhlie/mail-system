@@ -97,7 +97,7 @@
                 {
                     id: "4",
                     operator: "greater_or_equal",
-                    type: "String",
+                    type: "string",
                     value: "",
                 }
             ]
