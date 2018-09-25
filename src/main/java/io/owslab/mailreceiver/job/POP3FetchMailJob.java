@@ -1,42 +1,28 @@
 package io.owslab.mailreceiver.job;
 
-import antlr.StringUtils;
-import com.mariten.kanatools.KanaConverter;
-import com.sun.mail.iap.Argument;
-import com.sun.mail.iap.ProtocolException;
-import com.sun.mail.iap.Response;
-import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.protocol.*;
+
 import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FetchMailErroDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.BeanUtil;
-import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
-import io.owslab.mailreceiver.utils.Html2Text;
 import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
-import jp.co.worksap.message.decoder.HeaderDecoder;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.hibernate.annotations.Fetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.mail.search.*;
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import javax.swing.text.html.*;
-import javax.swing.text.html.parser.*;
 
-public class IMAPFetchMailJob implements Runnable {
+public class POP3FetchMailJob implements Runnable {
 
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
@@ -46,12 +32,12 @@ public class IMAPFetchMailJob implements Runnable {
     private final EmailAccount account;
     private final FetchMailsService.FetchMailProgress mailProgress;
     private final FetchMailErroDAO fetchMailErroDAO;
-    private IMAPFolder emailFolder;
+    private Folder emailFolder;
     private int openFolderFlag;
 
-    private static final Logger logger = LoggerFactory.getLogger(IMAPFetchMailJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(POP3FetchMailJob.class);
 
-    public IMAPFetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
+    public POP3FetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
         this.emailDAO = BeanUtil.getBean(EmailDAO.class);
         this.fileDAO = BeanUtil.getBean(FileDAO.class);
         this.fetchMailErroDAO = BeanUtil.getBean(FetchMailErroDAO.class);
@@ -68,6 +54,7 @@ public class IMAPFetchMailJob implements Runnable {
     }
 
     private void start(){
+        System.out.println("Pop3 start");
         List<Email> listEmail = emailDAO.findByAccountIdOrderBySentAtDesc(account.getId());
         int n = listEmail.size();
         if(n > 0){
@@ -77,14 +64,6 @@ public class IMAPFetchMailJob implements Runnable {
         } else {
             check(account, accountSetting, 1);
         }
-    }
-
-    private SearchTerm buildSearchTerm(Date fromDate){
-        if(fromDate != null) {
-            ReceivedDateTerm minDateTerm = new ReceivedDateTerm(ComparisonTerm.GE, fromDate);
-            return new AndTerm(minDateTerm, minDateTerm);
-        }
-        return null;
     }
 
     public void check(EmailAccount account, EmailAccountSetting accountSetting, int msgnum)
@@ -99,7 +78,7 @@ public class IMAPFetchMailJob implements Runnable {
             }
 
             //create the folder object and open it
-            emailFolder = (IMAPFolder) store.getFolder("INBOX");
+            emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
             Date beforeDate = null;
@@ -222,7 +201,7 @@ public class IMAPFetchMailJob implements Runnable {
         email.setCc(getRecipientsWithType(message, Message.RecipientType.CC));
         return email;
     }
-    
+
     public static Email setMailContent(MimeMessage message, Email email) throws MessagingException, IOException {
         String subject = message.getSubject();
         subject = subject != null ? subject : "null";
@@ -299,6 +278,9 @@ public class IMAPFetchMailJob implements Runnable {
     private String buildMessageId(OwsMimeMessage message, EmailAccount account) throws MessagingException {
         String msgId = message.getMessageID();
         if(msgId == null) {
+            System.out.println("buildMessageId: " + message.getMessageNumber());
+            System.out.println("buildMessageId: " + message.getReceivedDate().toString());
+            System.out.println("buildMessageId: " + msgId);
             msgId = message.getMessageNumber() + "-" + message.getReceivedDate().toString() + "+" + msgId;
             return account.getAccount() + "-" + msgId;
         }
@@ -481,7 +463,7 @@ public class IMAPFetchMailJob implements Runnable {
         return currentDateStr;
     }
 
-    private OwsMimeMessage[] getMessages(IMAPFolder emailFolder, int start, Date beforeDate) throws MessagingException {
+    private OwsMimeMessage[] getMessages(Folder emailFolder, int start, Date beforeDate) throws MessagingException {
         int end = emailFolder.getMessageCount();
         if(end == -1 && !emailFolder.isOpen()) {
             emailFolder.open(openFolderFlag);
@@ -512,53 +494,11 @@ public class IMAPFetchMailJob implements Runnable {
         }
     }
 
-    public static OwsMimeMessage getMessage(IMAPFolder folder, final int msgnum) throws MessagingException
+    public static OwsMimeMessage getMessage(Folder folder, final int msgnum) throws MessagingException
     {
-        return (OwsMimeMessage) folder.doCommand(new IMAPFolder.ProtocolCommand()
-        {
-            public Object doCommand(IMAPProtocol protocol) throws ProtocolException
-            {
-                OwsMimeMessage mm = null;
-                Response[] r = protocol.command("FETCH "  + Integer.toString(msgnum) + " (INTERNALDATE BODY.PEEK[])", null);
-                Response response = r[r.length - 1];
-                if (!response.isOK()) {
-                    throw new ProtocolException("Unable to retrieve message " + msgnum);
-                }
-                Properties props = new Properties();
-                props.setProperty("mail.store.protocol", "imap");
-                props.setProperty("mail.mime.base64.ignoreerrors", "true");
-                props.setProperty("mail.imap.partialfetch", "false");
-                props.setProperty("mail.imaps.partialfetch", "false");
-                Session session = Session.getInstance(props, null);
-
-                FetchResponse fetchResponse = (FetchResponse) r[0];
-                BODY body = (BODY) fetchResponse.getItem(com.sun.mail.imap.protocol.BODY.class);
-                INTERNALDATE internaldate = (INTERNALDATE) fetchResponse.getItem(INTERNALDATE.class);
-                ByteArrayInputStream is = body.getByteArrayInputStream();
-                try {
-                    mm = new OwsMimeMessage(new MimeMessage(session, is), msgnum, internaldate.getDate());
-                    String subject = mm.getHeader("Subject", null);
-                    if(subject != null) {
-                        try {
-                            HeaderDecoder decoder = new HeaderDecoder();
-                            if(subject.startsWith("=?")) {
-                                mm.setSubject(decoder.decodeSubject(subject));
-                            } else {
-                                int index = subject.indexOf("=?");
-                                if(index > 0) {
-                                    mm.setSubject(new String(subject.substring(0,index).getBytes("ISO-8859-1")) + decoder.decodeSubject(subject.substring(index)));
-                                }
-                            }
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (MessagingException e) {
-                    throw new ProtocolException("doCommand error", e);
-                }
-                return mm;
-            }
-        });
+        MimeMessage message = (MimeMessage) folder.getMessage(msgnum);
+        OwsMimeMessage owsMimeMessage = new OwsMimeMessage(message, msgnum, message.getSentDate());
+        return  owsMimeMessage;
     }
 
     public static class OwsMimeMessage extends MimeMessage {
