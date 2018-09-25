@@ -17,6 +17,7 @@ import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
+import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -475,7 +476,7 @@ public class MailBoxService {
         EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(accountId);
         if(accountSetting == null) return;
         try {
-            Store store = createStore(accountSetting);
+            Store store = MailUtils.createStore(accountSetting);
             if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
                 store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
             } else {
@@ -575,16 +576,6 @@ public class MailBoxService {
     private Email findOne(String messageId) {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
-    }
-
-    private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
-        Properties properties = new Properties();
-        properties.put("mail.imap.host", account.getMailServerAddress());
-        properties.put("mail.imap.port", account.getMailServerPort());
-        properties.put("mail.imap.starttls.enable", "true");
-        Session emailSession = Session.getDefaultInstance(properties);
-        Store store = emailSession.getStore("imaps");
-        return store;
     }
 
     public class SenderComparator implements Comparator<Email> {

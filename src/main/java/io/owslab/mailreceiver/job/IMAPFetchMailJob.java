@@ -18,6 +18,7 @@ import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.utils.Html2Text;
+import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 import jp.co.worksap.message.decoder.HeaderDecoder;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -87,23 +88,11 @@ public class IMAPFetchMailJob implements Runnable {
         return null;
     }
 
-    private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
-        Properties properties = new Properties();
-        properties.put("mail.imap.host", account.getMailServerAddress());
-        properties.put("mail.imap.port", account.getMailServerPort());
-        properties.put("mail.imap.starttls.enable", "true");
-//        properties.put("mail.debug", "true");
-        Session emailSession = Session.getDefaultInstance(properties);
-//        emailSession.setDebug(true);
-        Store store = emailSession.getStore("imaps");
-        return store;
-    }
-
     public void check(EmailAccount account, EmailAccountSetting accountSetting, int msgnum)
     {
         try {
 
-            Store store = createStore(accountSetting);
+            Store store = MailUtils.createStore(accountSetting);
             if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
                 store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
             } else {

@@ -10,6 +10,7 @@ import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
+import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 import org.apache.commons.lang.ArrayUtils;
 import org.codehaus.groovy.runtime.ArrayUtil;
@@ -93,12 +94,7 @@ public class SendMailService {
         final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
         final String password = accountSetting.getPassword();
 
-        //TODO using dynamic setting from DB
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.host", accountSetting.getMailServerAddress());
-        props.put("mail.smtp.port", accountSetting.getMailServerPort());
+        Properties props = MailUtils.buildProperties(accountSetting);
 
         to = selfEliminateDuplicates(to);
         cc = selfEliminateDuplicates(cc);
