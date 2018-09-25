@@ -35,6 +35,9 @@ import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvBeanReader;
@@ -45,6 +48,7 @@ import org.supercsv.prefs.CsvPreference;
  * Created by khanhlvb on 8/17/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_matching")
 public class EngineerService {
     private static final Logger logger = LoggerFactory.getLogger(EngineerService.class);
 
@@ -63,9 +67,16 @@ public class EngineerService {
     @Autowired
     private ExpansionTransaction expansionTransaction;
 
+    @CacheEvict(key="\"EngineerService:getPartnerIds:\"+#id")
     public void delete(long id) {
         engineerDAO.delete(id);
-//        relationshipEngineerPartnerDAO.deleteByEngineerId(id);
+        relationshipEngineerPartnerDAO.deleteByEngineerId(id);
+    }
+    
+    @CacheEvict(allEntries = true)
+    public void deleteAll() {
+        engineerDAO.deleteAll();
+        relationshipEngineerPartnerDAO.deleteAll();
     }
     
     public List<RelationshipEngineerPartner> getRelationshipEngineerPartner(long EngineerId){
@@ -267,7 +278,7 @@ public class EngineerService {
                     engineerDTOS.add(engineerDTO);
                 }
                 if(deleteOld) {
-                    engineerDAO.deleteAll();
+                    deleteAll();
                 }
                 for(int line = 0; line < engineerDTOS.size(); line++) {
                     CSVEngineerDTO csvEngineerDTO = engineerDTOS.get(line);
@@ -369,4 +380,10 @@ public class EngineerService {
         return result;
     }
     
+    @Cacheable(key="\"EngineerService:getPartnerIds:\"+#engineerId")
+    public List<Long> getPartnerIds(Long engineerId){
+    	List<Long> listPartnerId = relationshipEngineerPartnerDAO.getPartnerIds(engineerId);
+    	if(listPartnerId == null || listPartnerId.size()==0) return null;
+    	return listPartnerId;
+    }
 }
