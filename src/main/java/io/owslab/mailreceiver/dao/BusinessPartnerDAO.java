@@ -18,10 +18,4 @@ import javax.persistence.LockModeType;
 @Transactional
 public interface BusinessPartnerDAO extends PagingAndSortingRepository<BusinessPartner, Long> {
     List<BusinessPartner> findByPartnerCode(String partnerCode);
-    
-    @Query(
-            value = "select * from business_partners bp where bp.domain1=:domain or bp.domain2=:domain or bp.domain3=:domain",
-            nativeQuery = true
-    )
-    List<BusinessPartner> findByDomain(@Param("domain") String domain );
 }

@@ -255,6 +255,9 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective, distinguish);
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
+        
+        HashMap<String, List<String>> domainsRelation = partnerService.getDomainRelationPartnerGroup();
+        
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
             previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
@@ -269,7 +272,7 @@ public class MatchingConditionService {
                     }
                 }  
                 if(filterDomainInPartnerGroup) {
-                    boolean isDomainInPartnerGroup = matchingMailDomainInPartnerGroup(sourceResult, destinationResult);
+                    boolean isDomainInPartnerGroup = matchingMailDomainInPartnerGroup(sourceResult, destinationResult, domainsRelation);
                     if(isDomainInPartnerGroup) {
                         continue;
                     }
@@ -326,7 +329,8 @@ public class MatchingConditionService {
         return aDomain.equalsIgnoreCase(bDomain);
     }
     
-    private boolean matchingMailDomainInPartnerGroup(MatchingWordResult sourceResult, MatchingWordResult destinationResult){
+    private boolean matchingMailDomainInPartnerGroup(MatchingWordResult sourceResult, 
+    		MatchingWordResult destinationResult, HashMap<String, List<String>>domainsRelation){
         Email sourceEmail = sourceResult.getEmail();
         String sourceEmailAddress = sourceEmail.getFrom();
         Email destinationEmail = destinationResult.getEmail();
@@ -335,7 +339,16 @@ public class MatchingConditionService {
         if(domainSource==null) return false;
         String domainDestination = getDomainFromEmailAddress(destinationEmailAddress);
         if(domainDestination==null) return false;
-        return partnerService.checkPartnerAndOtherPartnerInGroup(domainSource, domainDestination);
+        
+        List<String> listDomainGroup = domainsRelation.get(domainSource);
+        if(listDomainGroup==null) return false;
+        
+        for(String domain : listDomainGroup){
+        	if(domainDestination.equals(domain)){
+        		return true;
+        	}
+        }
+        return false;
     }
 
     @Cacheable(key="\"MatchingConditionService:getEmailDomain:\"+#someEmail")
@@ -360,9 +373,7 @@ public class MatchingConditionService {
     }
 
     private MatchingPartResult isMailMatching(MatchingWordResult sourceResult,
-                                                          MatchingWordResult destinationResult,
-                                                          FilterRule matchingRule,
-                                                          boolean distinguish){
+                  MatchingWordResult destinationResult, FilterRule matchingRule, boolean distinguish){
         MatchingPartResult finalMatchingPartResult = new MatchingPartResult();
         FullNumberRange firstMatchRange = null;
         FullNumberRange firstRange = null;

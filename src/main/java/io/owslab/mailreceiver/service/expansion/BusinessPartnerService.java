@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.service.expansion;
 
-import io.owslab.mailreceiver.controller.PartnerImportExportController;
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
@@ -10,37 +9,34 @@ import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
-import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
-import io.owslab.mailreceiver.utils.Utils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.cellprocessor.constraint.NotNull;
-import org.supercsv.cellprocessor.constraint.StrRegEx;
-import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.*;
 
 /**
  * Created by khanhlvb on 8/13/18.
  */
 @Service
-@CacheConfig(cacheNames = "short_term_partner")
 public class BusinessPartnerService {
     private static final Logger logger = LoggerFactory.getLogger(BusinessPartnerService.class);
 
@@ -75,7 +71,6 @@ public class BusinessPartnerService {
         saveGroupList(addedPartner, groupAddIds);
     }
 
-    @CacheEvict(allEntries = true)
     public void update(PartnerForm form, long id) throws PartnerCodeException {
         BusinessPartner.Builder builder = form.getBuilder();
         builder.setId(id);
@@ -103,7 +98,6 @@ public class BusinessPartnerService {
         return partnerDAO.findOne(id);
     }
 
-    @CacheEvict(allEntries = true)
     public void delete(long id){
         partnerDAO.delete(id);
     }
@@ -112,7 +106,6 @@ public class BusinessPartnerService {
         return partnerGroupDAO.findByPartnerId(partnerId);
     }
 
-    @CacheEvict(allEntries = true)
     private void deleteGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
         List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
         for(Long groupWithPartnerId : groupWithPartnerIds) {
@@ -197,7 +190,6 @@ public class BusinessPartnerService {
         return withPartnerId + "-" + partnerId;
     }
     
-    @CacheEvict(allEntries = true)
     public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
     	List<String> listDomain = new ArrayList<String>();
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
@@ -293,7 +285,6 @@ public class BusinessPartnerService {
         return importLogs;
     }
 
-    @CacheEvict(allEntries = true)
     public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         File file = null;
@@ -391,31 +382,37 @@ public class BusinessPartnerService {
         return importLogs;
     }
     
-    public List<BusinessPartner> getPartnersByDomain(String domain){
-    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
-    	if(listPartner==null || listPartner.size()==0) return null;
-    	return listPartner;
+    public HashMap<String, List<String>> getDomainRelationPartnerGroup(){
+    	HashMap<String, List<String>> hashMapDomainPartnerGroups = new HashMap<String, List<String>>();
+    	List<BusinessPartnerGroup> listPartnerGroup = (List<BusinessPartnerGroup>) partnerGroupDAO.findAll();
+    	for(BusinessPartnerGroup partnerGroup : listPartnerGroup){
+   		 String partnerDomain1 = partnerGroup.getPartner().getDomain1();
+   		 String partnerDomain2 = partnerGroup.getPartner().getDomain2();
+   		 String partnerDomain3 = partnerGroup.getPartner().getDomain3();
+   		 
+   		 String otherPartnerDomain1 = partnerGroup.getWithPartner().getDomain1();
+   		 String otherPartnerDomain2 = partnerGroup.getWithPartner().getDomain2();
+   		 String otherPartnerDomain3 = partnerGroup.getWithPartner().getDomain3();
+   		 
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain1, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain2, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain3, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   	}
+   	return hashMapDomainPartnerGroups;
     }
     
-    @Cacheable(key="\"BusinessPartnerService:getPartnerIdByDomain:\"+#domain")
-    public long getPartnerIdByDomain(String domain){
-    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
-    	if(listPartner==null || listPartner.size()==0) return -1;
-    	return listPartner.get(0).getId();
+    public void putToHashMap(HashMap<String, List<String>> hashMapDomainPartnerGroups, String key, String domain1, String domain2, String domain3){
+  		if(key==null || key.equals("")) return;
+    	if(hashMapDomainPartnerGroups.containsKey(key)){
+  			hashMapDomainPartnerGroups.get(key).add(domain1);
+  			hashMapDomainPartnerGroups.get(key).add(domain2);
+  			hashMapDomainPartnerGroups.get(key).add(domain3);
+  		 }else{
+  			List<String> lisDomain = new ArrayList<String>();
+  			lisDomain.add(domain1);
+  			lisDomain.add(domain2);
+  			lisDomain.add(domain3);
+  			hashMapDomainPartnerGroups.put(key, lisDomain);
+  		 }
     }
-    
-    @Cacheable(key="\"BusinessPartnerService:checkPartnerAndOtherPartnerInGroup:\"+#domain+'-'+#otherDomain")
-    public boolean checkPartnerAndOtherPartnerInGroup(String domain, String otherDomain){
-    	Long partnerId = getPartnerIdByDomain(domain);
-    	if(partnerId == -1) return false;    	
-    	Long otherPartnerId = getPartnerIdByDomain(otherDomain);
-    	if(otherPartnerId == -1) return false;    	
-    	
-    	List<BusinessPartnerGroup> listPartnerGroup = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partnerId, otherPartnerId);
-    	if(listPartnerGroup==null || listPartnerGroup.size()==0){
-    		return false;
-    	}
-    	return true;
-    }
-   
 }
