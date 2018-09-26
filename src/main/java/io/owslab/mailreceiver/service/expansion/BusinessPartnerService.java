@@ -20,6 +20,9 @@ import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -37,6 +40,7 @@ import java.util.*;
  * Created by khanhlvb on 8/13/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_partner")
 public class BusinessPartnerService {
     private static final Logger logger = LoggerFactory.getLogger(BusinessPartnerService.class);
 
@@ -71,7 +75,7 @@ public class BusinessPartnerService {
         saveGroupList(addedPartner, groupAddIds);
     }
 
-    //TODO need to be transaction
+    @CacheEvict(allEntries = true)
     public void update(PartnerForm form, long id) throws PartnerCodeException {
         BusinessPartner.Builder builder = form.getBuilder();
         builder.setId(id);
@@ -99,6 +103,7 @@ public class BusinessPartnerService {
         return partnerDAO.findOne(id);
     }
 
+    @CacheEvict(allEntries = true)
     public void delete(long id){
         partnerDAO.delete(id);
     }
@@ -107,6 +112,7 @@ public class BusinessPartnerService {
         return partnerGroupDAO.findByPartnerId(partnerId);
     }
 
+    @CacheEvict(allEntries = true)
     private void deleteGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
         List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
         for(Long groupWithPartnerId : groupWithPartnerIds) {
@@ -190,7 +196,8 @@ public class BusinessPartnerService {
         }
         return withPartnerId + "-" + partnerId;
     }
-
+    
+    @CacheEvict(allEntries = true)
     public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
     	List<String> listDomain = new ArrayList<String>();
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
@@ -286,6 +293,7 @@ public class BusinessPartnerService {
         return importLogs;
     }
 
+    @CacheEvict(allEntries = true)
     public List<ImportLogDTO> importPartnerGroup(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         File file = null;
@@ -381,6 +389,33 @@ public class BusinessPartnerService {
         }
 
         return importLogs;
+    }
+    
+    public List<BusinessPartner> getPartnersByDomain(String domain){
+    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
+    	if(listPartner==null || listPartner.size()==0) return null;
+    	return listPartner;
+    }
+    
+    @Cacheable(key="\"BusinessPartnerService:getPartnerIdByDomain:\"+#domain")
+    public long getPartnerIdByDomain(String domain){
+    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
+    	if(listPartner==null || listPartner.size()==0) return -1;
+    	return listPartner.get(0).getId();
+    }
+    
+    @Cacheable(key="\"BusinessPartnerService:checkPartnerAndOtherPartnerInGroup:\"+#domain+'-'+#otherDomain")
+    public boolean checkPartnerAndOtherPartnerInGroup(String domain, String otherDomain){
+    	Long partnerId = getPartnerIdByDomain(domain);
+    	if(partnerId == -1) return false;    	
+    	Long otherPartnerId = getPartnerIdByDomain(otherDomain);
+    	if(otherPartnerId == -1) return false;    	
+    	
+    	List<BusinessPartnerGroup> listPartnerGroup = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partnerId, otherPartnerId);
+    	if(listPartnerGroup==null || listPartnerGroup.size()==0){
+    		return false;
+    	}
+    	return true;
     }
    
 }

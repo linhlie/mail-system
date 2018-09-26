@@ -1,21 +1,25 @@
 package io.owslab.mailreceiver.service.matching;
 
 import com.mariten.kanatools.KanaConverter;
+
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.MatchingCondition;
 import io.owslab.mailreceiver.model.NumberTreatment;
+import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
 import io.owslab.mailreceiver.utils.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +59,9 @@ public class MatchingConditionService {
 
     @Autowired
     private NumberTreatmentService numberTreatmentService;
+    
+    @Autowired
+    private BusinessPartnerService partnerService;
 
     @Autowired
     private MailAccountsService mailAccountsService;
@@ -219,6 +226,7 @@ public class MatchingConditionService {
         boolean filterSender = matchingConditionForm.isHandleDuplicateSender();
         boolean filterSubject = matchingConditionForm.isHandleDuplicateSubject();
         boolean filterSameDomain = matchingConditionForm.isHandleSameDomain();
+        boolean filterDomainInPartnerGroup = matchingConditionForm.isCheckDomainInPartnerGroup();
         List<Email> emailList = mailBoxService.getAll();
         logger.info("get EmailList done: " + emailList.size() + " emails");
 //        boolean distinguish = matchingConditionForm.isDistinguish();
@@ -259,7 +267,14 @@ public class MatchingConditionService {
                     if(isSameDomain) {
                         continue;
                     }
+                }  
+                if(filterDomainInPartnerGroup) {
+                    boolean isDomainInPartnerGroup = matchingMailDomainInPartnerGroup(sourceResult, destinationResult);
+                    if(isDomainInPartnerGroup) {
+                        continue;
+                    }
                 }
+                
                 List<String> realIntersectWords;
                 if(matchingWords.size() == 0){
                     realIntersectWords = matchingWords;
@@ -309,6 +324,18 @@ public class MatchingConditionService {
         String aDomain = getEmailDomain(a);
         String bDomain = getEmailDomain(b);
         return aDomain.equalsIgnoreCase(bDomain);
+    }
+    
+    private boolean matchingMailDomainInPartnerGroup(MatchingWordResult sourceResult, MatchingWordResult destinationResult){
+        Email sourceEmail = sourceResult.getEmail();
+        String sourceEmailAddress = sourceEmail.getFrom();
+        Email destinationEmail = destinationResult.getEmail();
+        String destinationEmailAddress = destinationEmail.getFrom();      
+        String domainSource = getDomainFromEmailAddress(sourceEmailAddress);
+        if(domainSource==null) return false;
+        String domainDestination = getDomainFromEmailAddress(destinationEmailAddress);
+        if(domainDestination==null) return false;
+        return partnerService.checkPartnerAndOtherPartnerInGroup(domainSource, domainDestination);
     }
 
     @Cacheable(key="\"MatchingConditionService:getEmailDomain:\"+#someEmail")
@@ -1074,6 +1101,13 @@ public class MatchingConditionService {
     public List<FullNumberRange> getMailRanges(Email email, String cacheId, String input) {
         List<FullNumberRange> mailRanges = email.getRangeList();
         return mailRanges != null && mailRanges.size() > 0 ? mailRanges : numberRangeService.buildNumberRangeForInput(cacheId, input);
+    }
+    
+    public String getDomainFromEmailAddress(String emailAddress){
+    	int index = emailAddress.indexOf("@");
+		if(index<=0) return null;
+		String domainEmail =  emailAddress.substring(index+1).toLowerCase();
+		return domainEmail;
     }
 
     private void increaseMatchingCounter() {
