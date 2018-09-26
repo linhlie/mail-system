@@ -641,8 +641,15 @@
         mailBodyDiv.innerHTML = data.originalBody;
         highlight(data);
     }
+    
+    function showMailContentToEditor(data, accounts, receiverData, sendTo) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
+        getInforPartner(receiverListStr, function(partnerInfor){
+        	showMailContentToEditorFinal(data, accounts, receiverData, partnerInfor);
+        });
+    }
 
-    function showMailContentToEditor(data, accounts, receiverData) {
+    function showMailContentToEditorFinal(data, accounts, receiverData, partnerInfor) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -678,6 +685,9 @@
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
+            if(partnerInfor != null && partnerInfor != ""){
+                data.originalBody = partnerInfor + data.originalBody;
+            }
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData(attachmentDropzone);
@@ -999,6 +1009,20 @@
                 dragging = false;
             }
         });
+    }
+    
+    function getInforPartner(sentTo, callback){
+        function onSuccess(response) {
+            if(response && response.status) {
+                if(typeof callback == 'function'){
+                	callback(response.msg);
+                }
+            }
+        }
+        function onError() {
+        }
+
+        getInforPartnerAPI(sentTo, onSuccess, onError);
     }
 
 })(jQuery);

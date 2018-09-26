@@ -55,6 +55,7 @@ function showReplyMail(accountId, messageId, callback) {
             }
             if (typeof callback === "function") {
                 callback(email, accounts);
+                console.log(email);
             }
         },
         error: function (e) {
@@ -271,6 +272,21 @@ function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError)
         cache: false,
         contentType: false,
         processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function getInforPartnerAPI(data, onSuccess, onError) {
+    var url = "/user/matchingResult/getInforPartner";
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: url,
+        data: data,
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
         success: onSuccess,
         error: onError
     });

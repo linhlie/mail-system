@@ -382,5 +382,11 @@ public class BusinessPartnerService {
 
         return importLogs;
     }
+    
+    public List<BusinessPartner> getPartnersByDomain(String domain){
+    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
+    	if(listPartner==null || listPartner.size()==0) return null;
+    	return listPartner;
+    }
    
 }
