@@ -21,6 +21,7 @@
     var destinationMatchDataTable;
     var selectedRowData;
     var totalSourceMatchingContainId = "totalSourceMatching";
+    var totalDestinationMatchingContainId = "totalDestinationMatching";
     
     var engineerNameId = "#engineerNameSelect";
     var partnerNameId = "#partnerNameSelect";
@@ -420,6 +421,7 @@
                 updateDestinationDataTrigger();
                 $('body').loadingModal('hide');
                 enableResizeDestinationColumns();
+                updateTotalDestinationMatching(currentDestinationResult.length);
                 $("#"+ tableId).closest('.table-container-wrapper').scrollTop(0);
             }, 10)
         }, 10)
@@ -1345,6 +1347,10 @@
         }
 
         getInforPartnerAPI(sentTo, onSuccess, onError);
+    }
+
+    function updateTotalDestinationMatching(total) {
+        $('#' + totalDestinationMatchingContainId).text("マッチング: " + total + "件")
     }
 
 })(jQuery);

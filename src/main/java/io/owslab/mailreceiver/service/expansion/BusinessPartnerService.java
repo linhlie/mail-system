@@ -459,9 +459,18 @@ public class BusinessPartnerService {
     	if(partner==null) return null;
     	
     	List<String> listDomain = new ArrayList<String>();
-    	listDomain.add(partner.getDomain1().toLowerCase());
-    	listDomain.add(partner.getDomain2().toLowerCase());
-    	listDomain.add(partner.getDomain3().toLowerCase());
+        String domain1 =partner.getDomain1();
+        String domain2 =partner.getDomain2();
+        String domain3 =partner.getDomain3();
+        if(domain1!=null && !domain1.equals("")){
+            listDomain.add(domain1.toLowerCase());
+        }
+        if(domain2!=null && !domain2.equals("")){
+            listDomain.add(domain2.toLowerCase());
+        }
+        if(domain3!=null && !domain3.equals("")){
+            listDomain.add(domain3.toLowerCase());
+        }
         return listDomain;
     }
     
