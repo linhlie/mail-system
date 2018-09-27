@@ -26,6 +26,7 @@ import io.owslab.mailreceiver.utils.FinalEmailMatchingEngineerResult;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -145,7 +146,8 @@ public class EmailMatchingEngineerController {
             result.setMailList(finalResult.getMailList());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            String error = ExceptionUtils.getStackTrace(e);
+            logger.error("emailMatchingEngineer/submitForm: " + error);
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);

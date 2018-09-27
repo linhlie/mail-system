@@ -673,9 +673,18 @@
     }
 
     function showMailContenttToEditor(data, accounts, receiverData, sendTo) {
-        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
+        getInforPartner(receiverListStr, function(partnerInfor){
+        	showMailContentToEditorFinal(data, accounts, receiverData, sendTo, partnerInfor);
+        });
+    }
+    
+    function showMailContentToEditorFinal(data, accounts, receiverData, sendTo, partnerInfor) {
+    	console.log(partnerInfor);
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
+        console.log(receiverListStr);
         updateMailEditorContent("");
         if(data){
             updateSenderSelector(data, accounts);
@@ -714,6 +723,9 @@
             data.excerpt = getDecorateExcerpt(data.excerpt, sendTo);
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
+            if(partnerInfor != null && partnerInfor != ""){
+                data.originalBody = partnerInfor + data.originalBody;
+            }
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
                 data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
@@ -722,6 +734,9 @@
                 data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
                 data.replacedBody = data.excerpt + data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
+                if(partnerInfor != null && partnerInfor != ""){
+                    data.replacedBody = partnerInfor + data.replacedBody;
+                }
                 updateMailEditorContent(data.replacedBody, true);
             }
             var files = data.files ? data.files : [];
@@ -1413,5 +1428,28 @@
     function getHistoryType() {
         return lastSendTo === "moto" ? 1 : 2;
     }
+    
+    function getInforPartner(sentTo, callback){
+        function onSuccess(response) {
+            if(response) {
+            	if(response.status){
+            		if(typeof callback == 'function'){
+                    	callback(response.msg);
+                    }
+            	}else{
+            		if(typeof callback == 'function'){
+                    	callback();
+                    }
+            	}
+            }
+        }
+        function onError() {
+        	if(typeof callback == 'function'){
+            	callback();
+            	alert('所属企業の情報の取得に失敗しました。');
+            }
+        }
 
+        getInforPartnerAPI(sentTo, onSuccess, onError);
+    }
 })(jQuery);
