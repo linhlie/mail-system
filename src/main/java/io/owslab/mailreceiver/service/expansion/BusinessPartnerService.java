@@ -394,21 +394,29 @@ public class BusinessPartnerService {
    		 String otherPartnerDomain2 = partnerGroup.getWithPartner().getDomain2();
    		 String otherPartnerDomain3 = partnerGroup.getWithPartner().getDomain3();
    		 
-   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain1, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
-   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain2, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
-   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain3, otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain1, partnerDomain2, partnerDomain3, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain2, partnerDomain1, partnerDomain3, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain3, partnerDomain1, partnerDomain2, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
    	}
    	return hashMapDomainPartnerGroups;
     }
     
-    public void putToHashMap(HashMap<String, List<String>> hashMapDomainPartnerGroups, String key, String domain1, String domain2, String domain3){
+    public void putToHashMap(HashMap<String, List<String>> hashMapDomainPartnerGroups, String key, String ownDomain1, String ownDomain2, 
+    		String domain1, String domain2, String domain3){
   		if(key==null || key.equals("")) return;
     	if(hashMapDomainPartnerGroups.containsKey(key)){
+    		hashMapDomainPartnerGroups.get(key).add(ownDomain1);
+  			hashMapDomainPartnerGroups.get(key).add(ownDomain2);
   			hashMapDomainPartnerGroups.get(key).add(domain1);
   			hashMapDomainPartnerGroups.get(key).add(domain2);
   			hashMapDomainPartnerGroups.get(key).add(domain3);
   		 }else{
   			List<String> lisDomain = new ArrayList<String>();
+  			lisDomain.add(ownDomain1);
+  			lisDomain.add(ownDomain2);
   			lisDomain.add(domain1);
   			lisDomain.add(domain2);
   			lisDomain.add(domain3);
