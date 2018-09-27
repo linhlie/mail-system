@@ -424,13 +424,16 @@
     
     function getInforPartner(sentTo, callback){
         function onSuccess(response) {
-            if(response && response.status) {
+            if(response) {
                 if(typeof callback == 'function'){
                 	callback(response.msg);
                 }
             }
         }
         function onError() {
+        	if(typeof callback == 'function'){
+            	callback();
+            }
         }
 
         getInforPartnerAPI(sentTo, onSuccess, onError);
