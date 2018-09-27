@@ -21,5 +21,4 @@ public interface BusinessPartnerDAO extends PagingAndSortingRepository<BusinessP
             nativeQuery = true
     )
     List<BusinessPartner> findByDomain(@Param("domain") String domain );
-    
 }

@@ -22,6 +22,7 @@ public class MatchingConditionForm {
     private boolean handleDuplicateSender;
     private boolean handleDuplicateSubject;
     private boolean handleSameDomain;
+    private boolean checkDomainInPartnerGroup;
 
     public MatchingConditionForm() {
     }
@@ -97,4 +98,12 @@ public class MatchingConditionForm {
     public void setHandleSameDomain(boolean handleSameDomain) {
         this.handleSameDomain = handleSameDomain;
     }
+
+	public boolean isCheckDomainInPartnerGroup() {
+		return checkDomainInPartnerGroup;
+	}
+
+	public void setCheckDomainInPartnerGroup(boolean checkDomainInPartnerGroup) {
+		this.checkDomainInPartnerGroup = checkDomainInPartnerGroup;
+	}
 }
