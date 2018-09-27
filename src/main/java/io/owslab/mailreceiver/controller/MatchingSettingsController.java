@@ -302,4 +302,25 @@ public class MatchingSettingsController {
     public String getSendTab() {
         return "user/matching/sendTab";
     }
+    
+    @PostMapping("/matchingResult/getInforPartner")
+    @ResponseBody
+    public ResponseEntity<?> getInforPartner(Model model, @Valid @RequestBody String sentTo, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
+        MatchingResponeBody result = new MatchingResponeBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+        	String info = mailBoxService.getInforPartner(sentTo);
+            result.setMsg(info);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }
