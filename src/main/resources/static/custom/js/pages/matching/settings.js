@@ -13,6 +13,7 @@
     var extractSourceBtnId = '#extractSourceBtn';
     var extractDestinationBtnId = '#extractDestinationBtn';
     var matchingWordsAreaId = '#matchingWordsArea';
+    var checkDomainInPartnerGroupId = "#check-domain-in-group";
 
     var sourceBuilderId = '#source-builder';
     var destinationBuilderId = '#destination-builder';
@@ -30,6 +31,8 @@
     var collapsedPrefixKey = "/user/matchingSettings/collapsed";
 
     var collapseViewPostfix = "-collapse-view";
+    
+    var checkDomainInPartnerGroupKey = "/user/matchingSettings/checkDomainInPartnerGroup";
 
     var sourceConditionNameId = "#source-condition-name";
     var destinationConditionNameId = "#destination-condition-name";
@@ -371,6 +374,7 @@
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
         initDuplicateHandle();
         initSameDomainHandle();
+        initcheckDomainInPartnerGroup();
         loadDefaultSettings();
         $(window).on('beforeunload', saveDefaultSettings);
         $(document).on("keydown", keydownHandler);
@@ -863,6 +867,7 @@
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "handleSameDomain": getCachedSameDomainSettingData(),
+            "checkDomainInPartnerGroup": getCachedCheckDomainInPartnerGroupSettingData(),
         };
         sessionStorage.setItem("distinguish", distinguish);
         sessionStorage.setItem("spaceEffective", spaceEffective);
@@ -927,11 +932,26 @@
             localStorage.setItem("enableSameDomainHandle", enable);
         });
     }
-
+    
     function getCachedSameDomainSettingData() {
         let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
         let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
+    }
+    
+    function initcheckDomainInPartnerGroup() {
+        let checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
+        $(checkDomainInPartnerGroupId).prop('checked', checkDomainInPartnerGroup);
+        $(checkDomainInPartnerGroupId).change(function() {
+            var enable = $(this).is(":checked");
+            localStorage.setItem(checkDomainInPartnerGroupKey, enable);
+        });
+    }
+    
+    function getCachedCheckDomainInPartnerGroupSettingData() {
+        let checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
+        let enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
+        return enablecheckDomainInPartnerGroup;
     }
     
     function getInputIdFromUrl(url) {

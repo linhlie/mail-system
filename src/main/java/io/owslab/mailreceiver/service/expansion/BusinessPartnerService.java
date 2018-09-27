@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.service.expansion;
 
-import io.owslab.mailreceiver.controller.PartnerImportExportController;
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
@@ -10,10 +9,18 @@ import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
-import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
-import io.owslab.mailreceiver.utils.Utils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
@@ -25,16 +32,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.cellprocessor.constraint.NotNull;
-import org.supercsv.cellprocessor.constraint.StrRegEx;
-import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.*;
 
 /**
  * Created by khanhlvb on 8/13/18.
@@ -211,7 +211,7 @@ public class BusinessPartnerService {
         }
         return withPartnerId + "-" + partnerId;
     }
-
+    
     public List<ImportLogDTO> importPartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
     	List<String> listDomain = new ArrayList<String>();
         List<ImportLogDTO> importLogs = new ArrayList<ImportLogDTO>();
@@ -403,6 +403,54 @@ public class BusinessPartnerService {
 
         return importLogs;
     }
+    
+    public HashMap<String, List<String>> getDomainRelationPartnerGroup(){
+    	HashMap<String, List<String>> hashMapDomainPartnerGroups = new HashMap<String, List<String>>();
+    	List<BusinessPartnerGroup> listPartnerGroup = (List<BusinessPartnerGroup>) partnerGroupDAO.findAll();
+    	for(BusinessPartnerGroup partnerGroup : listPartnerGroup){
+   		 String partnerDomain1 = partnerGroup.getPartner().getDomain1();
+   		 String partnerDomain2 = partnerGroup.getPartner().getDomain2();
+   		 String partnerDomain3 = partnerGroup.getPartner().getDomain3();
+   		 
+   		 String otherPartnerDomain1 = partnerGroup.getWithPartner().getDomain1();
+   		 String otherPartnerDomain2 = partnerGroup.getWithPartner().getDomain2();
+   		 String otherPartnerDomain3 = partnerGroup.getWithPartner().getDomain3();
+   		 
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain1, partnerDomain2, partnerDomain3, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain2, partnerDomain1, partnerDomain3, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   		putToHashMap(hashMapDomainPartnerGroups, partnerDomain3, partnerDomain1, partnerDomain2, 
+   				otherPartnerDomain1, otherPartnerDomain2, otherPartnerDomain3);
+   	}
+   	return hashMapDomainPartnerGroups;
+    }
+    
+    public void putToHashMap(HashMap<String, List<String>> hashMapDomainPartnerGroups, String key, String ownDomain1, String ownDomain2, 
+    		String domain1, String domain2, String domain3){
+  		if(key==null || key.equals("")) return;
+    	if(hashMapDomainPartnerGroups.containsKey(key)){
+    		hashMapDomainPartnerGroups.get(key).add(ownDomain1);
+  			hashMapDomainPartnerGroups.get(key).add(ownDomain2);
+  			hashMapDomainPartnerGroups.get(key).add(domain1);
+  			hashMapDomainPartnerGroups.get(key).add(domain2);
+  			hashMapDomainPartnerGroups.get(key).add(domain3);
+  		 }else{
+  			List<String> lisDomain = new ArrayList<String>();
+  			lisDomain.add(ownDomain1);
+  			lisDomain.add(ownDomain2);
+  			lisDomain.add(domain1);
+  			lisDomain.add(domain2);
+  			lisDomain.add(domain3);
+  			hashMapDomainPartnerGroups.put(key, lisDomain);
+  		 }
+    }
+    
+    public List<BusinessPartner> getPartnersByDomain(String domain){
+    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
+    	if(listPartner==null || listPartner.size()==0) return null;
+    	return listPartner;
+    }
 
     @Cacheable(key="\"BusinessPartnerService:getDomainPartner:\"+#partnerId")
     public List<String> getDomainPartner(Long partnerId){
@@ -431,5 +479,4 @@ public class BusinessPartnerService {
     	if(listWithPartnerId == null || listWithPartnerId.size()==0) return null;
     	return listWithPartnerId;
     }
-  
 }

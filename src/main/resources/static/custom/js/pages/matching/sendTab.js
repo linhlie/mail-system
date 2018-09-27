@@ -230,6 +230,13 @@
     }
     
     function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
+        getInforPartner(receiverListStr, function(partnerInfor){
+        	showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor);
+        });
+    }
+    
+    function showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -271,6 +278,9 @@
             data.excerpt = getDecorateExcerpt(data.excerpt, sendTo);
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
+            if(partnerInfor != null && partnerInfor != ""){
+                data.originalBody = partnerInfor + data.originalBody;
+            }
             updateMailEditorContent(data.originalBody);
             if( data.replacedBody != null){
                 data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
@@ -279,14 +289,24 @@
                 data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
                 data.replacedBody = data.excerpt + data.replacedBody;
                 data.replacedBody = data.replacedBody + data.signature;
+                if(partnerInfor != null && partnerInfor != ""){
+                    data.replacedBody = partnerInfor + data.replacedBody;
+                }
                 updateMailEditorContent(data.replacedBody, true);
             }
             var files = data.files ? data.files : [];
             updateDropzoneData(attachmentDropzone, files);
         }
     }
-
+    
     function showMailContentToEditorReply(data, accounts, receiverData) {
+        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
+        getInforPartner(receiverListStr, function(partnerInfor){
+        	showMailContentToEditorReplyFinal(data, accounts, receiverData, partnerInfor);
+        });
+    }
+
+    function showMailContentToEditorReplyFinal(data, accounts, receiverData, partnerInfor) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -322,6 +342,9 @@
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
+            if(partnerInfor != null && partnerInfor != ""){
+                data.originalBody = partnerInfor + data.originalBody;
+            }
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData(attachmentDropzone);
@@ -397,6 +420,30 @@
     function getMailEditorContent() {
         var editor = tinymce.get(rdMailBodyId);
         return editor.getContent();
+    }
+    
+    function getInforPartner(sentTo, callback){
+        function onSuccess(response ) {
+            if(response) {
+            	if(response.status){
+            		if(typeof callback == 'function'){
+                    	callback(response.msg);
+                    }
+            	}else{
+            		if(typeof callback == 'function'){
+                    	callback();
+                    }
+            	}            
+            }
+        }
+        function onError() {
+        	if(typeof callback == 'function'){
+            	callback();
+            	alert('所属企業の情報の取得に失敗しました。');
+            }
+        }
+
+        getInforPartnerAPI(sentTo, onSuccess, onError);
     }
 
 })(jQuery);

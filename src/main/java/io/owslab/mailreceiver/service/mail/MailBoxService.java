@@ -6,9 +6,11 @@ import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
@@ -60,6 +62,7 @@ public class MailBoxService {
     public static final int USE_RAW = 0;
     public static final int USE_LOWER_LIMIT = 1;
     public static final int USE_UPPER_LIMIT = 2;
+    public static final String BODY_HEADEAR = "ご担当者様";
     @Autowired
     private EmailDAO emailDAO;
     
@@ -90,6 +93,9 @@ public class MailBoxService {
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+    
+    @Autowired
+    private BusinessPartnerService partnerService;
     
     private List<Email> cachedEmailList = null;
 
@@ -356,7 +362,31 @@ public class MailBoxService {
         return result;
     }
 
-    public  DetailMailDTO getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType, String accountId) throws Exception {
+    public String getInforPartner(String sentTo) throws Exception {
+    	String replyTo = "";
+    	if(sentTo==null || sentTo.trim().equals("")){
+    		return replyTo;
+    	}
+    	String str[] = sentTo.split(",");
+    	if(str==null || str.length==0){
+    		return replyTo;
+    	}
+    	replyTo = str[0];
+    	int index = replyTo.indexOf("@");
+		if(index<=0) return "";
+		String domainEmail =  replyTo.substring(index+1).toLowerCase();
+    	String inforPartner="";
+    	List<BusinessPartner> listPartner = partnerService.getPartnersByDomain(domainEmail);
+    	if(listPartner==null) {
+    		return inforPartner;
+    	}
+    	BusinessPartner partner = listPartner.get(0);
+    	String companyType = CompanyType.fromValue(partner.getCompanyType()).getText();
+    	inforPartner ="<div class=\"gmail_extra\"><span>" + companyType+partner.getName()+BODY_HEADEAR + "</span></div>\n";
+		return inforPartner;
+	}
+
+	public  DetailMailDTO getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType, String accountId) throws Exception {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         List<Email> replyList = emailDAO.findByMessageId(replyId);
         Email originEmail = emailList.size() > 0 ? emailList.get(0) : null;
