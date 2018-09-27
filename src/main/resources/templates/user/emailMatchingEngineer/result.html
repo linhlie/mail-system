@@ -56,20 +56,20 @@
                         </div>
                         <div style="width: 100%; display: flex; align-items: center">
                             <div style="width: 25%;">
-                                <h5>マッチング</h5>
+                                <h5 id="totalDestinationMatching">マッチング</h5>
                             </div>
                             <div style="width: 75%; display: flex; align-items: center; justify-content: flex-end;">
                                 <span><b>技術者氏名:</b></span>
-                                <input id="engineerNameSelect" type="text" style="border: 1px solid black; padding-left: 5px; margin-left: 10px; margin-right: 15px; width: 35%;" aria-hidden="true" disabled="disabled"/>
+                                <input id="engineerNameSelect" type="text" style="background-color: #efefef; border: 1px solid black; padding-left: 5px; margin-left: 10px; margin-right: 15px; width: 35%;" aria-hidden="true" disabled="disabled"/>
                                 <span><b>所属会社:</b></span>
-                                <input id="partnerNameSelect" type="text" style="border: 1px solid black; padding-left: 5px; margin-left: 10px; width: 35%;" aria-hidden="true" disabled="disabled"/>
+                                <input id="partnerNameSelect" type="text" style="background-color: #efefef; border: 1px solid black; padding-left: 5px; margin-left: 10px; width: 35%;" aria-hidden="true" disabled="disabled"/>
                             </div>
             			</div>
                         <div class="table-container table-container-wrapper">
                             <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
-                                    <th class="fit">先数値</th>
+                                    <th class="fit">金額</th>
                                     <th class="fit">受信日時</th>
                                     <th class="fit">送信者</th>
                                     <th>件名</th>
