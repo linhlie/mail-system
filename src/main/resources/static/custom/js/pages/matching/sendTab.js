@@ -423,16 +423,23 @@
     }
     
     function getInforPartner(sentTo, callback){
-        function onSuccess(response) {
+        function onSuccess(response ) {
             if(response) {
-                if(typeof callback == 'function'){
-                	callback(response.msg);
-                }
+            	if(response.status){
+            		if(typeof callback == 'function'){
+                    	callback(response.msg);
+                    }
+            	}else{
+            		if(typeof callback == 'function'){
+                    	callback();
+                    }
+            	}            
             }
         }
         function onError() {
         	if(typeof callback == 'function'){
             	callback();
+            	alert('所属企業の情報の取得に失敗しました。');
             }
         }
 
