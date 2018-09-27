@@ -8,7 +8,7 @@ import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.form.SendAccountForm;
-import io.owslab.mailreceiver.job.IMAPFetchMailJob;
+import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
@@ -19,6 +19,7 @@ import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.FullNumberRange;
+import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -502,10 +503,10 @@ public class MailBoxService {
         List<EmailAccount> listAccount = mailAccountsService.findById(accountId);
         EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
         if(emailAccount == null) return;
-        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(accountId);
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneReceive(accountId);
         if(accountSetting == null) return;
         try {
-            Store store = createStore(accountSetting);
+            Store store = MailUtils.createStore(accountSetting);
             if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
                 store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());
             } else {
@@ -513,16 +514,16 @@ public class MailBoxService {
             }
 
             //create the folder object and open it
-            IMAPFolder emailFolder = (IMAPFolder) store.getFolder("INBOX");
+            Folder emailFolder = store.getFolder("INBOX");
             int openFolderFlag = Folder.READ_ONLY ;
             emailFolder.open(openFolderFlag);
 
-            IMAPFetchMailJob.OwsMimeMessage message = IMAPFetchMailJob.getMessage(emailFolder, Integer.parseInt(email.getMessageNumber()));
+            FetchMailJob.OwsMimeMessage message = FetchMailJob.getMessage(emailFolder, Integer.parseInt(email.getMessageNumber()));
             try {
-                email = IMAPFetchMailJob.buildReceivedMail(message, email);
+                email = FetchMailJob.buildReceivedMail(message, email);
                 boolean hasAttachments = saveFiles(message, email);
                 email.setHasAttachment(hasAttachments);
-                email = IMAPFetchMailJob.setMailContent(message, email);
+                email = FetchMailJob.setMailContent(message, email);
                 email.setErrorLog(null);
                 email.setStatus(Email.Status.NEW);
                 emailDAO.save(email);
@@ -537,7 +538,7 @@ public class MailBoxService {
                 }
             }
             logger.info("retry email: " + message.getSubject());
-            emailFolder.close(true);
+            emailFolder.close(false);
             store.close();
 
         } catch (NoSuchProviderException e) {
@@ -569,18 +570,18 @@ public class MailBoxService {
                         fileName = MimeUtility.decodeText(part.getFileName());
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
-                    String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
+                    String currentDateStr = FetchMailJob.getCurrentDateStr();
+                    saveDirectoryPath = FetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
+                    saveDirectoryPath = FetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = saveDirectoryPath + File.separator + IMAPFetchMailJob.getUniqueFileName();
+                    saveDirectoryPath = saveDirectoryPath + File.separator + FetchMailJob.getUniqueFileName();
                     File file = new File(saveDirectoryPath);
                     logger.info("Start Save file: " + fileName + " " + file.length());
                     part.saveFile(file);
@@ -605,16 +606,6 @@ public class MailBoxService {
     private Email findOne(String messageId) {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
-    }
-
-    private Store createStore(EmailAccountSetting account) throws NoSuchProviderException {
-        Properties properties = new Properties();
-        properties.put("mail.imap.host", account.getMailServerAddress());
-        properties.put("mail.imap.port", account.getMailServerPort());
-        properties.put("mail.imap.starttls.enable", "true");
-        Session emailSession = Session.getDefaultInstance(properties);
-        Store store = emailSession.getStore("imaps");
-        return store;
     }
 
     public class SenderComparator implements Comparator<Email> {

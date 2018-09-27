@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.dao;
 
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,12 @@ public interface BusinessPartnerGroupDAO extends PagingAndSortingRepository<Busi
             nativeQuery = true
     )
     List<BusinessPartnerGroup> findByPartnerIdAndWithPartnerId(@Param("partnerId") long partnerId, @Param("withPartnerId") long withPartnerId);
+    
+    
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "SELECT bpg.with_partner_id FROM business_partner_groups bpg  WHERE bpg.partner_id = :partnerId",
+            nativeQuery = true
+    )
+    List<Long> findWithPartnerIdByPartnerId(@Param("partnerId") long partnerId);
 }

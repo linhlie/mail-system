@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import io.owslab.mailreceiver.model.Engineer;
 
 public interface RelationshipEngineerPartnerDAO extends JpaRepository<RelationshipEngineerPartner, Long>{
@@ -25,4 +26,11 @@ public interface RelationshipEngineerPartnerDAO extends JpaRepository<Relationsh
     void deleteByIdIn(List<Long> listId);
     
     void deleteByEngineerId(Long engineerId);
+    
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "SELECT e.partner_id FROM relationship_engineer_partner e  WHERE e.engineer_id = :engineerId",
+            nativeQuery = true
+    )
+    List<Long> getPartnerIds(@Param("engineerId") long engineerId);
 }
