@@ -35,6 +35,12 @@ public class DomainService {
     private DomainUnregisterDAO domainDAO;
     
     @Autowired
+    private BusinessPartnerService partnerService;
+    
+    @Autowired
+    private EngineerService engineerService;
+    
+    @Autowired
     private RelationshipEngineerPartnerDAO relationshipEngineerPartnerDAO;
     
 	public List<DomainUnregister> getAll() {
@@ -172,52 +178,60 @@ public class DomainService {
 	}
 	
 	public boolean checkDomainPartnerCurrent(String emailFrom, Long partnerId){
-		BusinessPartner partner = partnerDAO.findOne(partnerId);
-		if(partner==null) return false;
+		List<String> listDomain = partnerService.getDomainPartner(partnerId);
+		if(listDomain==null || listDomain.size()==0) return false;
 		
 		int index = emailFrom.indexOf("@");
 		if(index<=0) return false;
 		
 		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
-		if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean checkDomainPartnerGroup(String emailFrom, Long partnerId){
-		List<BusinessPartnerGroup> listPartner = partnerGroupDAO.findByPartnerId(partnerId);
-		if(listPartner==null || listPartner.size()==0) return false;
-		
-		int index = emailFrom.indexOf("@");
-		if(index<=0) return false;
-		
-		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
-		for(BusinessPartnerGroup partnerGroup : listPartner){
-			BusinessPartner partner = partnerGroup.getWithPartner();
-			if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
+		for(int i=0;i<listDomain.size();i++){
+			if(domainEmail.equals(listDomain.get(i))){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public boolean checkDomainPartnerNotGood(String emailFrom, Long engineerId){
-		List<RelationshipEngineerPartner> partnerNotGood = relationshipEngineerPartnerDAO.findByEngineerId(engineerId);
-		if(partnerNotGood==null) return false;
-
+	public boolean checkDomainPartnerGroup(String emailFrom, Long partnerId){
+		List<Long> listPartnerId = partnerService.getWithPartnerIds(partnerId);
+		if(listPartnerId==null || listPartnerId.size()==0) return false;
+		
 		int index = emailFrom.indexOf("@");
 		if(index<=0) return false;
 		
 		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
-		for(RelationshipEngineerPartner relationship : partnerNotGood){
-			BusinessPartner partner = relationship.getPartner();
-			if(partner!=null){
-				if(domainEmail.equals(partner.getDomain1()) || domainEmail.equals(partner.getDomain2()) || domainEmail.equals(partner.getDomain3())){
+		for(int i=0;i<listPartnerId.size();i++){
+			String partnerGroupId = listPartnerId.get(i)+"";
+			List<String> listDomain = partnerService.getDomainPartner(Long.parseLong(partnerGroupId));
+			if(listDomain==null || listDomain.size()==0) continue;
+			for(int j=0;j<listDomain.size();j++){
+				if(domainEmail.equals(listDomain.get(i))){
 					return true;
 				}
 			}
-		}	
+		}
+		return false;
+	}
+	
+	public boolean checkDomainPartnerNotGood(String emailFrom, Long engineerId){
+		List<Long> listPartnerId = engineerService.getPartnerIds(engineerId);
+		if(listPartnerId==null || listPartnerId.size()==0) return false;
+		
+		int index = emailFrom.indexOf("@");
+		if(index<=0) return false;
+		
+		String domainEmail =  emailFrom.substring(index+1).toLowerCase();
+		for(int i=0;i<listPartnerId.size();i++){
+			String partnerId = listPartnerId.get(i)+"";
+			List<String> listDomain = partnerService.getDomainPartner(Long.parseLong(partnerId));
+			if(listDomain==null || listDomain.size()==0) continue;
+			for(int j=0;j<listDomain.size();j++){
+				if(domainEmail.equals(listDomain.get(i))){
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 

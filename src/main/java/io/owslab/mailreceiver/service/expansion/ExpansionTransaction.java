@@ -13,11 +13,14 @@ import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@CacheConfig(cacheNames = "short_term_matching")
 public class ExpansionTransaction {
 
 	@Autowired
@@ -29,6 +32,7 @@ public class ExpansionTransaction {
     @Autowired
     private BusinessPartnerService partnerService;
 
+    @CacheEvict(key="\"EngineerService:getPartnerIds:\"+#engineer.getId()")
     @Transactional(propagation = Propagation.REQUIRES_NEW,  rollbackFor = Exception.class)
     public void updateEngineerAndRelation(Engineer engineer, List<Long> addPartnerIds, List<Long> removePartnerIds)  throws EngineerNotFoundException, PartnerNotFoundException {
         updateEngineer(engineer);
