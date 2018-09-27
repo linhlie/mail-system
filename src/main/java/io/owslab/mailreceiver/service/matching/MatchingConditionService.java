@@ -255,9 +255,10 @@ public class MatchingConditionService {
         List<MatchingWordResult> matchWordDestination = findMatchWithWord(matchingWords, matchDestinationList, spaceEffective, distinguish);
         logger.info("matching pharse word done: " + matchWordSource.size() + " " + matchWordDestination.size());
         ConcurrentHashMap<String, MatchingResult> matchingResultMap = new ConcurrentHashMap<String, MatchingResult>();
-        
-        HashMap<String, List<String>> domainsRelation = partnerService.getDomainRelationPartnerGroup();
-        
+        HashMap<String, List<String>> domainsRelation = new HashMap<String, List<String>>();
+        if(filterDomainInPartnerGroup){
+        	domainsRelation = partnerService.getDomainRelationPartnerGroup();
+    	}       
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
             previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));

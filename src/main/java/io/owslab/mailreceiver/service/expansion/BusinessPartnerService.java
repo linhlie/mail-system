@@ -430,6 +430,7 @@ public class BusinessPartnerService {
     		String domain1, String domain2, String domain3){
   		if(key==null || key.equals("")) return;
     	if(hashMapDomainPartnerGroups.containsKey(key)){
+    		hashMapDomainPartnerGroups.get(key).add(key);
     		hashMapDomainPartnerGroups.get(key).add(ownDomain1);
   			hashMapDomainPartnerGroups.get(key).add(ownDomain2);
   			hashMapDomainPartnerGroups.get(key).add(domain1);
