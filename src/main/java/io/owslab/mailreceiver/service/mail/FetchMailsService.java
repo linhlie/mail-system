@@ -4,8 +4,7 @@ import io.owslab.mailreceiver.dao.EmailAccountDAO;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
-import io.owslab.mailreceiver.job.IMAPFetchMailJob;
-import io.owslab.mailreceiver.job.POP3FetchMailJob;
+import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -56,10 +55,9 @@ public class FetchMailsService {
                 EmailAccount account = list.get(i);
                 EmailAccountSetting accountSetting = emailAccountSettingService.findOneReceive(account.getId());
                 if(accountSetting != null){
-                    if(accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.IMAP) {
-                        callables.add(toCallable(new IMAPFetchMailJob(accountSetting, account)));
-                    } else if (accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.POP3) {
-                        callables.add(toCallable(new POP3FetchMailJob(accountSetting, account)));
+                    if (accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.IMAP
+                            || accountSetting.getMailProtocol() == EmailAccountSetting.Protocol.POP3) {
+                        callables.add(toCallable(new FetchMailJob(accountSetting, account)));
                     }
                 }
             }

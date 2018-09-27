@@ -7,7 +7,7 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.form.SendAccountForm;
-import io.owslab.mailreceiver.job.IMAPFetchMailJob;
+import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
@@ -473,7 +473,7 @@ public class MailBoxService {
         List<EmailAccount> listAccount = mailAccountsService.findById(accountId);
         EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
         if(emailAccount == null) return;
-        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(accountId);
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneReceive(accountId);
         if(accountSetting == null) return;
         try {
             Store store = MailUtils.createStore(accountSetting);
@@ -484,16 +484,16 @@ public class MailBoxService {
             }
 
             //create the folder object and open it
-            IMAPFolder emailFolder = (IMAPFolder) store.getFolder("INBOX");
+            Folder emailFolder = store.getFolder("INBOX");
             int openFolderFlag = Folder.READ_ONLY ;
             emailFolder.open(openFolderFlag);
 
-            IMAPFetchMailJob.OwsMimeMessage message = IMAPFetchMailJob.getMessage(emailFolder, Integer.parseInt(email.getMessageNumber()));
+            FetchMailJob.OwsMimeMessage message = FetchMailJob.getMessage(emailFolder, Integer.parseInt(email.getMessageNumber()));
             try {
-                email = IMAPFetchMailJob.buildReceivedMail(message, email);
+                email = FetchMailJob.buildReceivedMail(message, email);
                 boolean hasAttachments = saveFiles(message, email);
                 email.setHasAttachment(hasAttachments);
-                email = IMAPFetchMailJob.setMailContent(message, email);
+                email = FetchMailJob.setMailContent(message, email);
                 email.setErrorLog(null);
                 email.setStatus(Email.Status.NEW);
                 emailDAO.save(email);
@@ -508,7 +508,7 @@ public class MailBoxService {
                 }
             }
             logger.info("retry email: " + message.getSubject());
-            emailFolder.close(true);
+            emailFolder.close(false);
             store.close();
 
         } catch (NoSuchProviderException e) {
@@ -540,18 +540,18 @@ public class MailBoxService {
                         fileName = MimeUtility.decodeText(part.getFileName());
                     }
                     String saveDirectoryPath = enviromentSettingService.getStoragePath();
-                    String currentDateStr = IMAPFetchMailJob.getCurrentDateStr();
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
+                    String currentDateStr = FetchMailJob.getCurrentDateStr();
+                    saveDirectoryPath = FetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + currentDateStr;
                     File saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = IMAPFetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
+                    saveDirectoryPath = FetchMailJob.normalizeDirectoryPath(saveDirectoryPath) + File.separator + email.getMessageId().hashCode();
                     saveDirectory = new File(saveDirectoryPath);
                     if (!saveDirectory.exists()){
                         saveDirectory.mkdir();
                     }
-                    saveDirectoryPath = saveDirectoryPath + File.separator + IMAPFetchMailJob.getUniqueFileName();
+                    saveDirectoryPath = saveDirectoryPath + File.separator + FetchMailJob.getUniqueFileName();
                     File file = new File(saveDirectoryPath);
                     logger.info("Start Save file: " + fileName + " " + file.length());
                     part.saveFile(file);
