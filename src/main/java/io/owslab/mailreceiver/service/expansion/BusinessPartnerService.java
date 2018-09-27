@@ -27,6 +27,9 @@ import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvBeanReader;
@@ -37,6 +40,7 @@ import org.supercsv.prefs.CsvPreference;
  * Created by khanhlvb on 8/13/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_matching")
 public class BusinessPartnerService {
     private static final Logger logger = LoggerFactory.getLogger(BusinessPartnerService.class);
 
@@ -59,6 +63,21 @@ public class BusinessPartnerService {
     public List<BusinessPartnerGroup> getAllGroup() {
         return (List<BusinessPartnerGroup>) partnerGroupDAO.findAll();
     }
+    
+    @CacheEvict(allEntries = true)
+    public void deleteAllGroup(){
+    	partnerGroupDAO.deleteAll();
+    }
+    
+    @CacheEvict(key="\"BusinessPartnerService:getWithPartnerIds:\"+#partnerId")
+    public void deletePartnerGroup(Long partnerId, List<BusinessPartnerGroup> partnerGroups){
+    	partnerGroupDAO.delete(partnerGroups);
+    }
+    
+    @CacheEvict(allEntries = true)
+    public void deleteAllPartner(){
+    	partnerDAO.deleteAll();
+    }
 
     //TODO need to be transaction
     public void add(PartnerForm form) throws PartnerCodeException {
@@ -71,6 +90,7 @@ public class BusinessPartnerService {
         saveGroupList(addedPartner, groupAddIds);
     }
 
+    @CacheEvict(key="\"BusinessPartnerService:getDomainPartner:\"+#id")
     public void update(PartnerForm form, long id) throws PartnerCodeException {
         BusinessPartner.Builder builder = form.getBuilder();
         builder.setId(id);
@@ -98,6 +118,7 @@ public class BusinessPartnerService {
         return partnerDAO.findOne(id);
     }
 
+    @CacheEvict(key="\"BusinessPartnerService:getDomainPartner:\"+#id")
     public void delete(long id){
         partnerDAO.delete(id);
     }
@@ -118,9 +139,10 @@ public class BusinessPartnerService {
                 partnerGroups.add(groupWithPartners.get(0));
             }
         }
-        partnerGroupDAO.delete(partnerGroups);
+        deletePartnerGroup(partner.getId(), partnerGroups);
     }
 
+    @Cacheable(key="\"BusinessPartnerService:getWithPartnerIds:\"+#partner.getId()")
     private void saveGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
         List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
         for(Long groupWithPartnerId : groupWithPartnerIds) {
@@ -216,7 +238,7 @@ public class BusinessPartnerService {
                     partners.add(partnerDTO.build());
                 }
                 if(deleteOld) {
-                    partnerDAO.deleteAll();
+                    deleteAllPartner();
                 }
                 for(int line = 0; line < partners.size(); line++) {
                     BusinessPartner partner = partners.get(line);
@@ -312,7 +334,7 @@ public class BusinessPartnerService {
                     partnerGroups.add(partnerGroupDTO);
                 }
                 if(deleteOld) {
-                    partnerGroupDAO.deleteAll();
+                    deleteAllGroup();
                 }
                 for(int line = 0; line < partnerGroups.size(); line++) {
                     CSVPartnerGroupDTO partnerGroup = partnerGroups.get(line);
@@ -422,5 +444,30 @@ public class BusinessPartnerService {
   			lisDomain.add(domain3);
   			hashMapDomainPartnerGroups.put(key, lisDomain);
   		 }
+    }
+    
+    public List<BusinessPartner> getPartnersByDomain(String domain){
+    	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
+    	if(listPartner==null || listPartner.size()==0) return null;
+    	return listPartner;
+    }
+
+    @Cacheable(key="\"BusinessPartnerService:getDomainPartner:\"+#partnerId")
+    public List<String> getDomainPartner(Long partnerId){
+    	BusinessPartner partner = findOne(partnerId);
+    	if(partner==null) return null;
+    	
+    	List<String> listDomain = new ArrayList<String>();
+    	listDomain.add(partner.getDomain1().toLowerCase());
+    	listDomain.add(partner.getDomain2().toLowerCase());
+    	listDomain.add(partner.getDomain3().toLowerCase());
+        return listDomain;
+    }
+    
+    @Cacheable(key="\"BusinessPartnerService:getWithPartnerIds:\"+#partnerId")
+    public List<Long> getWithPartnerIds(Long partnerId){
+    	List<Long> listWithPartnerId = partnerGroupDAO.findWithPartnerIdByPartnerId(partnerId);
+    	if(listWithPartnerId == null || listWithPartnerId.size()==0) return null;
+    	return listWithPartnerId;
     }
 }
