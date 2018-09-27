@@ -38,14 +38,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="table-name-container">
-                			<span><b>技術者氏名:</b></span>
-                			<input id="engineerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px; width: 30%;" aria-hidden="true" disabled="disabled"/>
-                			<span><b>所属会社:</b></span>
-                			<input id="partnerNameSelect" type="text" style="margin-left: 10px; margin-right: 15px; width: 30%;" aria-hidden="true" disabled="disabled"/>
-                			<button class="btn  pull-right" >OPEN</button>	
-            			</div>
-            			<div id="engineer-control" class="select-row-control-container" style="display: inline-block;padding-right: 0; margin-bottom: 10px;">
+                        <div id="engineer-control" class="select-row-control-container" style="display: inline-block;padding-right: 0; margin: 10px 0;">
                             <div class="btn-group">
                                 <button id="engineer-first" name="first" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
                                     <span class="glyphicon glyphicon-step-backward"></span>(SHIFT+F2)
@@ -59,8 +52,19 @@
                                 <button id="engineer-last" name="last" th:data="engineer" th:disabled="true" type="button" class="btn btn-default btn-sm">
                                     <span class="glyphicon glyphicon-step-forward"></span>(SHIFT+F4)
                                 </button>
-                              </div>
-                           </div>
+                            </div>
+                        </div>
+                        <div style="width: 100%; display: flex; align-items: center">
+                            <div style="width: 25%;">
+                                <h5>マッチング</h5>
+                            </div>
+                            <div style="width: 75%; display: flex; align-items: center; justify-content: flex-end;">
+                                <span><b>技術者氏名:</b></span>
+                                <input id="engineerNameSelect" type="text" style="border: 1px solid black; padding-left: 5px; margin-left: 10px; margin-right: 15px; width: 35%;" aria-hidden="true" disabled="disabled"/>
+                                <span><b>所属会社:</b></span>
+                                <input id="partnerNameSelect" type="text" style="border: 1px solid black; padding-left: 5px; margin-left: 10px; width: 35%;" aria-hidden="true" disabled="disabled"/>
+                            </div>
+            			</div>
                         <div class="table-container table-container-wrapper">
                             <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
