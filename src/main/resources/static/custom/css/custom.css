@@ -681,6 +681,15 @@ mark.mark-range {
     z-index:999
 }
 
+#ghostbar1{
+    height:3px;
+    background-color:#000;
+    opacity:0.2;
+    position:absolute;
+    cursor: row-resize;
+    z-index:999
+}
+
 .duplicate-control-container {
     font-size: 13px;
     position: absolute;
