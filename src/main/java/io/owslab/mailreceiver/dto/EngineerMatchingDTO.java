@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.Engineer;
+import io.owslab.mailreceiver.utils.EngineerMatchingFilter;
 import io.owslab.mailreceiver.utils.FilterRule;
 
 import java.sql.Timestamp;
@@ -41,6 +42,20 @@ public class EngineerMatchingDTO {
         Timestamp to = new Timestamp(engineer.getProjectPeriodEnd());
         boolean active = !dormant && (!now.before(from) && !now.after(to));
         this.setActive(active);
+        this.setPartnerId(engineer.getPartnerId());
+        this.setMonetaryMoney(engineer.getMonetaryMoney());
+        this.setMailAddress(engineer.getMailAddress());
+        this.setMatchingWord(engineer.getMatchingWord());
+        this.setNotGoodWord(engineer.getNotGoodWord());
+    }
+    
+    public EngineerMatchingDTO(EngineerMatchingFilter engineer) {
+        this.setId(engineer.getId());
+        this.setName(engineer.getName());
+        this.setAutoExtend(engineer.isAutoExtend());
+        this.setDormant(engineer.isDormant());
+        this.setPartnerName(engineer.getPartnerName());
+        this.setActive(engineer.isActive());
         this.setPartnerId(engineer.getPartnerId());
         this.setMonetaryMoney(engineer.getMonetaryMoney());
         this.setMailAddress(engineer.getMailAddress());
