@@ -1155,7 +1155,7 @@
             {
                 var oldHeightEngineerTable = $('.matching-result .table-engineer').outerHeight();
                 var oldHeightMailTable = $('.matching-result .table-destination').outerHeight();
-                var newHeightEngineerTable = (e.pageY - $('.matching-result .table-engineer').offset().top);
+                var newHeightEngineerTable = (e.pageY - ($('.matching-result .table-engineer').offset().top + 42));
                 newHeightEngineerTable = newHeightEngineerTable > 60 ? newHeightEngineerTable : 60;
                 newHeightEngineerTable = newHeightEngineerTable < 420 ? newHeightEngineerTable : 420;
                 var valueChange = newHeightEngineerTable - oldHeightEngineerTable;
@@ -1206,7 +1206,7 @@
             {
             	
             	var oldHeightEmailTable = $('.matching-result .table-destination').outerHeight();
-                var newHeightEmailTable = (e.pageY - $('.matching-result .table-destination').offset().top);
+                var newHeightEmailTable = (e.pageY - ($('.matching-result .table-destination').offset().top + 5));
                 newHeightEmailTable = newHeightEmailTable > 60 ? newHeightEmailTable : 60;
                 newHeightEmailTable = newHeightEmailTable < 420 ? newHeightEmailTable : 420;
                 var valueChange = newHeightEmailTable - oldHeightEmailTable;             
