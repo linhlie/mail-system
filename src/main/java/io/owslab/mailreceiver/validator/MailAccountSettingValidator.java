@@ -15,10 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Store;
+import javax.mail.*;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,7 +51,7 @@ public class MailAccountSettingValidator implements Validator {
         }
 
         try {
-            check(emailAccount, newSendAccountSetting);
+            checkSend(emailAccount, newSendAccountSetting);
         } catch (Exception e) {
             e.printStackTrace();
             errors.rejectValue("sUserName", "Authentication.fullAccountForm.sUserName");
@@ -71,6 +68,32 @@ public class MailAccountSettingValidator implements Validator {
             }
             store.close();
         } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("check failed");
+        }
+    }
+
+    private void checkSend(EmailAccount account, EmailAccountSetting accountSetting) throws Exception {
+        try {
+            Properties props = MailUtils.buildProperties(accountSetting);
+            Session session = Session.getInstance(props, null);
+            String host = accountSetting.getMailServerAddress();
+            int port = accountSetting.getMailServerPort();
+            String user;
+            if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
+                user = accountSetting.getUserName();
+            } else {
+                user = account.getAccount();
+            }
+            String pwd = accountSetting.getPassword();
+            Transport transport = session.getTransport("smtp");
+            transport.connect(host, port, user, pwd);
+            transport.close();
+        }
+        catch(AuthenticationFailedException e) {
+            throw new Exception("check failed");
+        }
+        catch(MessagingException e) {
             throw new Exception("check failed");
         }
     }
