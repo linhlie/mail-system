@@ -1366,7 +1366,7 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(partnerInfor != null && partnerInfor != ""){
                 data.originalBody = partnerInfor + data.originalBody;
