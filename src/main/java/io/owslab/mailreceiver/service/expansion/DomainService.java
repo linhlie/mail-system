@@ -206,7 +206,7 @@ public class DomainService {
 			List<String> listDomain = partnerService.getDomainPartner(Long.parseLong(partnerGroupId));
 			if(listDomain==null || listDomain.size()==0) continue;
 			for(int j=0;j<listDomain.size();j++){
-				if(domainEmail.equals(listDomain.get(i))){
+				if(domainEmail.equals(listDomain.get(j))){
 					return true;
 				}
 			}
@@ -227,7 +227,7 @@ public class DomainService {
 			List<String> listDomain = partnerService.getDomainPartner(Long.parseLong(partnerId));
 			if(listDomain==null || listDomain.size()==0) continue;
 			for(int j=0;j<listDomain.size();j++){
-				if(domainEmail.equals(listDomain.get(i))){
+				if(domainEmail.equals(listDomain.get(j))){
 					return true;
 				}
 			}
