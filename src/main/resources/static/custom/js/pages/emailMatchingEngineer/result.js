@@ -373,12 +373,11 @@
                 sortList: [[2,1], [3,0]]
             })
             .bind("sortEnd",function() {
-                console.log(index+"  "+total);
             	var index = selectedEngineerTableRow ? selectedEngineerTableRow.index() : -1;
                 var total = matchingResult ? matchingResult.length : 0;
                 updateEngineerControls(index, total);
             });
-
+    	$("#enginnerTable").css('margin-top',0+'px');
     }
     
     function showDestinationData(tableId, data) {
