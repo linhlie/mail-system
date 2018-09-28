@@ -135,6 +135,7 @@
         '</tr>';
 
     $(function () {
+    	previewDraggingSetup1();
         previewDraggingSetup2();
         initSearch(mailBodyDivId, "moto");
         initDropzone();
@@ -372,12 +373,11 @@
                 sortList: [[2,1], [3,0]]
             })
             .bind("sortEnd",function() {
-                console.log(index+"  "+total);
             	var index = selectedEngineerTableRow ? selectedEngineerTableRow.index() : -1;
                 var total = matchingResult ? matchingResult.length : 0;
                 updateEngineerControls(index, total);
             });
-
+    	$("#enginnerTable").css('margin-top',0+'px');
     }
     
     function showDestinationData(tableId, data) {
@@ -1127,6 +1127,57 @@
         document.body.removeChild(a);
     }
     
+    function previewDraggingSetup1() {
+        var dragging = false;
+        $('#dragbar1').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var dragbar = $('#dragbar1');
+            var ghostbar = $('<div>',
+                {id:'ghostbar1',
+                    css: {
+                        width: dragbar.outerWidth(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("top",e.pageY);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var oldHeightEngineerTable = $('.matching-result .table-engineer').outerHeight();
+                var oldHeightMailTable = $('.matching-result .table-destination').outerHeight();
+                var newHeightEngineerTable = (e.pageY - ($('.matching-result .table-engineer').offset().top + 42));
+                newHeightEngineerTable = newHeightEngineerTable > 60 ? newHeightEngineerTable : 60;
+                newHeightEngineerTable = newHeightEngineerTable < 420 ? newHeightEngineerTable : 420;
+                var valueChange = newHeightEngineerTable - oldHeightEngineerTable;
+                var newHeightEmailTable = oldHeightMailTable - valueChange;
+                if(newHeightEmailTable>420){
+                	newHeightEngineerTable = newHeightEngineerTable + newHeightEmailTable - 420;
+                	newHeightEmailTable = 420;
+                }
+                
+                if(newHeightEmailTable<60){
+                	newHeightEngineerTable = newHeightEngineerTable - (60 - newHeightEmailTable);
+                	newHeightEmailTable = 60;
+                }
+                
+                $('.matching-result .table-engineer').css("height", newHeightEngineerTable + "px");
+                $('.matching-result .table-destination').css("height", newHeightEmailTable + "px");
+                $('#ghostbar1').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
+    }
+    
     function previewDraggingSetup2() {
         var dragging = false;
         $('#dragbar2').mousedown(function(e){
@@ -1152,18 +1203,18 @@
         $(document).mouseup(function(e){
             if (dragging)
             {
-                var container = $('#table-section');
-                var topHeight = (e.pageY - container.offset().top);
-                var tableHeight = Math.floor((topHeight - 78) / 2);
-                tableHeight = tableHeight > 60 ? tableHeight : 60;
-                tableHeight = tableHeight < 420 ? tableHeight : 420;
-                var previewHeightChange = 500 - tableHeight * 2;
-                var previewHeight = 444 + previewHeightChange;
-                $('.matching-result .table-container').css("height", tableHeight + "px");
-                $('.matching-result .mail-body').css("height", previewHeight + "px");
+            	
+            	var oldHeightEmailTable = $('.matching-result .table-destination').outerHeight();
+                var newHeightEmailTable = (e.pageY - ($('.matching-result .table-destination').offset().top + 5));
+                newHeightEmailTable = newHeightEmailTable > 60 ? newHeightEmailTable : 60;
+                newHeightEmailTable = newHeightEmailTable < 420 ? newHeightEmailTable : 420;
+                var valueChange = newHeightEmailTable - oldHeightEmailTable;             
+                var newHeightMailBody = $('.matching-result .mail-body').outerHeight() - valueChange;
+                $('.matching-result .table-destination').css("height", newHeightEmailTable + "px");
+                $('.matching-result .mail-body').css("height", newHeightMailBody + "px");
                 $('#ghostbar2').remove();
                 $(document).unbind('mousemove');
-                dragging = false;
+                dragging = false;           
             }
         });
     }
@@ -1207,7 +1258,7 @@
 
     function emailMoveToLast() {
         var lastTr = $('#' + destinationTableId).find(' tbody tr:last');
-        showDestinationMail(lastTr.prev());
+        showDestinationMail(lastTr);
     }
     
     function engineerMoveToFirst() {
@@ -1233,7 +1284,7 @@
 
     function engineerMoveToLast() {
         var lastTr = $('#' + engineerTableId).find(' tbody tr:last');
-        selectedRow(lastTr.prev());
+        selectedRow(lastTr);
     }
 
 
@@ -1315,7 +1366,7 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            data.originalBody = getExcerptWithGreeting(data.excerpt) + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(partnerInfor != null && partnerInfor != ""){
                 data.originalBody = partnerInfor + data.originalBody;
