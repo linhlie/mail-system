@@ -442,7 +442,12 @@
         if(valueStart && valueEnd) {
         	return true;
         }
-        showError.apply(input, ["必須", "div.engineer-form-field"]);
+        if(!valueStart){
+            showError.apply(inputStart, ["必須", "div.engineer-form-field"]);
+        }
+        if(!valueEnd){
+            showError.apply(inputEnd, ["必須", "div.engineer-form-field"]);
+        }
         return false;
     }
 
