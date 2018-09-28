@@ -292,8 +292,12 @@ public class Engineer {
             this.commutingTime = engineer.getCommutingTime();
             this.dormant = engineer.isDormant();
             this.skillSheet = engineer.getSkillSheet();
-            this.projectPeriodStart = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodStart());
-            this.projectPeriodEnd = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodEnd());
+            if(engineer.getProjectPeriodStart()!=0){
+                this.projectPeriodStart = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodStart());
+            }
+            if(engineer.getProjectPeriodEnd()!=0){
+            	this.projectPeriodEnd = Utils.formatTimestamp(Utils.DATE_FORMAT, engineer.getProjectPeriodEnd());
+            }
             this.initial = engineer.getInitial();
             this.introduction = engineer.getIntroduction();
         }
@@ -307,10 +311,14 @@ public class Engineer {
             engineer.setKanaName(this.getKanaName());
             engineer.setMailAddress(this.getMailAddress());
             engineer.setEmploymentStatus(this.getEmploymentStatus());
-            Date from = Utils.parseDateStr(this.getProjectPeriodStart());
-            Date to = Utils.parseDateStr(this.getProjectPeriodEnd());
-            engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
-            engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
+            if(this.getProjectPeriodStart() != null && !this.getProjectPeriodStart().equals("")){
+                Date from = Utils.parseDateStr(this.getProjectPeriodStart());
+                engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
+            }
+            if(this.getProjectPeriodEnd()!= null && !this.getProjectPeriodEnd().equals("")){
+                Date to = Utils.parseDateStr(this.getProjectPeriodEnd());
+                engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
+            }
             engineer.setPartnerId(this.getPartnerId());
             engineer.setAutoExtend(this.isAutoExtend());
             engineer.setExtendMonth(this.getExtendMonth());

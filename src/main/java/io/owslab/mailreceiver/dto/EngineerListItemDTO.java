@@ -15,8 +15,12 @@ public class EngineerListItemDTO {
     private boolean active;
     private boolean autoExtend;
     private boolean dormant;
+    
+    
 
-    public EngineerListItemDTO(Engineer engineer, String partnerName, Timestamp now) {
+    public EngineerListItemDTO() {}
+
+	public EngineerListItemDTO(Engineer engineer, String partnerName, Timestamp now) {
         this.setId(engineer.getId());
         this.setName(engineer.getName());
         this.setAutoExtend(engineer.isAutoExtend());

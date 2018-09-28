@@ -16,6 +16,7 @@ import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
+import io.owslab.mailreceiver.utils.EngineerFilter;
 import io.owslab.mailreceiver.utils.Utils;
 
 import java.io.BufferedReader;
@@ -95,17 +96,48 @@ public class EngineerService {
     }
 
     public List<EngineerListItemDTO> filter(EngineerFilterForm form, Timestamp now) {
-        switch (form.getFilterType()) {
-            case EngineerFilterForm.FilterType.ACTIVE:
-                return getActive(now);
-            case EngineerFilterForm.FilterType.INACTIVE:
-                return getInactive(now);
-            case EngineerFilterForm.FilterType.LAST_MONTH:
-                return getByLastMonth(form, now);
-            case EngineerFilterForm.FilterType.ALL:
-            default:
-                return getAll(now);
+    	List<EngineerFilter> listEngineerByStatus = filterEngineerByStatus(form, now);
+    	
+    	boolean filterTime = form.isFilterTime();
+    	boolean filterTimeNull = form.isFilterTimeNull();
+    	Long dateStart = 0L, dateEnd = 0L;
+        if(filterTime){
+            Date startDate = new Date(form.getFilterDate());
+            startDate = Utils.atStartOfDay(startDate);
+            Date endDate = Utils.addMonthsToDate(startDate, 1);
+            endDate = Utils.addDayToDate(endDate, -1);
+            endDate = Utils.atEndOfDay(endDate);
+            dateStart = startDate.getTime();
+            dateEnd = endDate.getTime();
         }
+    	for(int i = listEngineerByStatus.size()-1 ;i>=0 ; i--){
+        	if(filterTime && filterTimeNull){
+        		if(!checkFilterByTime(listEngineerByStatus.get(i), dateStart, dateEnd) && !checkFilterByTimeNull(listEngineerByStatus.get(i))){
+        			listEngineerByStatus.remove(i);
+        		}
+        	}else if(filterTime){
+        		if(!checkFilterByTime(listEngineerByStatus.get(i), dateStart, dateEnd)){
+        			listEngineerByStatus.remove(i);
+        		}
+        	}else if(filterTimeNull){
+        		if(!checkFilterByTimeNull(listEngineerByStatus.get(i))){
+        			listEngineerByStatus.remove(i);
+        		}
+        	}
+    	}
+    	return buildEngineerDTOFromEngineerFilter(listEngineerByStatus);
+    }
+    
+    public List<EngineerFilter> filterEngineerByStatus(EngineerFilterForm form, Timestamp now) {
+    	switch (form.getFilterType()) {
+        	case EngineerFilterForm.FilterType.ACTIVE:
+            	return getActive(now);
+        	case EngineerFilterForm.FilterType.INACTIVE:
+        		return getInactive(now);
+        	case EngineerFilterForm.FilterType.ALL:
+        	default:
+        		return getAll(now);
+    	}
     }
     
     public List<EngineerMatchingDTO> filterEngineerMatching(EngineerFilterForm form, Timestamp now) {
@@ -114,18 +146,16 @@ public class EngineerService {
                 return getActiveEngineerMatching(now);
             case EngineerFilterForm.FilterType.INACTIVE:
                 return getInactiveEngineerMatching(now);
-            case EngineerFilterForm.FilterType.LAST_MONTH:
-                return getByLastMonthEngineerMatching(form, now);
             case EngineerFilterForm.FilterType.ALL:
             default:
                 return getAllEngineerMatching(now);
         }
     }
 
-    public List<EngineerListItemDTO> getActive(Timestamp now) {
-        List<EngineerListItemDTO> listItemDTOS = getAll(now);
-        List<EngineerListItemDTO> result = new ArrayList<>();
-        for (EngineerListItemDTO item : listItemDTOS) {
+    public List<EngineerFilter> getActive(Timestamp now) {
+        List<EngineerFilter> listEngineer = getAll(now);
+        List<EngineerFilter> result = new ArrayList<>();
+        for (EngineerFilter item : listEngineer) {
             if (item.isActive()) {
                 result.add(item);
             }
@@ -144,10 +174,10 @@ public class EngineerService {
         return result;
     }
 
-    public List<EngineerListItemDTO> getInactive(Timestamp now) {
-        List<EngineerListItemDTO> listItemDTOS = getAll(now);
-        List<EngineerListItemDTO> result = new ArrayList<>();
-        for (EngineerListItemDTO item : listItemDTOS) {
+    public List<EngineerFilter> getInactive(Timestamp now) {
+        List<EngineerFilter> listEngineer = getAll(now);
+        List<EngineerFilter> result = new ArrayList<>();
+        for (EngineerFilter item : listEngineer) {
             if (!item.isActive()) {
                 result.add(item);
             }
@@ -166,9 +196,9 @@ public class EngineerService {
         return result;
     }
 
-    public List<EngineerListItemDTO> getAll(Timestamp now) {
+    public List<EngineerFilter> getAll(Timestamp now) {
         List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
-        return build(engineers, now);
+        return buildEngineerFilter(engineers, now);
     }
     
     public List<EngineerMatchingDTO> getAllEngineerMatching(Timestamp now) {
@@ -179,16 +209,6 @@ public class EngineerService {
     public List<Engineer> getList() {
         List<Engineer> engineers = (List<Engineer>) engineerDAO.findAll();
         return engineers;
-    }
-
-    public List<EngineerListItemDTO> getByLastMonth(EngineerFilterForm form, Timestamp now) {
-        Date startDate = new Date(form.getFilterDate());
-        startDate = Utils.atStartOfDay(startDate);
-        Date endDate = Utils.addMonthsToDate(startDate, 1);
-        endDate = Utils.addDayToDate(endDate, -1);
-        endDate = Utils.atEndOfDay(endDate);
-        List<Engineer> engineers = engineerDAO.findByProjectPeriodEndBetween(startDate.getTime(), endDate.getTime());
-        return build(engineers, now);
     }
     
     public List<EngineerMatchingDTO> getByLastMonthEngineerMatching(EngineerFilterForm form, Timestamp now) {
@@ -201,12 +221,27 @@ public class EngineerService {
         return buildEngineerMatching(engineers, now);
     }
 
-    private List<EngineerListItemDTO> build(List<Engineer> engineers, Timestamp now) {
+    private List<EngineerListItemDTO> buildEngineerDTOFromEngineerFilter(List<EngineerFilter> engineers) {
         List<EngineerListItemDTO> engineerDTOs = new ArrayList<>();
+        for(EngineerFilter engineer : engineers){
+        	EngineerListItemDTO eng = new EngineerListItemDTO();
+        	eng.setId(engineer.getId());
+        	eng.setName(engineer.getName());
+        	eng.setPartnerName(engineer.getPartnerName());
+        	eng.setActive(engineer.isActive());
+        	eng.setAutoExtend(engineer.isAutoExtend());
+        	eng.setDormant(engineer.isDormant());
+        	engineerDTOs.add(eng);
+        }
+        return engineerDTOs;
+    }
+    
+    private List<EngineerFilter> buildEngineerFilter(List<Engineer> engineers, Timestamp now) {
+        List<EngineerFilter> engineerDTOs = new ArrayList<>();
         for(Engineer engineer : engineers){
             BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
             if(partner != null) {
-                engineerDTOs.add(new EngineerListItemDTO(engineer, partner.getName(), now));
+                engineerDTOs.add(new EngineerFilter(engineer, partner.getName(), now));
             }
         }
         return engineerDTOs;
@@ -385,5 +420,19 @@ public class EngineerService {
     	List<Long> listPartnerId = relationshipEngineerPartnerDAO.getPartnerIds(engineerId);
     	if(listPartnerId == null || listPartnerId.size()==0) return null;
     	return listPartnerId;
+    }
+    
+    public boolean checkFilterByTime(EngineerFilter engineer, long startDate, long endDate){
+    	if(engineer.getProjectPeriodEnd()>= startDate && engineer.getProjectPeriodEnd() <= endDate){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public boolean checkFilterByTimeNull(EngineerFilter engineer){
+    	if(engineer.getProjectPeriodEnd()== 0 && engineer.getProjectPeriodStart() == 0){
+    		return true;
+    	}
+    	return false;
     }
 }

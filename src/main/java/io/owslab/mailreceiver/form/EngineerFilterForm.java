@@ -7,6 +7,8 @@ public class EngineerFilterForm {
 
     private int filterType;
     private long filterDate;
+    private boolean filterTime;
+    private boolean filterTimeNull;
 
     public EngineerFilterForm() {
     }
@@ -26,11 +28,26 @@ public class EngineerFilterForm {
     public void setFilterDate(long filterDate) {
         this.filterDate = filterDate;
     }
+    
+    public boolean isFilterTime() {
+		return filterTime;
+	}
 
-    public static class FilterType {
+	public void setFilterTime(boolean filterTime) {
+		this.filterTime = filterTime;
+	}
+
+	public boolean isFilterTimeNull() {
+		return filterTimeNull;
+	}
+
+	public void setFilterTimeNull(boolean filterTimeNull) {
+		this.filterTimeNull = filterTimeNull;
+	}
+
+	public static class FilterType {
         public static final int ALL = 1;
         public static final int ACTIVE = 2;
         public static final int INACTIVE = 3;
-        public static final int LAST_MONTH = 4;
     }
 }
