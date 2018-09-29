@@ -315,6 +315,9 @@ public class EngineerService {
         long current = System.currentTimeMillis();
         for(Engineer engineer: autoExtends) {
             long projectPeriodEnd = engineer.getProjectPeriodEnd();
+            if(projectPeriodEnd==0){
+            	continue;
+            }
             if(projectPeriodEnd < current) {
                 Date startDate = new Date(projectPeriodEnd);
                 startDate = Utils.addDayToDate(startDate, 1);
@@ -367,12 +370,13 @@ public class EngineerService {
                     String projectPeriodStart = csvEngineerDTO.getProjectPeriodStart();
                     String projectPeriodEnd = csvEngineerDTO.getProjectPeriodEnd();
                     String skillSheet = csvEngineerDTO.getSkillSheet();
-                    if(name == null || kanaName == null || employmentStatus == null
-                            || partnerCode == null || projectPeriodStart == null || projectPeriodEnd == null) {
-                        String type = "【技術者インポート】";
-                        int lineIndex = skipHeader ? line + 2 : line + 1;
-                        String info = "技術者名 " + Objects.toString(name, "");
-                        List<String> missingList = new ArrayList<>();
+                    
+                    String typetmp = "【技術者インポート】";
+                    int lineIndextmp = skipHeader ? line + 2 : line + 1;
+                    String infotmp = "技術者名 " + Objects.toString(name, "");
+                    List<String> missingList = new ArrayList<>();
+                    
+                    if(name == null || kanaName == null || employmentStatus == null || partnerCode == null) {
                         if(name == null) {
                             missingList.add("技術者名がありません");
                         }
@@ -385,14 +389,22 @@ public class EngineerService {
                         if(partnerCode == null) {
                             missingList.add("所属識別IDがありません");
                         }
-                        if(projectPeriodStart == null) {
-                            missingList.add("案件期間「開始」がありません");
-                        }
-                        if(projectPeriodEnd == null) {
-                            missingList.add("案件期間「終了」がありません");
-                        }
                         String detail = String.join("、", missingList) + "。";
-                        ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
+                    if(projectPeriodStart == null && projectPeriodEnd != null){
+                    	missingList.add("案件期間「開始」がありません");
+                        String detail = String.join("、", missingList) + "。";
+                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
+                    if(projectPeriodStart != null && projectPeriodEnd == null){
+                    	missingList.add("案件期間「終了」がありません");
+                        String detail = String.join("、", missingList) + "。";
+                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
                         importLogs.add(importLog);
                         continue;
                     }
