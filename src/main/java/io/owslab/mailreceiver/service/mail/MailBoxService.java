@@ -62,7 +62,7 @@ public class MailBoxService {
     public static final int USE_RAW = 0;
     public static final int USE_LOWER_LIMIT = 1;
     public static final int USE_UPPER_LIMIT = 2;
-    public static final String BODY_HEADEAR = "ご担当者様";
+    public static final String BODY_HEADEAR = "　ご担当者様";
     @Autowired
     private EmailDAO emailDAO;
     
