@@ -125,7 +125,7 @@ public class EngineerFilter {
 		}
 		
 	    public boolean checkFilterByTime(long projectPeriodStart, long projectPeriodEnd, long startDate, long endDate){
-	    	if(projectPeriodEnd==0){
+	    	if(projectPeriodEnd==0 && projectPeriodStart!=0){
 	    		if(projectPeriodStart<endDate){
 		    		return true;
 	    		}else{
