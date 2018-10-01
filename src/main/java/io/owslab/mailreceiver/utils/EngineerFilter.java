@@ -1,8 +1,10 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.model.Engineer;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class EngineerFilter {
 	   private long id;
@@ -14,6 +16,8 @@ public class EngineerFilter {
 	    private long projectPeriodStart;
 	    private long projectPeriodEnd;
 
+	    public EngineerFilter(){}
+	    
 	    public EngineerFilter(Engineer engineer, String partnerName, Timestamp now) {
 	        this.setId(engineer.getId());
 	        this.setName(engineer.getName());
@@ -92,4 +96,45 @@ public class EngineerFilter {
 		public void setProjectPeriodEnd(long projectPeriodEnd) {
 			this.projectPeriodEnd = projectPeriodEnd;
 		}
+		
+		public boolean FilterEngineerToRemove(Long filterDate, boolean filterTime, boolean filterTimeNull){
+	    	long dateStart = 0, dateEnd = 0;
+	        if(filterTime){
+	            Date startDate = new Date(filterDate);
+	            startDate = Utils.atStartOfDay(startDate);
+	            Date endDate = Utils.addMonthsToDate(startDate, 1);
+	            endDate = Utils.addDayToDate(endDate, -1);
+	            endDate = Utils.atEndOfDay(endDate);
+	            dateStart = startDate.getTime();
+	            dateEnd = endDate.getTime();
+	        }	
+			if(filterTime && filterTimeNull){
+        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
+        			return true;
+        		}
+        	}else if(filterTime){
+        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd)){
+        			return true;
+        		}
+        	}else if(filterTimeNull){
+        		if(!checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
+        			return true;
+        		}
+        	}
+			return false;
+		}
+		
+	    public boolean checkFilterByTime(long projectPeriodEnd, long startDate, long endDate){
+	    	if(projectPeriodEnd >= startDate && projectPeriodEnd <= endDate){
+	    		return true;
+	    	}
+	    	return false;
+	    }
+	    
+	    public boolean checkFilterByTimeNull(long projectPeriodEnd, long projectPeriodStart){
+	    	if(projectPeriodStart == 0 && projectPeriodEnd == 0){
+	    		return true;
+	    	}
+	    	return false;
+	    }
 }

@@ -4,31 +4,15 @@ import io.owslab.mailreceiver.model.Engineer;
 
 import java.sql.Timestamp;
 
-public class EngineerMatchingFilter {
-	   private long id;
-	    private String name;
+public class EngineerMatchingFilter extends EngineerFilter{
 	    private String mailAddress;
 	    private Long partnerId;
-	    private String partnerName;
 	    private String matchingWord;
 	    private String notGoodWord;
-	    private String monetaryMoney;
-	    private boolean active;
-	    private boolean autoExtend;
-	    private boolean dormant;
-	    private long projectPeriodStart;
-	    private long projectPeriodEnd;
-	    
+	    private String monetaryMoney;	    
 	    FilterRule moneyCondition;
-	    public EngineerMatchingFilter(){
-	    	
-	    }
 	    
-	    public EngineerMatchingFilter(Engineer engineer){
-	    	this.id = engineer.getId();
-	    	this.name =engineer.getName();
-	    	this.partnerName = "Partner Name";
-	    }
+	    public EngineerMatchingFilter(){}
 	    
 	    public EngineerMatchingFilter(Engineer engineer, String partnerName, Timestamp now) {
 	        this.setId(engineer.getId());
@@ -50,43 +34,6 @@ public class EngineerMatchingFilter {
 	        this.setProjectPeriodEnd(engineer.getProjectPeriodEnd());
 	    }
 	    
-		public long getId() {
-			return id;
-		}
-		public void setId(long id) {
-			this.id = id;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
-		}
-		public String getPartnerName() {
-			return partnerName;
-		}
-		public void setPartnerName(String partnerName) {
-			this.partnerName = partnerName;
-		}
-		public boolean isActive() {
-			return active;
-		}
-		public void setActive(boolean active) {
-			this.active = active;
-		}
-		public boolean isAutoExtend() {
-			return autoExtend;
-		}
-		public void setAutoExtend(boolean autoExtend) {
-			this.autoExtend = autoExtend;
-		}
-		public boolean isDormant() {
-			return dormant;
-		}
-		public void setDormant(boolean dormant) {
-			this.dormant = dormant;
-		}
-
 		public String getMailAddress() {
 			return mailAddress;
 		}
@@ -137,22 +84,6 @@ public class EngineerMatchingFilter {
 
 		public void setPartnerId(Long partnerId) {
 			this.partnerId = partnerId;
-		}
-
-		public long getProjectPeriodStart() {
-			return projectPeriodStart;
-		}
-
-		public void setProjectPeriodStart(long projectPeriodStart) {
-			this.projectPeriodStart = projectPeriodStart;
-		}
-
-		public long getProjectPeriodEnd() {
-			return projectPeriodEnd;
-		}
-
-		public void setProjectPeriodEnd(long projectPeriodEnd) {
-			this.projectPeriodEnd = projectPeriodEnd;
 		}
 
 }

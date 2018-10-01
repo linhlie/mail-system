@@ -101,34 +101,19 @@ public class EngineerService {
     	
     	boolean filterTime = form.isFilterTime();
     	boolean filterTimeNull = form.isFilterTimeNull();
-    	Long dateStart = 0L, dateEnd = 0L;
-        if(filterTime){
-            Date startDate = new Date(form.getFilterDate());
-            startDate = Utils.atStartOfDay(startDate);
-            Date endDate = Utils.addMonthsToDate(startDate, 1);
-            endDate = Utils.addDayToDate(endDate, -1);
-            endDate = Utils.atEndOfDay(endDate);
-            dateStart = startDate.getTime();
-            dateEnd = endDate.getTime();
-        }
+    	long filteDate=0;
+    	if(filterTime){
+    		filteDate = form.getFilterDate();
+    	}
+
     	for(int i = listEngineerByStatus.size()-1 ;i>=0 ; i--){
     		EngineerFilter engineer = listEngineerByStatus.get(i);
     		if(engineer==null){
     			listEngineerByStatus.remove(i);
     			continue;
     		}
-        	if(filterTime && filterTimeNull){
-        		if(!checkFilterByTime(engineer.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd())){
-        			listEngineerByStatus.remove(i);
-        		}
-        	}else if(filterTime){
-        		if(!checkFilterByTime(engineer.getProjectPeriodEnd(), dateStart, dateEnd)){
-        			listEngineerByStatus.remove(i);
-        		}
-        	}else if(filterTimeNull){
-        		if(!checkFilterByTimeNull(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd())){
-        			listEngineerByStatus.remove(i);
-        		}
+        	if(engineer.FilterEngineerToRemove(filteDate, filterTime, filterTimeNull)){
+        		listEngineerByStatus.remove(i);
         	}
     	}
     	return buildEngineerDTOFromEngineerFilter(listEngineerByStatus);
@@ -150,15 +135,9 @@ public class EngineerService {
     	List<EngineerMatchingFilter> listEngineerMatchingByStatus = filterEngineerMatchingyStatus(form, now);
     	boolean filterTime = form.isFilterTime();
     	boolean filterTimeNull = form.isFilterTimeNull();
-    	Long dateStart = 0L, dateEnd = 0L;
+    	long filterDate = 0;
         if(filterTime){
-            Date startDate = new Date(form.getFilterDate());
-            startDate = Utils.atStartOfDay(startDate);
-            Date endDate = Utils.addMonthsToDate(startDate, 1);
-            endDate = Utils.addDayToDate(endDate, -1);
-            endDate = Utils.atEndOfDay(endDate);
-            dateStart = startDate.getTime();
-            dateEnd = endDate.getTime();
+        	filterDate = form.getFilterDate();
         }
     	for(int i = listEngineerMatchingByStatus.size()-1 ;i>=0 ; i--){
     		EngineerMatchingFilter engineer = listEngineerMatchingByStatus.get(i);
@@ -166,18 +145,8 @@ public class EngineerService {
     			listEngineerMatchingByStatus.remove(i);
     			continue;
     		}
-        	if(filterTime && filterTimeNull){
-        		if(!checkFilterByTime(engineer.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd())){
-        			listEngineerMatchingByStatus.remove(i);
-        		}
-        	}else if(filterTime){
-        		if(!checkFilterByTime(engineer.getProjectPeriodEnd(), dateStart, dateEnd)){
-        			listEngineerMatchingByStatus.remove(i);
-        		}
-        	}else if(filterTimeNull){
-        		if(!checkFilterByTimeNull(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd())){
-        			listEngineerMatchingByStatus.remove(i);
-        		}
+    		if(engineer.FilterEngineerToRemove(filterDate, filterTime, filterTimeNull)){
+    			listEngineerMatchingByStatus.remove(i);
         	}
     	}
     	return buildEngineerMatchingDTOFromEngineerMatchingFilter(listEngineerMatchingByStatus);
@@ -271,14 +240,14 @@ public class EngineerService {
     
     
     private List<EngineerFilter> buildEngineerFilter(List<Engineer> engineers, Timestamp now) {
-        List<EngineerFilter> engineerDTOs = new ArrayList<>();
+        List<EngineerFilter> engineerFilters = new ArrayList<>();
         for(Engineer engineer : engineers){
             BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
             if(partner != null) {
-                engineerDTOs.add(new EngineerFilter(engineer, partner.getName(), now));
+            	engineerFilters.add(new EngineerFilter(engineer, partner.getName(), now));
             }
         }
-        return engineerDTOs;
+        return engineerFilters;
     }
     
     private List<EngineerMatchingDTO> buildEngineerMatchingDTOFromEngineerMatchingFilter(List<EngineerMatchingFilter> engineers) {
@@ -291,14 +260,14 @@ public class EngineerService {
     }
     
     private List<EngineerMatchingFilter> buildEngineerMatchingFilter(List<Engineer> engineers, Timestamp now) {
-        List<EngineerMatchingFilter> engineerDTOs = new ArrayList<>();
+        List<EngineerMatchingFilter> engineerMatchingFilters = new ArrayList<>();
         for(Engineer engineer : engineers){
             BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
             if(partner != null) {
-                engineerDTOs.add(new EngineerMatchingFilter(engineer, partner.getName(), now));
+            	engineerMatchingFilters.add(new EngineerMatchingFilter(engineer, partner.getName(), now));
             }
         }
-        return engineerDTOs;
+        return engineerMatchingFilters;
     }
 
     public List<Engineer.Builder> getById(long id) {
@@ -475,19 +444,5 @@ public class EngineerService {
     	List<Long> listPartnerId = relationshipEngineerPartnerDAO.getPartnerIds(engineerId);
     	if(listPartnerId == null || listPartnerId.size()==0) return null;
     	return listPartnerId;
-    }
-    
-    public boolean checkFilterByTime(long projectPeriodEnd, long startDate, long endDate){
-    	if(projectPeriodEnd >= startDate && projectPeriodEnd <= endDate){
-    		return true;
-    	}
-    	return false;
-    }
-    
-    public boolean checkFilterByTimeNull(long projectPeriodEnd, long projectPeriodStart){
-    	if(projectPeriodStart == 0 && projectPeriodEnd == 0){
-    		return true;
-    	}
-    	return false;
     }
 }
