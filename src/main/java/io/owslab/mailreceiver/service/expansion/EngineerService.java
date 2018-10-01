@@ -363,6 +363,15 @@ public class EngineerService {
                         importLogs.add(importLog);
                         continue;
                     }
+                    if(projectPeriodStart != null && projectPeriodEnd != null){
+                    	if(projectPeriodStart.compareTo(projectPeriodEnd)>0){
+                        	missingList.add("案件期間「終了」は案件期間「開始」以上");
+                            String detail = String.join("、", missingList) + "。";
+                            ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                            importLogs.add(importLog);
+                            continue;
+                    	}
+                    }
                     BusinessPartner existPartner = partnerService.findOneByPartnerCode(partnerCode);
                     if(existPartner != null) {
                         try {

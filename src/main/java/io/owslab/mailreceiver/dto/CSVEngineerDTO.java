@@ -267,7 +267,7 @@ public class CSVEngineerDTO {
         engineer.setPartnerId(partner.getId());
         Date from;
         Date to;
-        if(this.projectPeriodStart != null && !this.projectPeriodStart.equals("")){
+        if(this.projectPeriodStart != null && !this.projectPeriodStart.equals("") && !this.projectPeriodStart.equals("0")){
             try {
                 from = Utils.parseDateStr(this.projectPeriodStart);
             } catch (ParseException pe) {
@@ -276,7 +276,7 @@ public class CSVEngineerDTO {
             engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
         }
 
-        if(this.projectPeriodEnd != null && !this.projectPeriodEnd.equals("")){
+        if(this.projectPeriodEnd != null && !this.projectPeriodEnd.equals("") && !this.projectPeriodEnd.equals("0")){
         	try {
                 to = Utils.parseDateStr(this.projectPeriodEnd);
             } catch (ParseException pe) {

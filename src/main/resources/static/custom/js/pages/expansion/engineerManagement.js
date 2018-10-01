@@ -361,9 +361,10 @@
         var validate4 = engineerMonetaryMoneyValidate();
         var validate5 = engineerEmploymentStatusValidate();
         var validate6 = engineerPartnerValidate();
+        var validate7 = engineerProjectPeriodValidate();
         var validate9 = engineerExtendMonthValidate();
         return validate1 && validate2 && validate3 && validate4 && validate5
-            && validate6 && validate9;
+            && validate6 && validate7 && validate9;
     }
 
     function engineerNameValidate() {
@@ -380,6 +381,7 @@
         var container = $(this).closest(selector);
         container.addClass("has-error");
         container.find("span.form-error").text(error);
+        console.log(error);
     }
 
     function engineerKanaNameValidate() {
@@ -426,6 +428,30 @@
         var value = input.val();
         if(!value) {
             showError.apply(input, ["選んでください"]);
+            return false;
+        }
+        return true;
+    }
+
+    function engineerProjectPeriodValidate() {
+        var inputStart = $("input[name='projectPeriodStart']");
+        var inputEnd = $("input[name='projectPeriodEnd']");
+        var valueStart = inputStart.val();
+        var valueEnd = inputEnd.val();
+    	var dateFormat = new RegExp('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])');
+
+        if(valueStart && valueEnd){
+            if(valueStart.localeCompare(valueEnd)>0){
+            	showError.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
+            	return false;
+            }        
+        }
+        if(valueStart && !dateFormat.test(valueStart)){
+            showError.apply(inputStart, ["「開始」または「終了」不正確なデータ"]);
+            return false;
+        }
+        if(valueEnd && !dateFormat.test(valueEnd)){
+            showError.apply(inputEnd, ["「開始」または「終了」不正確なデータ"]);
             return false;
         }
         return true;

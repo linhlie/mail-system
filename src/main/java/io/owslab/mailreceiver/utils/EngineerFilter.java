@@ -109,11 +109,11 @@ public class EngineerFilter {
 	            dateEnd = endDate.getTime();
 	        }	
 			if(filterTime && filterTimeNull){
-        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
+        		if(!checkFilterByTime(this.getProjectPeriodStart(), this.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
         			return true;
         		}
         	}else if(filterTime){
-        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd)){
+        		if(!checkFilterByTime(this.getProjectPeriodStart(), this.getProjectPeriodEnd(), dateStart, dateEnd)){
         			return true;
         		}
         	}else if(filterTimeNull){
@@ -124,7 +124,14 @@ public class EngineerFilter {
 			return false;
 		}
 		
-	    public boolean checkFilterByTime(long projectPeriodEnd, long startDate, long endDate){
+	    public boolean checkFilterByTime(long projectPeriodStart, long projectPeriodEnd, long startDate, long endDate){
+	    	if(projectPeriodEnd==0){
+	    		if(projectPeriodStart<endDate){
+		    		return true;
+	    		}else{
+	    			return false;
+	    		}
+	    	}
 	    	if(projectPeriodEnd >= startDate && projectPeriodEnd <= endDate){
 	    		return true;
 	    	}
