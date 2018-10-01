@@ -135,7 +135,7 @@
 
     function initLastMonthActive() {
         var now = new Date();
-        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 1) + "月";
+        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 2) + "月";
         $(lastMonthActiveId).MonthPicker({
             Button: false,
             i18n: {
@@ -711,7 +711,6 @@
         startDate = addDaysToDate(endDate, 1);
         endDate = addMonthsToDate(startDate, 3);
         endDate = addDaysToDate(endDate, -1);
-        // startInput.val(formatDate(startDate));
         endInput.val(formatDate(endDate));
     }
     
