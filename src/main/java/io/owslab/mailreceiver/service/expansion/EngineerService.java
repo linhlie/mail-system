@@ -363,20 +363,6 @@ public class EngineerService {
                         importLogs.add(importLog);
                         continue;
                     }
-                    if(projectPeriodStart == null && projectPeriodEnd != null){
-                    	missingList.add("案件期間「開始」がありません");
-                        String detail = String.join("、", missingList) + "。";
-                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
-                        importLogs.add(importLog);
-                        continue;
-                    }
-                    if(projectPeriodStart != null && projectPeriodEnd == null){
-                    	missingList.add("案件期間「終了」がありません");
-                        String detail = String.join("、", missingList) + "。";
-                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
-                        importLogs.add(importLog);
-                        continue;
-                    }
                     BusinessPartner existPartner = partnerService.findOneByPartnerCode(partnerCode);
                     if(existPartner != null) {
                         try {

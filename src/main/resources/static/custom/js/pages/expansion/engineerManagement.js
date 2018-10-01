@@ -361,10 +361,9 @@
         var validate4 = engineerMonetaryMoneyValidate();
         var validate5 = engineerEmploymentStatusValidate();
         var validate6 = engineerPartnerValidate();
-        var validate7 = engineerProjectPeriodValidate();
         var validate9 = engineerExtendMonthValidate();
         return validate1 && validate2 && validate3 && validate4 && validate5
-            && validate6 && validate7 && validate9;
+            && validate6 && validate9;
     }
 
     function engineerNameValidate() {
@@ -430,26 +429,6 @@
             return false;
         }
         return true;
-    }
-
-    function engineerProjectPeriodValidate() {
-        var inputStart = $("input[name='projectPeriodStart']");
-        var inputEnd = $("input[name='projectPeriodEnd']");
-        var valueStart = inputStart.val();
-        var valueEnd = inputEnd.val();
-        if(!valueStart && !valueEnd) {
-        	return true;
-        }
-        if(valueStart && valueEnd) {
-        	return true;
-        }
-        if(!valueStart){
-            showError.apply(inputStart, ["必須", "div.engineer-form-field"]);
-        }
-        if(!valueEnd){
-            showError.apply(inputEnd, ["必須", "div.engineer-form-field"]);
-        }
-        return false;
     }
 
     function engineerExtendMonthValidate() {
