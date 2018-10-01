@@ -66,8 +66,16 @@ public class CSVEngineerDTO {
         this.setMailAddress(engineer.getMailAddress());
         this.setEmploymentStatus(Integer.toString(engineer.getEmploymentStatus()));
         this.setPartnerCode(partner.getPartnerCode());
-        this.setProjectPeriodStart(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodStart()));
-        this.setProjectPeriodEnd(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodEnd()));
+        if(engineer.getProjectPeriodStart()==0){
+        	this.setProjectPeriodStart("");
+        }else{
+        	this.setProjectPeriodStart(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodStart()));
+        }
+        if(engineer.getProjectPeriodEnd()==0){
+        	this.setProjectPeriodEnd(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodEnd()));
+        }else{
+        	this.setProjectPeriodEnd("");
+        }      
         this.setAutoExtend(Boolean.toString(engineer.isAutoExtend()).toUpperCase());
         this.setExtendMonth(Objects.toString(engineer.getExtendMonth(), null));
         this.setMatchingWord(engineer.getMatchingWord());
@@ -259,18 +267,23 @@ public class CSVEngineerDTO {
         engineer.setPartnerId(partner.getId());
         Date from;
         Date to;
-        try {
-            from = Utils.parseDateStr(this.projectPeriodStart);
-        } catch (ParseException pe) {
-            throw new EngineerFieldValidationException("案件期間「開始」の値が一致しません");
+        if(this.projectPeriodStart != null && !this.projectPeriodStart.equals("")){
+            try {
+                from = Utils.parseDateStr(this.projectPeriodStart);
+            } catch (ParseException pe) {
+                throw new EngineerFieldValidationException("案件期間「開始」の値が一致しません");
+            }
+            engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
         }
-        try {
-            to = Utils.parseDateStr(this.projectPeriodEnd);
-        } catch (ParseException pe) {
-            throw new EngineerFieldValidationException("案件期間「終了」の値が一致しません");
+
+        if(this.projectPeriodEnd != null && !this.projectPeriodEnd.equals("")){
+        	try {
+                to = Utils.parseDateStr(this.projectPeriodEnd);
+            } catch (ParseException pe) {
+                throw new EngineerFieldValidationException("案件期間「終了」の値が一致しません");
+            }
+            engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
         }
-        engineer.setProjectPeriodStart(Utils.atStartOfDay(from).getTime());
-        engineer.setProjectPeriodEnd(Utils.atEndOfDay(to).getTime());
         boolean autoExtend = this.autoExtend.equalsIgnoreCase("TRUE");
         engineer.setAutoExtend(autoExtend);
         if(autoExtend) {

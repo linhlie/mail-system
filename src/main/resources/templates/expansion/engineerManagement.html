@@ -11,8 +11,8 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>技術者管理</h4>
-                        <div class="form-group row">
-                            <div class="col-md-12">
+                        <div class="form-group row " >
+                            <div class="pull-left filterEngineer" style="padding-top:10px;">
                                 <label class="radio-inline">
                                     <input type="radio" name="engineerFilter" value="1" checked="checked"/>すべて表示
                                 </label>
@@ -22,13 +22,21 @@
                                 <label class="radio-inline">
                                     <input type="radio" name="engineerFilter" value="3"/>非稼働中のみ表示
                                 </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="engineerFilter" value="4"/>最終稼働月指定
-                                </label>
-                                <input id="lastMonthActive" type="text" style="width: 100px;"/>
-                                <input id="lastMonthActiveAlt" style="display: none" type="text"/>
-                                <button id="filterEngineerBtn" style="margin-left: 30px;" type="button" class="btn btn-default">実行</button>
                             </div>
+                            <div class="pull-left filterEngineer">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="enableEngineerFilterTime" checked="checked"/>案件期間で絞り込み（
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" id="filterEngineerFilterTime"/>最終稼働月指定
+                                </label>
+                                <input id="lastMonthActive" type="text" style="width: 100px;" disabled="disabled"/>
+                                <input id="lastMonthActiveAlt" style="display: none;" type="text"/>
+                                <label class="checkbox-inline" style="margin-left: 20px;">
+                                    <input type="checkbox" id="filterEngineerFilterNull"/>案件期間 未登録&nbsp;）
+                                </label>                             
+                            </div>
+                            <button id="filterEngineerBtn" style="margin-left: 30px; height: 40px;" type="button" class="btn btn-default">実行</button>
                         </div>
                         <div id="engineerBox" class="engineer-part table-container-section form-inline" style="height: 200px; position: relative">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>

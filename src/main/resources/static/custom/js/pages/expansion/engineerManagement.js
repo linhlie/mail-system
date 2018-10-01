@@ -135,7 +135,7 @@
 
     function initLastMonthActive() {
         var now = new Date();
-        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 1) + "月";
+        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 2) + "月";
         $(lastMonthActiveId).MonthPicker({
             Button: false,
             i18n: {
@@ -155,15 +155,26 @@
             MonthFormat: 'yy年m月',
             AltFormat: '@',
             AltField: lastMonthActiveId + "Alt",
-            Disabled: true,
         });
+        $(lastMonthActiveId).MonthPicker('option', 'Disabled', true);
     }
 
     function filterTypeChangeListener() {
-        $("input[name='engineerFilter']").click(function() {
-            var disabled = this.value !== "4";
-            $(lastMonthActiveId).MonthPicker('option', 'Disabled', disabled);
-        });
+    	$('#filterEngineerFilterTime').change(function(){
+    		    var disabled = $(this).is(':checked');
+    		    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+    	});
+    	
+    	$('#enableEngineerFilterTime').change(function(){
+		    var disabled = $(this).is(':checked');
+		    $('#filterEngineerFilterTime').prop('disabled', !disabled);
+		    $('#filterEngineerFilterNull').prop('disabled', !disabled);
+		    if(!disabled){
+			    $('#filterEngineerFilterTime').prop('checked', disabled);
+			    $('#filterEngineerFilterNull').prop('checked', disabled);
+			    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+		    }
+    	});
     }
 
     function initStickyHeader() {
@@ -350,11 +361,10 @@
         var validate4 = engineerMonetaryMoneyValidate();
         var validate5 = engineerEmploymentStatusValidate();
         var validate6 = engineerPartnerValidate();
-        var validate7 = engineerProjectPeriodStartValidate();
-        var validate8 = engineerProjectPeriodEndValidate();
+        var validate7 = engineerProjectPeriodValidate();
         var validate9 = engineerExtendMonthValidate();
         return validate1 && validate2 && validate3 && validate4 && validate5
-            && validate6 && validate7 && validate8 && validate9;
+            && validate6 && validate7 && validate9;
     }
 
     function engineerNameValidate() {
@@ -422,24 +432,24 @@
         return true;
     }
 
-    function engineerProjectPeriodStartValidate() {
-        var input = $("input[name='projectPeriodStart']");
-        var value = input.val();
-        if(!value) {
-            showError.apply(input, ["必須", "div.engineer-form-field"]);
-            return false;
+    function engineerProjectPeriodValidate() {
+        var inputStart = $("input[name='projectPeriodStart']");
+        var inputEnd = $("input[name='projectPeriodEnd']");
+        var valueStart = inputStart.val();
+        var valueEnd = inputEnd.val();
+        if(!valueStart && !valueEnd) {
+        	return true;
         }
-        return true;
-    }
-
-    function engineerProjectPeriodEndValidate() {
-        var input = $("input[name='projectPeriodEnd']");
-        var value = input.val();
-        if(!value) {
-            showError.apply(input, ["必須", "div.engineer-form-field"]);
-            return false;
+        if(valueStart && valueEnd) {
+        	return true;
         }
-        return true;
+        if(!valueStart){
+            showError.apply(inputStart, ["必須", "div.engineer-form-field"]);
+        }
+        if(!valueEnd){
+            showError.apply(inputEnd, ["必須", "div.engineer-form-field"]);
+        }
+        return false;
     }
 
     function engineerExtendMonthValidate() {
@@ -702,7 +712,6 @@
         startDate = addDaysToDate(endDate, 1);
         endDate = addMonthsToDate(startDate, 3);
         endDate = addDaysToDate(endDate, -1);
-        // startInput.val(formatDate(startDate));
         endInput.val(formatDate(endDate));
     }
     
@@ -714,9 +723,13 @@
     function getFilterForm() {
         var filterType = $('input[name=engineerFilter]:checked').val();
         var filterDate = $(lastMonthActiveId + "Alt").val();
+        var filterTime = $('#filterEngineerFilterTime').is(":checked");
+        var filterTimeNull = $('#filterEngineerFilterNull').is(":checked");
         return {
             filterType: filterType,
             filterDate: filterDate,
+            filterTime: filterTime,
+        	filterTimeNull: filterTimeNull,
         }
     }
     

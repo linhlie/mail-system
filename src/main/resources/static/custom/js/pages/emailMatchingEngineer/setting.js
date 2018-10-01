@@ -333,15 +333,26 @@
     }
     
     function filterTypeChangeListener() {
-        $("input[name='engineerFilter']").click(function() {
-            var disabled = this.value !== "4";
-            $(lastMonthActiveId).MonthPicker('option', 'Disabled', disabled);
-        });
+    	$('#filterEngineerFilterTime').change(function(){
+    		    var disabled = $(this).is(':checked');
+    		    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+    	});
+    	
+    	$('#enableEngineerFilterTime').change(function(){
+		    var disabled = $(this).is(':checked');
+		    $('#filterEngineerFilterTime').prop('disabled', !disabled);
+		    $('#filterEngineerFilterNull').prop('disabled', !disabled);
+		    if(!disabled){
+			    $('#filterEngineerFilterTime').prop('checked', disabled);
+			    $('#filterEngineerFilterNull').prop('checked', disabled);
+			    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+		    }
+    	});
     }
 
     function initLastMonthActive() {
         var now = new Date();
-        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 1) + "月";
+        var selectedMonth = now.getFullYear() + "年" + (now.getMonth() + 2) + "月";
         $(lastMonthActiveId).MonthPicker({
             Button: false,
             i18n: {
@@ -361,8 +372,8 @@
             MonthFormat: 'yy年m月',
             AltFormat: '@',
             AltField: lastMonthActiveId + "Alt",
-            Disabled: true,
         });
+    	$(lastMonthActiveId).MonthPicker('option', 'Disabled', true);
     }
 
     function initStickyHeader() {
@@ -740,11 +751,15 @@
     }
     
     function getFilterForm() {
-        var filterType = $('input[name=engineerFilter]:checked').val();
+    	var filterType = $('input[name=engineerFilter]:checked').val();
         var filterDate = $(lastMonthActiveId + "Alt").val();
+        var filterTime = $('#filterEngineerFilterTime').is(":checked");
+        var filterTimeNull = $('#filterEngineerFilterNull').is(":checked");
         return {
             filterType: filterType,
             filterDate: filterDate,
+            filterTime: filterTime,
+        	filterTimeNull: filterTimeNull,
         }
     }
     

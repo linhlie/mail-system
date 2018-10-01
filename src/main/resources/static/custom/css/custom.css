@@ -1264,3 +1264,9 @@ section.sendTab.content {
 .partnerImport div.import-log span {
     color: red;
 }
+
+.filterEngineer{
+	border: 1px solid black;
+	padding: 5px;
+	margin-left: 20px;
+}
