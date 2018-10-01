@@ -156,6 +156,7 @@
             AltFormat: '@',
             AltField: lastMonthActiveId + "Alt",
         });
+        $(lastMonthActiveId).MonthPicker('option', 'Disabled', true);
     }
 
     function filterTypeChangeListener() {
