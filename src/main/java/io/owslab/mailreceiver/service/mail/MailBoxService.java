@@ -6,12 +6,15 @@ import com.vdurmont.emoji.EmojiParser;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
 import io.owslab.mailreceiver.enums.CompanyType;
+import io.owslab.mailreceiver.form.MoreInformationMailContentForm;
 import io.owslab.mailreceiver.form.SendAccountForm;
 import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
+import io.owslab.mailreceiver.service.expansion.EngineerService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -68,6 +71,9 @@ public class MailBoxService {
     
     @Autowired
     private DomainService domainService;
+    
+    @Autowired
+    private EngineerService engineerService;
 
     @Autowired
     private FileDAO fileDAO;
@@ -360,6 +366,23 @@ public class MailBoxService {
         result.setReplySentAt(Utils.formatGMT(replyEmail.getSentAt()));
         result.setSubject("Re: " + replyEmail.getSubject());
         return result;
+    }
+    
+    public List<MoreInformationMailContentDTO> getMoreinforMailContent(MoreInformationMailContentForm form) throws Exception {
+    	MoreInformationMailContentDTO infor = new MoreInformationMailContentDTO();
+    	if(form.getEmailAddress() !=null){
+        	String inforPartner  = getInforPartner(form.getEmailAddress());
+        	infor.setPartnerInfor(inforPartner);
+    	}
+    	if(form.getEngineerId()!=null){
+    		Engineer engineer = engineerService.getEngineerById(form.getEngineerId());
+    		if(engineer!=null){
+    			infor.setEngineerIntroduction(engineer.getIntroduction());
+    		}
+    	}
+    	List<MoreInformationMailContentDTO> result = new ArrayList<MoreInformationMailContentDTO>();
+    	result.add(infor);
+    	return result;
     }
 
     public String getInforPartner(String sentTo) throws Exception {

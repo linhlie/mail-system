@@ -414,7 +414,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.messageId) {
-                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData);
+                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO.id);
                         }
                     });
                 }
@@ -673,19 +673,21 @@
         }
     }
     
-    function showMailEditor(messageId, accountId, receiver) {
+    function showMailEditor(messageId, accountId, receiver, engineerId) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-            showMailEditorInNewTab(messageId, accountId, receiver);
+            showMailEditorInNewTab(messageId, accountId, receiver, engineerId);
         } else {
-            showMailEditorInTab(messageId, accountId, receiver);
+            showMailEditorInTab(messageId, accountId, receiver, engineerId);
         }
     }
     
-    function showMailEditorInNewTab(messageId, accountId, receiver) {
+    function showMailEditorInNewTab(messageId, accountId, receiver, engineerId) {
         var data = {
+        	"type" : "replyFromEngineerMatching",
             "accountId" : accountId,
             "messageId" : messageId,
+            "engineerId" : engineerId,
             "receiver" : receiver,
             "historyType": getHistoryType(),
         };
@@ -698,18 +700,18 @@
         }
     }
 
-    function showMailEditorInTab(messageId, accountId, receiver) {
+    function showMailEditorInTab(messageId, accountId, receiver, engineerId) {
         $('#sendMailModal').modal();
         lastReceiver = receiver;
         lastMessageId = messageId;
         showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver)
+            showMailContentToEditor(email, accounts, receiver, engineerId)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
             showMailWithReplacedRangeNew(lastMessageId, this.value, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver)
+                showMailContentToEditor(email, accounts, lastReceiver, engineerId)
             });
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -1325,14 +1327,14 @@
         });
     }
     
-    function showMailContentToEditor(data, accounts, receiverData, engineer) {
+    function showMailContentToEditor(data, accounts, receiverData, engineerId) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartner(receiverListStr, function(partnerInfor){
-        	showMailContentToEditorFinal(data, accounts, receiverData, engineer, partnerInfor);
+        getInforPartnerAndEngineerIntroduction(receiverListStr, engineerId, function(moreInfor){
+        	showMailContentToEditorFinal(data, accounts, receiverData, moreInfor);
         });
     }
     
-    function showMailContentToEditorFinal(data, accounts, receiverData, engineer, partnerInfor) {
+    function showMailContentToEditorFinal(data, accounts, receiverData, moreInfor) {
     	var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -1366,28 +1368,30 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
+            if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
+            	data.originalBody = "<br><br>" + moreInfor.engineerIntroduction + data.originalBody;
+            }
             data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
-            if(partnerInfor != null && partnerInfor != ""){
-                data.originalBody = partnerInfor + data.originalBody;
+            if(moreInfor != null && moreInfor.partnerInfor != null && moreInfor.partnerInfor != ""){
+                data.originalBody = moreInfor.partnerInfor + data.originalBody;
             }
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData(attachmentDropzone);
     }
     
-    function getInforPartner(sentTo, callback){
+    function getInforPartnerAndEngineerIntroduction(sentTo, enginnerId, callback){
         function onSuccess(response) {
-            if(response) {
-            	if(response.status){
-            		if(typeof callback == 'function'){
-                    	callback(response.msg);
+            if(response && response.status) {
+            	if(response.list && response.list.length > 0) {
+                    var data = response.list[0];
+                    if(typeof callback == 'function'){
+                    	callback(data);
                     }
-            	}else{
-            		if(typeof callback == 'function'){
-                    	callback();
-                    }
-            	}
+                } else {
+                    $.alert('所属企業の情報の取得に失敗しました。');
+                }
             }
         }
         function onError() {
@@ -1396,8 +1400,14 @@
             	alert('所属企業の情報の取得に失敗しました。');
             }
         }
-
-        getInforPartnerAPI(sentTo, onSuccess, onError);
+        getInforPartnerAndEngineerIntroductionAPI(
+        		{
+        			"emailAddress": sentTo,
+        			"engineerId": enginnerId,
+        		}, 
+        		onSuccess, 
+        		onError
+        );
     }
 
     function updateTotalDestinationMatching(total) {

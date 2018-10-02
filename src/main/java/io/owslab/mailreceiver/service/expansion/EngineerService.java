@@ -271,6 +271,11 @@ public class EngineerService {
         }
         return result;
     }
+    
+    public Engineer getEngineerById(long id) {
+        Engineer engineer = engineerDAO.findOne(id);
+        return engineer;
+    }
 
     public void autoExtend() {
         List<Engineer> autoExtends = engineerDAO.findByAutoExtend(true);
