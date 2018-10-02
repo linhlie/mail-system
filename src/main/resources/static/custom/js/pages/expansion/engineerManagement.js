@@ -437,19 +437,37 @@
         var inputEnd = $("input[name='projectPeriodEnd']");
         var valueStart = inputStart.val();
         var valueEnd = inputEnd.val();
-        if(!valueStart && !valueEnd) {
-        	return true;
+    	var dateFormat = new RegExp('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])');
+
+        if(valueStart && !dateFormat.test(valueStart)){
+        	showErrorProjectPeriodStart.apply(inputStart, ["「開始」不正確なデータ"]);
+            return false;
         }
-        if(valueStart && valueEnd) {
-        	return true;
+        if(valueEnd && !dateFormat.test(valueEnd)){
+        	showErrorProjectPeriodEnd.apply(inputEnd, ["「終了」不正確なデータ"]);
+            return false;
         }
-        if(!valueStart){
-            showError.apply(inputStart, ["必須", "div.engineer-form-field"]);
+        if(valueStart && valueEnd){
+            if(valueStart.localeCompare(valueEnd)>0){
+            	showErrorProjectPeriodStart.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
+            	return false;
+            }        
         }
-        if(!valueEnd){
-            showError.apply(inputEnd, ["必須", "div.engineer-form-field"]);
-        }
-        return false;
+        return true;
+    }
+    
+    function showErrorProjectPeriodStart(error, selector) {
+        selector = selector || ".engineer-form-field";
+        var container = $(this).closest(selector);
+        container.addClass("has-error");
+        container.find("span.form-error").text(error);
+    }
+    
+    function showErrorProjectPeriodEnd(error, selector) {
+        selector = selector || ".engineer-form-field";
+        var container = $(this).closest(selector);
+        container.addClass("has-error");
+        container.find("span.form-error").text(error);
     }
 
     function engineerExtendMonthValidate() {

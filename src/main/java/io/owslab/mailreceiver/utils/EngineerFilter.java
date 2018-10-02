@@ -25,9 +25,7 @@ public class EngineerFilter {
 	        this.setDormant(engineer.isDormant());
 	        this.setPartnerName(partnerName);
 	        boolean dormant = engineer.isDormant();
-	        Timestamp from = new Timestamp(engineer.getProjectPeriodStart());
-	        Timestamp to = new Timestamp(engineer.getProjectPeriodEnd());
-	        boolean active = !dormant && (!now.before(from) && !now.after(to));
+	        boolean active = !dormant && checkActive(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd(), now);
 	        this.setActive(active);
 	        this.projectPeriodStart = engineer.getProjectPeriodStart();
 	        this.projectPeriodEnd = engineer.getProjectPeriodEnd();
@@ -97,9 +95,12 @@ public class EngineerFilter {
 			this.projectPeriodEnd = projectPeriodEnd;
 		}
 		
-		public boolean FilterEngineerToRemove(Long filterDate, boolean filterTime, boolean filterTimeNull){
-	    	long dateStart = 0, dateEnd = 0;
-	        if(filterTime){
+		public boolean FilterEngineerToRemove(EngineerFilterForm form, Timestamp now){
+	    	boolean filterTime = form.isFilterTime();
+	    	boolean filterTimeNull = form.isFilterTimeNull();
+	    	long filterDate=0, dateStart = 0, dateEnd = 0;
+	    	if(filterTime){
+	    		filterDate = form.getFilterDate();
 	            Date startDate = new Date(filterDate);
 	            startDate = Utils.atStartOfDay(startDate);
 	            Date endDate = Utils.addMonthsToDate(startDate, 1);
@@ -109,32 +110,56 @@ public class EngineerFilter {
 	            dateEnd = endDate.getTime();
 	        }	
 			if(filterTime && filterTimeNull){
-        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd) && !checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
+        		if(!checkFilterByTime(dateStart, dateEnd) && !checkFilterByTimeNull()){
         			return true;
         		}
         	}else if(filterTime){
-        		if(!checkFilterByTime(this.getProjectPeriodEnd(), dateStart, dateEnd)){
+        		if(!checkFilterByTime(dateStart, dateEnd)){
         			return true;
         		}
         	}else if(filterTimeNull){
-        		if(!checkFilterByTimeNull(this.getProjectPeriodStart(), this.getProjectPeriodEnd())){
+        		if(!checkFilterByTimeNull()){
         			return true;
         		}
         	}
 			return false;
 		}
 		
-	    public boolean checkFilterByTime(long projectPeriodEnd, long startDate, long endDate){
-	    	if(projectPeriodEnd >= startDate && projectPeriodEnd <= endDate){
+	    public boolean checkFilterByTime(long startDate, long endDate){
+	    	if(this.projectPeriodEnd==0 && this.projectPeriodStart!=0){
+	    		if(projectPeriodStart<=endDate){
+		    		return true;
+	    		}else{
+	    			return false;
+	    		}
+	    	}
+	    	if(this.projectPeriodEnd >= startDate && this.projectPeriodEnd <= endDate){
 	    		return true;
 	    	}
 	    	return false;
 	    }
 	    
-	    public boolean checkFilterByTimeNull(long projectPeriodEnd, long projectPeriodStart){
-	    	if(projectPeriodStart == 0 && projectPeriodEnd == 0){
+	    public boolean checkFilterByTimeNull(){
+	    	if(this.projectPeriodStart == 0 && this.projectPeriodEnd == 0){
 	    		return true;
 	    	}
 	    	return false;
+	    }
+	    
+	    public boolean checkActive(long projectPeriodStart, long projectPeriodEnd, Timestamp now){
+	    	 Timestamp from = new Timestamp(projectPeriodStart);
+	    	 if(projectPeriodStart==0 && projectPeriodEnd==0){
+	    		 return false;
+	    	 }
+		     if(projectPeriodEnd==0){
+		    		 return !now.before(from);
+		     }else{
+		    	 Timestamp to = new Timestamp(projectPeriodEnd);
+		    	 if(!now.before(from) && !now.after(to) ){
+		    		 return true;
+		    	 }else{
+		    		 return false;
+		    	 }
+		     }
 	    }
 }

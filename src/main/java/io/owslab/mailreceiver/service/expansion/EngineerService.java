@@ -98,13 +98,6 @@ public class EngineerService {
 
     public List<EngineerListItemDTO> filter(EngineerFilterForm form, Timestamp now) {
     	List<EngineerFilter> listEngineerByStatus = filterEngineerByStatus(form, now);
-    	
-    	boolean filterTime = form.isFilterTime();
-    	boolean filterTimeNull = form.isFilterTimeNull();
-    	long filteDate=0;
-    	if(filterTime){
-    		filteDate = form.getFilterDate();
-    	}
 
     	for(int i = listEngineerByStatus.size()-1 ;i>=0 ; i--){
     		EngineerFilter engineer = listEngineerByStatus.get(i);
@@ -112,7 +105,7 @@ public class EngineerService {
     			listEngineerByStatus.remove(i);
     			continue;
     		}
-        	if(engineer.FilterEngineerToRemove(filteDate, filterTime, filterTimeNull)){
+        	if(engineer.FilterEngineerToRemove(form, now)){
         		listEngineerByStatus.remove(i);
         	}
     	}
@@ -145,7 +138,7 @@ public class EngineerService {
     			listEngineerMatchingByStatus.remove(i);
     			continue;
     		}
-    		if(engineer.FilterEngineerToRemove(filterDate, filterTime, filterTimeNull)){
+    		if(engineer.FilterEngineerToRemove(form, now)){
     			listEngineerMatchingByStatus.remove(i);
         	}
     	}
@@ -363,19 +356,14 @@ public class EngineerService {
                         importLogs.add(importLog);
                         continue;
                     }
-                    if(projectPeriodStart == null && projectPeriodEnd != null){
-                    	missingList.add("案件期間「開始」がありません");
-                        String detail = String.join("、", missingList) + "。";
-                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
-                        importLogs.add(importLog);
-                        continue;
-                    }
-                    if(projectPeriodStart != null && projectPeriodEnd == null){
-                    	missingList.add("案件期間「終了」がありません");
-                        String detail = String.join("、", missingList) + "。";
-                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
-                        importLogs.add(importLog);
-                        continue;
+                    if(projectPeriodStart != null && projectPeriodEnd != null){
+                    	if(projectPeriodStart.compareTo(projectPeriodEnd)>0){
+                        	missingList.add("案件期間「終了」は案件期間「開始」以上");
+                            String detail = String.join("、", missingList) + "。";
+                            ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                            importLogs.add(importLog);
+                            continue;
+                    	}
                     }
                     BusinessPartner existPartner = partnerService.findOneByPartnerCode(partnerCode);
                     if(existPartner != null) {
