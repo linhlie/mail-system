@@ -24,6 +24,8 @@
     var lastReplaceType;
     var lastSendTo;
     var lastHistoryType;
+    var engineerId;
+    var type;
     var matching = false;
 
     var originalContentWrapId = "ows-mail-body";
@@ -84,8 +86,10 @@
         lastReplaceType = separateSendMailData.replaceType;
         lastSendTo = separateSendMailData.sendTo;
         lastHistoryType = separateSendMailData.historyType;
+        type = separateSendMailData.type;
+        engineerId = separateSendMailData.engineerId;
         matching = !!lastSendTo;
-        showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo);
+        showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, type, engineerId);
     }
 
     function autoResizeHeight() {
@@ -102,16 +106,16 @@
         tinyMCE.DOM.setStyle(tinyMCE.DOM.get(rdMailBodyId + '_ifr'), 'height', newHeight + 'px');
     }
 
-    function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
+    function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo, type, enginnerId) {
         setSendMailTitle(sendTo);
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver, sendTo)
+            showMailContentToEditor(email, accounts, receiver, sendTo, type, enginnerId)
         });
         $('#' + rdMailSenderId).off('change');
         $('#' + rdMailSenderId).change(function() {
             lastSelectedSendMailAccountId = this.value;
             showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver, lastSendTo)
+                showMailContentToEditor(email, accounts, lastReceiver, lastSendTo, type, enginnerId)
             });
         });
         $("button[name='sendSuggestMailClose']").off('click');
@@ -220,11 +224,11 @@
         }
     }
     
-    function showMailContentToEditor(data, accounts, receiverData, sendTo) {
+    function showMailContentToEditor(data, accounts, receiverData, sendTo, type, engineer) {
         if(matching) {
             showMailContentToEditorMatching(data, accounts, receiverData, sendTo);
         } else {
-            showMailContentToEditorReply(data, accounts, receiverData);
+            showMailContentToEditorReply(data, accounts, receiverData, type, engineerId);
         }
         autoResizeHeight();
     }
@@ -236,7 +240,7 @@
         });
     }
     
-    function showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor) {
+    function showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, type, partnerInfor) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -299,14 +303,14 @@
         }
     }
     
-    function showMailContentToEditorReply(data, accounts, receiverData) {
+    function showMailContentToEditorReply(data, accounts, receiverData, type, enginnerId) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartner(receiverListStr, function(partnerInfor){
-        	showMailContentToEditorReplyFinal(data, accounts, receiverData, partnerInfor);
+        getInforPartnerAndEngineerIntroduction(receiverListStr, enginnerId, function(moreInfor){
+        	showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor);
         });
     }
 
-    function showMailContentToEditorReplyFinal(data, accounts, receiverData, partnerInfor) {
+    function showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
@@ -340,10 +344,13 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
+            if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
+            	data.originalBody = moreInfor.engineerIntroduction + data.originalBody;
+            }
             data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
-            if(partnerInfor != null && partnerInfor != ""){
-                data.originalBody = partnerInfor + data.originalBody;
+            if(moreInfor != null && moreInfor.partnerInfor != null && moreInfor.partnerInfor != ""){
+                data.originalBody = moreInfor.partnerInfor + data.originalBody;
             }
             updateMailEditorContent(data.originalBody);
         }
@@ -444,6 +451,35 @@
         }
 
         getInforPartnerAPI(sentTo, onSuccess, onError);
+    }
+    
+    function getInforPartnerAndEngineerIntroduction(sentTo, enginnerId, callback){
+        function onSuccess(response) {
+            if(response && response.status) {
+            	if(response.list && response.list.length > 0) {
+                    var data = response.list[0];
+                    if(typeof callback == 'function'){
+                    	callback(data);
+                    }
+                } else {
+                    $.alert('所属企業の情報の取得に失敗しました。');
+                }
+            }
+        }
+        function onError() {
+        	if(typeof callback == 'function'){
+            	callback();
+            	alert('所属企業の情報の取得に失敗しました。');
+            }
+        }
+        getInforPartnerAndEngineerIntroductionAPI(
+        		{
+        			"emailAddress": sentTo,
+        			"engineerId": enginnerId,
+        		}, 
+        		onSuccess, 
+        		onError
+        );
     }
 
 })(jQuery);

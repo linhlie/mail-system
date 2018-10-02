@@ -55,7 +55,6 @@ function showReplyMail(accountId, messageId, callback) {
             }
             if (typeof callback === "function") {
                 callback(email, accounts);
-                console.log(email);
             }
         },
         error: function (e) {
@@ -275,6 +274,11 @@ function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError)
         success: onSuccess,
         error: onError
     });
+}
+
+function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
+    var url = "/user/matchingResult/getInforPartnerAndEngineerIntroduction";
+    _post(url, data, onSuccess, onError);
 }
 
 function getInforPartnerAPI(data, onSuccess, onError) {
