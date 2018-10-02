@@ -55,10 +55,8 @@ function getExcerptWithGreeting(excerpt, type) {
     var greeting = loadGreeting(type);
     if(greeting == null) {
         greeting = getExceprtLine("---------------------");
-    } else {
-        greeting = greeting + '<br /><br />';
     }
-    return '<div class="gmail_extra">' + greeting + '</div>';
+    return '<div class="gmail_extra">' + greeting + '</div><br /><br />';
     // if(greeting == null) {
     //     greeting = getExceprtLine("---------------------");
     //     greeting = greeting + '<br /><br /><br /><br /><br />';

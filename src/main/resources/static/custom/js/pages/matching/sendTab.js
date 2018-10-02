@@ -345,7 +345,7 @@
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
             if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
-            	data.originalBody = "<br><br>" + moreInfor.engineerIntroduction + data.originalBody;
+            	data.originalBody = moreInfor.engineerIntroduction + data.originalBody;
             }
             data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
