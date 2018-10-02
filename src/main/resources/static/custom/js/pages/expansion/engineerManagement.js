@@ -439,12 +439,6 @@
         var valueEnd = inputEnd.val();
     	var dateFormat = new RegExp('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])');
 
-        if(valueStart && valueEnd){
-            if(valueStart.localeCompare(valueEnd)>0){
-            	showErrorProjectPeriodStart.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
-            	return false;
-            }        
-        }
         if(valueStart && !dateFormat.test(valueStart)){
         	showErrorProjectPeriodStart.apply(inputStart, ["「開始」不正確なデータ"]);
             return false;
@@ -452,6 +446,12 @@
         if(valueEnd && !dateFormat.test(valueEnd)){
         	showErrorProjectPeriodEnd.apply(inputEnd, ["「終了」不正確なデータ"]);
             return false;
+        }
+        if(valueStart && valueEnd){
+            if(valueStart.localeCompare(valueEnd)>0){
+            	showErrorProjectPeriodStart.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
+            	return false;
+            }        
         }
         return true;
     }
