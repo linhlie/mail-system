@@ -72,9 +72,9 @@ public class CSVEngineerDTO {
         	this.setProjectPeriodStart(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodStart()));
         }
         if(engineer.getProjectPeriodEnd()==0){
-        	this.setProjectPeriodEnd(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodEnd()));
+            this.setProjectPeriodEnd("");
         }else{
-        	this.setProjectPeriodEnd("");
+            this.setProjectPeriodEnd(Utils.formatTimestamp(Utils.DATE_FORMAT_2, engineer.getProjectPeriodEnd()));
         }      
         this.setAutoExtend(Boolean.toString(engineer.isAutoExtend()).toUpperCase());
         this.setExtendMonth(Objects.toString(engineer.getExtendMonth(), null));
