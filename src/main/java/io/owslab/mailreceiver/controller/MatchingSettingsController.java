@@ -335,8 +335,6 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-        	System.out.println(form.getEmailAddress());
-        	System.out.println(form.getEngineerId());
         	List<MoreInformationMailContentDTO> listInfor = mailBoxService.getMoreinforMailContent(form);
             result.setMsg("done");
             result.setStatus(true);
