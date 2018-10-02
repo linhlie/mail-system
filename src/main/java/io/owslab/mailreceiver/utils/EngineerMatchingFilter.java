@@ -21,9 +21,7 @@ public class EngineerMatchingFilter extends EngineerFilter{
 	        this.setDormant(engineer.isDormant());
 	        this.setPartnerName(partnerName);
 	        boolean dormant = engineer.isDormant();
-	        Timestamp from = new Timestamp(engineer.getProjectPeriodStart());
-	        Timestamp to = new Timestamp(engineer.getProjectPeriodEnd());
-	        boolean active = !dormant && (!now.before(from) && !now.after(to));
+	        boolean active = !dormant && checkActive(engineer.getProjectPeriodStart(), engineer.getProjectPeriodEnd(), now);
 	        this.setActive(active);
 	        this.setPartnerId(engineer.getPartnerId());
 	        this.setMonetaryMoney(engineer.getMonetaryMoney());
