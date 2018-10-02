@@ -381,7 +381,6 @@
         var container = $(this).closest(selector);
         container.addClass("has-error");
         container.find("span.form-error").text(error);
-        console.log(error);
     }
 
     function engineerKanaNameValidate() {
@@ -442,19 +441,33 @@
 
         if(valueStart && valueEnd){
             if(valueStart.localeCompare(valueEnd)>0){
-            	showError.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
+            	showErrorProjectPeriodStart.apply(inputStart, ["案件期間「終了」は案件期間「開始」以上"]);
             	return false;
             }        
         }
         if(valueStart && !dateFormat.test(valueStart)){
-            showError.apply(inputStart, ["「開始」または「終了」不正確なデータ"]);
+        	showErrorProjectPeriodStart.apply(inputStart, ["「開始」不正確なデータ"]);
             return false;
         }
         if(valueEnd && !dateFormat.test(valueEnd)){
-            showError.apply(inputEnd, ["「開始」または「終了」不正確なデータ"]);
+        	showErrorProjectPeriodEnd.apply(inputEnd, ["「終了」不正確なデータ"]);
             return false;
         }
         return true;
+    }
+    
+    function showErrorProjectPeriodStart(error, selector) {
+        selector = selector || ".engineer-form-field";
+        var container = $(this).closest(selector);
+        container.addClass("has-error");
+        container.find("span.form-error").text(error);
+    }
+    
+    function showErrorProjectPeriodEnd(error, selector) {
+        selector = selector || ".engineer-form-field";
+        var container = $(this).closest(selector);
+        container.addClass("has-error");
+        container.find("span.form-error").text(error);
     }
 
     function engineerExtendMonthValidate() {

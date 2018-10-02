@@ -152,11 +152,7 @@ public class EngineerFilter {
 	    		 return false;
 	    	 }
 		     if(projectPeriodEnd==0){
-		    	 if(!now.before(from)){
-		    		 return true;
-		    	 }else{
-		    		 return false;
-		    	 }
+		    		 return !now.before(from);
 		     }else{
 		    	 Timestamp to = new Timestamp(projectPeriodEnd);
 		    	 if(!now.before(from) && !now.after(to) ){
