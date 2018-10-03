@@ -17,6 +17,7 @@ import io.owslab.mailreceiver.service.BeanUtil;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 import jp.co.worksap.message.decoder.HeaderDecoder;
@@ -119,7 +120,7 @@ public class FetchMailJob implements Runnable {
         } catch (Exception e) {
             String errorDetail = account.getAccount() + ": " + ExceptionUtils.getStackTrace(e);
             logger.error(errorDetail);
-//            ReportErrorService.sendReportError(errorDetail, false);
+            ReportErrorService.sendReportError(errorDetail, false);
         }
     }
 
@@ -131,6 +132,7 @@ public class FetchMailJob implements Runnable {
                     logger.info("[" + index + "] mail exist: " + message.getSubject() + " | " + message.getReceivedDate());
                     return;
                 }
+                logger.info("[" + index + "] start save email: " + message.getSubject());
                 Email email = buildInitReceivedMail(message, account);
                 try {
                     email = buildReceivedMail(message, email);
@@ -150,7 +152,6 @@ public class FetchMailJob implements Runnable {
                         emailDAO.save(errorEmail);
                     }
                 }
-                logger.info("[" + index + "] save email: " + message.getSubject());
                 mailProgress.increase();
             } catch (FolderClosedException ex) {
                 logger.warn("[" + index + "] FolderClosedException");
@@ -565,16 +566,24 @@ public class FetchMailJob implements Runnable {
 
     public static class OwsMimeMessage extends MimeMessage {
         private Date receivedDate;
+        private Date sentDate;
 
         public OwsMimeMessage(MimeMessage source, int msgnum, Date receivedDate) throws MessagingException {
             super(source);
             this.msgnum = msgnum;
-            this.receivedDate = receivedDate;
+            Date sentDate = source.getSentDate() != null ? source.getSentDate() : new Date();
+            this.sentDate = sentDate;
+            this.receivedDate = receivedDate != null ? receivedDate : (source.getReceivedDate() != null ? source.getReceivedDate() : sentDate );
         }
 
         @Override
         public Date getReceivedDate() {
             return receivedDate;
+        }
+
+        @Override
+        public Date getSentDate() {
+            return sentDate;
         }
     }
 }
