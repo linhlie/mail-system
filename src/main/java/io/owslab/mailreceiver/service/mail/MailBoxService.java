@@ -378,6 +378,18 @@ public class MailBoxService {
     		Engineer engineer = engineerService.getEngineerById(form.getEngineerId());
     		if(engineer!=null){
     			infor.setEngineerIntroduction(engineer.getIntroduction());
+    			BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
+    			if(partner!=null){
+    				if(partner.getDomain1()!=null){
+    					infor.addDomainPartnersOfEngineer(partner.getDomain1());
+    				}
+    				if(partner.getDomain2()!=null){
+    					infor.addDomainPartnersOfEngineer(partner.getDomain2());
+    				}
+    				if(partner.getDomain3()!=null){
+    					infor.addDomainPartnersOfEngineer(partner.getDomain3());
+    				}
+    			}
     		}
     	}
     	List<MoreInformationMailContentDTO> result = new ArrayList<MoreInformationMailContentDTO>();
