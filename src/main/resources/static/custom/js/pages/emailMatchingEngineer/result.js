@@ -661,7 +661,7 @@
                 }));
             }
             if(selectAccount){
-                $("#rdMailSender option").filter(function() {
+                $('#' + rdMailSenderId +' option').filter(function() {
                     return this.text == selectAccount; 
                 }).attr('selected', true);
             }else{
@@ -1352,13 +1352,15 @@
             $('#' + rdMailSenderId).off('change');
             $('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
-                showMailWithReplacedRangeNew(lastMessageId, this.value, function (email, accounts) {
-                	showMailContentToEditorFinal(email, accounts, lastReceiver, moreInfor);
-                });
+                getMailData(receiverData, this.value, moreInfor);
             });
-            showMailWithReplacedRangeNew(lastMessageId, $('#' + rdMailSenderId).val(), function (email, accounts) {
-            	showMailContentToEditorFinal(email, accounts, receiverData, moreInfor);
-            });
+            getMailData(receiverData, $('#' + rdMailSenderId).val(), moreInfor);
+        });
+    }
+    
+    function getMailData(receiverData, accountId, moreInfor){
+    	showMailWithReplacedRangeNew(lastMessageId, accountId, function (email, accounts) {
+        	showMailContentToEditorFinal(email, accounts, receiverData, moreInfor);
         });
     }
     
