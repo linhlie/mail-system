@@ -43,6 +43,7 @@
                 });
             }
         });
+        initAccountSelect();
         initStickyHeader();
         initGreetingTable();
         updateEnableAddGreetingBtn();
@@ -55,6 +56,21 @@
             updateEnableUpdateGreetingBtn();
         });
     });
+    
+    function initAccountSelect(){
+    	var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+        if(selectedSendMailAccountId) {
+            $("#sendMailAccountSelect option").each(function()
+            {
+                if($(this).val() == selectedSendMailAccountId)
+                    $(this).prop('selected', true);
+            });
+        }
+        
+        $('#sendMailAccountSelect').on('change', function() {
+        	initGreetingTable();
+        });
+    }
 
     function initStickyHeader() {
         $(".table-container-wrapper").scroll(function () {
@@ -74,6 +90,7 @@
     }
 
     function loadGreetingData() {
+        greetingDataCacheKey =  "greetingData-" + $('#sendMailAccountSelect').val();
         var greetingDataInStr = localStorage.getItem(greetingDataCacheKey);
         greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
         greetingData = Array.isArray(greetingData) ? greetingData : [];
