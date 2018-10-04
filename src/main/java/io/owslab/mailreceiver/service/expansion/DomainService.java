@@ -24,12 +24,6 @@ import org.springframework.stereotype.Service;
 public class DomainService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DomainService.class);
-	
-    @Autowired
-    private BusinessPartnerDAO partnerDAO;
-    
-    @Autowired
-    private BusinessPartnerGroupDAO partnerGroupDAO;
     
     @Autowired
     private DomainUnregisterDAO domainDAO;
@@ -45,6 +39,10 @@ public class DomainService {
     
 	public List<DomainUnregister> getAll() {
 		return domainDAO.findAll();
+	}
+	
+	public List<DomainUnregister> getDomainsByStatus(int status) {
+		return domainDAO.findByStatus(status);
 	}
 	
 	public void delete(long id) {
@@ -75,7 +73,7 @@ public class DomainService {
 			return;
 		}
 		LinkedHashMap<String, DomainUnregister> mapDomain = getDomainFromMailAddresses(listEmail);
-		List<DomainUnregister> listDomainUnregister = domainDAO.findAll();
+		List<DomainUnregister> listDomainUnregister = getAll();
 
 		for(DomainUnregister domain : listDomainUnregister){
 			if(mapDomain.containsKey(domain.getDomain())){
@@ -83,7 +81,7 @@ public class DomainService {
 			}
 		}
 
-		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
+		List<BusinessPartner> listPartner= partnerService.getAll();
 		for(BusinessPartner partner : listPartner){
 			String domain1 = partner.getDomain1();
 			String domain2 = partner.getDomain2();
@@ -113,7 +111,7 @@ public class DomainService {
 		List<DomainUnregister> listDomainUnregister = getAll();
 		if(listDomainUnregister.size() == 0) return;
 		List<String> mustDeletedDomains = new ArrayList<>();
-		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
+		List<BusinessPartner> listPartner= partnerService.getAll();
 		List<String> listDomainRegister = getDomainFromPartner(listPartner);
 		for(DomainUnregister domain : listDomainUnregister){
 			if(listDomainRegister.contains(domain.getDomain())){
@@ -152,6 +150,7 @@ public class DomainService {
 				DomainUnregister domain = new DomainUnregister();
 				int index = from.indexOf("@");
 				domain.setDomain(from.substring(index+1).toLowerCase());
+				domain.setStatus(DomainUnregister.Status.ALLOW_REGISTER);
 				hashMap.put(domain.getDomain(), domain);
 			}
 		}
