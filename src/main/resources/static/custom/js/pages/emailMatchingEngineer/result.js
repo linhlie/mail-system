@@ -1400,7 +1400,7 @@
             if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
             	data.originalBody = moreInfor.engineerIntroduction + data.originalBody;
             }
-            data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId).val()) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(moreInfor != null && moreInfor.partnerInfor != null && moreInfor.partnerInfor != ""){
                 data.originalBody = moreInfor.partnerInfor + data.originalBody;

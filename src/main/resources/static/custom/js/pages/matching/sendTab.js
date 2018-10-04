@@ -284,7 +284,7 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
-            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo);
+            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo, $('#' + rdMailSenderId).val());
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(partnerInfor != null && partnerInfor != ""){
@@ -363,7 +363,7 @@
             if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
             	data.originalBody = moreInfor.engineerIntroduction + data.originalBody;
             }
-            data.originalBody = getExcerptWithGreeting(data.excerpt, "返") + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId).val()) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(moreInfor != null && moreInfor.partnerInfor != null && moreInfor.partnerInfor != ""){
                 data.originalBody = moreInfor.partnerInfor + data.originalBody;

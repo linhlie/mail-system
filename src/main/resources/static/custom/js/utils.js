@@ -35,12 +35,12 @@ function getReplyWrapper(data) {
     return wrapperText;
 }
 
-function getDecorateExcerpt(excerpt, sendTo) {
+function getDecorateExcerpt(excerpt, sendTo, accountId) {
     if(sendTo === "moto") {
-        excerpt = getExcerptWithGreeting(excerpt, "元");
+        excerpt = getExcerptWithGreeting(excerpt, "元", accountId);
         // excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング元へ送信</span></div>' + excerpt;
     } else if (sendTo === "saki") {
-        excerpt = getExcerptWithGreeting(excerpt, "先");
+        excerpt = getExcerptWithGreeting(excerpt, "先", accountId);
         // excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング先へ送信</span></div>' + excerpt;
     }
     return excerpt;
@@ -51,8 +51,8 @@ function wrapInDivWithId(id, content) {
     return div;
 }
 
-function getExcerptWithGreeting(excerpt, type) {
-    var greeting = loadGreeting(type);
+function getExcerptWithGreeting(excerpt, type, accountId) {
+    var greeting = loadGreeting(type, accountId);
     if(greeting == null) {
         greeting = getExceprtLine("---------------------");
     }
@@ -72,9 +72,9 @@ function getExceprtLine(line) {
     return exceprtLine;
 }
 
-function loadGreeting(type) {
+function loadGreeting(type, accountId) {
     var greeting = null;
-    var greetingData = loadGreetingData();
+    var greetingData = loadGreetingData(accountId);
     for(var i = 0; i < greetingData.length; i++){
         var item = greetingData[i];
         if(item && item.type === type) {
@@ -85,8 +85,8 @@ function loadGreeting(type) {
     return greeting
 }
 
-function loadGreetingData() {
-    var greetingDataInStr = localStorage.getItem("greetingData");
+function loadGreetingData(accountId) {
+    var greetingDataInStr = localStorage.getItem("greetingData-"+accountId);
     var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
     greetingData = Array.isArray(greetingData) ? greetingData : [];
     return greetingData;
