@@ -234,6 +234,11 @@ function forceFetchMail(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getEmailAccounts(onSuccess, onError) {
+    var url ="/user/greetingRegistration/getEmailAccounts";
+    _get(url, onSuccess, onError);
+}
+
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
     $.ajax({

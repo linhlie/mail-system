@@ -720,7 +720,7 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
-            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo, $('#' + rdMailSenderId).val());
+            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo, $('#' + rdMailSenderId+' option:selected').text());
             data.originalBody = data.excerpt + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(partnerInfor != null && partnerInfor != ""){

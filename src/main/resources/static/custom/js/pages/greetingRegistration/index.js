@@ -19,7 +19,8 @@
         '</tr>';
     
     var greetingData = [];
-
+    var emailAccounts = [];
+    
     $(function () {
         tinymce.init({
             force_br_newlines : true,
@@ -43,9 +44,8 @@
                 });
             }
         });
-        initAccountSelect();
+        loadEmailAccounts();
         initStickyHeader();
-        initGreetingTable();
         updateEnableAddGreetingBtn();
         updateEnableUpdateGreetingBtn();
         setButtonClickListener("greetingAdd", addGreeting);
@@ -57,15 +57,35 @@
         });
     });
     
-    function initAccountSelect(){
-    	var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-        if(selectedSendMailAccountId) {
-            $("#sendMailAccountSelect option").each(function()
-            {
-                if($(this).val() == selectedSendMailAccountId)
-                    $(this).prop('selected', true);
-            });
+    function loadEmailAccounts() {
+        function onSuccess(response) {
+            if(response && response.status){
+            	emailAccounts = response.list;
+                console.log(emailAccounts);
+                initAccountSelect(emailAccounts);
+                initGreetingTable();
+            }
+            
+            if(typeof callback == 'function'){
+            	callback(response.list);
+            }
         }
+
+        function onError(error) {
+        }
+
+        getEmailAccounts(onSuccess, onError);
+    }
+    
+    function initAccountSelect(emailAccounts){
+    	var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+        $.each(emailAccounts, function (i, item) {
+            $('#sendMailAccountSelect').append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id.toString() === selectedSendMailAccountId)
+            }));
+        });
         
         $('#sendMailAccountSelect').on('change', function() {
         	initGreetingTable();
@@ -90,7 +110,8 @@
     }
 
     function loadGreetingData() {
-        greetingDataCacheKey =  "greetingData-" + $('#sendMailAccountSelect').val();
+    	var emailAddress = $('#sendMailAccountSelect option:selected').text();
+        greetingDataCacheKey =  "greetingData-" + emailAddress;
         var greetingDataInStr = localStorage.getItem(greetingDataCacheKey);
         greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
         greetingData = Array.isArray(greetingData) ? greetingData : [];
