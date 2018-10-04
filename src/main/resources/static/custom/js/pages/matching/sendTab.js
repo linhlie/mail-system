@@ -111,7 +111,6 @@
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
             showMailContentToEditor(email, accounts, receiver, sendTo, type, enginnerId)
         });
-        $('#' + rdMailSenderId).off('change');
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function() {
@@ -230,6 +229,7 @@
     function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         getInforPartner(receiverListStr, function(partnerInfor){
+            $('#' + rdMailSenderId).off('change');
         	$('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
                 showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
@@ -237,7 +237,10 @@
                 });
                 autoResizeHeight();
             });
-        	showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor);
+        	showMailWithData($('#' + rdMailSenderId).val(), lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+                showMailContentToEditorMatchingFinal(email, accounts, lastReceiver, sendTo, partnerInfor);
+            });
+            autoResizeHeight();
         });
     }
     
@@ -315,7 +318,10 @@
                 });
                 autoResizeHeight();
             });
-        	showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor);
+            showMailWithData($('#' + rdMailSenderId).val(), lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+                showMailContentToEditorReplyFinal(email, accounts, lastReceiver, type, moreInfor);
+            });
+            autoResizeHeight();
         });
     }
 
