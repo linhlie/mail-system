@@ -683,7 +683,7 @@
             data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             data.replyOrigin = getReplyWrapper(data);
             data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId).val()) + data.originalBody;
+            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId+' option:selected').text()) + data.originalBody;
             data.originalBody = data.originalBody + data.signature;
             if(partnerInfor != null && partnerInfor != ""){
                 data.originalBody = partnerInfor + data.originalBody;
