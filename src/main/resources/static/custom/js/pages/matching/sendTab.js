@@ -111,7 +111,6 @@
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
             showMailContentToEditor(email, accounts, receiver, sendTo, type, enginnerId)
         });
-        $('#' + rdMailSenderId).off('change');
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function() {
@@ -230,15 +229,20 @@
     function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         getInforPartner(receiverListStr, function(partnerInfor){
+            $('#' + rdMailSenderId).off('change');
         	$('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
-                showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                    showMailContentToEditorMatchingFinal(email, accounts, lastReceiver, sendTo, partnerInfor);
-                });
-                autoResizeHeight();
+                getMailDataToEditorMatching(sendTo, partnerInfor, this.value);         
             });
-        	showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor);
+        	getMailDataToEditorMatching(sendTo, partnerInfor, $('#' + rdMailSenderId).val());   
         });
+    }
+    
+    function getMailDataToEditorMatching(sendTo, partnerInfor, accountId){
+    	showMailWithData(accountId, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+            showMailContentToEditorMatchingFinal(email, accounts, lastReceiver, sendTo, partnerInfor);
+        });
+    	autoResizeHeight();
     }
     
     function showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, type, partnerInfor) {
@@ -310,13 +314,17 @@
         	updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
             $('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
-                showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                    showMailContentToEditorReplyFinal(email, accounts, lastReceiver, type, moreInfor);
-                });
-                autoResizeHeight();
+                getMailDataToEditorReply(moreInfor, type, this.value);
             });
-        	showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor);
+            getMailDataToEditorReply(moreInfor, type, $('#' + rdMailSenderId).val());
         });
+    }
+    
+    function getMailDataToEditorReply(moreInfor, type, accountId){
+    	showMailWithData(accountId, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+            showMailContentToEditorReplyFinal(email, accounts, lastReceiver, type, moreInfor);
+        });
+    	autoResizeHeight();
     }
 
     function showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor) {
@@ -411,7 +419,7 @@
                 }));
             }
             if(selectAccount){
-                $("#rdMailSender option").filter(function() {
+                $('#' + rdMailSenderId +' option').filter(function() {
                     return this.text == selectAccount; 
                 }).attr('selected', true);
             }else{
