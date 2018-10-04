@@ -45,6 +45,14 @@ public class DomainService {
 		return domainDAO.findByStatus(status);
 	}
 	
+	public DomainUnregister getDomain(Long id) {
+		return domainDAO.findOne(id);
+	}
+	
+	public void saveDomain(DomainUnregister domain) {
+		domainDAO.save(domain);
+	}
+	
 	public void delete(long id) {
 		domainDAO.delete(id);
 	}
@@ -55,6 +63,14 @@ public class DomainService {
 	
 	public void deleteByDomain(String domain) {
 		domainDAO.deleteByDomain(domain);
+	}
+	
+	public void changeStatus(long id, int newStatus){
+		DomainUnregister domain = getDomain(id);
+		if(domain != null){
+			domain.setStatus(newStatus);
+			saveDomain(domain);
+		}
 	}
 	
 	public void saveDomainUnregistered(List<Email> listEmail){
@@ -99,7 +115,7 @@ public class DomainService {
 		}
 		try {
 			for(DomainUnregister domainUnregister : mapDomain.values()) {
-				domainDAO.save(domainUnregister);
+				saveDomain(domainUnregister);
 			}
 		} catch (Exception e) {
 			String error = ExceptionUtils.getStackTrace(e);

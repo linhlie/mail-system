@@ -172,6 +172,17 @@ public class BusinessPartnerRegistController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @RequestMapping(value = "/domain/avoidRegister/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> avoidRegister(@PathVariable("id") long id) {
+        try {
+            domainService.changeStatus(id, DomainUnregister.Status.AVOID_REGISTER);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     public class BusinessPartnerComparator implements Comparator<BusinessPartner> {
         public int compare(BusinessPartner o1, BusinessPartner o2) {

@@ -64,13 +64,16 @@
     
 	var domainReplaceHead = '<tr>' +
 		'<th class="dark">Domain</th>' +
-		'<th colspan="2"></th>' +
+		'<th colspan="3"></th>' +
 		'</tr>';
 	
     var domainReplaceRow = '<tr role="row" class="hidden">' +
     	'<td rowspan="1" colspan="1" data="domain"><span></span></td>' +
     	'<td name="editDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
     	'<button type="button">編集</button>' +
+    	'</td>' +
+    	'<td name="avoidRegister" class="fit action" rowspan="1" colspan="1" data="id">' +
+    	'<button type="button">無視</button>' +
     	'</td>' +
     	'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
     	'<button type="button">削除</button>' +
@@ -783,6 +786,14 @@
                 	doDeleteDomain(rowData.id);
                 }
             });
+            setRowClickListener("avoidRegister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = domains[index];
+                if (rowData && rowData.id) {
+                	avoidRegister(rowData.id);
+                }
+            });
             setRowClickListener("editDomain", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
@@ -813,6 +824,33 @@
                     text: 'はい',
                     action: function(){
                     	deleteDomain(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
+    
+    function avoidRegister(id) {
+        function onSuccess() {
+            loadDomainUnregisters()
+            clearPartnerOnClick();
+        }
+        function onError() {
+            $.alert("取引先の削除に失敗しました。");
+        }
+        $.confirm({
+            title: '',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">Do you want to avoid register for this domain？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                    	avoidRegisterDomain(id, onSuccess, onError);
                     }
                 },
                 cancel: {
