@@ -641,16 +641,41 @@
         highlight(id, data);
     }
 
-    function updateSenderSelector(email, accounts) {
+    function updateSenderSelector(email, accounts, domains) {
         accounts = accounts || [];
         $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id.toString() === lastSelectedSendMailAccountId)
-            }));
-        });
+        var selectAccount;
+        if(domains){
+            for(var i=0;i<accounts.length;i++){
+            	var account = accounts[i].account.trim();
+            	var index = account.indexOf("@");
+            	var domain = account.substring(index+1);
+            	for(var j=0;j<domains.length;j++){
+            		if(domain==domains[j]){
+            			selectAccount = account;
+            		}
+            	}
+            	$('#' + rdMailSenderId).append($('<option>', {
+                    value: accounts[i].id,
+                    text : accounts[i].account
+                }));
+            }
+            if(selectAccount){
+                $('#' + rdMailSenderId +' option').filter(function() {
+                    return this.text == selectAccount; 
+                }).attr('selected', true);
+            }else{
+            	$('#' + rdMailSenderId).val(lastSelectedSendMailAccountId);
+            }
+        }else{
+            $.each(accounts, function (i, item) {
+                $('#' + rdMailSenderId).append($('<option>', {
+                    value: item.id,
+                    text : item.account,
+                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
+                }));
+            });
+        }
     }
 
     function updateMailEditorContent(content, preventClear){
@@ -706,13 +731,6 @@
         lastMessageId = messageId;
         showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
             showMailContentToEditor(email, accounts, receiver, engineerId)
-        });
-        $('#' + rdMailSenderId).off('change');
-        $('#' + rdMailSenderId).change(function() {
-            lastSelectedSendMailAccountId = this.value;
-            showMailWithReplacedRangeNew(lastMessageId, this.value, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver, engineerId)
-            });
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -1329,8 +1347,20 @@
     
     function showMailContentToEditor(data, accounts, receiverData, engineerId) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartnerAndEngineerIntroduction(receiverListStr, engineerId, function(moreInfor){
-        	showMailContentToEditorFinal(data, accounts, receiverData, moreInfor);
+        getMoreInformationMailContent(receiverListStr, engineerId, function(moreInfor){
+            updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
+            $('#' + rdMailSenderId).off('change');
+            $('#' + rdMailSenderId).change(function() {
+                lastSelectedSendMailAccountId = this.value;
+                getMailData(receiverData, this.value, moreInfor);
+            });
+            getMailData(receiverData, $('#' + rdMailSenderId).val(), moreInfor);
+        });
+    }
+    
+    function getMailData(receiverData, accountId, moreInfor){
+    	showMailWithReplacedRangeNew(lastMessageId, accountId, function (email, accounts) {
+        	showMailContentToEditorFinal(email, accounts, receiverData, moreInfor);
         });
     }
     
@@ -1340,7 +1370,6 @@
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if (data) {
-            updateSenderSelector(data, accounts);
             senderGlobal = data.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
@@ -1381,7 +1410,7 @@
         updateDropzoneData(attachmentDropzone);
     }
     
-    function getInforPartnerAndEngineerIntroduction(sentTo, enginnerId, callback){
+    function getMoreInformationMailContent(sentTo, enginnerId, callback){
         function onSuccess(response) {
             if(response && response.status) {
             	if(response.list && response.list.length > 0) {

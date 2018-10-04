@@ -111,13 +111,6 @@
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
             showMailContentToEditor(email, accounts, receiver, sendTo, type, enginnerId)
         });
-        $('#' + rdMailSenderId).off('change');
-        $('#' + rdMailSenderId).change(function() {
-            lastSelectedSendMailAccountId = this.value;
-            showMailWithData(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver, lastSendTo, type, enginnerId)
-            });
-        });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function() {
@@ -236,8 +229,20 @@
     function showMailContentToEditorMatching(data, accounts, receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         getInforPartner(receiverListStr, function(partnerInfor){
-        	showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, partnerInfor);
+            $('#' + rdMailSenderId).off('change');
+        	$('#' + rdMailSenderId).change(function() {
+                lastSelectedSendMailAccountId = this.value;
+                getMailDataToEditorMatching(sendTo, partnerInfor, this.value);         
+            });
+        	getMailDataToEditorMatching(sendTo, partnerInfor, $('#' + rdMailSenderId).val());   
         });
+    }
+    
+    function getMailDataToEditorMatching(sendTo, partnerInfor, accountId){
+    	showMailWithData(accountId, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+            showMailContentToEditorMatchingFinal(email, accounts, lastReceiver, sendTo, partnerInfor);
+        });
+    	autoResizeHeight();
     }
     
     function showMailContentToEditorMatchingFinal(data, accounts, receiverData, sendTo, type, partnerInfor) {
@@ -305,9 +310,21 @@
     
     function showMailContentToEditorReply(data, accounts, receiverData, type, enginnerId) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartnerAndEngineerIntroduction(receiverListStr, enginnerId, function(moreInfor){
-        	showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor);
+        getMoreInformationMailContent(receiverListStr, enginnerId, function(moreInfor){
+        	updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
+            $('#' + rdMailSenderId).change(function() {
+                lastSelectedSendMailAccountId = this.value;
+                getMailDataToEditorReply(moreInfor, type, this.value);
+            });
+            getMailDataToEditorReply(moreInfor, type, $('#' + rdMailSenderId).val());
         });
+    }
+    
+    function getMailDataToEditorReply(moreInfor, type, accountId){
+    	showMailWithData(accountId, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
+            showMailContentToEditorReplyFinal(email, accounts, lastReceiver, type, moreInfor);
+        });
+    	autoResizeHeight();
     }
 
     function showMailContentToEditorReplyFinal(data, accounts, receiverData, type, moreInfor) {
@@ -316,7 +333,6 @@
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if (data) {
-            updateSenderSelector(data, accounts);
             senderGlobal = data.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
@@ -383,16 +399,41 @@
         editor.undoManager.add();
     }
 
-    function updateSenderSelector(email, accounts) {
+    function updateSenderSelector(email, accounts, domains) {
         accounts = accounts || [];
         $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id.toString() === lastSelectedSendMailAccountId)
-            }));
-        });
+        var selectAccount;
+        if(domains){
+            for(var i=0;i<accounts.length;i++){
+            	var account = accounts[i].account.trim();
+            	var index = account.indexOf("@");
+            	var domain = account.substring(index+1);
+            	for(var j=0;j<domains.length;j++){
+            		if(domain==domains[j]){
+            			selectAccount = account;
+            		}
+            	}
+            	$('#' + rdMailSenderId).append($('<option>', {
+                    value: accounts[i].id,
+                    text : accounts[i].account
+                }));
+            }
+            if(selectAccount){
+                $('#' + rdMailSenderId +' option').filter(function() {
+                    return this.text == selectAccount; 
+                }).attr('selected', true);
+            }else{
+            	$('#' + rdMailSenderId).val(lastSelectedSendMailAccountId);
+            }
+        }else{
+            $.each(accounts, function (i, item) {
+                $('#' + rdMailSenderId).append($('<option>', {
+                    value: item.id,
+                    text : item.account,
+                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
+                }));
+            });
+        }
     }
 
     function initDropzone() {
@@ -453,7 +494,7 @@
         getInforPartnerAPI(sentTo, onSuccess, onError);
     }
     
-    function getInforPartnerAndEngineerIntroduction(sentTo, enginnerId, callback){
+    function getMoreInformationMailContent(sentTo, enginnerId, callback){
         function onSuccess(response) {
             if(response && response.status) {
             	if(response.list && response.list.length > 0) {
