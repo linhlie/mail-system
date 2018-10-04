@@ -61,7 +61,6 @@
         function onSuccess(response) {
             if(response && response.status){
             	emailAccounts = response.list;
-                console.log(emailAccounts);
                 initAccountSelect(emailAccounts);
                 initGreetingTable();
             }
