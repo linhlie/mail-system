@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dao.DomainUnregisterDAO;
 import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
+import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.model.DomainUnregister;
@@ -53,12 +54,20 @@ public class DomainService {
 		domainDAO.save(domain);
 	}
 	
+	public void saveListDomain(List<DomainUnregister> listDomain) {
+		domainDAO.save(listDomain);
+	}
+	
 	public void delete(long id) {
 		domainDAO.delete(id);
 	}
 	
     public void deleteDomainByListDomain(List<String> listDomain){
     	domainDAO.deleteByDomainIn(listDomain);
+    }
+    
+    public void deleteDomainByListDomainUnregister(List<DomainUnregister> listDomain){
+    	domainDAO.delete(listDomain);
     }
 	
 	public void deleteByDomain(String domain) {
@@ -249,5 +258,17 @@ public class DomainService {
 		}
 		return false;
 	}
-
+	
+	public void saveDomainAvoidRegister(DomainAvoidRegisterForm form){
+		if(form != null){
+			List<DomainUnregister> listDomainUpdate = form.getDomainsUpdate();
+			if(listDomainUpdate != null && listDomainUpdate.size()>0){
+				saveListDomain(listDomainUpdate);
+			}
+			List<DomainUnregister> listDomainDelete = form.getDomainsDelete();
+			if(listDomainDelete != null && listDomainDelete.size()>0){
+				deleteDomainByListDomainUnregister(listDomainDelete);
+			}	
+		}
+	}
 }

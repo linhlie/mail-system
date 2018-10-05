@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.exception.PartnerCodeException;
+import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
@@ -155,7 +156,7 @@ public class BusinessPartnerRegistController {
             result.setMsg("done");
             result.setStatus(true);
         } catch (Exception e) {
-            logger.error("getPartners: " + e.getMessage());
+            logger.error("getDomains: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
         }
@@ -182,6 +183,52 @@ public class BusinessPartnerRegistController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+    
+    @RequestMapping(value = { "/domainAvoidRegister" }, method = RequestMethod.GET)
+    public String getAvoidRegisterDomain(Model model, HttpServletRequest request) {
+        return "expansion/domainAvoidRegister";
+    }
+    
+    @RequestMapping(value = { "/domainAvoidRegister/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getDomainAvoidRegister() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+        	System.out.println("getDomainAvoidRegister");
+            List<DomainUnregister> listDomain = domainService.getDomainsByStatus(DomainUnregister.Status.AVOID_REGISTER);
+            result.setList(listDomain);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getDomains: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+    
+    @RequestMapping(value = "/domainAvoidRegister/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveDomainAvoidRegister(
+            @Valid @RequestBody DomainAvoidRegisterForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            domainService.saveDomainAvoidRegister(form);
+            result.setMsg("done");
+            result.setStatus(true);
+        }  catch (Exception e) {
+            e.printStackTrace();
+            logger.error("updateDomainAvoidRegister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 
     public class BusinessPartnerComparator implements Comparator<BusinessPartner> {
