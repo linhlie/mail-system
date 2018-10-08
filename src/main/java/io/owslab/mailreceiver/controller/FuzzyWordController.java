@@ -35,12 +35,17 @@ public class FuzzyWordController {
     private FuzzyWordService fuzzyWordService;
 
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
-    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
+    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search,
+                               @RequestParam(value = "selected", required = false) String selected,
+                               Model model) {
         int totalFuzzyWord = 0;
         List<Word> wordList = wordService.findAll();
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
-            Word word = wordService.findOne(search);
+        }
+        if(selected != null && selected.length() > 0){
+            model.addAttribute("selected", selected);
+            Word word = wordService.findOne(selected);
             if(word != null){
                 Set<FuzzyWord> originalWords = word.getOriginalWords();
                 Set<FuzzyWord> associatedWords = word.getAssociatedWords();
