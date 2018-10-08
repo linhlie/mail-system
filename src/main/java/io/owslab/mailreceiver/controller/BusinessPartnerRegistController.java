@@ -178,7 +178,7 @@ public class BusinessPartnerRegistController {
     @ResponseBody
     public ResponseEntity<Void> avoidRegister(@PathVariable("id") long id) {
         try {
-            domainService.changeStatus(id, DomainUnregister.Status.AVOID_REGISTER);
+            domainService.changeFromAllowToAvoid(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

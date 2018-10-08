@@ -49,6 +49,11 @@ public class DomainService {
 	public DomainUnregister getDomain(Long id) {
 		return domainDAO.findOne(id);
 	}
+
+	public DomainUnregister getDomainByIdAndStatus(Long id, int status) {
+		List<DomainUnregister>  domainUnregisters = domainDAO.findByIdAndStatus(id, status);
+		return domainUnregisters != null && domainUnregisters.size() > 0 ? domainUnregisters.get(0) : null;
+	}
 	
 	public void saveDomain(DomainUnregister domain) {
 		domainDAO.save(domain);
@@ -73,7 +78,14 @@ public class DomainService {
 	public void deleteByDomain(String domain) {
 		domainDAO.deleteByDomain(domain);
 	}
-	
+
+	public void changeFromAllowToAvoid(long id) {
+		DomainUnregister domain = getDomainByIdAndStatus(id, DomainUnregister.Status.ALLOW_REGISTER);
+		if(domain != null){
+			domain.setStatus(DomainUnregister.Status.AVOID_REGISTER);
+			saveDomain(domain);
+		}
+	}
 	public void changeStatus(long id, int newStatus){
 		DomainUnregister domain = getDomain(id);
 		if(domain != null){
