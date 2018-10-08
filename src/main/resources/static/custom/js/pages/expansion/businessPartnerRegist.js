@@ -845,7 +845,7 @@
         $.confirm({
             title: '',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want to avoid register for this domain？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当にこのドメインを無視しますか？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
