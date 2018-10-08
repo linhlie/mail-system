@@ -56,13 +56,22 @@ public class FuzzyWordController {
             }
         }
         List<KeyWordItem> keyWordItems = new ArrayList<>();
+        List<Word> filteredWordList = new ArrayList<>();
         for(Word word : wordList) {
             Word keyWord = fuzzyWordService.findKeyWord(word);
             String keyWordStr = keyWord != null ? keyWord.getWord() : "";
-            keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+            if(search != null && search.length() > 0) {
+                if(search.equalsIgnoreCase(keyWordStr) || search.equalsIgnoreCase(word.getWord())) {
+                    keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+                    filteredWordList.add(word);
+                }
+            } else {
+                keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+                filteredWordList.add(word);
+            }
         }
         model.addAttribute("wordList", keyWordItems);
-        model.addAttribute("wordListSize", wordList.size());
+        model.addAttribute("wordListSize", filteredWordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "user/fuzzyword/list";
     }
