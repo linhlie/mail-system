@@ -176,6 +176,21 @@ function deleteDomain(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function avoidRegisterDomain(id, onSuccess, onError) {
+    var url = "/expansion/domain/avoidRegister/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function saveDomainAvoidRegister(data, onSuccess, onError) {
+    var url = "/expansion/domainAvoidRegister/update";
+    _post(url, data, onSuccess, onError);
+}
+
+function getDomainAvoidRegister(onSuccess, onError) {
+    var url = "/expansion/domainAvoidRegister/list";
+    _get(url, onSuccess, onError);
+}
+
 function getEngineers(data, onSuccess, onError) {
     var url = "/expansion/engineer/list";
     _post(url, data, onSuccess, onError);

@@ -789,7 +789,7 @@ mark.mark-range {
     padding-top: 10px;
 }
 
-.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part, .partner .partner-part, .engineer .engineer-part {
+.greeting .greeting-part, .user-management .greeting-part, .condition-management .condition-management-part, .partner .partner-part, .engineer .engineer-part, .domain .domain-part {
     width: 100%;
     border: 1px solid black;
     margin-bottom: 20px;
@@ -842,7 +842,7 @@ div.table-container-section {
     border-top: none !important;
 }
 
-div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper, div.partner-part .table-container-wrapper, div.engineer-part .table-container-wrapper {
+div.greeting-part .table-container-wrapper, div.condition-management-part .table-container-wrapper, div.partner-part .table-container-wrapper, div.engineer-part .table-container-wrapper, div.domain-part .table-container-wrapper {
     background-color: whitesmoke;
 }
 

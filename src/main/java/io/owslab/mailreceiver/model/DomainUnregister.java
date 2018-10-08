@@ -18,6 +18,9 @@ public class DomainUnregister {
     
     @Column(name = "domain", length = 255, nullable = false)
     private String domain;
+    
+    @Column(name = "status", nullable = false)
+    private int status;
 
 	public long getId() {
 		return id;
@@ -35,5 +38,17 @@ public class DomainUnregister {
 		this.domain = domain;
 	}
 
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	
+    public static class Status {
+        public static final int ALLOW_REGISTER = 1;
+        public static final int AVOID_REGISTER = 2;
+    }
 	
 }

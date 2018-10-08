@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dao.DomainUnregisterDAO;
 import io.owslab.mailreceiver.dao.RelationshipEngineerPartnerDAO;
+import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.model.DomainUnregister;
@@ -24,12 +25,6 @@ import org.springframework.stereotype.Service;
 public class DomainService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DomainService.class);
-	
-    @Autowired
-    private BusinessPartnerDAO partnerDAO;
-    
-    @Autowired
-    private BusinessPartnerGroupDAO partnerGroupDAO;
     
     @Autowired
     private DomainUnregisterDAO domainDAO;
@@ -47,6 +42,27 @@ public class DomainService {
 		return domainDAO.findAll();
 	}
 	
+	public List<DomainUnregister> getDomainsByStatus(int status) {
+		return domainDAO.findByStatus(status);
+	}
+	
+	public DomainUnregister getDomain(Long id) {
+		return domainDAO.findOne(id);
+	}
+
+	public DomainUnregister getDomainByIdAndStatus(Long id, int status) {
+		List<DomainUnregister>  domainUnregisters = domainDAO.findByIdAndStatus(id, status);
+		return domainUnregisters != null && domainUnregisters.size() > 0 ? domainUnregisters.get(0) : null;
+	}
+	
+	public void saveDomain(DomainUnregister domain) {
+		domainDAO.save(domain);
+	}
+	
+	public void saveListDomain(List<DomainUnregister> listDomain) {
+		domainDAO.save(listDomain);
+	}
+	
 	public void delete(long id) {
 		domainDAO.delete(id);
 	}
@@ -54,9 +70,28 @@ public class DomainService {
     public void deleteDomainByListDomain(List<String> listDomain){
     	domainDAO.deleteByDomainIn(listDomain);
     }
+    
+    public void deleteDomainByListDomainUnregister(List<DomainUnregister> listDomain){
+    	domainDAO.delete(listDomain);
+    }
 	
 	public void deleteByDomain(String domain) {
 		domainDAO.deleteByDomain(domain);
+	}
+
+	public void changeFromAllowToAvoid(long id) {
+		DomainUnregister domain = getDomainByIdAndStatus(id, DomainUnregister.Status.ALLOW_REGISTER);
+		if(domain != null){
+			domain.setStatus(DomainUnregister.Status.AVOID_REGISTER);
+			saveDomain(domain);
+		}
+	}
+	public void changeStatus(long id, int newStatus){
+		DomainUnregister domain = getDomain(id);
+		if(domain != null){
+			domain.setStatus(newStatus);
+			saveDomain(domain);
+		}
 	}
 	
 	public void saveDomainUnregistered(List<Email> listEmail){
@@ -75,7 +110,7 @@ public class DomainService {
 			return;
 		}
 		LinkedHashMap<String, DomainUnregister> mapDomain = getDomainFromMailAddresses(listEmail);
-		List<DomainUnregister> listDomainUnregister = domainDAO.findAll();
+		List<DomainUnregister> listDomainUnregister = getAll();
 
 		for(DomainUnregister domain : listDomainUnregister){
 			if(mapDomain.containsKey(domain.getDomain())){
@@ -83,7 +118,7 @@ public class DomainService {
 			}
 		}
 
-		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
+		List<BusinessPartner> listPartner= partnerService.getAll();
 		for(BusinessPartner partner : listPartner){
 			String domain1 = partner.getDomain1();
 			String domain2 = partner.getDomain2();
@@ -101,7 +136,7 @@ public class DomainService {
 		}
 		try {
 			for(DomainUnregister domainUnregister : mapDomain.values()) {
-				domainDAO.save(domainUnregister);
+				saveDomain(domainUnregister);
 			}
 		} catch (Exception e) {
 			String error = ExceptionUtils.getStackTrace(e);
@@ -113,7 +148,7 @@ public class DomainService {
 		List<DomainUnregister> listDomainUnregister = getAll();
 		if(listDomainUnregister.size() == 0) return;
 		List<String> mustDeletedDomains = new ArrayList<>();
-		List<BusinessPartner> listPartner= (List<BusinessPartner>) partnerDAO.findAll();
+		List<BusinessPartner> listPartner= partnerService.getAll();
 		List<String> listDomainRegister = getDomainFromPartner(listPartner);
 		for(DomainUnregister domain : listDomainUnregister){
 			if(listDomainRegister.contains(domain.getDomain())){
@@ -152,6 +187,7 @@ public class DomainService {
 				DomainUnregister domain = new DomainUnregister();
 				int index = from.indexOf("@");
 				domain.setDomain(from.substring(index+1).toLowerCase());
+				domain.setStatus(DomainUnregister.Status.ALLOW_REGISTER);
 				hashMap.put(domain.getDomain(), domain);
 			}
 		}
@@ -234,5 +270,17 @@ public class DomainService {
 		}
 		return false;
 	}
-
+	
+	public void saveDomainAvoidRegister(DomainAvoidRegisterForm form){
+		if(form != null){
+			List<DomainUnregister> listDomainUpdate = form.getDomainsUpdate();
+			if(listDomainUpdate != null && listDomainUpdate.size()>0){
+				saveListDomain(listDomainUpdate);
+			}
+			List<DomainUnregister> listDomainDelete = form.getDomainsDelete();
+			if(listDomainDelete != null && listDomainDelete.size()>0){
+				deleteDomainByListDomainUnregister(listDomainDelete);
+			}	
+		}
+	}
 }

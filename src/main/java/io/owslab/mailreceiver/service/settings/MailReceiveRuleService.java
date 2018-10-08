@@ -54,6 +54,9 @@ public class MailReceiveRuleService {
     private DomainService domainService;
     
     @Autowired
+    private EnviromentSettingService enviromentSettingService;
+    
+    @Autowired
     private MatchingConditionService mcs;
 
     @Autowired
@@ -186,7 +189,10 @@ public class MailReceiveRuleService {
             }
         }
         emailDAO.save(emailList);
-        domainService.saveDomainUnregistered(listEmailToCheckDomain);
+        boolean addNewDomainUnregister = enviromentSettingService.getAddNewDomainUnregister();
+        if(addNewDomainUnregister){
+            domainService.saveDomainUnregistered(listEmailToCheckDomain);
+        }
     }
 
     public FilterRule getFilterRule(String ruleStr) {

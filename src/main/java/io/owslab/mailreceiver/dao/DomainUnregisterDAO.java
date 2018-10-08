@@ -18,4 +18,8 @@ public interface DomainUnregisterDAO extends JpaRepository<DomainUnregister, Lon
 	 
 	 @Transactional
 	public void deleteByDomainIn(List<String> domains);
+	 
+	 public List<DomainUnregister> findByStatus(int status);
+
+	public List<DomainUnregister> findByIdAndStatus(Long id, int status);
 }
