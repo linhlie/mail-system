@@ -61,6 +61,10 @@ public class ClickHistoryService {
                 return ClickHistory.ClickType.REPLY_SOURCE;
             case 7:
                 return ClickHistory.ClickType.REPLY_DESTINATION;
+            case 8:
+                return ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER;
+            case 9:
+                return ClickHistory.ClickType.REPLY_EMAIL_MATCHING_ENGINEER;
             default:
                 return "";
         }
@@ -76,6 +80,8 @@ public class ClickHistoryService {
                 return ClickSentHistory.ClickSentType.REPLY_SOURCE;
             case 4:
                 return ClickSentHistory.ClickSentType.REPLY_DESTINATION;
+            case 5:
+                return ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER;
             default:
                 return "";
         }
@@ -89,6 +95,13 @@ public class ClickHistoryService {
         clickCount.addAll(clickCount1);
         clickCount.addAll(clickCount2);
         clickCount.addAll(clickCount3);
+        return clickCount;
+    }
+
+    public List<String> getClickEmailMatchingEngineerCount(Date now, String accountId) {
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER);
+        clickCount.addAll(clickCount1);
         return clickCount;
     }
 
@@ -111,21 +124,20 @@ public class ClickHistoryService {
     public List<String> getTotalSentStats(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
         List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_SOURCE);
-        List<String> click1 = getClickCountByType(now, accountId, ClickHistory.ClickType.MATCHING);
         List<String> sent2 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
-        List<String> click2 = click1;
         List<String> sent3 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_SOURCE);
-        List<String> click3 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_SOURCE);
         List<String> sent4 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_DESTINATION);
-        List<String> click4 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_DESTINATION);
         stats.addAll(sent1);
-        stats.addAll(getSentRate(sent1, click1));
         stats.addAll(sent2);
-        stats.addAll(getSentRate(sent2, click2));
         stats.addAll(sent3);
-        stats.addAll(getSentRate(sent3, click3));
         stats.addAll(sent4);
-        stats.addAll(getSentRate(sent4, click4));
+        return stats;
+    }
+
+    public List<String> getSendMailEmailMatchingEngineerClick(Date now, String accountId) {
+        List<String> stats = new ArrayList<>();
+        List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER);
+        stats.addAll(sent1);
         return stats;
     }
 

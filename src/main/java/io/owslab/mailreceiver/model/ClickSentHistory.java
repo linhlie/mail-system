@@ -40,6 +40,7 @@ public class ClickSentHistory {
         public static final String MATCHING_DESTINATION = ClickHistory.ClickType.MATCHING_DESTINATION;
         public static final String REPLY_SOURCE = ClickHistory.ClickType.REPLY_SOURCE;
         public static final String REPLY_DESTINATION = ClickHistory.ClickType.REPLY_DESTINATION;
+        public static final String REPLY_EMAIL_MATCHING_ENGINEER = ClickHistory.ClickType.REPLY_EMAIL_MATCHING_ENGINEER;
     }
 }
 

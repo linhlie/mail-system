@@ -91,6 +91,8 @@ public class IndexController {
             Date now = new Date();
             List<String> clickCount = clickHistoryService.getClickCount(now, accountId);
             List<String> sendPerClick = clickHistoryService.getTotalSentStats(now, accountId);
+            List<String> clickEmailMatchingEngineerCount = clickHistoryService.getClickEmailMatchingEngineerCount(now, accountId);
+            List<String> sendMailEmailMatchingEngineerClick = clickHistoryService.getSendMailEmailMatchingEngineerClick(now, accountId);
             List<Account> accounts = accountService.getAllUserRoleAccounts();
             List<AccountDTO> accountDTOList = new ArrayList<>();
             for(Account account : accounts) {
@@ -99,6 +101,8 @@ public class IndexController {
             responseBody.setUsers(accountDTOList);
             responseBody.setClickCount(clickCount);
             responseBody.setSendPerClick(sendPerClick);
+            responseBody.setClickEmailMatchingEngineerCount(clickEmailMatchingEngineerCount);
+            responseBody.setSendMailEmailMatchingEngineerClick(sendMailEmailMatchingEngineerClick);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);

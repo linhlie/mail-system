@@ -132,6 +132,12 @@
         if(data && data.sendPerClick){
             pushDataToTable(data.sendPerClick, "sendPerClick");
         }
+        if(data && data.clickEmailMatchingEngineerCount){
+            pushDataToTable(data.clickEmailMatchingEngineerCount, "clickEmailMatchingEngineerCount");
+        }
+        if(data && data.sendMailEmailMatchingEngineerClick){
+            pushDataToTable(data.sendMailEmailMatchingEngineerClick, "sendMailEmailMatchingEngineerClick");
+        }
     }
     
     function pushDataToTable(data, tableId) {
