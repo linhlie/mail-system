@@ -185,7 +185,7 @@ public class ClickHistoryService {
             Object[] objectUser = listObject.get(0);
             String topQuantity = objectUser[1]+"";
             if( topQuantity == null || topQuantity.trim().equals("0")){
-                return "「該当なし」";
+                return "該当なし";
             }
             for( Object[] object : listObject){
                 String username = ""+object[0];
@@ -202,23 +202,25 @@ public class ClickHistoryService {
                     count++;
                 }
             }
-        }
-        Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
-        while (linkedHashMapIterator.hasNext()) {
-            String rank = "";
-            Integer key = linkedHashMapIterator.next();
-            List<String> usernames = topUserSentMail.get(key);
-            if(usernames.size()==1){
-                rank = rank + usernames.get(0) + "さん" + key + "件、";
-            }else{
-                rank = usernames.get(0) + "さん";
-                for(int i=1;i<usernames.size()-1;i++){
-                    rank = rank + "と" +usernames.get(i) + "さん";
+            Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
+            while (linkedHashMapIterator.hasNext()) {
+                String rank = "";
+                Integer key = linkedHashMapIterator.next();
+                List<String> usernames = topUserSentMail.get(key);
+                if(usernames.size()==1){
+                    rank = rank + usernames.get(0) + "さん" + key + "件、";
+                }else{
+                    rank = usernames.get(0) + "さん";
+                    for(int i=1;i<usernames.size()-1;i++){
+                        rank = rank + "と" +usernames.get(i) + "さん";
+                    }
+                    rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ" + key + "件、";
                 }
-                rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ" + key + "件、";
+                result = result + rank;
             }
-            result = result + rank;
+            return result.substring(0, result.length()-1);
+        }else{
+            return "該当なし";
         }
-        return result.substring(0, result.length()-1);
     }
 }
