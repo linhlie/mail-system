@@ -174,7 +174,10 @@ public class ClickHistoryService {
     }
 
     public String getTopSentMail(){
-        List<Object[]>  listObject = clickSentHistoryDAO.findTopSentMailObject();
+        Date now = new Date();
+        Date fromDate = Utils.atStartOfDay(now);
+        Date toDate = Utils.atEndOfDay(now);
+        List<Object[]>  listObject = clickSentHistoryDAO.findTopSentMailObject(fromDate, toDate);
         LinkedHashMap<Integer,List<String>> topUserSentMail = new LinkedHashMap<>();
         String result = "";
         int count = 0;
