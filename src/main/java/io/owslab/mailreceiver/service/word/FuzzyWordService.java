@@ -52,13 +52,30 @@ public class FuzzyWordService {
         return result;
     }
 
+    @Cacheable(key="\"FuzzyWordService:findKeyWordDeep:\"+#word.id")
+    public Word findKeyWordDeep(Word word){
+        Word result = null;
+        long wordId = word.getId();
+        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.SAME);
+        if(fuzzyWordList.size() > 0){
+            result = fuzzyWordList.get(0).getOriginalWord();
+        }
+        return result;
+    }
+
     @Cacheable(key="\"FuzzyWordService:findKeyWord:\"+#word.id")
     public Word findKeyWord(Word word){
         Word result = null;
         long wordId = word.getId();
-        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.EXCLUSION);
+        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.SAME);
         if(fuzzyWordList.size() > 0){
             result = fuzzyWordList.get(0).getOriginalWord();
+            Word rootKeyWord = findKeyWordDeep(result);
+            if(rootKeyWord != null) {
+                result = rootKeyWord;
+            }
+        } else {
+            result = word;
         }
         return result;
     }
