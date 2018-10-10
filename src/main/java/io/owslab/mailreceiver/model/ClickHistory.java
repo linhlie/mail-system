@@ -38,6 +38,8 @@ public class ClickHistory {
         public static final String MATCHING_DESTINATION = "マッチング後、「先へ」";
         public static final String REPLY_SOURCE = "元抽出後、「返信」";
         public static final String REPLY_DESTINATION = "先抽出後、「返信」";
+        public static final String EMAIL_MATCHING_ENGINEER = "DB⇔メールマッチング";
+        public static final String REPLY_EMAIL_MATCHING_ENGINEER = "DB⇔メールマッチング後、「返信」";
     }
 }
 

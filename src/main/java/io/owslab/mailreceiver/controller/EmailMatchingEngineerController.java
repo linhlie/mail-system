@@ -139,6 +139,7 @@ public class EmailMatchingEngineerController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
+            clickHistoryService.save(ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER);
         	FinalEmailMatchingEngineerResult finalResult = emailMatchingEngineerService.matchingEmailsWithEngineerCondition(form);
             result.setMsg("done");
             result.setStatus(true);

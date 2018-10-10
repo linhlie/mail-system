@@ -1309,12 +1309,12 @@
 
 
     function getHistoryType() {
-        return lastSendTo === "moto" ? 1 : 2;
+        return 5;
     }
     
     function showMailWithReplacedRangeNew(messageId, accountId, callback) {
         messageId = messageId.replace(/\+/g, '%2B');
-        var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
+        var type = 9;
         var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
         if(!!accountId){
             url = url + "&accountId=" + accountId;

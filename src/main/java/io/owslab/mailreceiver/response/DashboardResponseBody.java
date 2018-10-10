@@ -13,6 +13,8 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private boolean hasSystemError;
     private String latestReceive;
     private List<String> clickCount;
+    private List<String> clickEmailMatchingEngineerCount;
+    private List<String> sendMailEmailMatchingEngineerClick;
     private List<String> receiveMailNumber;
     private List<String> sendPerClick;
     private List<EmailAccount> emailAccounts;
@@ -94,4 +96,12 @@ public class DashboardResponseBody extends AjaxResponseBody {
     public void setCheckMailInterval(int checkMailInterval) {
         this.checkMailInterval = checkMailInterval;
     }
+
+    public List<String> getClickEmailMatchingEngineerCount() { return clickEmailMatchingEngineerCount; }
+
+    public void setClickEmailMatchingEngineerCount(List<String> clickEmailMatchingEngineerCount) { this.clickEmailMatchingEngineerCount = clickEmailMatchingEngineerCount; }
+
+    public List<String> getSendMailEmailMatchingEngineerClick() { return sendMailEmailMatchingEngineerClick; }
+
+    public void setSendMailEmailMatchingEngineerClick(List<String> sendMailEmailMatchingEngineerClick) { this.sendMailEmailMatchingEngineerClick = sendMailEmailMatchingEngineerClick; }
 }

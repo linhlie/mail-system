@@ -2,18 +2,16 @@ package io.owslab.mailreceiver.service.statistics;
 
 import io.owslab.mailreceiver.dao.ClickHistoryDAO;
 import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
-import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
 import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.utils.UserStatisticSentMail;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 7/9/18.
@@ -61,6 +59,10 @@ public class ClickHistoryService {
                 return ClickHistory.ClickType.REPLY_SOURCE;
             case 7:
                 return ClickHistory.ClickType.REPLY_DESTINATION;
+            case 8:
+                return ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER;
+            case 9:
+                return ClickHistory.ClickType.REPLY_EMAIL_MATCHING_ENGINEER;
             default:
                 return "";
         }
@@ -76,6 +78,8 @@ public class ClickHistoryService {
                 return ClickSentHistory.ClickSentType.REPLY_SOURCE;
             case 4:
                 return ClickSentHistory.ClickSentType.REPLY_DESTINATION;
+            case 5:
+                return ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER;
             default:
                 return "";
         }
@@ -89,6 +93,13 @@ public class ClickHistoryService {
         clickCount.addAll(clickCount1);
         clickCount.addAll(clickCount2);
         clickCount.addAll(clickCount3);
+        return clickCount;
+    }
+
+    public List<String> getClickEmailMatchingEngineerCount(Date now, String accountId) {
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER);
+        clickCount.addAll(clickCount1);
         return clickCount;
     }
 
@@ -111,21 +122,20 @@ public class ClickHistoryService {
     public List<String> getTotalSentStats(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
         List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_SOURCE);
-        List<String> click1 = getClickCountByType(now, accountId, ClickHistory.ClickType.MATCHING);
         List<String> sent2 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
-        List<String> click2 = click1;
         List<String> sent3 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_SOURCE);
-        List<String> click3 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_SOURCE);
         List<String> sent4 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_DESTINATION);
-        List<String> click4 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_DESTINATION);
         stats.addAll(sent1);
-        stats.addAll(getSentRate(sent1, click1));
         stats.addAll(sent2);
-        stats.addAll(getSentRate(sent2, click2));
         stats.addAll(sent3);
-        stats.addAll(getSentRate(sent3, click3));
         stats.addAll(sent4);
-        stats.addAll(getSentRate(sent4, click4));
+        return stats;
+    }
+
+    public List<String> getSendMailEmailMatchingEngineerClick(Date now, String accountId) {
+        List<String> stats = new ArrayList<>();
+        List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER);
+        stats.addAll(sent1);
         return stats;
     }
 
@@ -161,5 +171,62 @@ public class ClickHistoryService {
             }
         }
         return result;
+    }
+
+    public String getTopSentMail(){
+        Date now = new Date();
+        Date fromDate = Utils.atStartOfDay(now);
+        Date toDate = Utils.atEndOfDay(now);
+        List<Object[]>  listObject = clickSentHistoryDAO.findTopSentMailObject(fromDate, toDate);
+        LinkedHashMap<Integer,List<String>> topUserSentMail = new LinkedHashMap<>();
+        String result = "";
+        int count = 0;
+        if(listObject!=null && !listObject.isEmpty()){
+            Object[] objectUser = listObject.get(0);
+            String topQuantity = objectUser[1]+"";
+            if( topQuantity == null || topQuantity.trim().equals("0")){
+                return "該当なし";
+            }
+            for( Object[] object : listObject){
+                String username = "";
+                if(object[2] == null || (object[2]+"").trim().equals("")){
+                    username = ""+object[0];
+                }else {
+                    username = "" + object[2];
+                }
+                int quantity = Integer.parseInt((object[1]+"").trim());
+                if(topUserSentMail.containsKey(quantity)){
+                    topUserSentMail.get(quantity).add(username);
+                }else{
+                    if(count==3){
+                        break;
+                    }
+                    List<String> usernames = new ArrayList<>();
+                    usernames.add(username);
+                    topUserSentMail.put(quantity,usernames);
+                    count++;
+                }
+            }
+            Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
+            while (linkedHashMapIterator.hasNext()) {
+                String rank = "";
+                Integer key = linkedHashMapIterator.next();
+                List<String> usernames = topUserSentMail.get(key);
+                usernames.sort(String.CASE_INSENSITIVE_ORDER);
+                if(usernames.size()==1){
+                    rank = rank + usernames.get(0) + "さん" + key + "件、";
+                }else{
+                    rank = usernames.get(0) + "さん";
+                    for(int i=1;i<usernames.size()-1;i++){
+                        rank = rank + "と" +usernames.get(i) + "さん";
+                    }
+                    rank = rank + "と" + usernames.get(usernames.size()-1) + "さんが同じ" + key + "件、";
+                }
+                result = result + rank;
+            }
+            return result.substring(0, result.length()-1);
+        }else{
+            return "該当なし";
+        }
     }
 }
