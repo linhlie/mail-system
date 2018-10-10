@@ -70,9 +70,11 @@
             <select id="userSelector" style="margin-left: 100px; margin-top: 15px;">
                 <option value="">全てのユーザー</option>
             </select>
+            <label style="margin-left: 100px;">本日のメール送信件数上位３名 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <label id="topSentMail" th:text="${topUserSentMail}"></label>
         </div>
         <div class="row" style="margin-top: 20px;">
-            <span style="margin-left: 100px;">Email Matching</span>
+            <b style="margin-left: 100px;">メールマッチング</b>
             <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
                 <table id="clickCount">
@@ -204,7 +206,7 @@
             </div>
         </div>
         <div class="row" style="margin-top: 20px;">
-            <span style="margin-left: 100px;">DB Matching</span>
+            <b style="margin-left: 100px;">DB⇔メールマッチング</b>
             <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
                 <table id="clickEmailMatchingEngineerCount">

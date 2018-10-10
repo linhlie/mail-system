@@ -80,6 +80,8 @@ public class IndexController {
         model.addAttribute("numberOfMessage", numberOfMessage);
         int matchingCount = matchingConditionService.getMatchingCount();
         model.addAttribute("matchingCount", matchingCount);
+        String topUserSentMail = clickHistoryService.getTopSentMail();
+        model.addAttribute("topUserSentMail", topUserSentMail);
         return "index";
     }
 

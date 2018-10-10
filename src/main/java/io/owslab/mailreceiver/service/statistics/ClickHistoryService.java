@@ -2,18 +2,16 @@ package io.owslab.mailreceiver.service.statistics;
 
 import io.owslab.mailreceiver.dao.ClickHistoryDAO;
 import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
-import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
 import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.utils.UserStatisticSentMail;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 7/9/18.
@@ -173,5 +171,51 @@ public class ClickHistoryService {
             }
         }
         return result;
+    }
+
+    public String getTopSentMail(){
+        List<Object[]>  listObject = clickSentHistoryDAO.findTopSentMailObject();
+        LinkedHashMap<Integer,List<String>> topUserSentMail = new LinkedHashMap<>();
+        String result = "";
+        int count = 0;
+        if(listObject!=null && !listObject.isEmpty()){
+            Object[] objectUser = listObject.get(0);
+            String topQuantity = objectUser[1]+"";
+            if( topQuantity == null || topQuantity.trim().equals("0")){
+                return "「該当なし」";
+            }
+            for( Object[] object : listObject){
+                String username = ""+object[0];
+                int quantity = Integer.parseInt((object[1]+"").trim());
+                if(topUserSentMail.containsKey(quantity)){
+                    topUserSentMail.get(quantity).add(username);
+                }else{
+                    if(count==3){
+                        break;
+                    }
+                    List<String> usernames = new ArrayList<>();
+                    usernames.add(username);
+                    topUserSentMail.put(quantity,usernames);
+                    count++;
+                }
+            }
+        }
+        Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
+        while (linkedHashMapIterator.hasNext()) {
+            String rank = "";
+            Integer key = linkedHashMapIterator.next();
+            List<String> usernames = topUserSentMail.get(key);
+            if(usernames.size()==1){
+                rank = rank + usernames.get(0) + "さん" + key + "件、";
+            }else{
+                rank = usernames.get(0) + "さん";
+                for(int i=1;i<usernames.size()-1;i++){
+                    rank = rank + "と" +usernames.get(i) + "さん";
+                }
+                rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ" + key + "件、";
+            }
+            result = result + rank;
+        }
+        return result.substring(0, result.length()-1);
     }
 }
