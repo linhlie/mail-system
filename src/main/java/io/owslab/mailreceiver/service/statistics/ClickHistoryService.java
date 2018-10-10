@@ -189,7 +189,7 @@ public class ClickHistoryService {
             }
             for( Object[] object : listObject){
                 String username = "";
-                if(object[2] == null || (object[0]+"").trim().equals("")){
+                if(object[2] == null || (object[2]+"").trim().equals("")){
                     username = ""+object[0];
                 }else {
                     username = "" + object[2];
