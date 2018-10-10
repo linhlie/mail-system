@@ -15,7 +15,7 @@ public interface ClickSentHistoryDAO extends PagingAndSortingRepository<ClickSen
     long countByTypeAndCreatedAtBetween(String type, Date fromDate, Date toDate);
     long countByAccountIdAndTypeAndCreatedAtBetween(long accountId, String type, Date fromDate, Date toDate);
 
-    @Query(value = "SELECT acc.user_name, COUNT(his.account_id) " +
+    @Query(value = "SELECT acc.user_name, COUNT(his.account_id), acc.name " +
             "FROM click_sent_histories his, accounts acc " +
             "WHERE acc.id = his.account_id " +
             "AND his.created_at BETWEEN :fromDate AND :toDate " +

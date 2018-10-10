@@ -188,7 +188,12 @@ public class ClickHistoryService {
                 return "該当なし";
             }
             for( Object[] object : listObject){
-                String username = ""+object[0];
+                String username = "";
+                if(object[2] == null || (object[2]+"").trim().equals("")){
+                    username = ""+object[0];
+                }else {
+                    username = "" + object[2];
+                }
                 int quantity = Integer.parseInt((object[1]+"").trim());
                 if(topUserSentMail.containsKey(quantity)){
                     topUserSentMail.get(quantity).add(username);
@@ -207,6 +212,7 @@ public class ClickHistoryService {
                 String rank = "";
                 Integer key = linkedHashMapIterator.next();
                 List<String> usernames = topUserSentMail.get(key);
+                usernames.sort(String.CASE_INSENSITIVE_ORDER);
                 if(usernames.size()==1){
                     rank = rank + usernames.get(0) + "さん" + key + "件、";
                 }else{
@@ -214,7 +220,7 @@ public class ClickHistoryService {
                     for(int i=1;i<usernames.size()-1;i++){
                         rank = rank + "と" +usernames.get(i) + "さん";
                     }
-                    rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ" + key + "件、";
+                    rank = rank + "と" + usernames.get(usernames.size()-1) + "さんが同じ" + key + "件、";
                 }
                 result = result + rank;
             }
