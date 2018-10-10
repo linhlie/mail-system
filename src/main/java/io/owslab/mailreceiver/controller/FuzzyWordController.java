@@ -35,12 +35,17 @@ public class FuzzyWordController {
     private FuzzyWordService fuzzyWordService;
 
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
-    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search, Model model) {
+    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search,
+                               @RequestParam(value = "selected", required = false) String selected,
+                               Model model) {
         int totalFuzzyWord = 0;
         List<Word> wordList = wordService.findAll();
         if(search != null && search.length() > 0){
             model.addAttribute("search", search);
-            Word word = wordService.findOne(search);
+        }
+        if(selected != null && selected.length() > 0){
+            model.addAttribute("selected", selected);
+            Word word = wordService.findOne(selected);
             if(word != null){
                 Set<FuzzyWord> originalWords = word.getOriginalWords();
                 Set<FuzzyWord> associatedWords = word.getAssociatedWords();
@@ -51,13 +56,22 @@ public class FuzzyWordController {
             }
         }
         List<KeyWordItem> keyWordItems = new ArrayList<>();
+        List<Word> filteredWordList = new ArrayList<>();
         for(Word word : wordList) {
             Word keyWord = fuzzyWordService.findKeyWord(word);
             String keyWordStr = keyWord != null ? keyWord.getWord() : "";
-            keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+            if(search != null && search.length() > 0) {
+                if(search.equalsIgnoreCase(keyWordStr) || search.equalsIgnoreCase(word.getWord())) {
+                    keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+                    filteredWordList.add(word);
+                }
+            } else {
+                keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+                filteredWordList.add(word);
+            }
         }
         model.addAttribute("wordList", keyWordItems);
-        model.addAttribute("wordListSize", wordList.size());
+        model.addAttribute("wordListSize", filteredWordList.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "user/fuzzyword/list";
     }

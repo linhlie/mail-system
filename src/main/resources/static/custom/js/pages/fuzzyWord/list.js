@@ -62,7 +62,7 @@
                         sorter: false
                     },
                 },
-                sortList: [[0,0], [1,0]]
+                sortList: [[1,0], [0,0]]
             });
     }
 
