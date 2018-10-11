@@ -44,24 +44,6 @@ public class ClickHistoryService {
         clickSentHistoryDAO.save(history);
     }
 
-    public int getSentTypeFromInt(int value){
-        System.out.println("getSentTypeFromInt "+value);
-        switch (value) {
-            case 1:
-                return ClickType.MATCHING_SOURCE.getValue();
-            case 2:
-                return ClickType.MATCHING_DESTINATION.getValue();
-            case 3:
-                return ClickType.REPLY_SOURCE.getValue();
-            case 4:
-                return ClickType.REPLY_DESTINATION.getValue();
-            case 5:
-                return ClickType.REPLY_EMAIL_MATCHING_ENGINEER.getValue();
-            default:
-                return ClickType.OTHER.getValue();
-        }
-    }
-
     public List<String> getClickCount(Date now, String accountId) {
         List<String> clickCount = new ArrayList<>();
         List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.EXTRACT_SOURCE.getValue());
