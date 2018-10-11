@@ -36,27 +36,10 @@ public class ClickHistoryService {
         clickHistoryDAO.save(history);
     }
 
-    public void saveSent(String type) {
+    public void saveSent(int type) {
         long loggedInAccountId = accountService.getLoggedInAccountId();
         ClickSentHistory history = new ClickSentHistory(type, loggedInAccountId);
         clickSentHistoryDAO.save(history);
-    }
-
-    public String getSentTypeFromInt(int value){
-        switch (value) {
-            case 1:
-                return ClickSentHistory.ClickSentType.MATCHING_SOURCE;
-            case 2:
-                return ClickSentHistory.ClickSentType.MATCHING_DESTINATION;
-            case 3:
-                return ClickSentHistory.ClickSentType.REPLY_SOURCE;
-            case 4:
-                return ClickSentHistory.ClickSentType.REPLY_DESTINATION;
-            case 5:
-                return ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER;
-            default:
-                return "";
-        }
     }
 
     public List<String> getClickCount(Date now, String accountId) {
@@ -113,7 +96,7 @@ public class ClickHistoryService {
         return stats;
     }
 
-    private List<String> getClickSentCountByType(String accountId, String type) {
+    private List<String> getClickSentCountByType(String accountId, int type) {
         List<String> clickSentCount = new ArrayList<>();
         Date now = new Date();
         Date fromDate = Utils.atStartOfDay(now);

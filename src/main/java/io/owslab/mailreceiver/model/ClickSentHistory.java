@@ -13,7 +13,7 @@ public class ClickSentHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String type;
+    private int type;
     private Date createdAt;
     private long accountId;
 
@@ -24,23 +24,23 @@ public class ClickSentHistory {
         this.id = id;
     }
 
-    public ClickSentHistory(String type, long accountId){
+    public ClickSentHistory(int type, long accountId){
         this.type = type;
         this.createdAt = new Date();
         this.accountId = accountId;
     }
 
-    public ClickSentHistory(String type, Date createdAt) {
+    public ClickSentHistory(int type, Date createdAt) {
         this.type = type;
         this.createdAt = createdAt;
     }
 
     public class ClickSentType {
-        public static final String MATCHING_SOURCE = ClickHistory.ClickTypeOld.MATCHING_SOURCE;
-        public static final String MATCHING_DESTINATION = ClickHistory.ClickTypeOld.MATCHING_DESTINATION;
-        public static final String REPLY_SOURCE = ClickHistory.ClickTypeOld.REPLY_SOURCE;
-        public static final String REPLY_DESTINATION = ClickHistory.ClickTypeOld.REPLY_DESTINATION;
-        public static final String REPLY_EMAIL_MATCHING_ENGINEER = ClickHistory.ClickTypeOld.REPLY_EMAIL_MATCHING_ENGINEER;
+        public static final int MATCHING_SOURCE = 1;
+        public static final int MATCHING_DESTINATION = 2;
+        public static final int REPLY_SOURCE = 3;
+        public static final int REPLY_DESTINATION = 4;
+        public static final int REPLY_EMAIL_MATCHING_ENGINEER = 5;
     }
 
 

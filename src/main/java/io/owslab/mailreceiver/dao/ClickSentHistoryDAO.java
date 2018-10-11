@@ -12,8 +12,8 @@ import java.util.List;
  * Created by khanhlvb on 7/9/18.
  */
 public interface ClickSentHistoryDAO extends PagingAndSortingRepository<ClickSentHistory, Long> {
-    long countByTypeAndCreatedAtBetween(String type, Date fromDate, Date toDate);
-    long countByAccountIdAndTypeAndCreatedAtBetween(long accountId, String type, Date fromDate, Date toDate);
+    long countByTypeAndCreatedAtBetween(int type, Date fromDate, Date toDate);
+    long countByAccountIdAndTypeAndCreatedAtBetween(long accountId, int type, Date fromDate, Date toDate);
 
     @Query(value = "SELECT acc.user_name, COUNT(his.account_id), acc.name " +
             "FROM click_sent_histories his, accounts acc " +
