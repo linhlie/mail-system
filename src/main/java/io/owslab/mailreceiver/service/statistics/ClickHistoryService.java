@@ -173,19 +173,20 @@ public class ClickHistoryService {
         return result;
     }
 
-    public String getTopSentMail(){
+    public List<String> getTopSentMail(){
         Date now = new Date();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
         List<Object[]>  listObject = clickSentHistoryDAO.findTopSentMailObject(fromDate, toDate);
         LinkedHashMap<Integer,List<String>> topUserSentMail = new LinkedHashMap<>();
-        String result = "";
+        List<String> result = new ArrayList<>();
         int count = 0;
         if(listObject!=null && !listObject.isEmpty()){
             Object[] objectUser = listObject.get(0);
             String topQuantity = objectUser[1]+"";
-            if( topQuantity == null || topQuantity.trim().equals("0")){
-                return "該当なし";
+            if( topQuantity == null){
+                result.add("該当なし");
+                return result;
             }
             for( Object[] object : listObject){
                 String username = "";
@@ -209,24 +210,25 @@ public class ClickHistoryService {
             }
             Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
             while (linkedHashMapIterator.hasNext()) {
-                String rank = "";
+                String rank = " ";
                 Integer key = linkedHashMapIterator.next();
                 List<String> usernames = topUserSentMail.get(key);
                 usernames.sort(String.CASE_INSENSITIVE_ORDER);
                 if(usernames.size()==1){
-                    rank = rank + usernames.get(0) + "さん" + key + "件、";
+                    rank = rank + usernames.get(0) + "(" + key + "件)";
                 }else{
-                    rank = usernames.get(0) + "さん";
+                    rank = usernames.get(0) ;
                     for(int i=1;i<usernames.size()-1;i++){
-                        rank = rank + "と" +usernames.get(i) + "さん";
+                        rank = rank + "と" +usernames.get(i);
                     }
-                    rank = rank + "と" + usernames.get(usernames.size()-1) + "さんが同じ" + key + "件、";
+                    rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ(" + key + "件)";
                 }
-                result = result + rank;
+                result.add(rank +" ");
             }
-            return result.substring(0, result.length()-1);
+            return result;
         }else{
-            return "該当なし";
+            result.add("該当なし");
+            return result;
         }
     }
 }
