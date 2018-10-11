@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.dto;
 
+import io.owslab.mailreceiver.enums.SentMailType;
 import io.owslab.mailreceiver.model.SentMailHistory;
 import org.apache.commons.lang.time.DateFormatUtils;
 
@@ -29,7 +30,7 @@ public class SentMailHistoryDTO {
         this.setSubject(history.getSubject());
         this.setTo(history.getTo());
         this.setBody(history.getBody());
-        this.setSendType(history.getSendType());
+        this.setSendType(SentMailType.fromValue(history.getSendType()).getText());
         this.setMatchingMailAddress(history.getMatchingMailAddress());
         if(history.getSentAt() != null)
             this.setSentAt(DateFormatUtils.format(history.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));

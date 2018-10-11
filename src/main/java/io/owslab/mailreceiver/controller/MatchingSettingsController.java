@@ -184,8 +184,7 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
-            int clickType = clickHistoryService.getSentTypeFromInt(type);
-            clickHistoryService.save(clickType);
+            clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");
@@ -206,8 +205,7 @@ public class MatchingSettingsController {
     ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type, @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
-            int clickType = clickHistoryService.getSentTypeFromInt(type);
-            clickHistoryService.save(clickType);
+            clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");

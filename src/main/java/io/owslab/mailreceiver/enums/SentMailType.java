@@ -1,7 +1,7 @@
 package io.owslab.mailreceiver.enums;
 
 public enum SentMailType {
-    MATCHING_SOURCE(1, "[元へ]"),
+    MATCHING_SOURCE(1, "「元へ」"),
     MATCHING_DESTINATION(2, "「先へ」"),
     REPLY_SOURCE(3, "「返信」"),
     REPLY_DESTINATION(4, "「返信」"),

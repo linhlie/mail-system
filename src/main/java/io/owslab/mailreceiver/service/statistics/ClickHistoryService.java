@@ -45,6 +45,7 @@ public class ClickHistoryService {
     }
 
     public int getSentTypeFromInt(int value){
+        System.out.println("getSentTypeFromInt "+value);
         switch (value) {
             case 1:
                 return ClickType.MATCHING_SOURCE.getValue();
