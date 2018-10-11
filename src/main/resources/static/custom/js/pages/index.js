@@ -129,11 +129,18 @@
         }else{
             var count = 1;
             for(var i=0;i<data.length;i++){
-                resultHtml = resultHtml +
-                    "<div class=\"dashboard-number-circle\">"+
-                    "<span>"+count+"</span>"+
-                    "</div>"+
-                    "<b>"+data[i]+"</b>";
+                if(count==1){
+                    resultHtml = resultHtml +"<b>①"+data[i]+"</b>";
+                }
+
+                if(count==2){
+                    resultHtml = resultHtml +"<b>②"+data[i]+"</b>";
+                }
+
+                if(count==3){
+                    resultHtml = resultHtml +"<b>③"+data[i]+"</b>";
+                }
+
                 count++;
             }
         }
