@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.MoreInformationMailContentForm;
@@ -135,7 +136,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            clickHistoryService.save(ClickHistory.ClickType.MATCHING);
+            clickHistoryService.save(ClickType.MATCHING.getValue());
             FinalMatchingResult finalMatchingResult = matchingConditionService.matching(matchingConditionForm);
             result.setMsg("done");
             result.setStatus(true);
@@ -183,7 +184,8 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
-            clickHistoryService.save(type);
+            int clickType = clickHistoryService.getSentTypeFromInt(type);
+            clickHistoryService.save(clickType);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");
@@ -204,7 +206,8 @@ public class MatchingSettingsController {
     ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type, @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
-            clickHistoryService.save(type);
+            int clickType = clickHistoryService.getSentTypeFromInt(type);
+            clickHistoryService.save(clickType);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
             List<EmailAccount> accountList = mailAccountsService.list();
             result.setMsg("done");

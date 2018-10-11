@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.form.ExtractForm;
@@ -139,7 +140,7 @@ public class EmailMatchingEngineerController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            clickHistoryService.save(ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER);
+            clickHistoryService.save(ClickType.EMAIL_MATCHING_ENGINEER.getValue());
         	FinalEmailMatchingEngineerResult finalResult = emailMatchingEngineerService.matchingEmailsWithEngineerCondition(form);
             result.setMsg("done");
             result.setStatus(true);

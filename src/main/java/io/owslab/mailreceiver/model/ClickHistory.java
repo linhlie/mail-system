@@ -29,12 +29,5 @@ public class ClickHistory {
         this.createdAt = new Date();
         this.accountId = accountId;
     }
-
-    public class ClickType {
-        public static final int EXTRACT_SOURCE = 1;
-        public static final int EXTRACT_DESTINATION = 2;
-        public static final int MATCHING = 3;
-        public static final int EMAIL_MATCHING_ENGINEER = 4;
-    }
 }
 

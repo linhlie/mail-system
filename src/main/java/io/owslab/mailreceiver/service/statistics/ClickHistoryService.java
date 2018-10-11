@@ -2,6 +2,8 @@ package io.owslab.mailreceiver.service.statistics;
 
 import io.owslab.mailreceiver.dao.ClickHistoryDAO;
 import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
+import io.owslab.mailreceiver.enums.ClickType;
+import io.owslab.mailreceiver.enums.SentMailType;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
 import io.owslab.mailreceiver.service.security.AccountService;
@@ -42,11 +44,28 @@ public class ClickHistoryService {
         clickSentHistoryDAO.save(history);
     }
 
+    public int getSentTypeFromInt(int value){
+        switch (value) {
+            case 1:
+                return ClickType.MATCHING_SOURCE.getValue();
+            case 2:
+                return ClickType.MATCHING_DESTINATION.getValue();
+            case 3:
+                return ClickType.REPLY_SOURCE.getValue();
+            case 4:
+                return ClickType.REPLY_DESTINATION.getValue();
+            case 5:
+                return ClickType.REPLY_EMAIL_MATCHING_ENGINEER.getValue();
+            default:
+                return ClickType.OTHER.getValue();
+        }
+    }
+
     public List<String> getClickCount(Date now, String accountId) {
         List<String> clickCount = new ArrayList<>();
-        List<String> clickCount1 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_SOURCE);
-        List<String> clickCount2 = getClickCountByType(now, accountId, ClickHistory.ClickType.EXTRACT_DESTINATION);
-        List<String> clickCount3 = getClickCountByType(now, accountId, ClickHistory.ClickType.MATCHING);
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.EXTRACT_SOURCE.getValue());
+        List<String> clickCount2 = getClickCountByType(now, accountId, ClickType.EXTRACT_DESTINATION.getValue());
+        List<String> clickCount3 = getClickCountByType(now, accountId, ClickType.MATCHING.getValue());
         clickCount.addAll(clickCount1);
         clickCount.addAll(clickCount2);
         clickCount.addAll(clickCount3);
@@ -55,7 +74,7 @@ public class ClickHistoryService {
 
     public List<String> getClickEmailMatchingEngineerCount(Date now, String accountId) {
         List<String> clickCount = new ArrayList<>();
-        List<String> clickCount1 = getClickCountByType(now, accountId, ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER);
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.EMAIL_MATCHING_ENGINEER.getValue());
         clickCount.addAll(clickCount1);
         return clickCount;
     }
@@ -78,10 +97,10 @@ public class ClickHistoryService {
 
     public List<String> getTotalSentStats(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
-        List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_SOURCE);
-        List<String> sent2 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.MATCHING_DESTINATION);
-        List<String> sent3 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_SOURCE);
-        List<String> sent4 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_DESTINATION);
+        List<String> sent1 = getClickSentCountByType(accountId, SentMailType.MATCHING_SOURCE.getValue());
+        List<String> sent2 = getClickSentCountByType(accountId, SentMailType.MATCHING_DESTINATION.getValue());
+        List<String> sent3 = getClickSentCountByType(accountId, SentMailType.REPLY_SOURCE.getValue());
+        List<String> sent4 = getClickSentCountByType(accountId, SentMailType.REPLY_DESTINATION.getValue());
         stats.addAll(sent1);
         stats.addAll(sent2);
         stats.addAll(sent3);
@@ -91,7 +110,7 @@ public class ClickHistoryService {
 
     public List<String> getSendMailEmailMatchingEngineerClick(Date now, String accountId) {
         List<String> stats = new ArrayList<>();
-        List<String> sent1 = getClickSentCountByType(accountId, ClickSentHistory.ClickSentType.REPLY_EMAIL_MATCHING_ENGINEER);
+        List<String> sent1 = getClickSentCountByType(accountId, SentMailType.REPLY_EMAIL_MATCHING_ENGINEER.getValue());
         stats.addAll(sent1);
         return stats;
     }
