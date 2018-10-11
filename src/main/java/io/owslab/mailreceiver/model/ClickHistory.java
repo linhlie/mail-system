@@ -13,7 +13,7 @@ public class ClickHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String type;
+    private int type;
     private Date createdAt;
     private long accountId;
 
@@ -24,13 +24,25 @@ public class ClickHistory {
         this.id = id;
     }
 
-    public ClickHistory(String type, long accountId){
+    public ClickHistory(int type, long accountId){
         this.type = type;
         this.createdAt = new Date();
         this.accountId = accountId;
     }
 
     public class ClickType {
+        public static final int EXTRACT_SOURCE = 1;
+        public static final int EXTRACT_DESTINATION = 2;
+        public static final int MATCHING = 3;
+        public static final int MATCHING_SOURCE = 4;
+        public static final int MATCHING_DESTINATION = 5;
+        public static final int REPLY_SOURCE = 6;
+        public static final int REPLY_DESTINATION = 7;
+        public static final int EMAIL_MATCHING_ENGINEER = 8;
+        public static final int REPLY_EMAIL_MATCHING_ENGINEER = 9;
+    }
+
+    public class ClickTypeOld {
         public static final String EXTRACT_SOURCE = "元のみ抽出";
         public static final String EXTRACT_DESTINATION = "先のみ抽出";
         public static final String MATCHING = "マッチング";

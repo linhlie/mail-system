@@ -5,7 +5,6 @@ import io.owslab.mailreceiver.dao.ClickSentHistoryDAO;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.ClickSentHistory;
 import io.owslab.mailreceiver.service.security.AccountService;
-import io.owslab.mailreceiver.utils.UserStatisticSentMail;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ClickHistoryService {
     private DecimalFormat df = new DecimalFormat("#,##0.00");
     private DecimalFormat df2 = new DecimalFormat("#,##0");
 
-    public void save(String type) {
+    public void save(int type) {
         long loggedInAccountId = accountService.getLoggedInAccountId();
         ClickHistory history = new ClickHistory(type, loggedInAccountId);
         clickHistoryDAO.save(history);
@@ -41,31 +40,6 @@ public class ClickHistoryService {
         long loggedInAccountId = accountService.getLoggedInAccountId();
         ClickSentHistory history = new ClickSentHistory(type, loggedInAccountId);
         clickSentHistoryDAO.save(history);
-    }
-
-    public String getTypeFromInt(int value){
-        switch (value) {
-            case 1:
-                return ClickHistory.ClickType.EXTRACT_SOURCE;
-            case 2:
-                return ClickHistory.ClickType.EXTRACT_DESTINATION;
-            case 3:
-                return ClickHistory.ClickType.MATCHING;
-            case 4:
-                return ClickHistory.ClickType.MATCHING_SOURCE;
-            case 5:
-                return ClickHistory.ClickType.MATCHING_DESTINATION;
-            case 6:
-                return ClickHistory.ClickType.REPLY_SOURCE;
-            case 7:
-                return ClickHistory.ClickType.REPLY_DESTINATION;
-            case 8:
-                return ClickHistory.ClickType.EMAIL_MATCHING_ENGINEER;
-            case 9:
-                return ClickHistory.ClickType.REPLY_EMAIL_MATCHING_ENGINEER;
-            default:
-                return "";
-        }
     }
 
     public String getSentTypeFromInt(int value){
@@ -103,7 +77,7 @@ public class ClickHistoryService {
         return clickCount;
     }
 
-    private List<String> getClickCountByType(Date now, String accountId, String type) {
+    private List<String> getClickCountByType(Date now, String accountId, int type) {
         List<String> clickCount = new ArrayList<>();
         Date fromDate = Utils.atStartOfDay(now);
         Date toDate = Utils.atEndOfDay(now);
