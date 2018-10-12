@@ -180,7 +180,7 @@ public class SettingsController {
             emailAccountTransaction.saveEmailAccountTransaction(fullAccountForm);
         } catch (EmailAccountException e) {
             logger.error("Save account email fail "+e.toString());
-            model.addAttribute("errorMessage", "Error: Save email account fail");
+            model.addAttribute("errorMessage", "メールアカウントが登録できませんでした。");
             return "admin/settings/account/form";
         }
         return "redirect:/admin/mailAccountSettings";
