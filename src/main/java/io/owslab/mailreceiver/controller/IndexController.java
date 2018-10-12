@@ -160,7 +160,7 @@ public class IndexController {
 
     @RequestMapping(value="/user/dashboard/topUserSentMail", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getTopUserSantMail (){
+    ResponseEntity<?> getTopUserSentMail (){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             Date now = new Date();
@@ -170,7 +170,7 @@ public class IndexController {
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
-            logger.error("getTopUserSantMail: " + e.getMessage());
+            logger.error("getTopUserSentMail: " + e.getMessage());
             responseBody.setMsg(e.getMessage());
             responseBody.setStatus(false);
             return ResponseEntity.ok(responseBody);

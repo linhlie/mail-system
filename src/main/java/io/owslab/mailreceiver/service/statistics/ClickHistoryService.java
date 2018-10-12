@@ -210,7 +210,7 @@ public class ClickHistoryService {
             }
             Iterator<Integer> linkedHashMapIterator = topUserSentMail.keySet().iterator();
             while (linkedHashMapIterator.hasNext()) {
-                String rank = " ";
+                String rank = "";
                 Integer key = linkedHashMapIterator.next();
                 List<String> usernames = topUserSentMail.get(key);
                 usernames.sort(String.CASE_INSENSITIVE_ORDER);
@@ -223,7 +223,7 @@ public class ClickHistoryService {
                     }
                     rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ(" + key + "件)";
                 }
-                result.add(rank +" ");
+                result.add(rank +"　");
             }
             return result;
         }else{
