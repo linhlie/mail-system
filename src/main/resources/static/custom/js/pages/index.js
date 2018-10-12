@@ -7,6 +7,7 @@
     $(function () {
         loadMailData();
         loadUserData();
+        loadTopUserSentMail();
         $(accountSelectorId).change(function() {
             lastSelectedMailAccountId = this.value;
             loadMailData(this.value);
@@ -87,6 +88,63 @@
                 console.error("[ERROR] dashboard load data error: ", e);
             }
         });
+    }
+
+    function loadTopUserSentMail() {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+        var url = "/user/dashboard/topUserSentMail";
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                $('body').loadingModal('hide');
+                if (data && data.list) {
+                    pushTopUserSentMail(data.list);
+                } else {
+                    console.error("[ERROR] dashboard load data failed: ");
+                }
+            },
+            error: function (e) {
+                $('body').loadingModal('hide');
+                console.error("[ERROR] dashboard load data error: ", e);
+            }
+        });
+    }
+
+    function pushTopUserSentMail(data){
+        var resultHtml = "";
+        if(data.length==1 && data[0] == "該当なし"){
+            resultHtml = "<b>該当なし</b>"
+        }else{
+            var count = 1;
+            for(var i=0;i<data.length;i++){
+                if(count==1){
+                    resultHtml = resultHtml +"<b>①"+data[i]+"</b>";
+                }
+
+                if(count==2){
+                    resultHtml = resultHtml +"<b>②"+data[i]+"</b>";
+                }
+
+                if(count==3){
+                    resultHtml = resultHtml +"<b>③"+data[i]+"</b>";
+                }
+
+                count++;
+            }
+        }
+        $("#topUserSentMail").append(resultHtml);
     }
     
     function pushMailData(data) {
