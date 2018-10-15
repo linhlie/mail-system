@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EngineerListItemDTO;
 import io.owslab.mailreceiver.dto.PartnerDTO;
+import io.owslab.mailreceiver.exception.EngineerException;
 import io.owslab.mailreceiver.exception.EngineerNotFoundException;
 import io.owslab.mailreceiver.exception.PartnerNotFoundException;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import io.owslab.mailreceiver.service.transaction.EngineerTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,9 @@ public class EngineerManagementController {
     @Autowired
     private BusinessPartnerService partnerService;
 
+    @Autowired
+    private EngineerTransaction engineerTransaction;
+
     @RequestMapping(value = { "/engineerManagement" }, method = RequestMethod.GET)
     public String getEngineerManagement(Model model, HttpServletRequest request) {
         return "expansion/engineerManagement";
@@ -68,10 +73,10 @@ public class EngineerManagementController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            engineerService.add(form);
+            engineerTransaction.addEngineerAndRelationTransaction(form);
             result.setMsg("done");
             result.setStatus(true);
-        } catch (PartnerNotFoundException pnfe) {
+        } catch (EngineerException pnfe) {
             logger.error("addEngineer PartnerNotFoundException: " + pnfe.getMessage());
             result.setMsg(pnfe.getMessage());
             result.setStatus(false);
@@ -110,16 +115,12 @@ public class EngineerManagementController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            engineerService.update(form, id);
+            engineerTransaction.updateEngineerAndRelationTransaction(form, id);
             result.setMsg("done");
             result.setStatus(true);
-        } catch (EngineerNotFoundException enfe) {
+        } catch (EngineerException enfe) {
             logger.error("updateEngineer EngineerNotFoundException: " + enfe.getMessage());
             result.setMsg(enfe.getMessage());
-            result.setStatus(false);
-        } catch (PartnerNotFoundException pnfe) {
-            logger.error("updateEngineer PartnerNotFoundException: " + pnfe.getMessage());
-            result.setMsg(pnfe.getMessage());
             result.setStatus(false);
         } catch (ParseException pe) {
             logger.error("updateEngineer ParseException: " + pe.getMessage());
