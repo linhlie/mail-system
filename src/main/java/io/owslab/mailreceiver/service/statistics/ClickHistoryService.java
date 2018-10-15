@@ -219,9 +219,9 @@ public class ClickHistoryService {
                 }else{
                     rank = usernames.get(0) ;
                     for(int i=1;i<usernames.size()-1;i++){
-                        rank = rank + "と" +usernames.get(i);
+                        rank = rank + "、" +usernames.get(i);
                     }
-                    rank = rank + "と" + usernames.get(usernames.size()-1) + "が同じ(" + key + "件)";
+                    rank = rank + "、" + usernames.get(usernames.size()-1) + "(" + key + "件)";
                 }
                 result.add(rank +"　");
             }
