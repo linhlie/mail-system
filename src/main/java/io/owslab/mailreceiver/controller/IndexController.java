@@ -80,8 +80,6 @@ public class IndexController {
         model.addAttribute("numberOfMessage", numberOfMessage);
         int matchingCount = matchingConditionService.getMatchingCount();
         model.addAttribute("matchingCount", matchingCount);
-        String topUserSentMail = clickHistoryService.getTopSentMail();
-        model.addAttribute("topUserSentMail", topUserSentMail);
         return "index";
     }
 
@@ -154,6 +152,25 @@ public class IndexController {
             return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
             logger.error("forceFetchMail: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+            return ResponseEntity.ok(responseBody);
+        }
+    }
+
+    @RequestMapping(value="/user/dashboard/topUserSentMail", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getTopUserSentMail (){
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        try {
+            Date now = new Date();
+            List<String> topUserSentMail = clickHistoryService.getTopSentMail();
+            responseBody.setList(topUserSentMail);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            logger.error("getTopUserSentMail: " + e.getMessage());
             responseBody.setMsg(e.getMessage());
             responseBody.setStatus(false);
             return ResponseEntity.ok(responseBody);
