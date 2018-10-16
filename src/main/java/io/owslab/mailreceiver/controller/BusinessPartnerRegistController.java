@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.exception.BusinessPartnerException;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
 import io.owslab.mailreceiver.form.PartnerForm;
@@ -10,6 +11,7 @@ import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 
+import io.owslab.mailreceiver.service.transaction.BusinessPartnerTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class BusinessPartnerRegistController {
     
     @Autowired
     private DomainService domainService;
+
+    @Autowired
+    BusinessPartnerTransaction businessPartnerTransaction;
 
     @RequestMapping(value = { "/businessPartnerRegist" }, method = RequestMethod.GET)
     public String getBusinessPartnerRegist(Model model, HttpServletRequest request) {
@@ -76,13 +81,13 @@ public class BusinessPartnerRegistController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            partnerService.add(form);
-            domainService.deleteDomainByDomain(form.getBuilder().getDomain1(), form.getBuilder().getDomain2(), form.getBuilder().getDomain3());
+            businessPartnerTransaction.addPartnerTransaction(form);
             result.setMsg("done");
             result.setStatus(true);
-        } catch (PartnerCodeException dpce) {
+        } catch (BusinessPartnerException dpce) {
             result.setMsg(dpce.getMessage());
             result.setStatus(false);
+            logger.error("addPartner: " + dpce.getMessage());
         } catch (Exception e) {
             logger.error("addPartner: " + e.getMessage());
             result.setMsg(e.getMessage());
@@ -103,11 +108,10 @@ public class BusinessPartnerRegistController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            partnerService.update(form, id);
-            domainService.deleteDomainByDomain(form.getBuilder().getDomain1(), form.getBuilder().getDomain2(), form.getBuilder().getDomain3());
+            businessPartnerTransaction.updatePartnerTransaction(form, id);
             result.setMsg("done");
             result.setStatus(true);
-        } catch (PartnerCodeException dpce) {
+        } catch (BusinessPartnerException dpce) {
             result.setMsg(dpce.getMessage());
             result.setStatus(false);
         } catch (Exception e) {

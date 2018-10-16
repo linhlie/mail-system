@@ -18,6 +18,7 @@ import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
+import io.owslab.mailreceiver.service.transaction.EmailTransaction;
 import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 import jp.co.worksap.message.decoder.HeaderDecoder;
@@ -35,6 +36,7 @@ public class FetchMailJob implements Runnable {
 
     private final EmailDAO emailDAO;
     private final FileDAO fileDAO;
+    private final EmailTransaction emailTransaction;
     private final EnviromentSettingService enviromentSettingService;
     private final FetchMailsService fetchMailsService;
     private final EmailAccountSetting accountSetting;
@@ -49,6 +51,7 @@ public class FetchMailJob implements Runnable {
     public FetchMailJob(EmailAccountSetting accountSetting, EmailAccount account) {
         this.emailDAO = BeanUtil.getBean(EmailDAO.class);
         this.fileDAO = BeanUtil.getBean(FileDAO.class);
+        this.emailTransaction = BeanUtil.getBean(EmailTransaction.class);
         this.fetchMailErroDAO = BeanUtil.getBean(FetchMailErroDAO.class);
         this.enviromentSettingService = BeanUtil.getBean(EnviromentSettingService.class);
         this.fetchMailsService = BeanUtil.getBean(FetchMailsService.class);
@@ -140,11 +143,11 @@ public class FetchMailJob implements Runnable {
                     boolean hasAttachments = attachmentFiles.size() > 0;
                     email.setHasAttachment(hasAttachments);
                     email = setMailContent(message, email);
-                    emailDAO.save(email);
-                    if(hasAttachments) fileDAO.save(attachmentFiles);
+                    emailTransaction.saveEmaiTransaction(email, attachmentFiles, hasAttachments);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Email errorEmail = email;
+                    logger.error(e.toString());
                     if(errorEmail != null) {
                         String error = ExceptionUtils.getStackTrace(e);
                         errorEmail.setErrorLog(error);

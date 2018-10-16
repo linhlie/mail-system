@@ -65,9 +65,6 @@ public class EngineerService {
 
     @Autowired
     private UploadFileService uploadFileService;
-    
-    @Autowired
-    private ExpansionTransaction expansionTransaction;
 
     @CacheEvict(key="\"EngineerService:getPartnerIds:\"+#id")
     public void delete(long id) {
@@ -84,16 +81,6 @@ public class EngineerService {
     public List<RelationshipEngineerPartner> getRelationshipEngineerPartner(long EngineerId){
     	List<RelationshipEngineerPartner> result = relationshipEngineerPartnerDAO.findByEngineerId(EngineerId);
     	return result;
-    }
-
-    public void add(EngineerForm form) throws PartnerNotFoundException, ParseException{
-        expansionTransaction.addEngineerAndRelation(form);
-    }
-
-    public void update(EngineerForm form, long id) throws EngineerNotFoundException, PartnerNotFoundException, ParseException {
-        Engineer engineer = form.getBuilder().build();
-        engineer.setId(id);
-        expansionTransaction.updateEngineerAndRelation(engineer, form.getGroupAddIds(), form.getGroupRemoveIds());
     }
 
     public List<EngineerListItemDTO> filter(EngineerFilterForm form, Timestamp now) {

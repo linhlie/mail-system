@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EmailAccountDTO;
 import io.owslab.mailreceiver.dto.ReceiveRuleDTO;
+import io.owslab.mailreceiver.exception.EmailAccountException;
 import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
@@ -13,6 +14,7 @@ import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.settings.MailReceiveRuleService;
+import io.owslab.mailreceiver.service.transaction.EmailAccountTransaction;
 import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.FileAssertResult;
 import io.owslab.mailreceiver.utils.PageWrapper;
@@ -58,6 +60,9 @@ public class SettingsController {
 
     @Autowired
     private MailReceiveRuleService mailReceiveRuleService;
+
+    @Autowired
+    private EmailAccountTransaction emailAccountTransaction;
 
     @InitBinder
     protected void initBinder(WebDataBinder dataBinder) {
@@ -162,6 +167,7 @@ public class SettingsController {
         return "admin/settings/account/form";
     }
 
+    //need transaction
     @RequestMapping(value = { "/mailAccountSettings/add" }, method = RequestMethod.POST)
     public String saveReceiveAccount(
             Model model, @ModelAttribute("fullAccountForm") FullAccountForm fullAccountForm,
@@ -170,17 +176,13 @@ public class SettingsController {
         if (result.hasErrors()) {
             return "admin/settings/account/form";
         }
-        MailAccountForm mailAccountForm = fullAccountForm.getMailAccountForm();
-        ReceiveAccountForm receiveAccountForm = fullAccountForm.getReceiveAccountForm();
-        SendAccountForm sendAccountForm = fullAccountForm.getSendAccountForm();
-        EmailAccount emailAccount = mailAccountsService.save(new EmailAccount(mailAccountForm));
-        EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);
-        newReceiveAccountSetting.setAccountId(emailAccount.getId());
-        emailAccountSettingService.save(newReceiveAccountSetting);
-        EmailAccountSetting newSendAccountSetting = new EmailAccountSetting(sendAccountForm, true);
-        newSendAccountSetting.setAccountId(emailAccount.getId());
-        emailAccountSettingService.save(newSendAccountSetting);
-        ReportErrorService.updateSendAccountInfo();
+        try {
+            emailAccountTransaction.saveEmailAccountTransaction(fullAccountForm);
+        } catch (EmailAccountException e) {
+            logger.error("Save account email fail "+e.toString());
+            model.addAttribute("errorMessage", "メールアカウントが登録できませんでした。");
+            return "admin/settings/account/form";
+        }
         return "redirect:/admin/mailAccountSettings";
     }
 

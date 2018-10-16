@@ -19,4 +19,8 @@ public class EmailService {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
         return emailList.size() > 0 ? emailList.get(0) : null;
     }
+
+    public void save(Email email){
+        emailDAO.save(email);
+    }
 }

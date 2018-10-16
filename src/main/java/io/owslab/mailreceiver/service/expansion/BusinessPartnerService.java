@@ -79,34 +79,12 @@ public class BusinessPartnerService {
     	partnerDAO.deleteAll();
     }
 
-    //TODO need to be transaction
-    public void add(PartnerForm form) throws PartnerCodeException {
-        BusinessPartner.Builder builder = form.getBuilder();
-        String partnerCode = builder.getPartnerCode();
-        BusinessPartner existPartner = findOneByPartnerCode(partnerCode);
-        if(existPartner != null) throw new PartnerCodeException("識別IDは既に存在します。");
-        BusinessPartner addedPartner = partnerDAO.save(builder.build());
-        List<Long> groupAddIds = form.getGroupAddIds();
-        saveGroupList(addedPartner, groupAddIds);
+    public BusinessPartner savePartner(BusinessPartner partner){
+        return partnerDAO.save(partner);
     }
 
-    @CacheEvict(key="\"BusinessPartnerService:getDomainPartner:\"+#id")
-    public void update(PartnerForm form, long id) throws PartnerCodeException {
-        BusinessPartner.Builder builder = form.getBuilder();
-        builder.setId(id);
-        String partnerCode = builder.getPartnerCode();
-        BusinessPartner partner = findOne(id);
-        if(partner == null) throw new PartnerCodeException("取引先は存在しません");
-        BusinessPartner existPartner = findOneByPartnerCode(partnerCode);
-        if(existPartner != null) {
-            long existPartnerId = existPartner.getId();
-            if(existPartnerId != id) throw new PartnerCodeException("識別IDは既に存在します。");
-        }
-        BusinessPartner updatedPartner = partnerDAO.save(builder.build());
-        List<Long> groupRemoveIds = form.getGroupRemoveIds();
-        List<Long> groupAddIds = form.getGroupAddIds();
-        deleteGroupList(updatedPartner, groupRemoveIds);
-        saveGroupList(updatedPartner, groupAddIds);
+    public void savePartnerGroup(List<BusinessPartnerGroup> partnerGroups) {
+        partnerGroupDAO.save(partnerGroups);
     }
 
     public BusinessPartner findOneByPartnerCode(String partnerCode){
@@ -127,7 +105,7 @@ public class BusinessPartnerService {
         return partnerGroupDAO.findByPartnerId(partnerId);
     }
 
-    private void deleteGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
+    public void deleteGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
         List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
         for(Long groupWithPartnerId : groupWithPartnerIds) {
             List<BusinessPartnerGroup> groupWithPartners = partnerGroupDAO.findByPartnerIdAndWithPartnerId(partner.getId(), groupWithPartnerId);
@@ -140,19 +118,6 @@ public class BusinessPartnerService {
             }
         }
         deletePartnerGroup(partner.getId(), partnerGroups);
-    }
-
-    @Cacheable(key="\"BusinessPartnerService:getWithPartnerIds:\"+#partner.getId()")
-    private void saveGroupList(BusinessPartner partner, List<Long> groupWithPartnerIds) {
-        List<BusinessPartnerGroup> partnerGroups = new ArrayList<>();
-        for(Long groupWithPartnerId : groupWithPartnerIds) {
-            BusinessPartner groupWithPartner = findOne(groupWithPartnerId);
-            if(groupWithPartner != null) {
-                partnerGroups.add(new BusinessPartnerGroup(partner, groupWithPartner));
-                partnerGroups.add(new BusinessPartnerGroup(groupWithPartner, partner));
-            }
-        }
-        partnerGroupDAO.save(partnerGroups);
     }
 
     public CSVBundle<CSVPartnerDTO> export() {
