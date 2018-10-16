@@ -395,11 +395,24 @@ public class MatchingConditionService {
         Email targetEmail = destinationResult.getEmail();
         if(matchingRule.isGroup()){
             if(matchingRule.hasSubRules()) {
-                for(FilterRule rule : matchingRule.getRules()){
-                    MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
-                    if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
-                        firstMatchRange = matchingPartResult.getMatchRange();
-                        firstRange = matchingPartResult.getRange();
+                if(matchingRule.getCondition().equalsIgnoreCase("AND")){
+                    for(FilterRule rule : matchingRule.getRules()){
+                        MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
+                        if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+                            firstMatchRange = matchingPartResult.getMatchRange();
+                            firstRange = matchingPartResult.getRange();
+                        }
+                        if(!matchingPartResult.isMatch()){
+                            break;
+                        }
+                    }
+                }else{
+                    for(FilterRule rule : matchingRule.getRules()){
+                        MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
+                        if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+                            firstMatchRange = matchingPartResult.getMatchRange();
+                            firstRange = matchingPartResult.getRange();
+                        }
                     }
                 }
             } else {
