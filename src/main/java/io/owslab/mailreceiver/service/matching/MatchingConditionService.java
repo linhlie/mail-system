@@ -324,7 +324,7 @@ public class MatchingConditionService {
     }
 
     @Cacheable(key="\"MatchingConditionService:isSameDomain:\"+#a+'-'+#b")
-    private boolean isSameDomain(String a, String b) {
+    public boolean isSameDomain(String a, String b) {
         String aDomain = getEmailDomain(a);
         String bDomain = getEmailDomain(b);
         return aDomain.equalsIgnoreCase(bDomain);
@@ -361,8 +361,26 @@ public class MatchingConditionService {
 
     public void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
         if(filterRule.isGroup()){
-            for(FilterRule rule : filterRule.getRules()){
-                findMailMatching(emailList, rule, distinguish, spaceEffective);
+            if(filterRule.getCondition().equalsIgnoreCase("AND")){
+                List<Email> emailsInput = emailList;
+                for(FilterRule rule : filterRule.getRules()){
+                    findMailMatching(emailsInput, rule, distinguish, spaceEffective);
+                    emailsInput = rule.getMatchEmails();
+                }
+            }else{
+                LinkedHashMap<String, Email> emailsInput = new LinkedHashMap<>();
+                for(Email email : emailList){
+                    emailsInput.put(email.getMessageId(), email);
+                }
+                for(FilterRule rule : filterRule.getRules()){
+                    List<Email> emails = new ArrayList<Email>(emailsInput.values());
+                    findMailMatching(emails, rule, distinguish, spaceEffective);
+                    for(Email email : rule.getMatchEmails()){
+                        if(emailsInput.containsKey(email.getMessageId())){
+                            emailsInput.remove(email.getMessageId());
+                        }
+                    }
+                }
             }
         } else {
             for(Email email : emailList){
