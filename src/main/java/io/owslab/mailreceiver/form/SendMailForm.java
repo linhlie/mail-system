@@ -19,26 +19,11 @@ public class SendMailForm {
     private List<Long> uploadAttachment;
 
     private String accountId;
-    private String sendType;
+    private int sendType;
     private int historyType;
     private String matchingMessageId;
 
     public SendMailForm() {
-    }
-
-    public SendMailForm(String messageId, String subject, String receiver, boolean activeCC, String cc, String content, List<Long> originAttachment, List<Long> uploadAttachment, String accountId, String sendType, int historyType, String matchingMessageId) {
-        this.messageId = messageId;
-        this.subject = subject;
-        this.receiver = receiver;
-        this.activeCC = activeCC;
-        this.cc = cc;
-        this.content = content;
-        this.originAttachment = originAttachment;
-        this.uploadAttachment = uploadAttachment;
-        this.accountId = accountId;
-        this.sendType = sendType;
-        this.historyType = historyType;
-        this.matchingMessageId = matchingMessageId;
     }
 
     public String getMessageId() {
@@ -113,11 +98,11 @@ public class SendMailForm {
         this.accountId = accountId;
     }
 
-    public String getSendType() {
+    public int getSendType() {
         return sendType;
     }
 
-    public void setSendType(String sendType) {
+    public void setSendType(int sendType) {
         this.sendType = sendType;
     }
 

@@ -4,7 +4,6 @@ import io.owslab.mailreceiver.form.SendMailForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
 import java.util.Date;
 
 @Entity
@@ -49,7 +48,7 @@ public class SentMailHistory {
 
     private String body;
 
-    private String sendType;
+    private int sendType;
 
     private String matchingMailAddress;
 
@@ -81,24 +80,6 @@ public class SentMailHistory {
         }
     }
 
-    public SentMailHistory(String messageId, String matchingMessageId, long accountId, String from, String subject, String to, String cc, String bcc, String replyTo, Date sentAt, Date originalReceivedAt, Date matchingReceivedAt, boolean hasAttachment, String body, String sendType, String matchingMailAddress) {
-        this.messageId = messageId;
-        this.matchingMessageId = matchingMessageId;
-        this.accountId = accountId;
-        this.from = from;
-        this.subject = subject;
-        this.to = to;
-        this.cc = cc;
-        this.bcc = bcc;
-        this.replyTo = replyTo;
-        this.sentAt = sentAt;
-        this.originalReceivedAt = originalReceivedAt;
-        this.matchingReceivedAt = matchingReceivedAt;
-        this.hasAttachment = hasAttachment;
-        this.body = body;
-        this.sendType = sendType;
-        this.matchingMailAddress = matchingMailAddress;
-    }
 
     public long getId() {
         return id;
@@ -220,11 +201,11 @@ public class SentMailHistory {
         this.body = body;
     }
 
-    public String getSendType() {
+    public int getSendType() {
         return sendType;
     }
 
-    public void setSendType(String sendType) {
+    public void setSendType(int sendType) {
         this.sendType = sendType;
     }
 
@@ -235,4 +216,5 @@ public class SentMailHistory {
     public void setMatchingMailAddress(String matchingMailAddress) {
         this.matchingMailAddress = matchingMailAddress;
     }
+
 }

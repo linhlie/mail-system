@@ -880,7 +880,7 @@
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 matchingMessageId: messageId,
-                sendType: lastSendTo === "moto" ? "[元へ]" : "[先へ]",
+                sendType: getHistoryType(),
                 historyType: getHistoryType(),
             };
             var stripped = strip(form.content, originalContentWrapId);

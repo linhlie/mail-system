@@ -163,7 +163,7 @@
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
                 matchingMessageId: messageId,
-                sendType: !lastSendTo ? "[返信]" : (lastSendTo === "moto" ? "[元へ]" : "[先へ]"),
+                sendType: lastHistoryType,
                 historyType: lastHistoryType,
             };
             

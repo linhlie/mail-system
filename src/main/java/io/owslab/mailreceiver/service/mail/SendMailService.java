@@ -235,7 +235,7 @@ public class SendMailService {
     }
 
     private void saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
-        String sentType = clickHistoryService.getSentTypeFromInt(form.getHistoryType());
+        int sentType = form.getHistoryType();
         clickHistoryService.saveSent(sentType);
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;

@@ -784,7 +784,7 @@
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
-                sendType: "[返信]",
+                sendType: getHistoryType(),
                 historyType: getHistoryType(),
             };
             $.ajax({
