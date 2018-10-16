@@ -160,8 +160,7 @@ public class MatchingConditionService {
         boolean spaceEffective = false;
         List<Email> matchList;
         if(rootRule.getRules().size() > 0) {
-            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
-            matchList = rootRule.getMatchEmails();
+            matchList = findMailMatching(emailList, rootRule, distinguish, spaceEffective);
         } else {
             matchList = emailList;
         }
@@ -184,8 +183,7 @@ public class MatchingConditionService {
         boolean distinguish = false;
         boolean spaceEffective = false;
         if(rootRule.getRules().size() > 0) {
-            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
-            matchList = rootRule.getMatchEmails();
+            matchList = findMailMatching(emailList, rootRule, distinguish, spaceEffective);
         } else {
             matchList = emailList;
         }
@@ -235,16 +233,14 @@ public class MatchingConditionService {
         boolean spaceEffective = false;
         List<Email> matchSourceList;
         if(sourceRule.getRules().size() > 0) {
-            findMailMatching(emailList, sourceRule, distinguish, spaceEffective);
-            matchSourceList = sourceRule.getMatchEmails();
+            matchSourceList = findMailMatching(emailList, sourceRule, distinguish, spaceEffective);
         } else {
             matchSourceList = emailList;
         }
         matchSourceList = mailBoxService.filterDuplicate(matchSourceList, filterSender, filterSubject);
         List<Email> matchDestinationList;
         if(destinationRule.getRules().size() > 0) {
-            findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
-            matchDestinationList = destinationRule.getMatchEmails();
+            matchDestinationList = findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
         } else {
             matchDestinationList = emailList;
         }
@@ -359,35 +355,35 @@ public class MatchingConditionService {
         return  someEmail.substring(someEmail.indexOf("@") + 1);
     }
 
-    public void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+    public List<Email> findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+        List<Email> listResult = new ArrayList<Email>();
+        for(Email email : emailList){
+            if(checkMatchingRule(email, filterRule, distinguish, spaceEffective)){
+                listResult.add(email);
+            }
+        }
+        return listResult;
+    }
+
+    private boolean checkMatchingRule(Email email, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
         if(filterRule.isGroup()){
             if(filterRule.getCondition().equalsIgnoreCase("AND")){
-                List<Email> emailsInput = emailList;
                 for(FilterRule rule : filterRule.getRules()){
-                    findMailMatching(emailsInput, rule, distinguish, spaceEffective);
-                    emailsInput = rule.getMatchEmails();
-                }
-            }else{
-                LinkedHashMap<String, Email> emailsInput = new LinkedHashMap<>();
-                for(Email email : emailList){
-                    emailsInput.put(email.getMessageId(), email);
-                }
-                for(FilterRule rule : filterRule.getRules()){
-                    List<Email> emails = new ArrayList<Email>(emailsInput.values());
-                    findMailMatching(emails, rule, distinguish, spaceEffective);
-                    for(Email email : rule.getMatchEmails()){
-                        if(emailsInput.containsKey(email.getMessageId())){
-                            emailsInput.remove(email.getMessageId());
-                        }
+                    if(!checkMatchingRule(email, rule, distinguish, spaceEffective)){
+                        return false;
                     }
                 }
-            }
-        } else {
-            for(Email email : emailList){
-                if(isMatch(email, filterRule, distinguish, spaceEffective)){
-                    filterRule.add(email);
+                return true;
+            }else{
+                for(FilterRule rule : filterRule.getRules()){
+                    if(checkMatchingRule(email, rule, distinguish, spaceEffective)){
+                        return true;
+                    }
                 }
+                return false;
             }
+        }else{
+            return isMatch(email, filterRule, distinguish, spaceEffective);
         }
     }
 
