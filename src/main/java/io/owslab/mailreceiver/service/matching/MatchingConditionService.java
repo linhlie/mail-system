@@ -160,8 +160,7 @@ public class MatchingConditionService {
         boolean spaceEffective = false;
         List<Email> matchList;
         if(rootRule.getRules().size() > 0) {
-            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
-            matchList = rootRule.getMatchEmails();
+            matchList = findMailMatching(emailList, rootRule, distinguish, spaceEffective);
         } else {
             matchList = emailList;
         }
@@ -184,8 +183,7 @@ public class MatchingConditionService {
         boolean distinguish = false;
         boolean spaceEffective = false;
         if(rootRule.getRules().size() > 0) {
-            findMailMatching(emailList, rootRule, distinguish, spaceEffective);
-            matchList = rootRule.getMatchEmails();
+            matchList = findMailMatching(emailList, rootRule, distinguish, spaceEffective);
         } else {
             matchList = emailList;
         }
@@ -235,16 +233,14 @@ public class MatchingConditionService {
         boolean spaceEffective = false;
         List<Email> matchSourceList;
         if(sourceRule.getRules().size() > 0) {
-            findMailMatching(emailList, sourceRule, distinguish, spaceEffective);
-            matchSourceList = sourceRule.getMatchEmails();
+            matchSourceList = findMailMatching(emailList, sourceRule, distinguish, spaceEffective);
         } else {
             matchSourceList = emailList;
         }
         matchSourceList = mailBoxService.filterDuplicate(matchSourceList, filterSender, filterSubject);
         List<Email> matchDestinationList;
         if(destinationRule.getRules().size() > 0) {
-            findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
-            matchDestinationList = destinationRule.getMatchEmails();
+            matchDestinationList = findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
         } else {
             matchDestinationList = emailList;
         }
@@ -324,7 +320,7 @@ public class MatchingConditionService {
     }
 
     @Cacheable(key="\"MatchingConditionService:isSameDomain:\"+#a+'-'+#b")
-    private boolean isSameDomain(String a, String b) {
+    public boolean isSameDomain(String a, String b) {
         String aDomain = getEmailDomain(a);
         String bDomain = getEmailDomain(b);
         return aDomain.equalsIgnoreCase(bDomain);
@@ -359,17 +355,35 @@ public class MatchingConditionService {
         return  someEmail.substring(someEmail.indexOf("@") + 1);
     }
 
-    public void findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+    public List<Email> findMailMatching(List<Email> emailList, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
+        List<Email> listResult = new ArrayList<Email>();
+        for(Email email : emailList){
+            if(checkMatchingRule(email, filterRule, distinguish, spaceEffective)){
+                listResult.add(email);
+            }
+        }
+        return listResult;
+    }
+
+    private boolean checkMatchingRule(Email email, FilterRule filterRule, boolean distinguish, boolean spaceEffective){
         if(filterRule.isGroup()){
-            for(FilterRule rule : filterRule.getRules()){
-                findMailMatching(emailList, rule, distinguish, spaceEffective);
-            }
-        } else {
-            for(Email email : emailList){
-                if(isMatch(email, filterRule, distinguish, spaceEffective)){
-                    filterRule.add(email);
+            if(filterRule.getCondition().equalsIgnoreCase("AND")){
+                for(FilterRule rule : filterRule.getRules()){
+                    if(!checkMatchingRule(email, rule, distinguish, spaceEffective)){
+                        return false;
+                    }
                 }
+                return true;
+            }else{
+                for(FilterRule rule : filterRule.getRules()){
+                    if(checkMatchingRule(email, rule, distinguish, spaceEffective)){
+                        return true;
+                    }
+                }
+                return false;
             }
+        }else{
+            return isMatch(email, filterRule, distinguish, spaceEffective);
         }
     }
 
@@ -381,11 +395,24 @@ public class MatchingConditionService {
         Email targetEmail = destinationResult.getEmail();
         if(matchingRule.isGroup()){
             if(matchingRule.hasSubRules()) {
-                for(FilterRule rule : matchingRule.getRules()){
-                    MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
-                    if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
-                        firstMatchRange = matchingPartResult.getMatchRange();
-                        firstRange = matchingPartResult.getRange();
+                if(matchingRule.getCondition().equalsIgnoreCase("AND")){
+                    for(FilterRule rule : matchingRule.getRules()){
+                        MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
+                        if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+                            firstMatchRange = matchingPartResult.getMatchRange();
+                            firstRange = matchingPartResult.getRange();
+                        }
+                        if(!matchingPartResult.isMatch()){
+                            break;
+                        }
+                    }
+                }else{
+                    for(FilterRule rule : matchingRule.getRules()){
+                        MatchingPartResult matchingPartResult = isMailMatching(sourceResult, destinationResult, rule, distinguish);
+                        if(firstRange == null && firstMatchRange == null && ((matchingPartResult.getRange() != null) || (matchingPartResult.getMatchRange() != null))) {
+                            firstMatchRange = matchingPartResult.getMatchRange();
+                            firstRange = matchingPartResult.getRange();
+                        }
                     }
                 }
             } else {

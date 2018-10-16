@@ -78,8 +78,7 @@ public class EmailMatchingEngineerService {
         
         List<Email> matchDestinationList;
         if(destinationRule.getRules().size() > 0) {
-        	matchingConditionService.findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
-            matchDestinationList = destinationRule.getMatchEmails();
+			matchDestinationList = matchingConditionService.findMailMatching(emailList, destinationRule, distinguish, spaceEffective);
         } else {
             matchDestinationList = emailList;
         }
