@@ -55,13 +55,17 @@
     }
 
     function loadBulletinEditor(){
+        $(changeShowTypeId).html("ー");
         $('#'+blockPreviewId).css('display', 'none');
         $('#'+blockEdittorId).css('display', 'block');
+        showType = "editor";
     }
 
     function loadBulletinPreview() {
+        $(changeShowTypeId).html("+");
         $('#'+blockEdittorId).css('display', 'none');
         $('#'+blockPreviewId).css('display', 'block');
+        showType = "preview";
     }
     
     function loadMailData(accountId) {
@@ -97,6 +101,7 @@
         function onSuccess(response) {
             if (response.bulletinBoardDTO && response.status) {
                 pushBulletenBoardData(response.bulletinBoardDTO);
+                loadBulletinPreview();
             } else {
                 console.warn("[WARN] Bulletin database is empty");
             }
@@ -255,13 +260,9 @@
 
     function changeShowTypeOnclick() {
         if(showType=="preview"){
-            $(changeShowTypeId).html("ー");
             loadBulletinEditor();
-            showType = "editor";
         }else{
-            $(changeShowTypeId).html("+");
             loadBulletinPreview()
-            showType = "preview";
         }
     }
 
