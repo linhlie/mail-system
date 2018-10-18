@@ -176,7 +176,7 @@
     }
 
     function setHistoryEditBulletin(data){
-        var history = data.timeEdit+" "+data.username+"により更新。"
+        var history = data.timeEdit+" "+data.username+"により更新"
         $(historyEditId).text(history);
     }
 

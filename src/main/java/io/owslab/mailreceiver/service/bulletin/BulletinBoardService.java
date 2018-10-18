@@ -8,6 +8,10 @@ import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class BulletinBoardService {
 
@@ -38,11 +42,9 @@ public class BulletinBoardService {
         }else{
             bulletinBoardDTO.setBulletin(bulletinBoard.getBulletin());
         }
-        String date = bulletinBoard.getTimeEdit().toString();
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        String date = df.format(bulletinBoard.getTimeEdit());
         bulletinBoardDTO.setTimeEdit(date);
-        if(date != null && date.length()>2){
-            bulletinBoardDTO.setTimeEdit(date.substring(0, date.length()-2));
-        }
         Account account = accountService.findById(bulletinBoard.getAccountId());
         bulletinBoardDTO.setUsername("");
         if(account!=null){
