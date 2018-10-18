@@ -1,10 +1,13 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.AccountDTO;
+import io.owslab.mailreceiver.dto.BulletinBoardDTO;
 import io.owslab.mailreceiver.model.Account;
+import io.owslab.mailreceiver.model.BulletinBoard;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
+import io.owslab.mailreceiver.service.bulletin.BulletinBoardService;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -22,15 +25,18 @@ import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
@@ -49,10 +55,7 @@ public class IndexController {
     private MatchingConditionService matchingConditionService;
 
     @Autowired
-    private ClickHistoryService clickHistoryService;
-
-    @Autowired
-    private AccountService accountService;
+    private BulletinBoardService bulletinBoardService;
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
@@ -89,12 +92,10 @@ public class IndexController {
         try {
             Date now = new Date();
             String latestReceive = mailBoxService.getLatestReceive(accountId);
-            List<String> receiveMailNumber = mailBoxService.getReceiveMailNumberStats(now, accountId);
             List<EmailAccount> emailAccounts = mailAccountsService.list();
             int checkMailInterval = enviromentSettingService.getCheckMailTimeInterval();
             responseBody.setHasSystemError(ReportErrorService.hasSystemError());
             responseBody.setLatestReceive(latestReceive);
-            responseBody.setReceiveMailNumber(receiveMailNumber);
             responseBody.setEmailAccounts(emailAccounts);
             responseBody.setCheckMailInterval(checkMailInterval);
             responseBody.setMsg("done");
@@ -107,6 +108,52 @@ public class IndexController {
             return ResponseEntity.ok(responseBody);
         }
     }
+
+    @RequestMapping(value="/user/dashboard/getBulletinBoard", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getBulletinBoard (){
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        try {
+            BulletinBoardDTO bulletinBoardDTO = bulletinBoardService.getBulletinBoard();
+            responseBody.setBulletinBoardDTO(bulletinBoardDTO);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            logger.error("getBulletinBoard: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+            return ResponseEntity.ok(responseBody);
+        }
+    }
+
+
+
+    @RequestMapping(value = "/user/dashboard/updateBulletin", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveBulletin(@Valid @RequestBody String bulletin, BindingResult bindingResult) {
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        if (bindingResult.hasErrors()) {
+            responseBody.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+        try {
+            if(bulletin.equals("null")){
+                bulletin = "";
+            }
+            bulletinBoardService.saveBulletinBoard(bulletin);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+        } catch (Exception e) {
+            logger.error("saveBulletin: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+        }
+        return ResponseEntity.ok(responseBody);
+    }
+
 
     @RequestMapping(value="/user/dashboard/forceFetchMail", method = RequestMethod.GET)
     @ResponseBody

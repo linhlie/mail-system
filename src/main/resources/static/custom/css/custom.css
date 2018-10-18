@@ -969,6 +969,16 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
     position: relative;
 }
 
+.dashboard .bulletin {
+    margin-top: 5px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 5px 10px;
+    border: 1px solid #3c8dbc;
+    position: relative;
+}
+
 .dashboard table th {
     font-weight: 400;
 }

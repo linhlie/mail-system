@@ -1,7 +1,9 @@
 package io.owslab.mailreceiver.response;
 
 import io.owslab.mailreceiver.dto.AccountDTO;
+import io.owslab.mailreceiver.dto.BulletinBoardDTO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.model.BulletinBoard;
 import io.owslab.mailreceiver.model.EmailAccount;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private List<EmailAccount> emailAccounts;
     private List<AccountDTO> users;
     private int checkMailInterval;
+    private BulletinBoardDTO bulletinBoardDTO;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -104,4 +107,8 @@ public class DashboardResponseBody extends AjaxResponseBody {
     public List<String> getSendMailEmailMatchingEngineerClick() { return sendMailEmailMatchingEngineerClick; }
 
     public void setSendMailEmailMatchingEngineerClick(List<String> sendMailEmailMatchingEngineerClick) { this.sendMailEmailMatchingEngineerClick = sendMailEmailMatchingEngineerClick; }
+
+    public BulletinBoardDTO getBulletinBoardDTO() { return bulletinBoardDTO; }
+
+    public void setBulletinBoardDTO(BulletinBoardDTO bulletinBoardDTO) { this.bulletinBoardDTO = bulletinBoardDTO; }
 }

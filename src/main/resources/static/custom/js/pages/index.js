@@ -2,6 +2,11 @@
 (function () {
     var lastSelectedMailAccountId = "";
     var accountSelectorId = "#accountSelector";
+    var bulletinBoardId = "bulletinBoard";
+    var updateBulletinBoardId = "#updateBulletinBoard";
+    var clearBulletinBoardId = "#clearBulletinBoard";
+    var historyEditId = "#historyEdit";
+
     $(function () {
         loadMailData();
         $(accountSelectorId).change(function() {
@@ -9,6 +14,32 @@
             loadMailData(this.value);
         });
         setButtonClickListenter("#forceFetchMailBtn", doForceFetchMail);
+        setButtonClickListenter(updateBulletinBoardId, updateBulletinBoardOnclick);
+        setButtonClickListenter(clearBulletinBoardId, clearBulletinBoardOnclick);
+        tinymce.init({
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block : '',
+            selector: '#' + bulletinBoardId,
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 450,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor'
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            init_instance_callback: function (editor) {
+                loadBulletinBoard()
+                editor.on('Change', function (e) {
+                    disableUpdateBulletinBoard(false);
+                });
+            },
+        });
+        disableUpdateBulletinBoard(true);
     });
     
     function loadMailData(accountId) {
@@ -21,29 +52,45 @@
             backgroundColor: 'rgb(0,0,0)',
             animation: 'doubleBounce',
         });
-        var url = "/user/dashboard/mailStatistics";
-        if(accountId && accountId.length > 0) {
-            url = url + "?accountId=" + accountId;
-        }
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                $('body').loadingModal('hide');
-                if (data && data.status) {
-                    pushMailData(data);
-                } else {
-                    console.error("[ERROR] dashboard load data failed: ");
-                }
-            },
-            error: function (e) {
-                $('body').loadingModal('hide');
-                console.error("[ERROR] dashboard load data error: ", e);
+
+        function onSuccess(response) {
+            $('body').loadingModal('hide');
+            if (response && response.status) {
+                pushMailData(response);
+            } else {
+                console.error("[ERROR] dashboard load data failed: ");
             }
-        });
+        }
+
+        function onError(error) {
+            $('body').loadingModal('hide');
+            console.error("[ERROR] dashboard load data error: ", error);
+        }
+
+        getMailDataAPI(accountId, onSuccess, onError);
+    }
+
+
+    function loadBulletinBoard() {
+        function onSuccess(response) {
+            if (response.bulletinBoardDTO && response.status) {
+                pushBulletenBoardData(response.bulletinBoardDTO);
+            } else {
+                console.warn("[WARN] Bulletin database is empty");
+            }
+        }
+
+        function onError(error) {
+            $('body').loadingModal('hide');
+            console.error("[ERROR] dashboard load data error: ", error);
+        }
+
+        getBulletinBoardAPI(onSuccess, onError);
+    }
+
+    function pushBulletenBoardData(data){
+        setBulletinBoard(data.bulletin);
+        setHistoryEditBulletin(data);
     }
     
     function pushMailData(data) {
@@ -56,9 +103,6 @@
         }
         if(data && data.checkMailInterval){
             $("#checkMailInterval").text(data.checkMailInterval + "分間隔で新着メール受信中");
-        }
-        if(data && data.receiveMailNumber){
-            pushDataToTable(data.receiveMailNumber, "receiveMailNumber");
         }
     }
 
@@ -78,14 +122,7 @@
             }));
         });
     }
-    
-    function pushDataToTable(data, tableId) {
-        for(var i = 0; i < data.length; i++) {
-            var col   = (i%8) + 2;
-            var row   = Math.floor(i/8) + 2;
-            $("#" + tableId + " tr:nth-child(" + row + ") td:nth-child(" + col  + ")").html(data[i]);
-        }
-    }
+
 
     function doForceFetchMail() {
         function onSuccess(response) {
@@ -124,6 +161,65 @@
     function hideloading() {
         $('body').loadingModal('hide');
         $('body').loadingModal('destroy');
+    }
+
+    function setBulletinBoard(data) {
+        if(data==null){
+            data = "";
+        }
+        if (typeof(tinyMCE) != "undefined") {
+            var editor = tinymce.get(bulletinBoardId);
+            editor.setContent(data);
+            editor.undoManager.clear();
+            editor.undoManager.add();
+        }
+    }
+
+    function setHistoryEditBulletin(data){
+        var history = data.timeEdit+" "+data.username+"により更新。"
+        $(historyEditId).text(history);
+    }
+
+    function getBulletinBoard() {
+        var editor = tinymce.get(bulletinBoardId);
+        return editor.getContent();
+    }
+    
+    function clearBulletinBoardOnclick() {
+        setBulletinBoard();
+        disableUpdateBulletinBoard(false);
+    }
+
+    function updateBulletinBoardOnclick(){
+        if (typeof(tinyMCE) != "undefined") {
+            var newBulletin = getBulletinBoard();
+            if(newBulletin==null || newBulletin.trim()==""){
+                newBulletin = "null";
+            }
+            function onSuccess(response) {
+                if(response && response.status) {
+                    $.alert({
+                        title: "",
+                        content: "保存に成功しました",
+                        onClose: function () {
+                            loadBulletinBoard();
+                        }
+                    });
+                } else {
+                    $.alert("保存に失敗しました");
+                }
+            }
+
+            function onError(response) {
+                $.alert("保存に失敗しました");
+            }
+            updateBulletinBoard(newBulletin, onSuccess, onError);
+        }
+
+    }
+
+    function disableUpdateBulletinBoard(disable){
+        $(updateBulletinBoardId).prop('disabled', disable);
     }
 
 })(jQuery);
