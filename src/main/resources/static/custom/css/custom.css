@@ -977,6 +977,25 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
     padding: 5px 10px;
     border: 1px solid #3c8dbc;
     position: relative;
+    height: 1000px;
+}
+
+.dashboard .bulletin-preview {
+    margin-top: 5px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 5px 10px;
+    border: 1px solid #3c8dbc;
+    position: relative;
+    height: 1000px;
+    overflow: scroll;
+}
+.dashboard .change-show-type-bulletinboard{
+    width: 50px;
+    height: 30px;
+    transform: translateY(-8px);
+    margin-left: 15px;
 }
 
 .dashboard table th {
@@ -1098,6 +1117,13 @@ button[name=builder-ec] {
     top: -1px;
     bottom: 0;
     left: 250px;
+}
+
+.builder-wrapper-header div.edit-history {
+    position: absolute;
+    top: 25px;
+    bottom: 0;
+    left: 450px;
 }
 
 .builder-wrapper-header div.builder-condition-name label {
