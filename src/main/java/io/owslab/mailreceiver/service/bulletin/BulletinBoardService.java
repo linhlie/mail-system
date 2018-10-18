@@ -42,7 +42,7 @@ public class BulletinBoardService {
         }else{
             bulletinBoardDTO.setBulletin(bulletinBoard.getBulletin());
         }
-        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         String date = df.format(bulletinBoard.getTimeEdit());
         bulletinBoardDTO.setTimeEdit(date);
         Account account = accountService.findById(bulletinBoard.getAccountId());
