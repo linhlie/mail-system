@@ -203,6 +203,7 @@
                         content: "保存に成功しました",
                         onClose: function () {
                             loadBulletinBoard();
+                            disableUpdateBulletinBoard(true);
                         }
                     });
                 } else {
