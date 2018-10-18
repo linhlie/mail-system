@@ -39,14 +39,17 @@
             <div class="col-sm-4" style="padding-left: 100px;">
                 <h1 style="color: grey;">Bulletin board</h1>
             </div>
-            <div class="col-sm-8"  style="margin-top: 30px; padding-top: 8px">
+            <div class="col-sm-6"  style="margin-top: 30px; padding-top: 8px">
                 <span id="historyEdit"></span>
             </div>
+            <div class="col-sm-2"  style="margin-top: 30px; padding-top: 8px; padding-right: 100px; transform: translateY(-15px)">
+                <button id="changeShowType" type="button" class="btn btn-primary btn-block">＋</button>
+            </div>
         </div>
-        <div class="row">
-            <div class="bulletin" style="height: 600px; ">
-                <div style="height: 530px;">
-                    <textarea id="bulletinBoard"></textarea>
+        <div class="row" id="blockEditor">
+            <div class="bulletin" style="height: 1000px; ">
+                <div style="height: 930px;">
+                    <textarea id="bulletinBoardEditor" style="height: 100%; width: 100%;"></textarea>
                 </div>
                 <div class="row" style="margin-top: 10px;">
                     <div class="col-md-3 pull-right">
@@ -60,6 +63,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row" id="blockPreview">
+            <div class="bulletin" style="height: 1000px;">
+                <span id="bulletinBoardPreview" style="height: 100%; width: 100%;"></span>
             </div>
         </div>
 
