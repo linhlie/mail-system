@@ -34,249 +34,35 @@
                     <span class="dashboard-box-icon"><i class="fa fa-clock-o"></i></span>
                 </div>
             </div>
-            <div class="stats-wrapper">
-                <b>メール受信件数</b>
-                <table id="receiveMailNumber">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-envelope-o"></i></span>
-                </div>
+        </div>
+        <div class="row" style="transform: translateY(15px)">
+            <div class="col-sm-4" style="padding-left: 100px;">
+                <h1 style="color: grey;">Bulletin board</h1>
+            </div>
+            <div class="col-sm-8"  style="margin-top: 30px; padding-top: 8px">
+                <span id="historyEdit"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3" style="padding-left: 100px; margin-top: 15px;">
-                <select id="userSelector" style="width: 100%;">
-                    <option value="">全てのユーザー</option>
-                </select>
-            </div>
-            <div class="col-sm-3"  style="margin-top: 15px; padding-top: 8px">
-                <label>本日のメール送信件数上位３名 &nbsp;&nbsp;&nbsp;&nbsp;</label>
-            </div>
-            <div class="col-sm-6" style=" margin-top: 15px; padding-left: 0px; padding-right: 100px; ; padding-top: 8px"  id="topUserSentMail">
-            </div>
-        </div>
-        <div class="row" style="margin-top: 20px; ">
-            <b  style="margin-left: 100px;">メールマッチング</b>
-            <div class="stats-wrapper">
-                <b>ボタン押下件数</b>
-                <table id="clickCount">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>元のみ抽出</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>先のみ抽出</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>マッチング</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
+            <div class="bulletin" style="height: 600px; ">
+                <div style="height: 530px;">
+                    <textarea id="bulletinBoard"></textarea>
                 </div>
-            </div>
-            <div class="stats-wrapper">
-                <b>メール送信件数</b>
-                <table id="sendPerClick">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>マッチング後、「元へ」</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>マッチング後、「先へ」</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>元抽出後、「返信」</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>先抽出後、「返信」</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-send-o"></i></span>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-md-3 pull-right">
+                        <div style="width: 90%;">
+                            <button id="updateBulletinBoard" type="button" class="btn btn-primary btn-block">更 新</button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 pull-right">
+                        <div style="width: 90%;">
+                            <button id="clearBulletinBoard" type="button" class="btn btn-primary btn-block">クリアー</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-top: 20px;">
-            <b style="margin-left: 100px;">DB⇔メールマッチング</b>
-            <div class="stats-wrapper">
-                <b>ボタン押下件数</b>
-                <table id="clickEmailMatchingEngineerCount">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>マッチング</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
-                </div>
-            </div>
-            <div class="stats-wrapper">
-                <b>メール送信件数</b>
-                <table id="sendMailEmailMatchingEngineerClick">
-                    <tr>
-                        <th></th>
-                        <th scope="col">本日</th>
-                        <th scope="col">前日</th>
-                        <th scope="col">2日前</th>
-                        <th scope="col">3日前</th>
-                        <th scope="col">4日前</th>
-                        <th scope="col">5日前</th>
-                        <th scope="col">6日前</th>
-                        <th scope="col">7日前</th>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <span>マッチング後、「返信」</span>
-                        </th>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-                <div class="dashboard-icon-wrapper">
-                    <span class="dashboard-box-icon"><i class="fa fa-send-o"></i></span>
-                </div>
-            </div>
-        </div>
+
         <!-- /.row -->
     </section>
 </div>

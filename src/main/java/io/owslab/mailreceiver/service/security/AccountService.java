@@ -53,6 +53,10 @@ public class AccountService {
         return accounts.size() > 0 ? accounts.get(0) : null;
     }
 
+    public Account findById(Long id){
+        return accountDAO.findOne(id);
+    }
+
     public List<Account> getAllUserRoleAccounts(){
         List<String> roles = new ArrayList<>();
         roles.add(Account.Role.MEMBER);

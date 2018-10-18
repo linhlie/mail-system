@@ -254,6 +254,34 @@ function getEmailAccounts(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getBulletinBoardAPI(onSuccess, onError) {
+    var url = "/user/dashboard/getBulletinBoard";
+    _get(url, onSuccess, onError);
+}
+
+function getMailDataAPI(accountId, onSuccess, onError) {
+    var url = "/user/dashboard/mailStatistics";
+    if(accountId && accountId.length > 0) {
+        url = url + "?accountId=" + accountId;
+    }
+    _get(url, onSuccess, onError);
+}
+
+function updateBulletinBoard(bulletin, onSuccess, onError){
+    var url = "/user/dashboard/updateBulletin";
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: url,
+        data: bulletin,
+        dataType: 'json',
+        cache: false,
+        timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
     $.ajax({
