@@ -2,6 +2,9 @@
 (function () {
 
     $(function () {
+        $("#engineerActionType").change(function () {
+           setDisplayType(this.value);
+        });
         setButtonClickListenter("#importEngineerBtn", onImportEngineerClick);
         setButtonClickListenter("#engineerActions", doEngineerActions);
         setImportFileChangeListener()
@@ -91,6 +94,18 @@
 
     function clearImportLogs() {
         $("#importLogs").html("");
+    }
+
+    function setDisplayType(type) {
+        if(type=="export"){
+            $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
+            $("#importEngineerInputDiv").css("visibility","hidden");
+            $("#engineerDeleteOldDiv").css("visibility","hidden");
+        }else{
+            $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
+            $("#importEngineerInputDiv").css("visibility","visible");
+            $("#engineerDeleteOldDiv").css("visibility","visible");
+        }
     }
 
 
