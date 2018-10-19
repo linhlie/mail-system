@@ -292,14 +292,6 @@
                 callback();
             }
         });
-
-        function sortDomain(doamin1, domain2){
-            if(domain1.domain > domain2.domain){
-                return 1;
-            }else{
-                return -1;
-            }
-        }
     }
     
     function showError(error, selector) {
