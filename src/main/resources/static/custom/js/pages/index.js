@@ -69,18 +69,7 @@
     }
     
     function loadMailData(accountId) {
-        $('body').loadingModal('destroy');
-        $('body').loadingModal({
-            position: 'auto',
-            text: 'ローディング...',
-            color: '#fff',
-            opacity: '0.7',
-            backgroundColor: 'rgb(0,0,0)',
-            animation: 'doubleBounce',
-        });
-
         function onSuccess(response) {
-            $('body').loadingModal('hide');
             if (response && response.status) {
                 pushMailData(response);
             } else {
@@ -98,7 +87,18 @@
 
 
     function loadBulletinBoard() {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+
         function onSuccess(response) {
+            $('body').loadingModal('hide');
             if (response.bulletinBoardDTO && response.status) {
                 pushBulletenBoardData(response.bulletinBoardDTO);
                 loadBulletinPreview();

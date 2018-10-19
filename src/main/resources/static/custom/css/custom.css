@@ -969,28 +969,6 @@ input#historyFromDate[disabled], input#historyToDate[disabled] {
     position: relative;
 }
 
-.dashboard .bulletin {
-    margin-top: 5px;
-    background-color: white;
-    margin-left: 100px;
-    margin-right: 100px;
-    padding: 5px 10px;
-    border: 1px solid #3c8dbc;
-    position: relative;
-    height: 1000px;
-}
-
-.dashboard .bulletin-preview {
-    margin-top: 5px;
-    background-color: white;
-    margin-left: 100px;
-    margin-right: 100px;
-    padding: 5px 10px;
-    border: 1px solid #3c8dbc;
-    position: relative;
-    height: 1000px;
-    overflow: scroll;
-}
 .dashboard .change-show-type-bulletinboard{
     width: 50px;
     height: 30px;
@@ -1305,4 +1283,64 @@ section.sendTab.content {
 	border: 1px solid black;
 	padding: 5px;
 	margin-left: 20px;
+}
+
+.bulletinboard .stats-wrapper {
+    margin-top: 5px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #3c8dbc;
+    position: relative;
+}
+
+.bulletinboard .bulletin {
+    margin-top: 5px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 5px 10px;
+    border: 1px solid #3c8dbc;
+    position: relative;
+    height: 1000px;
+}
+
+.bulletinboard .bulletin-preview {
+    margin-top: 5px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 5px 10px;
+    border: 1px solid #3c8dbc;
+    position: relative;
+    height: 1000px;
+    overflow: scroll;
+}
+.bulletinboard .change-show-type-bulletinboard{
+    width: 50px;
+    height: 30px;
+    transform: translateY(-8px);
+    margin-left: 15px;
+}
+
+div.bulletinboard-icon-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -90px;
+    width: 90px;
+}
+.bulletinboard-box-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    float: left;
+    height: auto;
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    line-height: 100%;
 }
