@@ -35,18 +35,17 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="transform: translateY(15px)">
-            <div class="col-sm-4" style="padding-left: 100px;">
-                <h1 style="color: grey;">Bulletin board</h1>
-            </div>
-            <div class="col-sm-8"  style="margin-top: 30px; padding-top: 8px">
-                <span id="historyEdit"></span>
+        <div class="builder-wrapper-header" style="margin-top: 20px; transform: translateY(10px); padding-left: 100px; color: grey;">
+            <span style="font-size: 40px;">Bulletin board</span>
+            <button id="changeShowType" type="button"  class="btn btn-default btn-xs change-show-type-bulletinboard">&nbsp;</button>
+            <div class="edit-history" >
+                <span id="historyEdit" style="color: #0c0c0c;"></span>
             </div>
         </div>
-        <div class="row">
-            <div class="bulletin" style="height: 600px; ">
-                <div style="height: 530px;">
-                    <textarea id="bulletinBoard"></textarea>
+        <div class="row" id="blockEditor">
+            <div class="bulletin">
+                <div style="height: 930px;">
+                    <textarea id="bulletinBoardEditor" style="height: 100%; width: 100%;"></textarea>
                 </div>
                 <div class="row" style="margin-top: 10px;">
                     <div class="col-md-3 pull-right">
@@ -60,6 +59,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row" id="blockPreview">
+            <div class="bulletin-preview">
+                <span id="bulletinBoardPreview" style="height: 100%; width: 100%;"></span>
             </div>
         </div>
 

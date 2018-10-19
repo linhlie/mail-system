@@ -2,10 +2,16 @@
 (function () {
     var lastSelectedMailAccountId = "";
     var accountSelectorId = "#accountSelector";
-    var bulletinBoardId = "bulletinBoard";
+    var bulletinBoardEditorId = "bulletinBoardEditor";
+    var bulletinBoardPreviewId = "bulletinBoardPreview";
     var updateBulletinBoardId = "#updateBulletinBoard";
     var clearBulletinBoardId = "#clearBulletinBoard";
     var historyEditId = "#historyEdit";
+    var blockEdittorId = "blockEditor";
+    var blockPreviewId = "blockPreview";
+    var changeShowTypeId = "#changeShowType";
+    var showType = "preview";
+
 
     $(function () {
         loadMailData();
@@ -16,15 +22,21 @@
         setButtonClickListenter("#forceFetchMailBtn", doForceFetchMail);
         setButtonClickListenter(updateBulletinBoardId, updateBulletinBoardOnclick);
         setButtonClickListenter(clearBulletinBoardId, clearBulletinBoardOnclick);
+        setButtonClickListenter(changeShowTypeId, changeShowTypeOnclick);
+        loadBulletinData();
+        loadBulletinPreview();
+    });
+
+    function loadBulletinData() {
         tinymce.init({
             force_br_newlines : true,
             force_p_newlines : false,
             forced_root_block : '',
-            selector: '#' + bulletinBoardId,
+            selector: '#' + bulletinBoardEditorId,
             language: 'ja',
             theme: 'modern',
             statusbar: false,
-            height: 450,
+            height: 850,
             plugins: [
                 'advlist autolink link image lists charmap preview hr anchor pagebreak',
                 'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
@@ -40,7 +52,21 @@
             },
         });
         disableUpdateBulletinBoard(true);
-    });
+    }
+
+    function loadBulletinEditor(){
+        $(changeShowTypeId).html("ー");
+        $('#'+blockPreviewId).css('display', 'none');
+        $('#'+blockEdittorId).css('display', 'block');
+        showType = "editor";
+    }
+
+    function loadBulletinPreview() {
+        $(changeShowTypeId).html("+");
+        $('#'+blockEdittorId).css('display', 'none');
+        $('#'+blockPreviewId).css('display', 'block');
+        showType = "preview";
+    }
     
     function loadMailData(accountId) {
         $('body').loadingModal('destroy');
@@ -75,6 +101,7 @@
         function onSuccess(response) {
             if (response.bulletinBoardDTO && response.status) {
                 pushBulletenBoardData(response.bulletinBoardDTO);
+                loadBulletinPreview();
             } else {
                 console.warn("[WARN] Bulletin database is empty");
             }
@@ -89,6 +116,7 @@
     }
 
     function pushBulletenBoardData(data){
+        setBulletinBoardPreview(data.bulletin);
         setBulletinBoard(data.bulletin);
         setHistoryEditBulletin(data);
     }
@@ -168,11 +196,18 @@
             data = "";
         }
         if (typeof(tinyMCE) != "undefined") {
-            var editor = tinymce.get(bulletinBoardId);
+            var editor = tinymce.get(bulletinBoardEditorId);
             editor.setContent(data);
             editor.undoManager.clear();
             editor.undoManager.add();
         }
+    }
+
+    function setBulletinBoardPreview(data) {
+        if(data==null){
+            data = "";
+        }
+        $('#'+bulletinBoardPreviewId).html(data);
     }
 
     function setHistoryEditBulletin(data){
@@ -181,7 +216,7 @@
     }
 
     function getBulletinBoard() {
-        var editor = tinymce.get(bulletinBoardId);
+        var editor = tinymce.get(bulletinBoardEditorId);
         return editor.getContent();
     }
     
@@ -221,6 +256,14 @@
 
     function disableUpdateBulletinBoard(disable){
         $(updateBulletinBoardId).prop('disabled', disable);
+    }
+
+    function changeShowTypeOnclick() {
+        if(showType=="preview"){
+            loadBulletinEditor();
+        }else{
+            loadBulletinPreview()
+        }
     }
 
 })(jQuery);
