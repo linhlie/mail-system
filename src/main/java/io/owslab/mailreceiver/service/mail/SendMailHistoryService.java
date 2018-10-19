@@ -1,8 +1,11 @@
 package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
+import io.owslab.mailreceiver.dto.SentMailHistoryDTO;
 import io.owslab.mailreceiver.form.SentMailHistoryForm;
+import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.SentMailHistory;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,6 +25,9 @@ public class SendMailHistoryService {
     @Autowired
     private SentMailHistoryDAO sentMailHistoryDAO;
 
+    @Autowired
+    AccountService accountService;
+
     public List<SentMailHistory> search(SentMailHistoryForm form) {
         String filterType = form.getFilterType();
         String fromDateStr = form.getFromDateStr();
@@ -31,6 +38,25 @@ public class SendMailHistoryService {
             return findByDateRange(fromDateStr, toDateStr);
         }
         return findAll();
+    }
+
+    public List<SentMailHistoryDTO> getSentMailhistory(SentMailHistoryForm form){
+        List<SentMailHistory> rawHistories = search(form);
+        List<Account> listAccount = accountService.getAllUserRoleAccounts();
+        HashMap<Long, String>  mapAccount = new HashMap<>();
+        for(Account account : listAccount){
+            if(account.getName()!=null && !account.getName().equals("")){
+                mapAccount.put(account.getId(), account.getName());
+            }else{
+                mapAccount.put(account.getId(), account.getUserName());
+            }
+        }
+        List<SentMailHistoryDTO> histories = new ArrayList<>();
+        for(SentMailHistory history : rawHistories) {
+            String username = mapAccount.get(history.getAccountSentMailId());
+            histories.add(new SentMailHistoryDTO(history, username));
+        }
+        return histories;
     }
 
     private List<SentMailHistory> findToday() {

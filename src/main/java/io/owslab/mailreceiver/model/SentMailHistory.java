@@ -52,6 +52,8 @@ public class SentMailHistory {
 
     private String matchingMailAddress;
 
+    private long accountSentMailId;
+
     public SentMailHistory() {
     }
 
@@ -59,7 +61,7 @@ public class SentMailHistory {
         this.id = id;
     }
 
-    public SentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+    public SentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId) {
         this.messageId = originalMail.getMessageId();
         this.accountId = emailAccount.getId();
         this.from = emailAccount.getAccount();
@@ -78,6 +80,7 @@ public class SentMailHistory {
             this.matchingReceivedAt = matchingMail.getReceivedAt();
             this.matchingMailAddress = matchingMail.getFrom();
         }
+        this.accountSentMailId = accountSentMailId;
     }
 
 
@@ -217,4 +220,11 @@ public class SentMailHistory {
         this.matchingMailAddress = matchingMailAddress;
     }
 
+    public long getAccountSentMailId() {
+        return accountSentMailId;
+    }
+
+    public void setAccountSentMailId(long accountSentMailId) {
+        this.accountSentMailId = accountSentMailId;
+    }
 }

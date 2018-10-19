@@ -21,6 +21,7 @@
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="originalReceivedAt"><span></span></td>' +
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingReceivedAt"><span></span></td>' +
         '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
+        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="username"><span></span></td>' +
         '</tr>';
     $(function () {
         initSortHistory();
@@ -118,6 +119,7 @@
                 $('body').loadingModal('hide');
                 if (data && data.status) {
                     histories = data.list;
+                    console.log(data.list);
                 } else {
                     console.error("[ERROR] submit failed: ");
                 }

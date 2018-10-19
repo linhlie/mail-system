@@ -53,11 +53,7 @@ public class SendMailHistoryController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            List<SentMailHistory> rawHistories = sendMailHistoryService.search(sentMailHistoryForm);
-            List<SentMailHistoryDTO> histories = new ArrayList<>();
-            for(SentMailHistory history : rawHistories) {
-                histories.add(new SentMailHistoryDTO(history));
-            }
+            List<SentMailHistoryDTO> histories = sendMailHistoryService.getSentMailhistory(sentMailHistoryForm);
             result.setMsg("done");
             result.setStatus(true);
             result.setList(histories);

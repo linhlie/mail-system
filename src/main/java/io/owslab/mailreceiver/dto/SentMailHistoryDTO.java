@@ -24,8 +24,9 @@ public class SentMailHistoryDTO {
     private String body;
     private String sendType;
     private String matchingMailAddress;
+    private String username;
 
-    public SentMailHistoryDTO(SentMailHistory history) {
+    public SentMailHistoryDTO(SentMailHistory history, String username) {
         this.setFrom(history.getFrom());
         this.setSubject(history.getSubject());
         this.setTo(history.getTo());
@@ -38,6 +39,7 @@ public class SentMailHistoryDTO {
             this.setOriginalReceivedAt(DateFormatUtils.format(history.getOriginalReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
         if(history.getMatchingReceivedAt() != null)
             this.setMatchingReceivedAt(DateFormatUtils.format(history.getMatchingReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
+        this.username = username;
     }
 
     public String getFrom() {
@@ -111,4 +113,8 @@ public class SentMailHistoryDTO {
     public void setMatchingMailAddress(String matchingMailAddress) {
         this.matchingMailAddress = matchingMailAddress;
     }
+
+    public String getUsername() { return username; }
+
+    public void setUsername(String username) { this.username = username; }
 }
