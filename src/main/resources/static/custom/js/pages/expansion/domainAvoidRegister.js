@@ -52,6 +52,10 @@
     function loadDomainsAvoidRegister(){
     	function onSuccess(response) {
             if(response && response.status){
+                response.list.sort(function (a, b) {
+                    if(a.domain>b.domain) return 1;
+                    return -1;
+                });
             	for(var i=0;i<response.list.length;i++){
             		var domain = {
         					id: response.list[i].id,
@@ -158,18 +162,20 @@
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
-                    content: "Save success",
+                    title: "",
+                    content: "保存に成功しました",
                     onClose: function () {
-                    	loadDomainsAvoidRegister();
+                        loadDomainsAvoidRegister();
+
                     }
                 });
             } else {
-                $.alert("Save fail");
+                $.alert("保存に失敗しました");
             }
         }
         
         function onError(response) {
-            $.alert("Save fail");
+            $.alert("保存に失敗しました");
         }
         
         saveDomainAvoidRegister({
@@ -285,6 +291,14 @@
                 callback();
             }
         });
+
+        function sortDomain(doamin1, domain2){
+            if(domain1.domain > domain2.domain){
+                return 1;
+            }else{
+                return -1;
+            }
+        }
     }
     
     function showError(error, selector) {
