@@ -56,6 +56,7 @@
                     if(a.domain>b.domain) return 1;
                     return -1;
                 });
+                domainsOriginal = [];
             	for(var i=0;i<response.list.length;i++){
             		var domain = {
         					id: response.list[i].id,
