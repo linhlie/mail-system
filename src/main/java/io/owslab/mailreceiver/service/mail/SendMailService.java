@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.file.UploadFileService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
@@ -63,6 +64,9 @@ public class SendMailService {
 
     @Autowired
     private ClickHistoryService clickHistoryService;
+
+    @Autowired
+    private AccountService accountService;
 
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId());
@@ -239,7 +243,8 @@ public class SendMailService {
         clickHistoryService.saveSent(sentType);
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;
-        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment);
+        long accountSentMailId = accountService.getLoggedInAccountId();
+        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountSentMailId);
         sentMailHistoryDAO.save(history);
     }
 

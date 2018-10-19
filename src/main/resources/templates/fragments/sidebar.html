@@ -178,7 +178,11 @@
                         <i class="fa fa-share-square-o"></i> <span>取引先ｲﾝﾎﾟｰﾄ・ｴｷｽﾎﾟｰﾄ</span>
                     </a>
                 </li>
-
+                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerImportExport'})?'active':''">
+                    <a href="#" th:href="@{/expansion/engineerImportExport}">
+                        <i class="fa fa-share-square-o"></i> <span>技術者ｲﾝﾎﾟｰﾄ・ｴｷｽﾎﾟｰﾄ</span>
+                    </a>
+                </li>
             </ul>
         </li>
         <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'statistic'})?'active':''">
