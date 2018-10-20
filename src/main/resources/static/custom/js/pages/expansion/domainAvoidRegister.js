@@ -82,7 +82,7 @@
     function loadDomainDataTable(tableId, data) {
         domains = data;
         removeAllRow(tableId, domainReplaceRow);
-        if (domains.length > 0) {
+        if (domains.length >= 0) {
             var html = domainReplaceRow;
             for (var i = 0; i < domains.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
