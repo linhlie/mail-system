@@ -52,6 +52,11 @@
     function loadDomainsAvoidRegister(){
     	function onSuccess(response) {
             if(response && response.status){
+                response.list.sort(function (a, b) {
+                    if(a.domain>b.domain) return 1;
+                    return -1;
+                });
+                domainsOriginal = [];
             	for(var i=0;i<response.list.length;i++){
             		var domain = {
         					id: response.list[i].id,
@@ -77,7 +82,7 @@
     function loadDomainDataTable(tableId, data) {
         domains = data;
         removeAllRow(tableId, domainReplaceRow);
-        if (domains.length > 0) {
+        if (domains.length >= 0) {
             var html = domainReplaceRow;
             for (var i = 0; i < domains.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
@@ -158,18 +163,20 @@
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
-                    content: "Save success",
+                    title: "",
+                    content: "保存に成功しました",
                     onClose: function () {
-                    	loadDomainsAvoidRegister();
+                        loadDomainsAvoidRegister();
+
                     }
                 });
             } else {
-                $.alert("Save fail");
+                $.alert("保存に失敗しました");
             }
         }
         
         function onError(response) {
-            $.alert("Save fail");
+            $.alert("保存に失敗しました");
         }
         
         saveDomainAvoidRegister({

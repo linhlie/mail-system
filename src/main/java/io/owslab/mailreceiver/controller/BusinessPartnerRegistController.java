@@ -198,7 +198,6 @@ public class BusinessPartnerRegistController {
     @ResponseBody
     public ResponseEntity<?> getDomainAvoidRegister() {AjaxResponseBody result = new AjaxResponseBody();
         try {
-        	System.out.println("getDomainAvoidRegister");
             List<DomainUnregister> listDomain = domainService.getDomainsByStatus(DomainUnregister.Status.AVOID_REGISTER);
             result.setList(listDomain);
             result.setMsg("done");
