@@ -152,11 +152,11 @@
     function setDisplayTypePartner(type) {
         if(type=="export"){
             $("#partnerIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
-            $("#importPartnerInputDiv").css("visibility","hidden");
+            $("#importPartnerInputDiv").css("display","none");
             $("#partnerDeleteOldDiv").css("visibility","hidden");
         }else{
             $("#partnerIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
-            $("#importPartnerInputDiv").css("visibility","visible");
+            $("#importPartnerInputDiv").css("display","block");
             $("#partnerDeleteOldDiv").css("visibility","visible");
         }
     }
@@ -164,11 +164,11 @@
     function setDisplayTypePartnerGroup(type) {
         if(type=="export"){
             $("#groupIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
-            $("#importGroupInputDiv").css("visibility","hidden");
+            $("#importGroupInputDiv").css("display","none");
             $("#groupDeleteOldDiv").css("visibility","hidden");
         }else{
             $("#groupIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
-            $("#importGroupInputDiv").css("visibility","visible");
+            $("#importGroupInputDiv").css("display","block");
             $("#groupDeleteOldDiv").css("visibility","visible");
         }
     }

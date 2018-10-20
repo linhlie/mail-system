@@ -99,11 +99,11 @@
     function setDisplayType(type) {
         if(type=="export"){
             $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
-            $("#importEngineerInputDiv").css("visibility","hidden");
+            $("#importEngineerInputDiv").css("display","none");
             $("#engineerDeleteOldDiv").css("visibility","hidden");
         }else{
             $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
-            $("#importEngineerInputDiv").css("visibility","visible");
+            $("#importEngineerInputDiv").css("display","block");
             $("#engineerDeleteOldDiv").css("visibility","visible");
         }
     }
