@@ -2,6 +2,12 @@
 (function () {
 
     $(function () {
+        $("#partnerActionType").change(function () {
+            setDisplayTypePartner(this.value);
+        });
+        $("#groupActionType").change(function () {
+            setDisplayTypePartnerGroup(this.value);
+        });
         setButtonClickListenter("#importGroupBtn", onImportGroupClick);
         setButtonClickListenter("#importPartnerBtn", onImportPartnerClick);
         setButtonClickListenter("#partnerActions", doPartnerActions);
@@ -143,5 +149,28 @@
         $("#importLogs").html("");
     }
 
+    function setDisplayTypePartner(type) {
+        if(type=="export"){
+            $("#partnerIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
+            $("#importPartnerInputDiv").css("display","none");
+            $("#partnerDeleteOldDiv").css("visibility","hidden");
+        }else{
+            $("#partnerIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
+            $("#importPartnerInputDiv").css("display","block");
+            $("#partnerDeleteOldDiv").css("visibility","visible");
+        }
+    }
+
+    function setDisplayTypePartnerGroup(type) {
+        if(type=="export"){
+            $("#groupIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
+            $("#importGroupInputDiv").css("display","none");
+            $("#groupDeleteOldDiv").css("visibility","hidden");
+        }else{
+            $("#groupIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
+            $("#importGroupInputDiv").css("display","block");
+            $("#groupDeleteOldDiv").css("visibility","visible");
+        }
+    }
 
 })(jQuery);

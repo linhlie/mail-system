@@ -18,8 +18,8 @@
                                 <option value="export">エキスポート</option>
                             </select>
                             <input id="engineerIncludeHeader" type="checkbox" th:checked="true"/>
-                            <span>&nbsp;先頭行はタイトルとみなす</span>
-                            <div class="row" style="padding-top: 20px; padding-bottom: 20px">
+                            <span id="engineerIncludeHeaderText">&nbsp;先頭行はタイトルとみなす</span>
+                            <div class="row"  id="importEngineerInputDiv" style="padding-top: 20px; padding-bottom: 20px">
                                 <div class="col-xs-10">
                                     <input th:readonly="true" id="importEngineer" type="text" class="form-control" placeholder="取引先のファイルのパス"/>
                                     <form enctype="multipart/form-data" method="post" id="importEngineerForm">
@@ -33,7 +33,7 @@
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <div class="col-md-6" style="padding: 5px 0;">
+                                <div class="col-md-6" id="engineerDeleteOldDiv" style="padding: 5px 0;">
                                     <input id="engineerDeleteOld" type="checkbox"/><span>&nbsp;インポート時に登録済データを全て削除する</span>
                                 </div>
                                 <div class="col-md-6" style="padding: 0; text-align: right">
