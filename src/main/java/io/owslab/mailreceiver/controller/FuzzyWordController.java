@@ -7,6 +7,8 @@ import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.KeyWordItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,9 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/user/")
 public class FuzzyWordController {
+
+    private static final Logger logger = LoggerFactory.getLogger(FuzzyWordController.class);
+
     @Autowired
     private WordService wordService;
 
@@ -56,22 +61,23 @@ public class FuzzyWordController {
             }
         }
         List<KeyWordItem> keyWordItems = new ArrayList<>();
-        List<Word> filteredWordList = new ArrayList<>();
-        for(Word word : wordList) {
-            Word keyWord = fuzzyWordService.findKeyWord(word);
-            String keyWordStr = keyWord != null ? keyWord.getWord() : "";
-            if(search != null && search.length() > 0) {
-                if(search.equalsIgnoreCase(keyWordStr) || search.equalsIgnoreCase(word.getWord())) {
+        if(search != null && search.length() > 0){
+            keyWordItems = fuzzyWordService.searchWord(wordService.findOne(search));
+        }else{
+            for(Word word : wordList) {
+                Word keyWord = fuzzyWordService.findKeyWord(word);
+                String keyWordStr = keyWord != null ? keyWord.getWord() : "";
+                if(search != null && search.length() > 0) {
+                    if(search.equalsIgnoreCase(keyWordStr) || search.equalsIgnoreCase(word.getWord())) {
+                        keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
+                    }
+                } else {
                     keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
-                    filteredWordList.add(word);
                 }
-            } else {
-                keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
-                filteredWordList.add(word);
             }
         }
         model.addAttribute("wordList", keyWordItems);
-        model.addAttribute("wordListSize", filteredWordList.size());
+        model.addAttribute("wordListSize", keyWordItems.size());
         model.addAttribute("totalFuzzyWord", totalFuzzyWord);
         return "user/fuzzyword/list";
     }

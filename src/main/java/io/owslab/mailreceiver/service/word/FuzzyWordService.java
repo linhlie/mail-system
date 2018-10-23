@@ -3,14 +3,14 @@ package io.owslab.mailreceiver.service.word;
 import io.owslab.mailreceiver.dao.FuzzyWordDAO;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
+import io.owslab.mailreceiver.utils.KeyWordItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 2/7/18.
@@ -98,4 +98,32 @@ public class FuzzyWordService {
         }
         return result;
     }
+
+    public List<KeyWordItem> searchWord(Word word){
+        Set<Word> result = new LinkedHashSet<>();
+        List<KeyWordItem> listWord = new ArrayList<>();
+        getWords(word,result);
+        for(Word w : result){
+            listWord.add(new KeyWordItem(w.getWord(), word.getWord()));
+        }
+        return listWord;
+    }
+
+    public void getWords(Word word, Set<Word> result){
+        for(FuzzyWord fuzzyWord : word.getOriginalWords()){
+            if(fuzzyWord.getFuzzyType() == FuzzyWord.Type.SAME){
+                if(!result.contains(fuzzyWord.getAssociatedWord())){
+                    result.add(fuzzyWord.getAssociatedWord());
+                    getWords(fuzzyWord.getAssociatedWord(), result);
+                }
+            }
+        }
+        for(FuzzyWord fuzzyWord : word.getAssociatedWords()){
+            if(!result.contains(fuzzyWord.getOriginalWord())){
+                result.add(fuzzyWord.getOriginalWord());
+                getWords(fuzzyWord.getOriginalWord(), result);
+            }
+        }
+    }
+
 }
