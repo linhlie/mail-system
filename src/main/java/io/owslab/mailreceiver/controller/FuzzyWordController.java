@@ -62,18 +62,15 @@ public class FuzzyWordController {
         }
         List<KeyWordItem> keyWordItems = new ArrayList<>();
         if(search != null && search.length() > 0){
-            keyWordItems = fuzzyWordService.searchWord(wordService.findOne(search));
+            Word wordSearch = wordService.findOne(search);
+            if(wordSearch!=null){
+                keyWordItems = fuzzyWordService.searchWord(wordSearch);
+            }
         }else{
             for(Word word : wordList) {
                 Word keyWord = fuzzyWordService.findKeyWord(word);
                 String keyWordStr = keyWord != null ? keyWord.getWord() : "";
-                if(search != null && search.length() > 0) {
-                    if(search.equalsIgnoreCase(keyWordStr) || search.equalsIgnoreCase(word.getWord())) {
-                        keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
-                    }
-                } else {
-                    keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
-                }
+                keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
             }
         }
         model.addAttribute("wordList", keyWordItems);

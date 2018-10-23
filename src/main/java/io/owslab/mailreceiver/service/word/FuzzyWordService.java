@@ -102,6 +102,7 @@ public class FuzzyWordService {
     public List<KeyWordItem> searchWord(Word word){
         Set<Word> result = new LinkedHashSet<>();
         List<KeyWordItem> listWord = new ArrayList<>();
+        result.add(word);
         getWords(word,result);
         for(Word w : result){
             listWord.add(new KeyWordItem(w.getWord(), word.getWord()));
