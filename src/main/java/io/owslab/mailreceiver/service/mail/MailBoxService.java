@@ -692,6 +692,7 @@ public class MailBoxService {
 
             if(emailList.size() > 0) {
                 Email email = emailList.get(0);
+                p.setLocale(Locale.ENGLISH);
                 return Utils.formatGMT2(email.getReceivedAt()) + " (" + p.format(email.getReceivedAt()) + ")";
             }
         } catch (Exception e) {
