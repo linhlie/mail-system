@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@CacheConfig(cacheNames = "short_term_matching")
 public class BusinessPartnerTransaction {
 
     @Autowired
