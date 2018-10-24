@@ -67,11 +67,7 @@ public class FuzzyWordController {
                 keyWordItems = fuzzyWordService.searchWord(wordSearch);
             }
         }else{
-            for(Word word : wordList) {
-                Word keyWord = fuzzyWordService.findKeyWord(word);
-                String keyWordStr = keyWord != null ? keyWord.getWord() : "";
-                keyWordItems.add(new KeyWordItem(word.getWord(), keyWordStr));
-            }
+            keyWordItems = fuzzyWordService.getDefaultListWord(wordList);
         }
         model.addAttribute("wordList", keyWordItems);
         model.addAttribute("wordListSize", keyWordItems.size());

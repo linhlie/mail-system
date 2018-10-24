@@ -99,6 +99,41 @@ public class FuzzyWordService {
         return result;
     }
 
+    public List<KeyWordItem> getDefaultListWord(List<Word> wordList){
+        LinkedHashMap<Long, KeyWordItem> listDefault = new LinkedHashMap<>();
+        for(Word word : wordList){
+            if(!listDefault.containsKey(word.getId())){
+                Set<Word> listWordSame = new LinkedHashSet<>();
+                getWords(word,listWordSame);
+                if(listWordSame.size()>0){
+                    long min = Long.MAX_VALUE;
+                    String rootWord = "";
+                    for(Word w : listWordSame){
+                        if(w.getId()<min){
+                            min = w.getId();
+                            rootWord = w.getWord();
+                        }
+                    }
+                    for(Word w : listWordSame){
+                        if(!listDefault.containsKey(w.getId())){
+                            KeyWordItem key = new KeyWordItem(w.getWord(), rootWord);
+                            listDefault.put(w.getId(), key);
+                        }
+                    }
+                }else{
+                    KeyWordItem key = new KeyWordItem(word.getWord(), word.getWord());
+                    listDefault.put(word.getId(), key);
+                }
+            }
+        }
+        List<KeyWordItem> result = new ArrayList<KeyWordItem>();
+        SortedSet<Long> keys = new TreeSet<>(listDefault.keySet());
+        for (long key : keys) {
+            result.add(listDefault.get(key));
+        }
+        return result;
+    }
+
     public List<KeyWordItem> searchWord(Word word){
         Set<Word> result = new LinkedHashSet<>();
         List<KeyWordItem> listWord = new ArrayList<>();
@@ -120,9 +155,11 @@ public class FuzzyWordService {
             }
         }
         for(FuzzyWord fuzzyWord : word.getAssociatedWords()){
-            if(!result.contains(fuzzyWord.getOriginalWord())){
-                result.add(fuzzyWord.getOriginalWord());
-                getWords(fuzzyWord.getOriginalWord(), result);
+            if(fuzzyWord.getFuzzyType() == FuzzyWord.Type.SAME) {
+                if (!result.contains(fuzzyWord.getOriginalWord())) {
+                    result.add(fuzzyWord.getOriginalWord());
+                    getWords(fuzzyWord.getOriginalWord(), result);
+                }
             }
         }
     }
