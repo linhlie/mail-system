@@ -58,7 +58,7 @@ public class PartnerImportExportController {
             csvBundle = partnerService.export();
         }
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(csvBundle.getFileName(), "UTF-8"));
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("SHIFT_JIS");
         ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
                 CsvPreference.STANDARD_PREFERENCE);
         if(header) {
