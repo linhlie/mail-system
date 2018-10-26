@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.WordDAO;
 import io.owslab.mailreceiver.model.Word;
+import io.owslab.mailreceiver.utils.KeyWordItem;
 import io.owslab.mailreceiver.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -9,7 +10,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by khanhlvb on 2/7/18.
@@ -53,4 +57,32 @@ public class WordService {
     public String normalize(String word){
         return word == null ? "" : Utils.normalize(word);
     }
+
+    public List<Word> getListWordByGroup(){
+        return wordDAO.findWordsGroupNotNull();
+    }
+
+    public List<Word> getListWordinGroup(String group){
+        return wordDAO.findByGroup(group);
+    }
+
+
+    public List<Word> searchWord(String wordValue){
+        if(wordValue==null || wordValue.equals("")){
+            return getListWordByGroup();
+        }
+        List<Word> listWordGroup = new ArrayList<>();
+        listWordGroup = getListWordinGroup(wordValue);
+        if(listWordGroup!=null && listWordGroup.size()>0){
+            return listWordGroup;
+        }
+        List<Word> listWord = new ArrayList<>();
+        Word word = findOne(wordValue);
+        if(word == null || word.getGroup() == null){
+            return listWord;
+        }else{
+            return getListWordinGroup(word.getGroup());
+        }
+    }
+
 }

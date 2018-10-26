@@ -600,6 +600,9 @@
                 } else if (cellNode.nodeName == "SPAN") {
                     var cellData = data[cellKey];
                     cellNode.textContent = cellData;
+                    console.log(data);
+                    console.log(cellKey);
+                    console.log(cellData);
                 }
             }
         }

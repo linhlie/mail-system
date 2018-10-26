@@ -267,6 +267,26 @@ function getMailDataAPI(accountId, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getWords(onSuccess, onError) {
+    var url = "/user/fuzzyWord/getListWord";
+    _get(url, onSuccess, onError);
+}
+
+function getExclusion(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/getExclusion";
+    _postString(url, data, onSuccess, onError);
+}
+
+function addFuzzyWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addFuzzyWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function searchWordAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/searchWord";
+    _postString(url, data, onSuccess, onError);
+}
+
 function updateBulletinBoard(bulletin, onSuccess, onError){
     var url = "/user/dashboard/updateBulletin";
     $.ajax({
@@ -371,6 +391,20 @@ function _get(url, onSuccess, onError) {
         type: "GET",
         contentType: "application/json",
         url: url,
+        cache: false,
+        timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function _postString(url, data, onSuccess, onError) {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: url,
+        data: data,
+        dataType: 'json',
         cache: false,
         timeout: 600000,
         success: onSuccess,

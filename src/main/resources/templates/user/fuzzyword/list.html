@@ -21,101 +21,68 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="fuzzy-form-container">
-                                    <div class="col-xs-5 full-height">
-                                        <div class="fuzzy-table-container">
-                                            <form action="#" th:action="@{/user/fuzzyWord}">
-                                                <table id="wordList" style="margin: auto;" class="table table-bordered tablesorter">
-                                                    <thead>
+                                    <div class="col-xs-6 full-height">
+                                        <div class="fuzzy-table-container" style="background-color: white; ">
+                                            <table id="wordList" style="margin: auto;" class="table table-bordered tablesorter">
+                                                <thead>
                                                     <tr class="main-table-row-head">
-                                                        <th class="col-xs-5">単語</th>
-                                                        <th class="col-xs-5">主ワード</th>
+                                                        <th class="col-xs-10">Fuzzy Word</th>
                                                         <th class="col-xs-2 text-center">
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th th:colspan="2">
+                                                        <th>
                                                             <div>
-                                                                <input name="search" th:value="${search}" type="text" class="form-control input-sm" placeholder="入力してください"/>
+                                                                <input id="searchWordTxt" name="search" type="text" class="form-control input-sm" placeholder="入力してください"/>
                                                             </div>
                                                         </th>
-                                                        <th class="text-center"><button type="submit">条件</button></th>
+                                                        <th class="text-center"><button id="btnSearchWord" type="submit">条件</button></th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                            <div id="divWords" style="overflow-y: scroll; height: 385px;">
+                                                <ul class="visible" style="padding-left: 30px; margin-top: 10px;">
+                                                    <li class="treeview">
+                                                        <span class="groupFuzzyWordName col-xs-8"><b>Group: DB⇔sasdasd</b> </span>
+                                                        <span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-1.5"></span>
+                                                        <span class="glyphicon glyphicon-play fuzzyword-icon-play pull-right"></span>
+                                                        <ul class="visible groupFuzzyWord" style="padding-left: 30px; display: none;">
+                                                            <li>
+                                                                <span class="col-xs-6">asdasdasdasdasda</span>
+                                                                <span class="glyphicon glyphicon-pencil fuzzyword-icon-trash col-xs-2"></span>
+                                                                <span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-4"></span>
+                                                            </li>
+                                                            <li>
+                                                                <span class="col-xs-6">asasdasda</span>
+                                                                <span class="glyphicon glyphicon-pencil fuzzyword-icon-trash col-xs-2"></span>
+                                                                <span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-4"></span>
+                                                            </li>
+                                                            <li>
+                                                                <span class="fa glyphicon-plus fuzzyword-icon-plus" style="padding-left: 15px;">&nbsp;addword</span>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 full-height">
+                                        <div class="fuzzy-table-container">
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="wordExclusionTable" class="table table-bordered">
+                                                    <thead class="sticky-header">
+                                                    <tr>
+                                                        <th class="col-xs-5">Word</th>
+                                                        <th class="col-xs-5">Other Word</th>
+                                                        <th class="col-xs-2" style="text-align: center">
+                                                            <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="color: #00e765; cursor: pointer; display: none;"></span>
+                                                        </th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr th:each="item:${wordList}">
-                                                        <td th:text="${item.word}"></td>
-                                                        <td th:text="${item.keyWord}"></td>
-                                                        <td class="text-center">
-                                                            <a href="#" th:href="@{/user/fuzzyWord(selected=${item.word},search=${search})}">
-                                                                    <span title="删除"
-                                                                          style="cursor: pointer"
-                                                                          class="glyphicon glyphicon-play">
-                                                                    </span>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
                                                     </tbody>
                                                 </table>
-                                                <table class="table table-bordered" th:if="${wordListSize} eq 0">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td>レコードが見つかりません</td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7 full-height">
-                                        <div class="fuzzy-table-container">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th class="col-xs-2">同一/除外</th>
-                                                    <th class="col-xs-9">類似単語</th>
-                                                    <th class="col-xs-1 text-center" th:with="originalText=${selected != null and selected != '' ? selected : search}">
-                                                        <a title="新規登録" href="#" th:href="@{/user/fuzzyWord/add(original=${originalText})}"
-                                                           th:if="(${search} ne null or ${selected} ne null)">
-                                                            <span class="glyphicon glyphicon-plus"></span>
-                                                        </a>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr role="row" class="odd" th:each="item:${originalList}">
-                                                    <!--<td class="combo-box">-->
-                                                        <!--<select>-->
-                                                            <!--<option value="1" th:selected="(${item.fuzzyType} == '1')">同一</option>-->
-                                                            <!--<option value="0" th:selected="(${item.fuzzyType} == '0')">除外</option>-->
-                                                            <!--&lt;!&ndash;TODO: //make a list option automatic&ndash;&gt;-->
-                                                        <!--</select>-->
-                                                    <!--</td>-->
-                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
-                                                    <td th:text="${item.associatedWord.word}"></td>
-                                                    <td class="text-center">
-                                                        <span name="trash" title="删除" th:data="${item.id}"
-                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
-                                                    </td>
-                                                </tr>
-                                                <tr role="row" class="odd" th:each="item:${associatedToList}">
-                                                    <td th:text="${item.fuzzyType} == '1' ? '同一' : '除外'"></td>
-                                                    <td>
-                                                        <span th:text="${item.originalWord.word}"></span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <span name="trash" title="删除" th:data="${item.id}"
-                                                              style="cursor: pointer" class="glyphicon glyphicon-trash"></span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                            <table class="table table-bordered" th:if="${totalFuzzyWord} eq 0">
-                                                <tbody>
-                                                <tr>
-                                                    <td>レコードが見つかりません</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -129,8 +96,47 @@
             </div>
         </div>
     </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">Title</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModal" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">Word</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="word" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">Word Exclusion</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/fuzzyWord/list.js"></script>
 </th:block>
 </body>

@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.regex.Pattern;
  * Created by khanhlvb on 2/9/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class EmailWordJobService {
     private static final Logger logger = LoggerFactory.getLogger(EmailWordJobService.class);
 
