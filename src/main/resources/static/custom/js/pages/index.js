@@ -11,7 +11,11 @@
     var blockPreviewId = "blockPreview";
     var changeShowTypeId = "#changeShowType";
     var showType = "preview";
-
+    var bulletinBoardTabsId = "bulletinBoardTabs";
+    var btnAddTagId = "#btn-add-tab";
+    var bulletinArray = [];
+    var currentBulletinBoard;
+    var currentIndex;
 
     $(function () {
         loadMailData();
@@ -23,11 +27,12 @@
         setButtonClickListenter(updateBulletinBoardId, updateBulletinBoardOnclick);
         setButtonClickListenter(clearBulletinBoardId, clearBulletinBoardOnclick);
         setButtonClickListenter(changeShowTypeId, changeShowTypeOnclick);
-        loadBulletinData();
+        initPrevew();
         loadBulletinPreview();
+        initTab();
     });
 
-    function loadBulletinData() {
+    function initPrevew() {
         tinymce.init({
             force_br_newlines : true,
             force_p_newlines : false,
@@ -45,8 +50,8 @@
             menubar: 'edit view insert format table',
             toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
             init_instance_callback: function (editor) {
-                loadBulletinBoard()
-                editor.on('Change', function (e) {
+                loadBulletinBoard(0)
+                editor.on('keyup', function (e) {
                     disableUpdateBulletinBoard(false);
                 });
             },
@@ -86,7 +91,7 @@
     }
 
 
-    function loadBulletinBoard() {
+    function loadBulletinBoard(index) {
         $('body').loadingModal('destroy');
         $('body').loadingModal({
             position: 'auto',
@@ -99,8 +104,9 @@
 
         function onSuccess(response) {
             $('body').loadingModal('hide');
-            if (response.bulletinBoardDTO && response.status) {
-                pushBulletenBoardData(response.bulletinBoardDTO);
+            if (response&& response.status) {
+                bulletinArray = response.listBulletinBoardDTO;
+                pushBulletenBoardData(response.listBulletinBoardDTO, index);
                 loadBulletinPreview();
             } else {
                 console.warn("[WARN] Bulletin database is empty");
@@ -115,7 +121,61 @@
         getBulletinBoardAPI(onSuccess, onError);
     }
 
-    function pushBulletenBoardData(data){
+    function pushBulletenBoardData(data, index){
+        var showIndex = false;
+        $("#"+bulletinBoardTabsId).empty();
+        if(data==null || data.length==0){
+            createNewtab();
+        }else{
+            for(var i=0;i<data.length;i++){
+                if(i == index){
+                    showIndex = true;
+                    $("#"+bulletinBoardTabsId).append(
+                        '<li class="active" ><a href="#tab'+i+'" class="bulletinTab" role="tab" data-toggle="tab">' +
+                        '<span>' +data[i].tabName + '</span>'+
+                        '<button class="close" type="button" title="Remove this page">×</button>' +
+                        '<input id="'+ "tagName"+i +'" class="textTagname">' +
+                        '</a></li>'
+                    );
+                }else{
+                    $("#"+bulletinBoardTabsId).append(
+                        '<li><a href="#tab'+i+'" class="bulletinTab" role="tab" data-toggle="tab">' +
+                        '<span>' +data[i].tabName + '</span>'+
+                        '<button class="close" type="button" title="Remove this page">×</button>' +
+                        '<input id="'+ "tagName"+i +'" class="textTagname">' +
+                        '</a></li>'
+                    );
+                }
+            }
+            $("#"+bulletinBoardTabsId).append(
+                '<li><a class="btn-add-tag" id="btn-add-tab" href="#" role="tab" data-toggle="tab"> + </a></li>'
+            );
+            setButtonClickListenter(btnAddTagId, addTagOnclick);
+            if(showIndex){
+                setDataBulletinBoard(data[index]);
+                currentIndex = index;
+            }else{
+                var tabFirst = $('#'+bulletinBoardTabsId+' a:first');
+                tabFirst.tab('show');
+                setDataBulletinBoard(data[0]);
+                currentIndex = 0;
+            }
+        }
+    }
+
+    function createNewtab() {
+        var newBulletin = {
+            bulletin: "",
+            tabName: "NewTab",
+            tabNumber: bulletinArray.length+1,
+            timeEdit: "",
+            username: "",
+        };
+        saveBulletin(newBulletin, bulletinArray.length);
+    }
+
+    function setDataBulletinBoard(data) {
+        currentBulletinBoard = data;
         setBulletinBoardPreview(data.bulletin);
         setBulletinBoard(data.bulletin);
         setHistoryEditBulletin(data);
@@ -227,31 +287,56 @@
 
     function updateBulletinBoardOnclick(){
         if (typeof(tinyMCE) != "undefined") {
-            var newBulletin = getBulletinBoard();
-            if(newBulletin==null || newBulletin.trim()==""){
-                newBulletin = "null";
+            var contentBulletin = getBulletinBoard();
+            if(contentBulletin==null){
+                contentBulletin = "";
             }
-            function onSuccess(response) {
-                if(response && response.status) {
-                    $.alert({
-                        title: "",
-                        content: "保存に成功しました",
-                        onClose: function () {
-                            loadBulletinBoard();
-                            disableUpdateBulletinBoard(true);
-                        }
-                    });
-                } else {
-                    $.alert("保存に失敗しました");
-                }
-            }
-
-            function onError(response) {
-                $.alert("保存に失敗しました");
-            }
-            updateBulletinBoard(newBulletin, onSuccess, onError);
+            currentBulletinBoard.bulletin = contentBulletin;
+            // currentBulletinBoard.tabName = "tagName";
+            saveBulletin(currentBulletinBoard, currentIndex);
         }
 
+    }
+
+    function updateBulletinBoardTagname(tagName){
+        if (typeof(tinyMCE) != "undefined") {
+            var contentBulletin = getBulletinBoard();
+            if(contentBulletin==null){
+                contentBulletin = "";
+            }
+            currentBulletinBoard.bulletin = contentBulletin;
+            currentBulletinBoard.tabName = tagName;
+            saveBulletin(currentBulletinBoard, currentIndex);
+        }
+
+    }
+
+    function updateBulletinBoardTagnamePosition(start, end){
+        function onSuccess(response) {
+            if(response && response.status) {
+                loadBulletinBoard(end);
+                disableUpdateBulletinBoard(true);
+            }
+        }
+
+        function onError(response) {
+            console.log(response);
+        }
+        updateBulletinBoardPosition(start+"_"+end, onSuccess, onError);
+    }
+
+    function saveBulletin(newBulletin, index){
+        function onSuccess(response) {
+            if(response && response.status) {
+                loadBulletinBoard(index);
+                disableUpdateBulletinBoard(true);
+            }
+        }
+
+        function onError(response) {
+            console.log(response);
+        }
+        saveBulletinBoard(newBulletin, onSuccess, onError);
     }
 
     function disableUpdateBulletinBoard(disable){
@@ -264,6 +349,100 @@
         }else{
             loadBulletinPreview()
         }
+    }
+
+    function initTab() {
+        var isCloseTab = false;
+        $('#'+bulletinBoardTabsId).on('click','.close',function(){
+            isCloseTab = true;
+            var idTab = $(this).parents('a').attr('href');
+            var liTag = $(this).parents('li');
+            $.confirm({
+                title: '<b>【Delete bulletin board】</b>',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            var index = (idTab+"").slice(4,idTab.length);
+                            var bulletin = bulletinArray[index];
+
+                            if(bulletin != null && bulletin.timeEdit != ""){
+                                function onSuccess() {
+                                    if(currentIndex>0){
+                                        loadBulletinBoard(currentIndex-1);
+                                    }else{
+                                        loadBulletinBoard(currentIndex);
+                                    }
+                                    liTag.remove();
+                                    $(idTab).remove();
+                                }
+                                function onError() {
+                                    $.alert("don't remove");
+                                }
+
+                                deleteBulletinBoard(bulletin.id, onSuccess, onError);
+                            }
+
+                            isCloseTab = false;
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){
+                            isCloseTab = false;
+                        }
+                    },
+                }
+            });
+        });
+
+        $('#'+bulletinBoardTabsId).on('click','.bulletinTab',function(){
+            var tabId = $(this).attr('href');
+            var index = (tabId+"").slice(4,tabId.length);
+            if(!isCloseTab){
+                setDataBulletinBoard(bulletinArray[index]);
+                disableUpdateBulletinBoard(true);
+                currentIndex = index;
+            }
+        });
+
+        $('#'+bulletinBoardTabsId).on('dblclick','.bulletinTab',function(){
+            var spanTag = $(this).find('span');
+            var inputTag = $(this).find('input');
+            spanTag.css('display','none');
+            inputTag.val(spanTag.text());
+            inputTag.css('display','inline-block');
+            $(document).click(function(event) {
+                if(!$(event.target).closest(inputTag).length) {
+                    var oldName = spanTag.text();
+                    var newName = inputTag.val();
+                    if(newName!="" && oldName!=newName){
+                        spanTag.text(newName);
+                        updateBulletinBoardTagname(newName);
+                    }
+                    spanTag.css('display','inline-block');
+                    inputTag.css('display','none');
+                }
+            });
+        });
+
+        $("#"+bulletinBoardTabsId).sortable({
+            start: function(event, ui) {
+                var start_pos = ui.item.index();
+                ui.item.data('start_pos', start_pos);
+            },
+            update: function (event, ui) {
+                var start_pos = ui.item.data('start_pos');
+                var end_pos = ui.item.index();
+                updateBulletinBoardTagnamePosition(start_pos, end_pos);
+            }
+        });
+    }
+
+    function addTagOnclick() {
+        createNewtab();
     }
 
 })(jQuery);

@@ -114,8 +114,8 @@ public class IndexController {
     ResponseEntity<?> getBulletinBoard (){
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
-            BulletinBoardDTO bulletinBoardDTO = bulletinBoardService.getBulletinBoard();
-            responseBody.setBulletinBoardDTO(bulletinBoardDTO);
+            List<BulletinBoardDTO> listBulletinBoardDTO = bulletinBoardService.getBulletinBoard();
+            responseBody.setListBulletinBoardDTO(listBulletinBoardDTO);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);
@@ -129,9 +129,9 @@ public class IndexController {
 
 
 
-    @RequestMapping(value = "/user/dashboard/updateBulletin", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/dashboard/saveBulletin", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> saveBulletin(@Valid @RequestBody String bulletin, BindingResult bindingResult) {
+    public ResponseEntity<?> saveBulletin(@Valid @RequestBody BulletinBoardDTO bulletin, BindingResult bindingResult) {
         DashboardResponseBody responseBody = new DashboardResponseBody();
         if (bindingResult.hasErrors()) {
             responseBody.setMsg(bindingResult.getAllErrors()
@@ -140,9 +140,6 @@ public class IndexController {
             return ResponseEntity.badRequest().body(responseBody);
         }
         try {
-            if(bulletin.equals("null")){
-                bulletin = "";
-            }
             bulletinBoardService.saveBulletinBoard(bulletin);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
@@ -152,6 +149,40 @@ public class IndexController {
             responseBody.setStatus(false);
         }
         return ResponseEntity.ok(responseBody);
+    }
+
+    @RequestMapping(value = "/user/dashboard/updateBulletinPosition", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> updateBulletinPosition(@Valid @RequestBody String startEndPosition, BindingResult bindingResult) {
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        if (bindingResult.hasErrors()) {
+            responseBody.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+        try {
+            System.out.println(startEndPosition);
+            bulletinBoardService.updateBulletinPosition(startEndPosition);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+        } catch (Exception e) {
+            logger.error("updateBulletinPosition: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+        }
+        return ResponseEntity.ok(responseBody);
+    }
+
+    @RequestMapping(value = "/user/dashboard/deleteBulletin/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteTabNumber(@PathVariable("id") long id) {
+        try {
+            bulletinBoardService.deleteTabNumber(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
