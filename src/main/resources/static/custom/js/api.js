@@ -267,16 +267,26 @@ function getMailDataAPI(accountId, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function updateBulletinBoard(bulletin, onSuccess, onError){
-    var url = "/user/dashboard/updateBulletin";
+function saveBulletinBoard(bulletin, onSuccess, onError){
+    var url = "/user/dashboard/saveBulletin";
+    _post(url, bulletin, onSuccess, onError);
+}
+
+function deleteBulletinBoard(id, onSuccess, onError) {
+    var url = "/user/dashboard/deleteBulletin/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+
+function updateBulletinBoardPosition(data, onSuccess, onError){
+    var url = "/user/dashboard/updateBulletinPosition";
     $.ajax({
-        type: "POST",
-        contentType: "application/json",
         url: url,
-        data: bulletin,
-        dataType: 'json',
+        type: 'POST',
+        data: data,
         cache: false,
-        timeout: 600000,
+        contentType: false,
+        processData: false,
         success: onSuccess,
         error: onError
     });

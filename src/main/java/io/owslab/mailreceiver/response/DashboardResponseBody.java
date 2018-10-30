@@ -22,7 +22,7 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private List<EmailAccount> emailAccounts;
     private List<AccountDTO> users;
     private int checkMailInterval;
-    private BulletinBoardDTO bulletinBoardDTO;
+    private List<BulletinBoardDTO> listBulletinBoardDTO;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -108,7 +108,7 @@ public class DashboardResponseBody extends AjaxResponseBody {
 
     public void setSendMailEmailMatchingEngineerClick(List<String> sendMailEmailMatchingEngineerClick) { this.sendMailEmailMatchingEngineerClick = sendMailEmailMatchingEngineerClick; }
 
-    public BulletinBoardDTO getBulletinBoardDTO() { return bulletinBoardDTO; }
+    public List<BulletinBoardDTO> getListBulletinBoardDTO() { return listBulletinBoardDTO; }
 
-    public void setBulletinBoardDTO(BulletinBoardDTO bulletinBoardDTO) { this.bulletinBoardDTO = bulletinBoardDTO; }
+    public void setListBulletinBoardDTO(List<BulletinBoardDTO> listBulletinBoardDTO) { this.listBulletinBoardDTO = listBulletinBoardDTO; }
 }
