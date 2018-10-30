@@ -50,7 +50,6 @@ public class BulletinBoardService {
             long start = Integer.parseInt(str[0]) + 1;
             long end = Integer.parseInt(str[1]) + 1;
             BulletinBoard bulletinBoard = bulletinBoardDAO.findTopByTabNumber(start);
-            System.out.println(bulletinBoard.getTabName());
             if(bulletinBoard!=null){
                 if(start>end){
                     bulletinBoard.setTabNumber(end);

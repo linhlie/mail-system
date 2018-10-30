@@ -142,7 +142,7 @@
                         '<li><a href="#tab'+i+'" class="bulletinTab" role="tab" data-toggle="tab">' +
                         '<span>' +data[i].tabName + '</span>'+
                         '<button class="close" type="button" title="Remove this page">×</button>' +
-                        '<input id="'+ "tagName"+i +'" class="textTagname">' +
+                        '<input class="textTagname">' +
                         '</a></li>'
                     );
                 }
@@ -166,7 +166,7 @@
     function createNewtab() {
         var newBulletin = {
             bulletin: "",
-            tabName: "NewTab",
+            tabName: "新しいTAB",
             tabNumber: bulletinArray.length+1,
             timeEdit: "",
             username: "",
@@ -358,9 +358,9 @@
             var idTab = $(this).parents('a').attr('href');
             var liTag = $(this).parents('li');
             $.confirm({
-                title: '<b>【Delete bulletin board】</b>',
+                title: '<b>【Delete】</b>',
                 titleClass: 'text-center',
-                content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+                content: '<div class="text-center" style="font-size: 16px;">'+ $(this).siblings('span').text() + 'を削除しますか<br/></div>',
                 buttons: {
                     confirm: {
                         text: 'はい',

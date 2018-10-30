@@ -162,7 +162,6 @@ public class IndexController {
             return ResponseEntity.badRequest().body(responseBody);
         }
         try {
-            System.out.println(startEndPosition);
             bulletinBoardService.updateBulletinPosition(startEndPosition);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
