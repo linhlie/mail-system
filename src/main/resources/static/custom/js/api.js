@@ -287,61 +287,34 @@ function searchWordAPI(data, onSuccess, onError) {
     _postString(url, data, onSuccess, onError);
 }
 
-function updateBulletinBoard(bulletin, onSuccess, onError){
-    var url = "/user/dashboard/updateBulletin";
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: url,
-        data: bulletin,
-        dataType: 'json',
-        cache: false,
-        timeout: 600000,
-        success: onSuccess,
-        error: onError
-    });
+function saveBulletinBoard(bulletin, onSuccess, onError){
+    var url = "/user/dashboard/saveBulletin";
+    _post(url, bulletin, onSuccess, onError);
+}
+
+function deleteBulletinBoard(id, onSuccess, onError) {
+    var url = "/user/dashboard/deleteBulletin/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function updateBulletinBoardPosition(data, onSuccess, onError){
+    var url = "/user/dashboard/updateBulletinPosition";
+    _postString(url, data, onSuccess, onError);
 }
 
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function importEngineers(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importEngineer?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
@@ -351,17 +324,7 @@ function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
 
 function getInforPartnerAPI(data, onSuccess, onError) {
     var url = "/user/matchingResult/getInforPartner";
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: url,
-        data: data,
-        dataType: 'json',
-        cache: false,
-        timeout: 600000,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function _doDownload(href){

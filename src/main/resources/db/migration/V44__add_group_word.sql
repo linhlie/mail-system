@@ -1,2 +1,2 @@
-ALTER TABLE `mailsys`.`words`
+ALTER TABLE `words`
 ADD COLUMN `group` VARCHAR(200) DEFAULT NULL;

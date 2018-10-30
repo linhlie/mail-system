@@ -1297,7 +1297,6 @@ section.sendTab.content {
 }
 
 .bulletinboard .bulletin {
-    margin-top: 5px;
     background-color: white;
     margin-left: 100px;
     margin-right: 100px;
@@ -1308,7 +1307,6 @@ section.sendTab.content {
 }
 
 .bulletinboard .bulletin-preview {
-    margin-top: 5px;
     background-color: white;
     margin-left: 100px;
     margin-right: 100px;
@@ -1372,8 +1370,38 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
 }
 
-.word-icon-edit{
+.word-icon-edit {
     width: 30px;
     margin-left: 10px;
     cursor: pointer;
+}
+
+.bulletinTab{
+    margin-top: 2px;
+    background-color: #E0E0E0;
+}
+
+.bulletinTab:hover{
+    margin-top: 2px;
+    background-color: #EEEEEE;
+}
+
+.btn-add-tag{
+    margin-top: 3px;
+    background-color: #E0E0E0;
+}
+
+.btn-add-tag:hover{
+    margin-top: 3px;
+    background-color: #EEEEEE;
+}
+
+.textTagname{
+    width: 100px;
+    height: 20px;
+    display: none;
+}
+
+.close {
+    margin-left: 10px;
 }

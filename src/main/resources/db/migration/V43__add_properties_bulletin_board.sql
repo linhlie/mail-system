@@ -1,0 +1,3 @@
+ALTER TABLE `bulletin_board`
+ADD COLUMN `tab_name` VARCHAR(200) NOT NULL,
+ADD COLUMN `tab_number` INT NULL DEFAULT 0;

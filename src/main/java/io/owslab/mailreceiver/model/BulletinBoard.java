@@ -12,6 +12,8 @@ public class BulletinBoard {
     private String bulletin;
     private long accountId;
     private Date timeEdit;
+    private String tabName;
+    private long tabNumber;
 
     public BulletinBoard(){
 
@@ -54,4 +56,12 @@ public class BulletinBoard {
     public void setTimeEdit(Date timeEdit) {
         this.timeEdit = timeEdit;
     }
+
+    public String getTabName() { return tabName; }
+
+    public void setTabName(String tabName) { this.tabName = tabName; }
+
+    public long getTabNumber() { return tabNumber; }
+
+    public void setTabNumber(long tabNumber) { this.tabNumber = tabNumber; }
 }
