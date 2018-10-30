@@ -151,6 +151,11 @@
                 '<li><a class="btn-add-tag" id="btn-add-tab" href="#" role="tab" data-toggle="tab"> + </a></li>'
             );
             setButtonClickListenter(btnAddTagId, addTagOnclick);
+
+            $( ".bulletinTab" ).each(function() {
+                $(this).width($(this).width()+1);
+            });
+
             if(showIndex){
                 setDataBulletinBoard(data[index]);
                 currentIndex = index;
@@ -409,6 +414,9 @@
         });
 
         $('#'+bulletinBoardTabsId).on('dblclick','.bulletinTab',function(){
+            var widthLi = $(this).width();
+            var liTag = this;
+            $(this).width("auto");
             var spanTag = $(this).find('span');
             var inputTag = $(this).find('input');
             spanTag.css('display','none');
@@ -421,6 +429,8 @@
                     if(newName!="" && oldName!=newName){
                         spanTag.text(newName);
                         updateBulletinBoardTagname(newName);
+                    }else{
+                        $(liTag).width(widthLi);
                     }
                     spanTag.css('display','inline-block');
                     inputTag.css('display','none');
