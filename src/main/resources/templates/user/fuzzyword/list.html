@@ -125,14 +125,50 @@
                         <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
                             <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
                         </div>
-                        <div class="col-sm-2">
-                            <span class="glyphicon glyphicon-plus " style="transform: translateY(10px); color: #00e765; cursor: pointer;"></span>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
                     <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="modalAddGroup" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="modalAddGroupTitle" class="modal-title">Title</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModalAddGroup" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">Group</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="groupName" class="dataModalName form-control " type="text" name="dataModalName" list="keylist" placeholder=""/>
+                        </div>
+                    </div>
+                    <div id="listWordMember" class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">Word</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input class="dataModalName form-control wordMember" type="text" placeholder=""/>
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="glyphicon glyphicon-plus add_word_member" ></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalAddGroupCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="modalAddGroupOk" class="btn btn-primary">OK</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

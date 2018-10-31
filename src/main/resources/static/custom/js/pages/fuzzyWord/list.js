@@ -241,7 +241,12 @@
     function addGroupWord() {
         $("#addGroupWord").click(function () {
             console.log("add word");
+            showAddGroupModal("Add Group", doAddGroupWord);
         })
+    }
+
+    function doAddGroupWord() {
+        console.log("Add New Group")
     }
 
     function deleteGroup() {
@@ -515,7 +520,7 @@
                 if(word != null && word.trim()!="" && wordExclusion!=null && wordExclusion.trim() != ""){
                     var isValid = checkValidWord(datalist, word, wordExclusion);
                     if(!isValid){
-                        showError("Word invalid");
+                        showError("#hasErrorModal", "Word invalid");
                     }
 
                     if(isValid){
@@ -527,7 +532,7 @@
                         $('#dataModal').modal('hide');
                     }
                 }else{
-                    showError("Word invalid");
+                    showError("#hasErrorModal", "Word invalid");
                 }
             }
         });
@@ -586,8 +591,46 @@
         return false;
     }
 
-    function showError(error) {
-        $("#hasErrorModal").text(error);
+    function showError(id, error) {
+        $(id).text(error);
+    }
+
+    function showAddGroupModal(title, callback) {
+        $('#modalAddGroup').modal();
+        $( '#modalAddGroupTitle').text(title);
+        $( '#listWordMember .wordMember').val("");
+        setInputAutoComplete("dataModalName");
+        $('#modalAddGroupOk').off('click');
+        $("#modalAddGroupOk").click(function () {
+            var word = $( '#word').val();
+            var wordExclusion = $( '#wordExclusion').val();
+            if(typeof callback === "function"){
+                if(word != null && word.trim()!="" && wordExclusion!=null && wordExclusion.trim() != ""){
+                    var isValid = checkValidWord(datalist, word, wordExclusion);
+                    if(!isValid){
+                        showError("#hasErrorModalAddGroup", "Word invalid");
+                    }
+
+                    if(isValid){
+                        var fuzzyWord = {
+                            word: word,
+                            wordExclusion: wordExclusion
+                        }
+                        callback(fuzzyWord);
+                        $('#modalAddGroup').modal('hide');
+                    }
+                }else{
+                    showError("#hasErrorModalAddGroup", "Word invalid");
+                }
+            }
+        });
+        $('#modalAddGroupCancel').off('click');
+        $("#modalAddGroupCancel").click(function () {
+            $('#modalAddGroup').modal('hide');
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
     }
 
 

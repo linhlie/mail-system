@@ -1394,6 +1394,11 @@ div.bulletinboard-icon-wrapper {
     display: none;
 }
 
+.add_word_member{
+    transform: translateY(10px);
+    color: #00e765;
+    cursor: pointer;
+}
 
 .bulletinTab{
     margin-top: 2px;
