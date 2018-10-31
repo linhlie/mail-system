@@ -272,13 +272,38 @@ function getWords(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getExclusion(data, onSuccess, onError) {
+function getExclusion(groupWord, onSuccess, onError) {
     var url = "/user/fuzzyWord/getExclusion";
-    _postString(url, data, onSuccess, onError);
+    _postString(url, groupWord, onSuccess, onError);
 }
 
 function addFuzzyWord(data, onSuccess, onError) {
     var url = "/user/fuzzyWord/addFuzzyWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteFuzzyWord(id, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteFuzzyWord/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function deleteGroupWord(group, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteGroupWord/" + group;
+    _delete(url, onSuccess, onError);
+}
+
+function deleteWordInGroup(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteWordInGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function editWordAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function addWordToGroupAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addWordToGroup";
     _post(url, data, onSuccess, onError);
 }
 

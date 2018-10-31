@@ -27,7 +27,7 @@ public class FuzzyWordService {
     private WordService wordService;
 
     @CacheEvict(allEntries = true)
-    public void delete(long id){
+    public void deleteFuzzyWord(long id){
         fuzzyWordDAO.delete(id);
     }
 
@@ -58,24 +58,19 @@ public class FuzzyWordService {
 
     @Cacheable(key="\"FuzzyWordService:findAllSameWord:\"+#word.id")
     public List<Word> findAllSameWord(Word word){
-        if(word!=null && word.getGroup()!=null){
-            return wordService.getListWordinGroup(word.getGroup());
+        if(word!=null && word.getGroupWord()!=null){
+            return wordService.getListWordinGroup(word.getGroupWord());
         }
         return null;
     }
 
-    public List<FuzzyWordDTO> getExclusion(String wordValue){
-        Word word = wordService.findOne(wordValue);
-        List<Word> listWordSame = new ArrayList<>();
-        if(word != null && word.getGroup() != null){
-            listWordSame =wordService.getListWordinGroup(word.getGroup());
-        }
+    public List<FuzzyWordDTO> getExclusion(List<Word> listWordSame){
         List<FuzzyWord> fuzzyWordList = (List<FuzzyWord>) fuzzyWordDAO.findAll();
         List<FuzzyWordDTO> listResult = new ArrayList<>();
         for(Word wordSame: listWordSame){
             for(FuzzyWord fuzzy : fuzzyWordList){
                 if(fuzzy.getOriginalWord().getId() == wordSame.getId() && fuzzy.getFuzzyType() == FuzzyWord.Type.EXCLUSION){
-                    listResult.add(new FuzzyWordDTO(fuzzy.getId(), word.getWord(), fuzzy.getAssociatedWord().getWord()));
+                    listResult.add(new FuzzyWordDTO(fuzzy.getId(), fuzzy.getOriginalWord().getWord(), fuzzy.getAssociatedWord().getWord()));
                 }
             }
         }

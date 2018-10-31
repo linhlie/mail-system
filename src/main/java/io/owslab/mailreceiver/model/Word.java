@@ -18,14 +18,12 @@ public class Word implements Serializable {
     @NotNull
     private String word;
 
-    @Column(name="`group`")
-    private String group;
+    @Column(name="`group_word`")
+    private String groupWord;
 
     public long getId() { return id; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public void setId(long id) { this.id = id; }
 
     public String getWord() {
         return word;
@@ -35,11 +33,7 @@ public class Word implements Serializable {
         this.word = word;
     }
 
-    public String getGroup() {
-        return group;
-    }
+    public String getGroupWord() { return groupWord; }
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
+    public void setGroupWord(String groupWord) { this.groupWord = groupWord; }
 }

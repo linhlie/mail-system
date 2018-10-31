@@ -13,12 +13,19 @@ import java.util.List;
 public interface WordDAO extends CrudRepository<Word, Long> {
     List<Word> findByWord(String word);
     List<Word> findById(long id);
-    List<Word> findByGroup(String group);
+    List<Word> findByGroupWord(String group);
 
     @Modifying(clearAutomatically = true)
     @Query(
-            value = "SELECT * FROM words w WHERE w.group is not null order by w.group;",
+            value = "SELECT * FROM words w WHERE w.group_word is not null order by w.group_word;",
             nativeQuery = true
     )
     List<Word> findWordsGroupNotNull();
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "UPDATE words SET group_word = NULL WHERE group_word = :groupName",
+            nativeQuery = true
+    )
+    void deleteGroup(@Param("groupName") String groupName);
 }

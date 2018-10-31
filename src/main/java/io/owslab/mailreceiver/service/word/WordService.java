@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.WordDAO;
+import io.owslab.mailreceiver.form.EditWordForm;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.utils.KeyWordItem;
 import io.owslab.mailreceiver.utils.Utils;
@@ -54,6 +55,23 @@ public class WordService {
         wordDAO.save(word);
     }
 
+    public void deleteGroupWord(String group){
+        wordDAO.deleteGroup(group);
+    }
+
+    public int deleteWordInGroup(String w){
+        Word word = findOne(w);
+        if(word != null){
+            String group = word.getGroupWord();
+            List<Word> words = getListWordinGroup(group);
+            System.out.println(group+"  "+words.size());
+            word.setGroupWord(null);
+            wordDAO.save(word);
+            return words.size()-1;
+        }
+        return 0;
+    }
+
     public String normalize(String word){
         return word == null ? "" : Utils.normalize(word);
     }
@@ -63,7 +81,7 @@ public class WordService {
     }
 
     public List<Word> getListWordinGroup(String group){
-        return wordDAO.findByGroup(group);
+        return wordDAO.findByGroupWord(group);
     }
 
 
@@ -78,10 +96,37 @@ public class WordService {
         }
         List<Word> listWord = new ArrayList<>();
         Word word = findOne(wordValue);
-        if(word == null || word.getGroup() == null){
+        if(word == null || word.getGroupWord() == null){
             return listWord;
         }else{
-            return getListWordinGroup(word.getGroup());
+            return getListWordinGroup(word.getGroupWord());
+        }
+    }
+
+    public void editWord(EditWordForm form) throws Exception {
+        Word word = findOne(form.getOldWord());
+        Word newWord = findOne(form.getNewWord());
+
+        if(word == null || newWord != null){
+            throw new Exception("Word esxit");
+        }else{
+            word.setWord(form.getNewWord());
+            save(word);
+        }
+    }
+
+    public void addWord(Word word) throws Exception {
+        Word checkWord = findOne(word.getWord());
+
+        if(checkWord!=null){
+            if(checkWord.getGroupWord()!=null){
+                throw new Exception("Word esxit");
+            }else{
+                checkWord.setGroupWord(word.getGroupWord());
+                save(checkWord);
+            }
+        }else{
+            save(word);
         }
     }
 

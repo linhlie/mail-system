@@ -1376,6 +1376,25 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
 }
 
+.word-edit-text{
+    display: none;
+}
+
+.word-icon-save-add{
+    width: 30px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: none;
+}
+
+.word-icon-cancel-add{
+    width: 30px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: none;
+}
+
+
 .bulletinTab{
     margin-top: 2px;
     background-color: #E0E0E0;

@@ -28,6 +28,7 @@
                                                     <tr class="main-table-row-head">
                                                         <th class="col-xs-10">Fuzzy Word</th>
                                                         <th class="col-xs-2 text-center">
+                                                            <span id="addGroupWord" class="glyphicon glyphicon-plus" style="color: #00e765; cursor: pointer;" title="Add Group Word"></span>
                                                         </th>
                                                     </tr>
                                                     <tr>
@@ -58,7 +59,7 @@
                                                                 <span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-4"></span>
                                                             </li>
                                                             <li>
-                                                                <span class="fa glyphicon-plus fuzzyword-icon-plus" style="padding-left: 15px;">&nbsp;addword</span>
+                                                                <span class="glyphicon glyphicon-plus-sign fuzzyword-icon-plus" style="padding-left: 15px;">&nbsp;add word</span>
                                                             </li>
                                                         </ul>
                                                     </li>
@@ -75,7 +76,7 @@
                                                         <th class="col-xs-5">Word</th>
                                                         <th class="col-xs-5">Other Word</th>
                                                         <th class="col-xs-2" style="text-align: center">
-                                                            <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="color: #00e765; cursor: pointer; display: none;"></span>
+                                                            <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="color: #00e765; cursor: pointer; display: none;" title="Add Exclusion Word"></span>
                                                         </th>
                                                     </tr>
                                                     </thead>
@@ -123,6 +124,9 @@
                         </div>
                         <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
                             <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
+                        </div>
+                        <div class="col-sm-2">
+                            <span class="glyphicon glyphicon-plus " style="transform: translateY(10px); color: #00e765; cursor: pointer;"></span>
                         </div>
                     </div>
                 </div>
