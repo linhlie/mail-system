@@ -324,7 +324,7 @@ function deleteBulletinBoard(id, onSuccess, onError) {
 
 function updateBulletinBoardPosition(data, onSuccess, onError){
     var url = "/user/dashboard/updateBulletinPosition";
-    _postString(url, data, onSuccess, onError);
+    _post(url, data, onSuccess, onError);
 }
 
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {

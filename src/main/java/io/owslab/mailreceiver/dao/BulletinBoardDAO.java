@@ -41,4 +41,5 @@ public interface BulletinBoardDAO extends PagingAndSortingRepository<BulletinBoa
             nativeQuery = true
     )
     void downPosition(@Param("startPosition") long startPosition, @Param("endPosition") long endPosition);
+
 }
