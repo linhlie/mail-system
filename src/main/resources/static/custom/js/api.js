@@ -280,16 +280,7 @@ function deleteBulletinBoard(id, onSuccess, onError) {
 
 function updateBulletinBoardPosition(data, onSuccess, onError){
     var url = "/user/dashboard/updateBulletinPosition";
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _post(url, data, onSuccess, onError);
 }
 
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {

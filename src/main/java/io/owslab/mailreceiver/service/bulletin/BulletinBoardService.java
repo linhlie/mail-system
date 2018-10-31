@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.bulletin;
 
 import io.owslab.mailreceiver.dao.BulletinBoardDAO;
 import io.owslab.mailreceiver.dto.BulletinBoardDTO;
+import io.owslab.mailreceiver.form.BulletinBoardForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.BulletinBoard;
 import io.owslab.mailreceiver.service.security.AccountService;
@@ -39,27 +40,32 @@ public class BulletinBoardService {
         bulletinBoard.setAccountId(accountId);
         bulletinBoard.setTimeEdit(new Date());
         bulletinBoard.setTabName(bulletin.getTabName());
-        bulletinBoard.setTabNumber(bulletin.getTabNumber());
+        if(bulletin.getTabNumber() == 0){
+            List<BulletinBoard> bulletinBoards = findTabsBulletin(0);
+            bulletinBoard.setTabNumber(bulletinBoards.size() + 1);
+        }else{
+            bulletinBoard.setTabNumber(bulletin.getTabNumber());
+        }
         bulletinBoardDAO.save(bulletinBoard);
     }
 
     //need one query
-    public void updateBulletinPosition(String startEndPosition){
-        String str[] = startEndPosition.split("_");
-        if(str[0]!=null && str[1]!=null && !str[0].equals(str[1])){
-            long start = Integer.parseInt(str[0]) + 1;
-            long end = Integer.parseInt(str[1]) + 1;
-            BulletinBoard bulletinBoard = bulletinBoardDAO.findTopByTabNumber(start);
-            if(bulletinBoard!=null){
-                if(start>end){
-                    bulletinBoard.setTabNumber(end);
-                    bulletinBoardDAO.upPosition(end,start);
-                    bulletinBoardDAO.save(bulletinBoard);
-                }else{
-                    bulletinBoard.setTabNumber(end);
-                    bulletinBoardDAO.downPosition(start,end);
-                    bulletinBoardDAO.save(bulletinBoard);
-                }
+    public void updateBulletinPosition(BulletinBoardForm form){
+        BulletinBoardDTO bulletinBoardDTO = form.getBulletionBoard();
+        BulletinBoard bulletinBoard = bulletinBoardDAO.findOne(bulletinBoardDTO.getId());
+        if(bulletinBoard ==null || bulletinBoard.getTabNumber() != bulletinBoardDTO.getTabNumber()){
+            return;
+        }else{
+            long start = bulletinBoard.getTabNumber();
+            long end = form.getPosition() + 1;
+            if(start>end){
+                bulletinBoard.setTabNumber(end);
+                bulletinBoardDAO.upPosition(end,start);
+                bulletinBoardDAO.save(bulletinBoard);
+            }else{
+                bulletinBoard.setTabNumber(end);
+                bulletinBoardDAO.downPosition(start,end);
+                bulletinBoardDAO.save(bulletinBoard);
             }
         }
     }
