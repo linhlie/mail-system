@@ -172,7 +172,7 @@
         var newBulletin = {
             bulletin: "",
             tabName: "新しいTAB",
-            tabNumber: bulletinArray.length+1,
+            tabNumber: 0,
             timeEdit: "",
             username: "",
         };
@@ -325,9 +325,14 @@
         }
 
         function onError(response) {
+            loadBulletinBoard(0);
+            disableUpdateBulletinBoard(true);
             console.log(response);
         }
-        updateBulletinBoardPosition(start+"_"+end, onSuccess, onError);
+        updateBulletinBoardPosition({
+            bulletionBoard : bulletinArray[start],
+            position: end
+        }, onSuccess, onError);
     }
 
     function saveBulletin(newBulletin, index){

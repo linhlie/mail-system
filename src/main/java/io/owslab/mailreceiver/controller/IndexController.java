@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.dto.BulletinBoardDTO;
+import io.owslab.mailreceiver.form.BulletinBoardForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.BulletinBoard;
 import io.owslab.mailreceiver.model.EmailAccount;
@@ -153,7 +154,7 @@ public class IndexController {
 
     @RequestMapping(value = "/user/dashboard/updateBulletinPosition", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> updateBulletinPosition(@Valid @RequestBody String startEndPosition, BindingResult bindingResult) {
+    public ResponseEntity<?> updateBulletinPosition(@Valid @RequestBody BulletinBoardForm form, BindingResult bindingResult) {
         DashboardResponseBody responseBody = new DashboardResponseBody();
         if (bindingResult.hasErrors()) {
             responseBody.setMsg(bindingResult.getAllErrors()
@@ -162,7 +163,7 @@ public class IndexController {
             return ResponseEntity.badRequest().body(responseBody);
         }
         try {
-            bulletinBoardService.updateBulletinPosition(startEndPosition);
+            bulletinBoardService.updateBulletinPosition(form);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
         } catch (Exception e) {
