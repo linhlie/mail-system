@@ -327,6 +327,7 @@
     function deleteGroup() {
         $(".fuzzyword-icon-trash").click(function () {
             var text = $(this).siblings(".groupFuzzyWordName").text();
+            var liTag = $(this).parent('.fuzzyword-li-group-select');
             var ulTag = $(this).parents('ul');
             var group = text.substring(prefxGroup.length, text.length);
             if(group!=null){
@@ -334,6 +335,10 @@
             }
             function onSuccess() {
                 ulTag.remove();
+                if(liTag[0]){
+                    console.log(liTag[0]);
+                    clearTableExclusionWord();
+                }
             }
             function onError() {
                 $.alert("の削除に失敗しました。");
@@ -519,6 +524,7 @@
                         liTag.remove();
                     }
                     clearTableExclusionWord();
+                    $(".fuzzyword-li-group").removeClass("fuzzyword-li-group-select");
                 }
             }
             function onError(error) {
