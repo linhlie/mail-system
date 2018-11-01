@@ -62,11 +62,11 @@ public class WordService {
         List<Word> newWords = getListWordinGroup(form.getNewWord());
 
         if(oldWords.size()==0){
-            throw new Exception("Group has been remove");
+            throw new Exception("グループ名が存在しない、又は消除された");
         }
 
         if(newWords.size() > 0){
-            throw new Exception("New Group is esxit");
+            throw new Exception("言葉が既存の同義語のグループにある");
         }else{
             wordDAO.editGroup(form.getOldWord(), form.getNewWord());
         }
@@ -125,12 +125,12 @@ public class WordService {
         Word newWord = findOne(form.getNewWord());
 
         if(word == null){
-            throw new Exception("Word has been remove");
+            throw new Exception("言葉が存在しない、又は消除された");
         }
 
         if(newWord != null){
             if(newWord.getGroupWord()!=null){
-                throw new Exception("Word esxit");
+                throw new Exception("言葉が既存の同義語のグループにある");
             }else{
                 newWord.setGroupWord(word.getGroupWord());
                 word.setGroupWord(null);
@@ -148,7 +148,7 @@ public class WordService {
 
         if(checkWord!=null){
             if(checkWord.getGroupWord()!=null){
-                throw new Exception("Word esxit");
+                throw new Exception("言葉が既存の同義語のグループにある");
             }else{
                 checkWord.setGroupWord(word.getGroupWord());
                 save(checkWord);
@@ -162,12 +162,12 @@ public class WordService {
         List<Word> words = getListWordinGroup(form.getGroupWord());
         List<Word> wordsSave = new ArrayList<>();
         if(words.size()>0){
-            throw new Exception("Group is esxit");
+            throw new Exception("グループ名は既に存在します");
         }else{
             for(String w : form.getListWord()){
                 Word word = findOne(w);
                 if(word!=null && word.getGroupWord() != null){
-                    throw new Exception("Word esxit");
+                    throw new Exception("言葉が既存の同義語のグループにある");
                 }else{
                     if(word!=null){
                         word.setGroupWord(form.getGroupWord());

@@ -82,7 +82,7 @@ public class FuzzyWordService {
         Word originalWord = wordService.findOne(fuzzyWordDTO.getWord());
         Word associatedWord = wordService.findOne(fuzzyWordDTO.getWordExclusion());
         if(originalWord == null){
-            throw new Exception("originalWord is not esxit or has been deleted");
+            throw new Exception("主ワードが存在しない、又は消除された");
         }
         if(associatedWord != null) {
             FuzzyWord existFuzzyWord = findOne(originalWord, associatedWord);

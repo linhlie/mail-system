@@ -593,7 +593,7 @@
                 if(word != null && word.trim()!="" && wordExclusion!=null && wordExclusion.trim() != ""){
                     var isValid = checkValidWord(datalist, word, wordExclusion);
                     if(!isValid){
-                        showError("#hasErrorModal", "Word invalid");
+                        showError("#hasErrorModal", "除外単語");
                     }
 
                     if(isValid){
@@ -605,7 +605,7 @@
                         $('#dataModal').modal('hide');
                     }
                 }else{
-                    showError("#hasErrorModal", "Word invalid");
+                    showError("#hasErrorModal", "除外単語");
                 }
             }
         });
@@ -681,14 +681,14 @@
             var hasError = false;
 
             if(groupName==null || groupName.trim()==""){
-                showError("#hasErrorModalAddGroup", "Group invalid");
+                showError("#hasErrorModalAddGroup", "除外グループ名");
                 hasError = true;
             }
 
             $(".wordMember").each(function() {
                 var text = $(this).val();
                 if(text==null || text.trim()==""){
-                    showError("#hasErrorModalAddGroup", "Word invalid");
+                    showError("#hasErrorModalAddGroup", "除外単語");
                     hasError = true;
                 }else{
                     words.push(text);
