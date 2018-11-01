@@ -28,6 +28,9 @@ public class WordService {
     @Autowired
     private WordDAO wordDAO;
 
+    @Autowired
+    private FuzzyWordService fuzzyWordService;
+
     @Cacheable(key="\"WordService:findAll\"")
     public List<Word> findAll(){
         return (List<Word>) wordDAO.findAll();

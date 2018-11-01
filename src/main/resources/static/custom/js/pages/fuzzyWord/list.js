@@ -18,23 +18,24 @@
 
     var addGroupEnd = '</b> </span>'+
         '<input class="group-edit-text col-xs-7"></input>'+
-        '<span class="glyphicon glyphicon-pencil group-icon-edit col-xs-1" data="edit"></span>' +
-        '<span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-1.5"></span>' +
+        '<span class="glyphicon fuzzyword-icon-null col-xs-1.5"></span>' +
         '<span class="glyphicon glyphicon-play fuzzyword-icon-play pull-right"></span>' +
+        '<span class="glyphicon glyphicon-pencil group-icon-edit pull-right" data="edit"></span>' +
+        '<span class="glyphicon glyphicon-trash fuzzyword-icon-trash pull-right"></span>' +
         '<ul class="visible groupFuzzyWord" style="padding-left: 30px; display: none;"></ul>' +
         '</li> </ul>';
 
-    var addWordStart ='<li class="word-li"><span class="col-xs-6 word-value">';
+    var addWordStart ='<li class="word-li"><span class="col-xs-9 word-value">';
 
-    var addWordEnd ='</span> <input class="word-edit-text col-xs-6"></input>' +
-        '<span class="glyphicon glyphicon-pencil word-icon-edit col-xs-2" data="edit"></span>' +
-        '<span class="glyphicon glyphicon-trash word-icon-delete col-xs-4"></span></li>';
+    var addWordEnd ='</span> <input class="word-edit-text col-xs-9"></input>' +
+        '<span class="glyphicon glyphicon-trash word-icon-delete pull-right"></span>' +
+        '<span class="glyphicon glyphicon-pencil word-icon-edit pull-right" data="edit"></span></li>';
 
     var addWord ='<li style="height: 26px; margin: 1px; list-style-type: none; margin-left: 30px;"> ' +
-        '<span class="glyphicon glyphicon-plus-sign fuzzyword-icon-plus col-xs-6" data="add">&nbsp;add word</span> ' +
-        '<input class="word-edit-text col-xs-6" placeholder="単語を入力してください"></input>' +
-        '<span class="glyphicon glyphicon-ok word-icon-save-add col-xs-2" data="edit"></span>' +
-        '<span class="glyphicon glyphicon glyphicon-remove word-icon-cancel-add col-xs-4" style="color: red"></span>' +
+        '<span class="glyphicon glyphicon-plus fuzzyword-icon-plus col-xs-9" data="add">&nbsp;より多くの単語</span> ' +
+        '<input class="word-edit-text col-xs-9" placeholder="単語を入力してください"></input>' +
+        '<span class="glyphicon glyphicon glyphicon-remove word-icon-cancel-add pull-right"></span>' +
+        '<span class="glyphicon glyphicon-ok word-icon-save-add pull-right" data="edit"></span>' +
         '</li>';
 
     var replaceRow = '<tr role="row" class="hidden">' +
@@ -46,7 +47,8 @@
         '</tr>';
 
     var replaceRowNull = '<tr role="row">' +
-        '<td rowspan="1" colspan="3" data="word"><span style="font-style: italic; margin-left: 20px;">レコードが見つかりません</span></td>' +
+        '<td rowspan="1" colspan="3" data="word">' +
+        '<span style="font-style: italic; margin-left: 20px;">レコードが見つかりません</span></td>' +
         '</tr>';
 
     var addWordMember = '<div class="form-group row addNewWord">' +
@@ -224,7 +226,7 @@
             $(".groupFuzzyWord").last().append(addWord);
         }
         addGroupWord();
-        showGroup();
+        showGroup(data);
         editGroup();
         deleteGroup();
         showExclusionGroup();
@@ -237,7 +239,14 @@
         clearTableExclusionWord();
     }
 
-    function showGroup() {
+    function showGroup(data) {
+        if(data.length>0){
+            $(".fuzzyword-icon-arrow:first").toggleClass("glyphicon-chevron-down");
+            $(".groupFuzzyWord:first").slideToggle("slow");
+            $(".fuzzyword-li-group:first").addClass('fuzzyword-li-group-select');
+            loadExclusion(data[0].groupWord);
+        }
+
         $(".groupFuzzyWordName").click(function () {
             $(this).siblings("ul").slideToggle("slow");
             $(this).siblings(".fuzzyword-icon-arrow").toggleClass("glyphicon-chevron-down");
@@ -589,6 +598,7 @@
         $( '#dataModalTitle').text(title);
         $( '#word').val("");
         $( '#wordExclusion').val("");
+        showError("#hasErrorModal", "");
         updateKeyList(datalist);
         setInputAutoComplete("dataModalName");
         $('#dataModalOk').off('click');
@@ -679,6 +689,7 @@
         $('#modalAddGroupTitle').text(title);
         $('.wordMember').val("");
         $('#groupName').val("");
+        showError("#hasErrorModalAddGroup", "");
         setInputAutoComplete("dataModalName");
         $('#modalAddGroupOk').off('click');
         $("#modalAddGroupOk").click(function () {

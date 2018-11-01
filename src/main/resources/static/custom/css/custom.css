@@ -1345,7 +1345,7 @@ div.bulletinboard-icon-wrapper {
 
 .fuzzyword-icon-plus{
     cursor: pointer;
-    color: #00e765
+    color: #7a869d;
 }
 
 .fuzzyword-icon-trash{
@@ -1357,9 +1357,13 @@ div.bulletinboard-icon-wrapper {
 
 .fuzzyword-icon-play{
     width: 30px;
-    margin-left: 10px;
     cursor: pointer;
     color: #00c0ef;
+    height: 26px;
+}
+
+.fuzzyword-icon-null{
+    width: 30px;
     height: 26px;
 }
 
@@ -1392,18 +1396,16 @@ div.bulletinboard-icon-wrapper {
 
 .word-icon-delete{
     width: 30px;
-    margin-left: 10px;
     cursor: pointer;
 }
 
 .word-icon-edit {
     width: 30px;
-    margin-left: 10px;
     cursor: pointer;
 }
 
 .group-icon-edit {
-    width: 20px;
+    width: 30px;
     cursor: pointer;
     height: 26px;
 }
@@ -1418,14 +1420,12 @@ div.bulletinboard-icon-wrapper {
 
 .word-icon-save-add{
     width: 30px;
-    margin-left: 10px;
     cursor: pointer;
     display: none;
 }
 
 .word-icon-cancel-add{
     width: 30px;
-    margin-left: 10px;
     cursor: pointer;
     display: none;
 }
@@ -1439,7 +1439,6 @@ div.bulletinboard-icon-wrapper {
 
 .add_word_member{
     transform: translateY(10px);
-    color: #00e765;
     cursor: pointer;
 }
 .fuzzyword-ul-word{

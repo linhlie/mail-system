@@ -78,7 +78,6 @@ public class FuzzyWordService {
     }
 
     public void addFuzzyWord(FuzzyWordDTO fuzzyWordDTO) throws Exception {
-        System.out.println("Word "+fuzzyWordDTO.getWordExclusion());
         Word originalWord = wordService.findOne(fuzzyWordDTO.getWord());
         Word associatedWord = wordService.findOne(fuzzyWordDTO.getWordExclusion());
         if(originalWord == null){
