@@ -46,7 +46,7 @@
         '</tr>';
 
     var replaceRowNull = '<tr role="row">' +
-        '<td rowspan="1" colspan="3" data="word"><span style="font-style: italic; margin-left: 20px;">Don\'t have exclusion word</span></td>' +
+        '<td rowspan="1" colspan="3" data="word"><span style="font-style: italic; margin-left: 20px;">レコードが見つかりません</span></td>' +
         '</tr>';
 
     var addWordMember = '<div class="form-group row addNewWord">' +
@@ -129,7 +129,7 @@
         }
 
         function onError(error) {
-            $.alert("Save Fail");
+            $.alert("保存に失敗しました");
         }
         addFuzzyWord(fuzzyWord, onSuccess, onError);
     }
@@ -265,7 +265,7 @@
             }
         }
         function onError(error) {
-            $.alert("Save Fail");
+            $.alert("保存に失敗しました");
         }
 
         addListWord({
@@ -305,7 +305,7 @@
                         }
                     }
                     function onError(error) {
-                        $.alert("Save Fail");
+                        $.alert("保存に失敗しました");
                     }
 
                     editGroupWord({
@@ -422,7 +422,7 @@
                     }
                 }
                 function onError(error) {
-                    $.alert("Save Fail");
+                    $.alert("保存に失敗しました");
                 }
 
                 addWordToGroupAPI({
@@ -488,7 +488,7 @@
                         }
                     }
                     function onError(error) {
-                        $.alert("Save Fail");
+                        $.alert("保存に失敗しました");
                     }
 
                     editWordAPI({
@@ -685,7 +685,7 @@
                 hasError = true;
             }
 
-            $( ".wordMember" ).each(function() {
+            $(".wordMember").each(function() {
                 var text = $(this).val();
                 if(text==null || text.trim()==""){
                     showError("#hasErrorModalAddGroup", "Word invalid");
