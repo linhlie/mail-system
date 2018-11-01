@@ -9,26 +9,30 @@
     var wordsExclusion = [];
     var groupWordCurrent = [];
     var currentGroupWord ;
+    var prefxGroup = "グループ: ";
 
-    var addGroupStart = '<ul class="visible" style="padding-left: 30px; margin-top: 10px;">' +
-        '<li class="treeview">' +
-        '<span class="groupFuzzyWordName col-xs-8"><b>Group: ';
+    var addGroupStart = '<ul class="visible fuzzyword-ul-word">' +
+        '<li class="treeview fuzzyword-li-group">' +
+        '<span class="glyphicon glyphicon-chevron-right fuzzyword-icon-arrow col-xs-1"></span>' +
+        '<span class="groupFuzzyWordName col-xs-7"><b>グループ: ';
 
     var addGroupEnd = '</b> </span>'+
+        '<input class="group-edit-text col-xs-7"></input>'+
+        '<span class="glyphicon glyphicon-pencil group-icon-edit col-xs-1" data="edit"></span>' +
         '<span class="glyphicon glyphicon-trash fuzzyword-icon-trash col-xs-1.5"></span>' +
         '<span class="glyphicon glyphicon-play fuzzyword-icon-play pull-right"></span>' +
         '<ul class="visible groupFuzzyWord" style="padding-left: 30px; display: none;"></ul>' +
         '</li> </ul>';
 
-    var addWordStart ='<li style="height: 26px; margin: 1px;"><span class="col-xs-6 word-value">';
+    var addWordStart ='<li class="word-li"><span class="col-xs-6 word-value">';
 
     var addWordEnd ='</span> <input class="word-edit-text col-xs-6"></input>' +
         '<span class="glyphicon glyphicon-pencil word-icon-edit col-xs-2" data="edit"></span>' +
         '<span class="glyphicon glyphicon-trash word-icon-delete col-xs-4"></span></li>';
 
-    var addWord ='<li style="height: 26px; margin: 1px;"> ' +
+    var addWord ='<li style="height: 26px; margin: 1px; list-style-type: none; margin-left: 30px;"> ' +
         '<span class="glyphicon glyphicon-plus-sign fuzzyword-icon-plus col-xs-6" data="add">&nbsp;add word</span> ' +
-        '<input class="word-edit-text col-xs-6"></input>' +
+        '<input class="word-edit-text col-xs-6" placeholder="単語を入力してください"></input>' +
         '<span class="glyphicon glyphicon-ok word-icon-save-add col-xs-2" data="edit"></span>' +
         '<span class="glyphicon glyphicon glyphicon-remove word-icon-cancel-add col-xs-4" style="color: red"></span>' +
         '</li>';
@@ -42,9 +46,20 @@
         '</tr>';
 
     var replaceRowNull = '<tr role="row">' +
-        '<td rowspan="1" colspan="3" data="word"><span>Have not exclusion word</span></td>' +
+        '<td rowspan="1" colspan="3" data="word"><span style="font-style: italic; margin-left: 20px;">Don\'t have exclusion word</span></td>' +
         '</tr>';
 
+    var addWordMember = '<div class="form-group row addNewWord">' +
+        '<div class="col-sm-2">' +
+        '<label style="transform: translateY(10px);">単語</label>' +
+        '</div>' +
+        '<div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">' +
+        '<input class="dataModalName form-control wordMember" type="text" placeholder=""/>' +
+        '</div>' +
+        '<div class="col-sm-2">' +
+        '<span class="glyphicon glyphicon-plus add_word_member" data = "add"></span>' +
+        '</div>' +
+        '</div>'
 
     $(function () {
         loadListWord();
@@ -64,13 +79,11 @@
     function loadListWord() {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
                 showData(response.list);
             }
         }
 
         function onError(error) {
-            console.log(error);
         }
 
         getWords(onSuccess, onError);
@@ -79,14 +92,12 @@
     function loadExclusion(group) {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
                 groupWordCurrent = response.listWord;
                 showExclusionData(wordExclusionTableId, response.list);
             }
         }
 
         function onError(error) {
-            console.log(error);
         }
 
         getExclusion(group, onSuccess, onError);
@@ -95,13 +106,11 @@
     function searchWord(word) {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
                 showData(response.list);
             }
         }
 
         function onError(error) {
-            console.log(error);
         }
 
         searchWordAPI(word, onSuccess, onError);
@@ -112,20 +121,16 @@
         function onSuccess(response) {
             if(response){
                 if(response.status){
-                    console.log(response.list);
-                    $.alert("Save Success");
                     loadExclusion(currentGroupWord);
                 }else{
-                    $.alert("Save Fail");
+                    $.alert(response.msg);
                 }
             }
         }
 
         function onError(error) {
             $.alert("Save Fail");
-            console.log(error);
         }
-        console.log("add ",fuzzyWord);
         addFuzzyWord(fuzzyWord, onSuccess, onError);
     }
 
@@ -220,6 +225,7 @@
         }
         addGroupWord();
         showGroup();
+        editGroup();
         deleteGroup();
         showExclusionGroup();
         addWordToGroup();
@@ -233,27 +239,96 @@
 
     function showGroup() {
         $(".groupFuzzyWordName").click(function () {
-            console.log($(this).text());
+            $(this).siblings("ul").slideToggle("slow");
+            $(this).siblings(".fuzzyword-icon-arrow").toggleClass("glyphicon-chevron-down");
+        })
+        $(".fuzzyword-icon-arrow").click(function () {
+            $(this).toggleClass("glyphicon-chevron-down");
             $(this).siblings("ul").slideToggle("slow");
         })
     }
 
     function addGroupWord() {
         $("#addGroupWord").click(function () {
-            console.log("add word");
-            showAddGroupModal("Add Group", doAddGroupWord);
+            showAddGroupModal("類似グループ登録", doAddGroupWord);
         })
     }
 
-    function doAddGroupWord() {
-        console.log("Add New Group")
+    function doAddGroupWord(groupName, words) {
+        function onSuccess(response) {
+            if(response){
+                if(response.status){
+                    loadListWord();
+                }else{
+                    $.alert(response.msg);
+                }
+            }
+        }
+        function onError(error) {
+            $.alert("Save Fail");
+        }
+
+        addListWord({
+            listWord : words,
+            groupWord : groupName
+        }, onSuccess, onError);
+    }
+
+    function editGroup() {
+        $(".group-icon-edit").click(function () {
+            var spanGroup = $(this).siblings(".groupFuzzyWordName");
+            var inputWord = $(this).siblings("input");
+            var spanEdit = this;
+            var flag = $(this).attr('data');
+            if(flag == "edit"){
+                var text =  spanGroup.text()
+                var group = text.substring(prefxGroup.length, text.length);
+                spanGroup.css('display','none');
+                inputWord.val(group.trim());
+                inputWord.css('display','inline-block');
+
+                $(this).removeClass("glyphicon-pencil");
+                $(this).addClass("glyphicon-ok");
+                $(this).attr('data','save');
+            }else{
+                var text =  spanGroup.text()
+                var oldGroup = text.substring(prefxGroup.length, text.length).trim();
+                var newGroup  = inputWord.val().trim();
+                if(newGroup != "" && newGroup != oldGroup){
+                    function onSuccess(response) {
+                        if(response){
+                            if(response.status){
+                                loadListWord();
+                            }else{
+                                $.alert(response.msg);
+                            }
+                        }
+                    }
+                    function onError(error) {
+                        $.alert("Save Fail");
+                    }
+
+                    editGroupWord({
+                        oldWord : oldGroup,
+                        newWord : newGroup.trim()
+                    }, onSuccess, onError);
+                }else{
+                    inputWord.css('display','none');
+                    spanGroup.css('display','inline-block');
+
+                    $(spanEdit).removeClass("glyphicon-ok");
+                    $(spanEdit).addClass("glyphicon-pencil");
+                    $(spanEdit).attr('data','edit');
+                }
+            }
+        })
     }
 
     function deleteGroup() {
         $(".fuzzyword-icon-trash").click(function () {
             var text = $(this).siblings(".groupFuzzyWordName").text();
             var ulTag = $(this).parents('ul');
-            var group = text.substring(7, text.length);
+            var group = text.substring(prefxGroup.length, text.length);
             if(group!=null){
                 group = group.trim();
             }
@@ -286,7 +361,9 @@
     function showExclusionGroup() {
         $(".fuzzyword-icon-play").click(function () {
             var text = $(this).siblings(".groupFuzzyWordName").text();
-            text = text.substr(7, text.length);
+            $(".fuzzyword-li-group").removeClass("fuzzyword-li-group-select");
+            $(this).parent(".fuzzyword-li-group").addClass("fuzzyword-li-group-select");
+            text = text.substring(prefxGroup.length, text.length);
             if(text!=null){
                 text = text.trim();
             }
@@ -322,7 +399,7 @@
             var spanGroup = ulTag.siblings(".groupFuzzyWordName");
             var word = inputWord.val();
             var text = spanGroup.text();
-            var group = text.substring(7, text.length);
+            var group = text.substring(prefxGroup.length, text.length);
             if(word != null && word != ""){
                 function onSuccess(response) {
                     if(response){
@@ -340,13 +417,12 @@
                             editWord();
                             deleteword();
                         }else{
-                            $.alert("Save Fail");
+                            $.alert(response.msg);
                         }
                     }
                 }
                 function onError(error) {
                     $.alert("Save Fail");
-                    console.log(error);
                 }
 
                 addWordToGroupAPI({
@@ -392,8 +468,8 @@
                 $(this).addClass("glyphicon-ok");
                 $(this).attr('data','save');
             }else{
-                var oldWord = spanWord.text();
-                var newWord = inputWord.val();
+                var oldWord = spanWord.text().trim();
+                var newWord = inputWord.val().trim();
                 if(newWord != "" && newWord != oldWord){
                     function onSuccess(response) {
                         if(response){
@@ -407,13 +483,12 @@
                                 $(spanEdit).attr('data','edit');
 
                             }else{
-                                $.alert("Save Fail");
+                                $.alert(response.msg);
                             }
                         }
                     }
                     function onError(error) {
                         $.alert("Save Fail");
-                        console.log(error);
                     }
 
                     editWordAPI({
@@ -438,7 +513,6 @@
             var liTag = $(this).parent('li');
             function onSuccess(response) {
                 if(response){
-                    console.log(response.msg);
                     if(response.msg == '0'){
                         liTag.parents('ul').remove();
                     }else{
@@ -474,8 +548,7 @@
 
     function addExclusionWord() {
         $("#"+addExclusionWordId).click(function () {
-            console.log("add exclusion word");
-            showNamePrompt("Add Exclusion Word", groupWordCurrent, saveExclusionWord);
+            showNamePrompt("除外単語登録", groupWordCurrent, saveExclusionWord);
         })
     }
 
@@ -597,38 +670,58 @@
 
     function showAddGroupModal(title, callback) {
         $('#modalAddGroup').modal();
-        $( '#modalAddGroupTitle').text(title);
-        $( '#listWordMember .wordMember').val("");
+        $('#modalAddGroupTitle').text(title);
+        $('.wordMember').val("");
+        $('#groupName').val("");
         setInputAutoComplete("dataModalName");
         $('#modalAddGroupOk').off('click');
         $("#modalAddGroupOk").click(function () {
-            var word = $( '#word').val();
-            var wordExclusion = $( '#wordExclusion').val();
-            if(typeof callback === "function"){
-                if(word != null && word.trim()!="" && wordExclusion!=null && wordExclusion.trim() != ""){
-                    var isValid = checkValidWord(datalist, word, wordExclusion);
-                    if(!isValid){
-                        showError("#hasErrorModalAddGroup", "Word invalid");
-                    }
+            var groupName = $('#groupName').val();
+            var words = [];
+            var hasError = false;
 
-                    if(isValid){
-                        var fuzzyWord = {
-                            word: word,
-                            wordExclusion: wordExclusion
-                        }
-                        callback(fuzzyWord);
-                        $('#modalAddGroup').modal('hide');
-                    }
-                }else{
+            if(groupName==null || groupName.trim()==""){
+                showError("#hasErrorModalAddGroup", "Group invalid");
+                hasError = true;
+            }
+
+            $( ".wordMember" ).each(function() {
+                var text = $(this).val();
+                if(text==null || text.trim()==""){
                     showError("#hasErrorModalAddGroup", "Word invalid");
+                    hasError = true;
+                }else{
+                    words.push(text);
                 }
+            });
+            if(typeof callback === "function" && !hasError){
+                callback(groupName, words);
+                $('#modalAddGroup').modal('hide');
             }
         });
         $('#modalAddGroupCancel').off('click');
         $("#modalAddGroupCancel").click(function () {
             $('#modalAddGroup').modal('hide');
-            if(typeof callback === "function"){
-                callback();
+        });
+        $('.addNewWord').remove();
+        $('.mainAddGroup').append(addWordMember);
+        $('.add_word_member').off('click');
+        addWordMemberOnclick();
+    }
+
+    function addWordMemberOnclick() {
+        $('.add_word_member').click(function () {
+            var flag = $(this).attr('data');
+            if(flag == "add"){
+                $(this).removeClass("glyphicon-plus");
+                $(this).addClass("glyphicon-remove");
+                $(this).css('color', 'red');
+                $(this).attr('data','delete');
+                $(this).parents('.mainAddGroup').append(addWordMember);
+                $('.add_word_member').off('click');
+                addWordMemberOnclick();
+            }else{
+                $(this).parents('.addNewWord').remove();
             }
         });
     }

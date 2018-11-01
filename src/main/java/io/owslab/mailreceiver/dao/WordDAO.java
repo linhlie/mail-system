@@ -28,4 +28,11 @@ public interface WordDAO extends CrudRepository<Word, Long> {
             nativeQuery = true
     )
     void deleteGroup(@Param("groupName") String groupName);
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "UPDATE words SET group_word = :newGroup WHERE group_word = :oldGroup",
+            nativeQuery = true
+    )
+    void editGroup(@Param("oldGroup") String oldGroup, @Param("newGroup") String newGroup);
 }

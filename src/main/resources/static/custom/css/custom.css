@@ -1352,6 +1352,7 @@ div.bulletinboard-icon-wrapper {
     width: 30px;
     margin-left: 10px;
     cursor: pointer;
+    height: 26px;
 }
 
 .fuzzyword-icon-play{
@@ -1359,9 +1360,34 @@ div.bulletinboard-icon-wrapper {
     margin-left: 10px;
     cursor: pointer;
     color: #00c0ef;
+    height: 26px;
 }
+
+.fuzzyword-icon-arrow{
+    width: 30px;
+    cursor: pointer;
+    height: 26px;
+}
+
+.fuzzyword-li-group{
+    /*border: 1px solid #3c8dbc;*/
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    padding-top: 15px;
+}
+
+.fuzzyword-li-group-select{
+    background-color: #ffff8d;
+}
+
+.groupFuzzyWord{
+    border-top: 1px solid #eeeeee;
+    padding-top: 5px;
+}
+
 .groupFuzzyWordName{
     cursor: pointer;
+    height: 26px;
 }
 
 .word-icon-delete{
@@ -1376,7 +1402,17 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
 }
 
+.group-icon-edit {
+    width: 20px;
+    cursor: pointer;
+    height: 26px;
+}
+
 .word-edit-text{
+    display: none;
+}
+
+.group-edit-text{
     display: none;
 }
 
@@ -1394,10 +1430,27 @@ div.bulletinboard-icon-wrapper {
     display: none;
 }
 
+.word-li{
+    height: 26px;
+    margin-top: 2px;
+    margin-left: 30px;
+    list-style-type: none;
+}
+
 .add_word_member{
     transform: translateY(10px);
     color: #00e765;
     cursor: pointer;
+}
+.fuzzyword-ul-word{
+    margin-top: 10px;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.fuzzyword-hr{
+     margin-top: 5px;
+     margin-bottom: 5px;
 }
 
 .bulletinTab{

@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.FuzzyWordDTO;
+import io.owslab.mailreceiver.form.AddListWordForm;
 import io.owslab.mailreceiver.form.EditWordForm;
 import io.owslab.mailreceiver.form.FuzzyWordForm;
 import io.owslab.mailreceiver.model.FuzzyWord;
@@ -124,6 +125,28 @@ public class FuzzyWordController {
         }
     }
 
+    @PostMapping("/fuzzyWord/editGroupWord")
+    @ResponseBody
+    public ResponseEntity<?> editGroupWord(@Valid @RequestBody EditWordForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            wordService.editGroupWord(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
     @RequestMapping(value = "/fuzzyWord/deleteGroupWord/{group}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Void> deleteGroupWord(@PathVariable("group") String group) {
@@ -146,7 +169,6 @@ public class FuzzyWordController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            System.out.println("Delete Word "+form.getOldWord());
             int words = wordService.deleteWordInGroup(form.getOldWord());
             result.setMsg(words+"");
             result.setStatus(true);
@@ -203,6 +225,28 @@ public class FuzzyWordController {
         }
         try {
             wordService.addWord(word);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/fuzzyWord/addListWord")
+    @ResponseBody
+    public ResponseEntity<?> addListWord(@Valid @RequestBody AddListWordForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            wordService.addListWord(form);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

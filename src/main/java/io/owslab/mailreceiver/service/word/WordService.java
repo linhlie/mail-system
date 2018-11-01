@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.WordDAO;
+import io.owslab.mailreceiver.form.AddListWordForm;
 import io.owslab.mailreceiver.form.EditWordForm;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.utils.KeyWordItem;
@@ -55,6 +56,22 @@ public class WordService {
         wordDAO.save(word);
     }
 
+    //need transaction
+    public void editGroupWord(EditWordForm form) throws Exception {
+        List<Word> oldWords = getListWordinGroup(form.getOldWord());
+        List<Word> newWords = getListWordinGroup(form.getNewWord());
+
+        if(oldWords.size()==0){
+            throw new Exception("Group has been remove");
+        }
+
+        if(newWords.size() > 0){
+            throw new Exception("New Group is esxit");
+        }else{
+            wordDAO.editGroup(form.getOldWord(), form.getNewWord());
+        }
+    }
+
     public void deleteGroupWord(String group){
         wordDAO.deleteGroup(group);
     }
@@ -64,7 +81,6 @@ public class WordService {
         if(word != null){
             String group = word.getGroupWord();
             List<Word> words = getListWordinGroup(group);
-            System.out.println(group+"  "+words.size());
             word.setGroupWord(null);
             wordDAO.save(word);
             return words.size()-1;
@@ -103,12 +119,24 @@ public class WordService {
         }
     }
 
+    //need transaction
     public void editWord(EditWordForm form) throws Exception {
         Word word = findOne(form.getOldWord());
         Word newWord = findOne(form.getNewWord());
 
-        if(word == null || newWord != null){
-            throw new Exception("Word esxit");
+        if(word == null){
+            throw new Exception("Word has been remove");
+        }
+
+        if(newWord != null){
+            if(newWord.getGroupWord()!=null){
+                throw new Exception("Word esxit");
+            }else{
+                newWord.setGroupWord(word.getGroupWord());
+                word.setGroupWord(null);
+                save(newWord);
+                save(word);
+            }
         }else{
             word.setWord(form.getNewWord());
             save(word);
@@ -127,6 +155,32 @@ public class WordService {
             }
         }else{
             save(word);
+        }
+    }
+
+    public void addListWord(AddListWordForm form) throws Exception {
+        List<Word> words = getListWordinGroup(form.getGroupWord());
+        List<Word> wordsSave = new ArrayList<>();
+        if(words.size()>0){
+            throw new Exception("Group is esxit");
+        }else{
+            for(String w : form.getListWord()){
+                Word word = findOne(w);
+                if(word!=null && word.getGroupWord() != null){
+                    throw new Exception("Word esxit");
+                }else{
+                    if(word!=null){
+                        word.setGroupWord(form.getGroupWord());
+                        wordsSave.add(word);
+                    }else{
+                        Word newWord = new Word();
+                        newWord.setWord(w);
+                        newWord.setGroupWord(form.getGroupWord());
+                        wordsSave.add(newWord);
+                    }
+                }
+            }
+            wordDAO.save(wordsSave);
         }
     }
 

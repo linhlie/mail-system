@@ -287,6 +287,11 @@ function deleteFuzzyWord(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function editGroupWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editGroupWord";
+    _post(url, data, onSuccess, onError);
+}
+
 function deleteGroupWord(group, onSuccess, onError) {
     var url = "/user/fuzzyWord/deleteGroupWord/" + group;
     _delete(url, onSuccess, onError);
@@ -304,6 +309,11 @@ function editWordAPI(data, onSuccess, onError) {
 
 function addWordToGroupAPI(data, onSuccess, onError) {
     var url = "/user/fuzzyWord/addWordToGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function addListWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addListWord";
     _post(url, data, onSuccess, onError);
 }
 
