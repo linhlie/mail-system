@@ -67,7 +67,10 @@ public class FuzzyWordService {
     @Cacheable(key="\"FuzzyWordService:findAllSameWord:\"+#word.id")
     public List<Word> findAllSameWord(Word word){
         if(word!=null && word.getGroupWord()!=null){
-            return wordService.getListWordinGroup(word.getGroupWord());
+            List<Word> words = wordService.getListWordinGroup(word.getGroupWord());
+            int index = words.indexOf(word);
+            words.remove(index);
+            return words;
         }
         return null;
     }
