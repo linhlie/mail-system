@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.word;
 import io.owslab.mailreceiver.dao.WordDAO;
 import io.owslab.mailreceiver.form.AddListWordForm;
 import io.owslab.mailreceiver.form.EditWordForm;
+import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.utils.KeyWordItem;
 import io.owslab.mailreceiver.utils.Utils;
@@ -30,6 +31,11 @@ public class WordService {
 
     @Autowired
     private FuzzyWordService fuzzyWordService;
+
+    @CacheEvict(allEntries = true)
+    public void delete(Word word){
+        wordDAO.delete(word);
+    }
 
     @Cacheable(key="\"WordService:findAll\"")
     public List<Word> findAll(){
@@ -76,7 +82,16 @@ public class WordService {
     }
 
     public void deleteGroupWord(String group){
-        wordDAO.deleteGroup(group);
+        List<Word> listWord = getListWordinGroup(group);
+        for(Word word : listWord){
+            List<FuzzyWord> checkFuzzyword = fuzzyWordService.findByAssociatedWord(word);
+            if(checkFuzzyword.size()>0){
+                word.setGroupWord(null);
+                wordDAO.save(word);
+            }else{
+                delete(word);
+            }
+        }
     }
 
     public int deleteWordInGroup(String w){
@@ -84,8 +99,14 @@ public class WordService {
         if(word != null){
             String group = word.getGroupWord();
             List<Word> words = getListWordinGroup(group);
-            word.setGroupWord(null);
-            wordDAO.save(word);
+            List<FuzzyWord> checkFuzzyword = fuzzyWordService.findByAssociatedWord(word);
+            if(checkFuzzyword.size()>0){
+                word.setGroupWord(null);
+                wordDAO.save(word);
+            }else{
+                delete(word);
+            }
+
             return words.size()-1;
         }
         return 0;

@@ -4,7 +4,6 @@ import io.owslab.mailreceiver.dao.FuzzyWordDAO;
 import io.owslab.mailreceiver.dto.FuzzyWordDTO;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
-import io.owslab.mailreceiver.utils.KeyWordItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -30,6 +29,11 @@ public class FuzzyWordService {
     public void deleteFuzzyWord(long id){
         fuzzyWordDAO.delete(id);
     }
+
+    public List<FuzzyWord> findByAssociatedWord(Word word){
+        return fuzzyWordDAO.findByAssociatedWord(word);
+    }
+
 
     @CacheEvict(allEntries = true)
     public void save(FuzzyWord fuzzyWord){
@@ -89,6 +93,7 @@ public class FuzzyWordService {
             }
             FuzzyWord existFuzzyWord = findOne(originalWord, associatedWord);
             if(existFuzzyWord != null){
+                System.out.println(existFuzzyWord.getId()+" "+existFuzzyWord.getFuzzyType());
                 throw new Exception("データは既に存在します");
             }
         } else {
