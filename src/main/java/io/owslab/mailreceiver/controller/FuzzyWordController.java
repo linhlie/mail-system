@@ -118,7 +118,7 @@ public class FuzzyWordController {
     @ResponseBody
     public ResponseEntity<Void> deleteFuzzyWord(@PathVariable("id") long id) {
         try {
-            fuzzyWordService.deleteFuzzyWord(id);
+            fuzzyWordService.deleteFuzzyWordAPI(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

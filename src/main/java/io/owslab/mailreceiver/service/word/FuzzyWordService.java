@@ -34,6 +34,10 @@ public class FuzzyWordService {
         return fuzzyWordDAO.findByAssociatedWord(word);
     }
 
+    public FuzzyWord findById(Long id){
+        return fuzzyWordDAO.findOne(id);
+    }
+
 
     @CacheEvict(allEntries = true)
     public void save(FuzzyWord fuzzyWord){
@@ -105,4 +109,20 @@ public class FuzzyWordService {
         save(fuzzyWord);
     }
 
+    public void deleteFuzzyWordAPI(long id){
+        FuzzyWord fuzzyWord = findById(id);
+        if(fuzzyWord!=null){
+            Word wordExclusion = fuzzyWord.getAssociatedWord();
+            if(wordExclusion.getGroupWord()==null){
+                List<FuzzyWord> checkWord = findByAssociatedWord(wordExclusion);
+                if(checkWord.size()==1){
+                    wordService.delete(wordExclusion);
+                }else{
+                    deleteFuzzyWord(id);
+                }
+            }else{
+                deleteFuzzyWord(id);
+            }
+        }
+    }
 }
