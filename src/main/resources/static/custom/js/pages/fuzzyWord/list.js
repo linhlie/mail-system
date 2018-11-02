@@ -32,7 +32,7 @@
         '<span class="glyphicon glyphicon-pencil word-icon-edit pull-right" data="edit"></span></li>';
 
     var addWord ='<li style="height: 26px; margin: 1px; list-style-type: none; margin-left: 30px;"> ' +
-        '<span class="glyphicon glyphicon-plus fuzzyword-icon-plus col-xs-9" data="add">&nbsp;より多くの単語</span> ' +
+        '<span class="glyphicon glyphicon-plus fuzzyword-icon-plus col-xs-9" data="add">単語を追加する</span> ' +
         '<input class="word-edit-text col-xs-9" placeholder="単語を入力してください"></input>' +
         '<span class="glyphicon glyphicon glyphicon-remove word-icon-cancel-add pull-right"></span>' +
         '<span class="glyphicon glyphicon-ok word-icon-save-add pull-right" data="edit"></span>' +
@@ -41,8 +41,8 @@
     var replaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="wordExclusion"><span></span></td>' +
-        '<td name="deleteWordExclusion" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">削除</button>' +
+        '<td name="deleteWordExclusion" class="fit action" rowspan="1" colspan="1" data="id" style="text-align: center; cursor: pointer;">' +
+        '<label class="glyphicon glyphicon-trash" style="cursor: pointer;"></label>' +
         '</td>' +
         '</tr>';
 
@@ -244,6 +244,7 @@
             $(".fuzzyword-icon-arrow:first").toggleClass("glyphicon-chevron-down");
             $(".groupFuzzyWord:first").slideToggle("slow");
             $(".fuzzyword-li-group:first").addClass('fuzzyword-li-group-select');
+            currentGroupWord = data[0].groupWord;
             loadExclusion(data[0].groupWord);
         }
 
@@ -353,7 +354,7 @@
                 $.alert("の削除に失敗しました。");
             }
             $.confirm({
-                title: '<b>【Delete Group Word】</b>',
+                title: '<b>【類似グループ削除】</b>',
                 titleClass: 'text-center',
                 content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
                 buttons: {
@@ -444,7 +445,7 @@
                     groupWord : group.trim()
                 }, onSuccess, onError);
             }else{
-                $.alert("Word invalid");
+                $.alert("除外単語");
             }
         })
     }
@@ -540,7 +541,7 @@
                 $.alert("の削除に失敗しました。");
             }
             $.confirm({
-                title: '<b>【Delete Word】</b>',
+                title: '<b>【単語削除】</b>',
                 titleClass: 'text-center',
                 content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
                 buttons: {
@@ -575,7 +576,7 @@
             $.alert("の削除に失敗しました。");
         }
         $.confirm({
-            title: '<b>【Delete FuzzyWord】</b>',
+            title: '<b>【除外単語削除】</b>',
             titleClass: 'text-center',
             content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
             buttons: {

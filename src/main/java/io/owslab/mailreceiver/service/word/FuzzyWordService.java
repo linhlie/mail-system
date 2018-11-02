@@ -84,6 +84,9 @@ public class FuzzyWordService {
             throw new Exception("主ワードが存在しない、又は消除された");
         }
         if(associatedWord != null) {
+            if(originalWord.getGroupWord().equals(associatedWord.getGroupWord())){
+                throw new Exception("除外単語と主ワードは同じ類似グループにしてはいけません。");
+            }
             FuzzyWord existFuzzyWord = findOne(originalWord, associatedWord);
             if(existFuzzyWord != null){
                 throw new Exception("データは既に存在します");

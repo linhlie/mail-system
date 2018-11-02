@@ -1349,7 +1349,7 @@ div.bulletinboard-icon-wrapper {
 }
 
 .fuzzyword-icon-trash{
-    width: 30px;
+    margin-right: 15px;
     margin-left: 10px;
     cursor: pointer;
     height: 26px;
@@ -1400,12 +1400,12 @@ div.bulletinboard-icon-wrapper {
 }
 
 .word-icon-edit {
-    width: 30px;
+    margin-right: 15px;
     cursor: pointer;
 }
 
 .group-icon-edit {
-    width: 30px;
+    margin-right: 15px;
     cursor: pointer;
     height: 26px;
 }
@@ -1419,7 +1419,7 @@ div.bulletinboard-icon-wrapper {
 }
 
 .word-icon-save-add{
-    width: 30px;
+    margin-right: 15px;
     cursor: pointer;
     display: none;
 }
