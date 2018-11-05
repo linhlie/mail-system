@@ -41,6 +41,9 @@
     var replaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="word"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="wordExclusion"><span></span></td>' +
+        '<td name="editWordExclusion" class="fit action" rowspan="1" colspan="1" data="id" style="text-align: center; cursor: pointer;">' +
+        '<label class="glyphicon glyphicon-pencil" style="cursor: pointer;"></label>' +
+        '</td>' +
         '<td name="deleteWordExclusion" class="fit action" rowspan="1" colspan="1" data="id" style="text-align: center; cursor: pointer;">' +
         '<label class="glyphicon glyphicon-trash" style="cursor: pointer;"></label>' +
         '</td>' +
@@ -136,6 +139,23 @@
         addFuzzyWord(fuzzyWord, onSuccess, onError);
     }
 
+    function editExclusionWord(fuzzyWord) {
+        function onSuccess(response) {
+            if(response){
+                if(response.status){
+                    loadExclusion(currentGroupWord);
+                }else{
+                    $.alert(response.msg);
+                }
+            }
+        }
+
+        function onError(error) {
+            $.alert("保存に失敗しました");
+        }
+        editFuzzyWord(fuzzyWord, onSuccess, onError);
+    }
+
     function searchWordOnClick(){
         var wordSearch = $("#"+searchWordTxtId).val();
         if(wordSearch == null || wordSearch ==""){
@@ -154,6 +174,16 @@
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
+
+            setRowClickListener("editWordExclusion", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = wordsExclusion[index];
+                if (rowData && rowData.id) {
+                    editWordExclusion(rowData);
+                }
+            });
+
             setRowClickListener("deleteWordExclusion", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
@@ -564,8 +594,12 @@
 
     function addExclusionWord() {
         $("#"+addExclusionWordId).click(function () {
-            showNamePrompt("除外単語登録", groupWordCurrent, saveExclusionWord);
+            showNamePrompt("除外単語登録", groupWordCurrent, null, "add-fuzzy-word", saveExclusionWord);
         })
+    }
+
+    function editWordExclusion(fuzzyWord){
+        showNamePrompt("除外単語登録", groupWordCurrent, fuzzyWord, "edit-fuzzy-word", editExclusionWord);
     }
 
     function deleteWordExclusion(fuzzyWord){
@@ -594,13 +628,18 @@
         });
     }
 
-    function showNamePrompt(title, datalist, callback) {
+
+    function showNamePrompt(title, datalist, fuzzyWordInput, type, callback) {
         $('#dataModal').modal();
         $( '#dataModalTitle').text(title);
         $( '#word').val("");
         $( '#wordExclusion').val("");
         showError("#hasErrorModal", "");
         updateKeyList(datalist);
+        if(type == "edit-fuzzy-word"){
+            $( '#word').val(fuzzyWordInput.word);
+            $( '#wordExclusion').val(fuzzyWordInput.wordExclusion);
+        }
         setInputAutoComplete("dataModalName");
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
@@ -617,6 +656,9 @@
                         var fuzzyWord = {
                             word: word,
                             wordExclusion: wordExclusion
+                        }
+                        if(type == "edit-fuzzy-word"){
+                            fuzzyWord.id = fuzzyWordInput.id;
                         }
                         callback(fuzzyWord);
                         $('#dataModal').modal('hide');

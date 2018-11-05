@@ -278,4 +278,27 @@ public class FuzzyWordController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @PostMapping("/fuzzyWord/editFuzzyWord")
+    @ResponseBody
+    public ResponseEntity<?> editFuzzyWord(@Valid @RequestBody FuzzyWordDTO fuzzyWordDTO, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            fuzzyWordService.deleteFuzzyWordAPI(fuzzyWordDTO.getId());
+            fuzzyWordService.addFuzzyWord(fuzzyWordDTO);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }

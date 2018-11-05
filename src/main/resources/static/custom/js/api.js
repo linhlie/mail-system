@@ -282,6 +282,11 @@ function addFuzzyWord(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function editFuzzyWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editFuzzyWord";
+    _post(url, data, onSuccess, onError);
+}
+
 function deleteFuzzyWord(id, onSuccess, onError) {
     var url = "/user/fuzzyWord/deleteFuzzyWord/" + id;
     _delete(url, onSuccess, onError);
