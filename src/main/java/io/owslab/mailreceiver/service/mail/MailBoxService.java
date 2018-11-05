@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -96,6 +97,9 @@ public class MailBoxService {
 
     @Autowired
     private FuzzyWordService fuzzyWordService;
+
+    @Autowired
+    private MatchingConditionService matchingConditionService;
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
@@ -298,7 +302,17 @@ public class MailBoxService {
         if(highlightWordsStr != null) {
             highlightWordsStr = highlightWordsStr.replace("!!", ",");
             List<String> hlWords = Arrays.asList(highlightWordsStr.split(","));
+            List<String> hlWordsFinal = new ArrayList<>();
             for(String highlightWord : hlWords) {
+                if(highlightWord!=null){
+                    hlWordsFinal.add(highlightWord);
+                    String optimizeWord = matchingConditionService.getOptimizedText(highlightWord, false);
+                    if(!highlightWord.equals(optimizeWord)){
+                        hlWordsFinal.add(optimizeWord);
+                    }
+                }
+            }
+            for(String highlightWord : hlWordsFinal) {
                 if(highlightWord != null) {
                     List<String> highLightWords = result.getHighLightWords();
                     List<String> excludeWords = result.getExcludeWords();

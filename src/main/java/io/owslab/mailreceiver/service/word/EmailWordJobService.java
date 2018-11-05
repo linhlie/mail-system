@@ -4,6 +4,7 @@ import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class EmailWordJobService {
 
     @Autowired
     private FuzzyWordService fuzzyWordService;
+
+    @Autowired
+    private MatchingConditionService matchingConditionService;
 
     @Cacheable(key="\"EmailWordJobService:find:\"+#cacheId+'-'+toFind+'-'+spaceEffective")
     private ArrayList<Integer> find(String cacheId, String toSearch, String toFind, boolean spaceEffective){
@@ -116,9 +120,9 @@ public class EmailWordJobService {
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            String optimizeWord = getOptimizedText(word, distinguish);
+            String optimizeWord = matchingConditionService.getOptimizedText(word, distinguish);
             if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), optimizeWord, spaceEffective)){
-                result.addMatchWord(optimizeWord);
+                result.addMatchWord(word);
             }
         }
         return result;
@@ -127,25 +131,12 @@ public class EmailWordJobService {
     public boolean matchingWordEngineer(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         boolean matching = false;
         for(String word : words){
-            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            String optimizeWord = matchingConditionService.getOptimizedText(word, distinguish);
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), optimizeWord, spaceEffective)){
             	return true;
             }
         }
         return matching;
     }
 
-    public String getOptimizedText(String text, boolean distinguish){
-        if(text == null) {
-            text = "";
-        }
-        if(distinguish){
-            return text.toLowerCase();
-        } else {
-            int conv_op_flags = 0;
-            conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
-            conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
-            String japaneseOptimizedText = KanaConverter.convertKana(text, conv_op_flags);
-            return japaneseOptimizedText.toLowerCase();
-        }
-    }
 }
