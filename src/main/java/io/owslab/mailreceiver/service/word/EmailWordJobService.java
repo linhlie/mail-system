@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.word;
 
+import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
@@ -115,8 +116,9 @@ public class EmailWordJobService {
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
-                result.addMatchWord(word);
+            String optimizeWord = getOptimizedText(word, distinguish);
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), optimizeWord, spaceEffective)){
+                result.addMatchWord(optimizeWord);
             }
         }
         return result;
@@ -130,5 +132,20 @@ public class EmailWordJobService {
             }
         }
         return matching;
+    }
+
+    public String getOptimizedText(String text, boolean distinguish){
+        if(text == null) {
+            text = "";
+        }
+        if(distinguish){
+            return text.toLowerCase();
+        } else {
+            int conv_op_flags = 0;
+            conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
+            conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
+            String japaneseOptimizedText = KanaConverter.convertKana(text, conv_op_flags);
+            return japaneseOptimizedText.toLowerCase();
+        }
     }
 }
