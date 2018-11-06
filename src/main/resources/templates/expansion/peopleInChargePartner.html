@@ -1,0 +1,164 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>取引先 担当者管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content partner">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <h4>取引先 担当者管理</h4>
+                        <div class="form-group row">
+                            <div class="col-md-5">
+                                <select id="selectPartner" style="width: 100%;">
+                                    <option value="">取引先一覧</option>
+                                    <option value="">未登録取引先一覧</option>
+                                </select>
+                            </div>
+                            <label id="labelDomain" class="control-label col-md-2 text-left" style="margin-top: 15px;">役 職</label>
+                        </div>
+                        <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative; margin-top: 5px;">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
+                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                <table id="peopleTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                    <thead class="sticky-header">
+                                    <tr>
+                                        <th class="dark">担当者氏名</th>
+                                        <th class="dark">所属部署</th>
+                                        <th class="dark">役職</th>
+                                        <th class="dark">メールアドレス</th>
+                                        <th class="fit dark" style="text-align: center">休止</th>
+                                        <th class="fit dark" style="text-align: center"></th>
+                                        <th class="fit dark" style="text-align: center"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="width: 100%">
+                            <div id="dragbar2" style="margin-top: -10px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
+                            <div style="width: 100%; margin-top: 10px;">
+                                <form id="peopleForm" class="form-horizontal" action="javascript:void(0);">
+                                    <div class="form-group row">
+                                        <label for="lastName" class="control-label col-md-1 text-left">担当者氏名</label>
+                                        <label class="control-label col-md-1 text-right">姓</label>
+                                        <div class="col-md-4">
+                                            <input id="lastName" name="lastName" class="form-control" placeholder="姓">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="firstName" class="control-label col-md-1 text-left" style="visibility: hidden">担当者氏名</label>
+                                        <label class="control-label col-md-1 text-right">名</label>
+                                        <div class="col-md-4">
+                                            <input id="firstName" name="firstName" style="display: inline-block" class="form-control" placeholder="名">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="department" class="control-label col-md-2 text-left">所属部署</label>
+                                        <div class="col-md-6">
+                                            <input id="department" name="department" class="form-control">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="position" class="control-label col-md-2 text-left">役 職</label>
+                                        <div class="col-md-6">
+                                            <input id="position" name="position" class="form-control">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="emailAddress" class="control-label col-md-2 text-left">メールアドレス</label>
+                                        <div class="col-md-6">
+                                            <input id="emailAddress" name="emailAddress" class="form-control">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="col-md-12">
+                                                <label class="checkbox-inline"><input id="emailAddressIncharge" type="checkbox" name="emailAddressIncharge" value=""/>&nbsp;代表メールアドレス</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="numberPhone1" class="control-label col-md-1 text-left">電話番号</label>
+                                        <label  class="control-label col-md-1 text-right" style="font-size: 18px;">①</label>
+                                        <div class="col-md-6">
+                                            <input id="numberPhone1" name="numberPhone1" class="form-control" placeholder="①">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="numberPhone2" class="control-label col-md-1 text-left" style="visibility: hidden">電話番号</label>
+                                        <label  class="control-label col-md-1 text-right" style="font-size: 18px;">②</label>
+                                        <div class="col-md-6">
+                                            <input id="numberPhone2" name="numberPhone2" class="form-control" placeholder="②">
+                                            </input>
+                                            <span class="form-error">..</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="note" class="control-label col-md-2 text-left">特記事項</label>
+                                        <div class="col-md-10">
+                                            <textarea id="note" name="note" class="form-control" placeholder="" type="text"></textarea>
+                                        </div>
+                                        <span class="form-error">..</span>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="pause" class="control-label col-md-2 text-left">休止</label>
+                                        <div class="col-md-10">
+                                            <label class="checkbox-inline"><input id="pause" type="checkbox" name="pause" value=""/>&nbsp;</label>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div style="width: 90%;">
+                                            <button id="peopleAdd" name="peopleAdd" type="button" class="btn btn-success btn-block">登録</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div style="width: 90%;">
+                                            <button id="peopleUpdate" disabled="true" name="peopleUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="checkbox-inline"><input id="checkboxNext" type="checkbox" value=""/>更新後、次の行を編集;</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div style="width: 90%; margin: auto;">
+                                            <button id="peopleClear" name="peopleClear" type="button" class="btn btn-default btn-block">クリア</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/expansion/peopleInChargePartner.js"></script>
+</th:block>
+</body>
+</html>
