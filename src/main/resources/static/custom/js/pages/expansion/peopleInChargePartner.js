@@ -1,6 +1,4 @@
 (function () {
-    var partnerComboBoxId = "partnerComboBox";
-    var partnerIdComboBoxId = "partnerIdComboBox";
 
     var peopleAddBtnId = "#peopleAdd";
     var peopleUpdateBtnId = "#peopleUpdate";
@@ -9,14 +7,17 @@
 
     var peopleTableId = "peopleTable";
     var formId = "#peopleForm";
+    var formPartnerId = "#partnerForm";
 
     var selectPartnerId = "selectPartner";
     var labelDomainId = "labelDomain";
 
-    var partnerGroupTableId = "partnerGroup";
+    var currenntPartnerId;
+    var updatingPeopleId;
+    var listPeopleInChargePartner;
+
     var partners = null;
     var domains = null;
-    var updatingPartnerId = null;
     var selectedSourceTableRow=-1;
     var updatingDomainId = null;
 
@@ -26,10 +27,10 @@
         {type: "input", name: "department"},
         {type: "input", name: "position"},
         {type: "input", name: "emailAddress"},
-        {type: "checkbox", name: "emailAddressIncharge"},
+        {type: "checkbox", name: "emailInChargePartner"},
         {type: "input", name: "numberPhone1"},
         {type: "input", name: "numberPhone2"},
-        {type: "textarea", name: "specialProblem"},
+        {type: "textarea", name: "note"},
         {type: "checkbox", name: "pause"}
     ];
 
@@ -54,17 +55,17 @@
         '</tr>';
 
     var peopleReplaceRow = '<tr role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="department"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="position"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="emailAddress"><span></span></td>' +
+        '<td name="sourceRow" rowspan="1" colspan="1" data="name" style="cursor: pointer"><span></span></td>' +
+        '<td name="sourceRow" rowspan="1" colspan="1" data="department" style="cursor: pointer"><span></span></td>' +
+        '<td name="sourceRow" rowspan="1" colspan="1" data="position" style="cursor: pointer"><span></span></td>' +
+        '<td name="sourceRow" rowspan="1" colspan="1" data="emailAddress" style="cursor: pointer"><span></span></td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="pause">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
         '<td name="deletePeople" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
-        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="emailAddressInCharge">' +
+        '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="emailInChargePartner">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
         '</tr>';
@@ -78,11 +79,11 @@
         setButtonClickListenter(peopleUpdateBtnId, updatePeopleOnClick);
         setButtonClickListenter(peopleClearBtnId, clearPeopleOnClick);
         loadBusinessPartners();
+        draggingSetup();
 
         // companyTypeChangeListener();
         // styleShowTableChangeListener();
         // loadBusinessPartners();
-        // draggingSetup();
         // setVisibleCountDomain("hidden")
     });
 
@@ -102,30 +103,34 @@
         $('#' + selectPartnerId).off('change');
         $('#' + selectPartnerId).change(function() {
             var selected = $(this).find("option:selected");
-            var name = selected.text();
-            var id = selected.attr("data-id");
+            var partnerId = selected.attr("data-id");
             var domain = this.value;
-            console.log(id+"   "+name+"  "+domain);
             $('#' + labelDomainId).text(domain);
+            currenntPartnerId = partnerId;
+            clearFormValidate();
+            clearPeopleOnClick();
+            loadPeopleInChargePartners(partnerId);
         });
     }
 
     function addPeopleOnClick() {
         clearFormValidate();
-        var validated = partnerFormValidate();
+        var validated = formValidate();
         if(!validated) return;
         var data = getFormData();
-        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
+        data.partnerId = currenntPartnerId;
+        console.log(data);
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadBusinessPartners();
-                        clearPartnerOnClick();
+                        loadPeopleInChargePartners(currenntPartnerId);
+                        clearPeopleOnClick();
                     }
                 });
             } else {
+                console.log(response.msg);
                 $.alert("保存に失敗しました");
             }
         }
@@ -133,11 +138,7 @@
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        addPartner({
-            builder: data,
-            groupAddIds: addRemoveGroupPartnerIds.add,
-            groupRemoveIds: addRemoveGroupPartnerIds.remove,
-        }, onSuccess, onError)
+        addPeopleInChargePartner(data, onSuccess, onError)
     }
 
     function getFormData() {
@@ -174,17 +175,19 @@
 
     function updatePeopleOnClick() {
         clearFormValidate();
-        var validated = partnerFormValidate();
+        var validated = formValidate();
         if(!validated) return;
         var data = getFormData();
-        var addRemoveGroupPartnerIds = getAddRemoveGroupPartnerIds();
+        data.partnerId = currenntPartnerId;
+        data.id = updatingPeopleId;
+        console.log(data);
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadBusinessPartners(selectNextRow);
+                        loadPeopleInChargePartners(currenntPartnerId);
                     }
                 });
             } else {
@@ -196,19 +199,10 @@
             $.alert("保存に失敗しました");
         }
 
-        updatePartner(
-            updatingPartnerId,
-            {
-                builder: data,
-                groupAddIds: addRemoveGroupPartnerIds.add,
-                groupRemoveIds: addRemoveGroupPartnerIds.remove,
-            },
-            onSuccess,
-            onError
-        );
+        updatePeopleInChargePartner(data, onSuccess, onError);
     }
 
-    function pFormValidate() {
+    function formValidate() {
         var validate1 = lastNameValidate();
         var validate2 = firstNameValidate();
         var validate3 = departmentValidate();
@@ -216,7 +210,8 @@
         var validate5 = emailAddressValidate();
         var validate6 = numberphone1Validate();
         var validate7 = numberphone2Validate();
-        return validate1 && validate2 && validate3 && validate4 && validate5 && validate6 && validate7;
+        var validate8 = partnerValidate();
+        return validate1 && validate2 && validate3 && validate4 && validate5 && validate6 && validate7 && validate8;
     }
 
 
@@ -263,18 +258,24 @@
     }
 
     function emailAddressValidate() {
-        var input = $("input[name='position']");
-        if(!input.val()) {
+        var input = $("input[name='emailAddress']");
+        var vaulue = input.val();
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if(!vaulue) {
             showError.apply(input, ["必要"]);
             return false;
-        }else{
-            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(input).toLowerCase());
         }
+
+        if(!re.test(String(vaulue).toLowerCase())){
+            showError.apply(input, ["email invalid"]);
+            return false;
+        }
+        return true;
     }
 
     function numberphone1Validate() {
-        var input = $("input[name='position']");
+        var input = $("input[name='numberPhone1']");
         if(!input.val()) {
             showError.apply(input, ["必要"]);
             return false;
@@ -283,7 +284,7 @@
     }
 
     function numberphone2Validate() {
-        var input = $("input[name='position']");
+        var input = $("input[name='numberPhone2']");
         if(!input.val()) {
             showError.apply(input, ["必要"]);
             return false;
@@ -291,23 +292,29 @@
         return true;
     }
 
+    function partnerValidate() {
+        var input = $("#partnerError");
+        if(!currenntPartnerId) {
+            showError.apply(input, ["You must select business partner"]);
+            return false;
+        }
+        return true;
+    }
 
     function clearPeopleOnClick() {
         resetForm();
         clearFormValidate();
-        disableUpdatePartner(true);
-        updateCompanySpecificType();
-        clearUpdatingParterId();
-        loadBusinessPartnerGroupData(partnerGroupTableId, []);
-        resetPartnerTable();
+        disableUpdatePeople(true);
+        updatingPeopleId = null;
+        resetPeopleTable();
     }
 
-    function resetPartnerTable() {
-        $("#" + partnerTableId).find('tr.highlight-selected').removeClass('highlight-selected');
+    function resetPeopleTable() {
+        $("#" + peopleTableId).find('tr.highlight-selected').removeClass('highlight-selected');
     }
 
     function clearUpdatingParterId() {
-        updatingPartnerId = null;
+        updatingPeopleId = null;
     }
 
     function resetForm() {
@@ -316,6 +323,7 @@
 
     function clearFormValidate() {
         $(formId).find(".has-error").removeClass('has-error');
+        $(formPartnerId).find(".has-error").removeClass('has-error');
     }
 
     function loadBusinessPartners() {
@@ -330,6 +338,21 @@
             console.log(error);
         }
         getBusinessPartnersForPeopleInCharge(onSuccess, onError);
+    }
+
+    function loadPeopleInChargePartners(partnerId){
+        function onSuccess(response) {
+            if(response && response.status){
+                console.log(response.list);
+                setDataTablePeople(response.list);
+                clearPeopleOnClick();
+            }
+        }
+
+        function onError(error) {
+            console.log(error);
+        }
+        getPeopleInChargePartners(partnerId, onSuccess, onError);
     }
 
     function setDataComboboxPartner(options) {
@@ -352,35 +375,55 @@
         });
     }
 
-    function loadBusinessPartnersData(tableId, data) {
-        partners = data;
-        removeAllRow(tableId, partnerReplaceRow);
-        if (partners.length > 0) {
-            var html = partnerReplaceRow;
-            for (var i = 0; i < partners.length; i++) {
-                html = html + addRowWithData(tableId, data[i], i);
+    function setDataTablePeople(listPeople) {
+        listPeopleInChargePartner = listPeople;
+        removeAllRow(peopleTableId, peopleReplaceRow);
+        if (listPeople.length > 0) {
+            var html = peopleReplaceRow;
+            for (var i = 0; i < listPeople.length; i++) {
+                html = html + addRowWithData(peopleTableId, listPeople[i], i);
             }
-            $("#" + tableId + "> thead").html(partnerReplaceHead);
-            $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deletePartner", function () {
+            $("#" + peopleTableId + "> thead").html(peopleReplaceHead);
+            $("#" + peopleTableId + "> tbody").html(html);
 
+            setRowClickListener("deletePeople", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                var rowData = partners[index];
+                var rowData = listPeopleInChargePartner[index];
                 if (rowData && rowData.id) {
-                    doDeletePartner(rowData.id);
+                    doDeletePeople(rowData.id);
                 }
             });
-            setRowClickListener("editPartner", function () {
+
+            setRowClickListener("sourceRow", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 selectedSourceTableRow = parseInt(index) + 1;
-                var rowData = partners[index];
+                var rowData = listPeopleInChargePartner[index];
                 if (rowData && rowData.id) {
-                    selectedRow($('#' + partnerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
-                    doEditPartner(rowData);
+                    function onSuccess(response) {
+                        if(response && response.status) {
+                            if(response.list && response.list.length > 0) {
+                                var data = response.list[0];
+                                updatingPeopleId = data.id;
+                                selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                                doEditPeople(data);
+                            } else {
+                                $.alert("the people doesn't esxit");
+                            }
+                        } else {
+                            $.alert("unload infor the people");
+                        }
+                    }
+
+                    function onError() {
+                        $.alert("unload infor the people");
+                    }
+                    getDetailPeopleInChargePartner(rowData.id, onSuccess, onError);
                 }
             });
+        }else{
+            $.alert("Don't have the people in charge of this partner");
         }
     }
 
@@ -399,18 +442,16 @@
         var cells = row.cells;
         for (var i = 0; i < cells.length; i++) {
             var cell = cells.item(i);
-            var cellKeysData = cell.getAttribute("data");
-            if (!cellKeysData || cellKeysData.length == 0) continue;
-            var cellKeys = cellKeysData.split(".");
+            var cellKey = cell.getAttribute("data");
+            if (!cellKey) continue;
             var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
             if (cellNode) {
-                if (cellNode.nodeName == "SPAN") {
-                    var cellData = cellKeys.length == 2 ? (data[cellKeys[0]] ? data[cellKeys[0]][cellKeys[1]] : undefined) : data[cellKeys[0]];
-                    if (Array.isArray(cellData)) {
-                        cellNode.textContent = cellData.length;
-                    } else {
-                        cellNode.textContent = cellData;
-                    }
+                if(cellNode.nodeName == "IMG") {
+                    var cellData = data[cellKey];
+                    cellNode.className = !!cellData ? undefined : cellNode.className;
+                } else if (cellNode.nodeName == "SPAN") {
+                    var cellData = data[cellKey];
+                    cellNode.textContent = cellData;
                 }
             }
         }
@@ -426,23 +467,22 @@
         })
     }
 
-    function doDeletePartner(id) {
+    function doDeletePeople(id) {
         function onSuccess() {
-            loadBusinessPartners();
-            clearPartnerOnClick();
+            loadPeopleInChargePartners(currenntPartnerId);
         }
         function onError() {
-            $.alert("取引先の削除に失敗しました。");
+            $.alert("can't delete");
         }
         $.confirm({
-            title: '<b>【取引先の削除】</b>',
+            title: '<b>【Delete peopple】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">do you want to delete it？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
                     action: function(){
-                        deletePartner(id, onSuccess, onError);
+                        deletePeopleInChargePartner(id, onSuccess, onError);
                     }
                 },
                 cancel: {
@@ -453,65 +493,23 @@
         });
     }
 
-    function doEditPartner(data) {
+    function doEditPeople(data) {
+        console.log(data);
         clearFormValidate();
-        updatingPartnerId = data.id;
-        loadBusinessPartnerGroup(data.id);
-        disableUpdatePartner(false);
+        disableUpdatePeople(false);
         setFormData(data);
-        updateCompanySpecificType(data.companyType);
-
     }
 
     function doEditDomain(data) {
         clearFormValidate();
         updatingDomainId = data.id;
-        disableUpdatePartner(false);
+        disableUpdatePeople(false);
         setFormDomainUpdate(data);
     }
 
-    function loadBusinessPartnerGroup(partnerId) {
-        function onSuccess(response) {
-            if(response && response.status) {
-                loadBusinessPartnerGroupData(partnerGroupTableId, response.list);
-            }
-        }
-        function onError() {}
 
-        getBusinessPartnerGroup(partnerId, onSuccess, onError);
-    }
-
-    function loadBusinessPartnerGroupData(tableId, data) {
-        removeAllRow(tableId, groupReplaceRow);
-        if (data.length > 0) {
-            var html = groupReplaceRow;
-            for (var i = 0; i < data.length; i++) {
-                html = html + addRowWithData(tableId, data[i].withPartner, i);
-            }
-            $("#" + tableId + "> tbody").html(html);
-            setDeleteGroupPartnerListener();
-        }
-        addPartnerComboBox();
-        updatePartnerComboBox(partners);
-        partnerComboBoxListener();
-        partnerIdComboBoxListener();
-    }
-
-    function setDeleteGroupPartnerListener() {
-        setRowClickListener("deleteGroupPartner", function () {
-            //TODO:
-            var tr = $(this).closest('tr');
-            var type = tr.attr("data-type");
-            if(type == GroupPartnerRowTypes.NEW) {
-                tr.remove();
-            } else if (type == GroupPartnerRowTypes.ORIGINAL) {
-                tr.addClass("hidden");
-            }
-        });
-    }
-
-    function disableUpdatePartner(disable) {
-        $(partnerUpdateBtnId).prop('disabled', disable);
+    function disableUpdatePeople(disable) {
+        $(peopleUpdateBtnId).prop('disabled', disable);
     }
 
     function disableAddPartner(disable) {
@@ -594,7 +592,7 @@
 
             var type = $(styleShowTableId + ' option:selected').text();
             if(type == '取引先一覧'){
-                doEditPartner(rowData);
+                doEditPeople(rowData);
             }
 
             if(type == '未登録取引先一覧'){

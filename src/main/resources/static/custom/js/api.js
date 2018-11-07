@@ -151,11 +151,6 @@ function getBusinessPartners(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {
-    var url = "/expansion/peopleInChargePartner/getPartners";
-    _get(url, onSuccess, onError);
-}
-
 function getBusinessPartnersForEngineer(onSuccess, onError) {
     var url = "/expansion/engineer/partnerList";
     _get(url, onSuccess, onError);
@@ -282,7 +277,6 @@ function deleteBulletinBoard(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
-
 function updateBulletinBoardPosition(data, onSuccess, onError){
     var url = "/user/dashboard/updateBulletinPosition";
     _post(url, data, onSuccess, onError);
@@ -348,6 +342,38 @@ function getInforPartnerAPI(data, onSuccess, onError) {
         success: onSuccess,
         error: onError
     });
+}
+
+
+function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/getPartners";
+    _get(url, onSuccess, onError);
+}
+
+
+function getPeopleInChargePartners(partnerId, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/getPeopleInChargePartners/" + partnerId;
+    _get(url, onSuccess, onError);
+}
+
+function getDetailPeopleInChargePartner(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/info/" + id;
+    _get(url, onSuccess, onError);
+}
+
+function addPeopleInChargePartner(data, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updatePeopleInChargePartner(data, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/edit";
+    _post(url, data, onSuccess, onError);
+}
+
+function deletePeopleInChargePartner(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/delete/" + id;
+    _delete(url, onSuccess, onError);
 }
 
 function _doDownload(href){

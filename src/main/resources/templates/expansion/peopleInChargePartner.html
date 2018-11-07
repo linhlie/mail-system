@@ -11,15 +11,16 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>取引先 担当者管理</h4>
+                        <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
                         <div class="form-group row">
                             <div class="col-md-5">
                                 <select id="selectPartner" style="width: 100%;">
-                                    <option value="">取引先一覧</option>
-                                    <option value="">未登録取引先一覧</option>
                                 </select>
+                                <span id="partnerError" class="form-error">..</span>
                             </div>
-                            <label id="labelDomain" class="control-label col-md-2 text-left" style="margin-top: 15px;">役 職</label>
+                            <label id="labelDomain" class="control-label col-md-2 text-left" style="margin-top: 15px;"></label>
                         </div>
+                        </form>
                         <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative; margin-top: 5px;">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
@@ -88,7 +89,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="col-md-12">
-                                                <label class="checkbox-inline"><input id="emailAddressIncharge" type="checkbox" name="emailAddressIncharge" value=""/>&nbsp;代表メールアドレス</label>
+                                                <label class="checkbox-inline"><input id="emailInChargePartner" type="checkbox" name="emailInChargePartner" value=""/>&nbsp;代表メールアドレス</label>
                                             </div>
                                         </div>
                                     </div>
