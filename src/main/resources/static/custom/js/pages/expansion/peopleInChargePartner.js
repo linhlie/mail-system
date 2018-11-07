@@ -15,11 +15,7 @@
     var currenntPartnerId;
     var updatingPeopleId;
     var listPeopleInChargePartner;
-
-    var partners = null;
-    var domains = null;
     var selectedSourceTableRow=-1;
-    var updatingDomainId = null;
 
     var formFields = [
         {type: "input", name: "lastName"},
@@ -33,16 +29,6 @@
         {type: "textarea", name: "note"},
         {type: "checkbox", name: "pause"}
     ];
-
-    var CompanyTypes = {
-        LTD: 1,
-        LIMITED: 2,
-        GROUP: 3,
-        JOINT_STOCK: 4,
-        FOUNDATION: 5,
-        CORPORATION: 6,
-        OTHER: 7,
-    };
 
     var peopleReplaceHead = '<tr> ' +
         '<th class="dark">担当者氏名</th>' +
@@ -74,17 +60,11 @@
     $(function () {
         initStickyHeader();
         partnerComboBoxListener();
-        // partnerIdComboBoxListener();
         setButtonClickListenter(peopleAddBtnId, addPeopleOnClick);
         setButtonClickListenter(peopleUpdateBtnId, updatePeopleOnClick);
         setButtonClickListenter(peopleClearBtnId, clearPeopleOnClick);
         loadBusinessPartners();
         draggingSetup();
-
-        // companyTypeChangeListener();
-        // styleShowTableChangeListener();
-        // loadBusinessPartners();
-        // setVisibleCountDomain("hidden")
     });
 
     function initStickyHeader() {
@@ -130,8 +110,7 @@
                     }
                 });
             } else {
-                console.log(response.msg);
-                $.alert("保存に失敗しました");
+                $.alert(response.msg);
             }
         }
 
@@ -187,7 +166,7 @@
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadPeopleInChargePartners(currenntPartnerId);
+                        loadPeopleInChargePartners(currenntPartnerId, selectNextRow);
                     }
                 });
             } else {
@@ -313,10 +292,6 @@
         $("#" + peopleTableId).find('tr.highlight-selected').removeClass('highlight-selected');
     }
 
-    function clearUpdatingParterId() {
-        updatingPeopleId = null;
-    }
-
     function resetForm() {
         $(formId).trigger("reset");
     }
@@ -329,7 +304,7 @@
     function loadBusinessPartners() {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
+                // console.log(response.list);
                 setDataComboboxPartner(response.list);
             }
         }
@@ -340,12 +315,15 @@
         getBusinessPartnersForPeopleInCharge(onSuccess, onError);
     }
 
-    function loadPeopleInChargePartners(partnerId){
+    function loadPeopleInChargePartners(partnerId, callback){
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
+                // console.log(response.list);
                 setDataTablePeople(response.list);
                 clearPeopleOnClick();
+            }
+            if(typeof callback == 'function'){
+                callback(response.list);
             }
         }
 
@@ -405,7 +383,6 @@
                         if(response && response.status) {
                             if(response.list && response.list.length > 0) {
                                 var data = response.list[0];
-                                updatingPeopleId = data.id;
                                 selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                                 doEditPeople(data);
                             } else {
@@ -494,41 +471,16 @@
     }
 
     function doEditPeople(data) {
-        console.log(data);
+        // console.log(data);
+        updatingPeopleId = data.id;
         clearFormValidate();
         disableUpdatePeople(false);
         setFormData(data);
     }
 
-    function doEditDomain(data) {
-        clearFormValidate();
-        updatingDomainId = data.id;
-        disableUpdatePeople(false);
-        setFormDomainUpdate(data);
-    }
-
 
     function disableUpdatePeople(disable) {
         $(peopleUpdateBtnId).prop('disabled', disable);
-    }
-
-    function disableAddPartner(disable) {
-        $(partnerAddBtnId).prop('disabled', disable);
-    }
-
-    function companyTypeChangeListener() {
-        $("input[name='companyType']").click(function() {
-            updateCompanySpecificType(this.value);
-        });
-    }
-
-    function updateCompanySpecificType(companyType) {
-        var input = $("#companySpecificType");
-        if(parseInt(companyType) == CompanyTypes.OTHER) {
-            input.css('visibility', 'visible');
-        } else {
-            input.css('visibility', 'hidden');
-        }
     }
 
     function draggingSetup() {
@@ -570,188 +522,48 @@
     }
 
     function selectNextRow(data){
+        console.log(data);
         if ($(checkboxNextSelectId).is(":checked")){
-            var type = $(styleShowTableId + ' option:selected').text();
-            if(type == '取引先一覧'){
-                selectedSourceTableRow = selectedSourceTableRow+1;
-            }
+            selectedSourceTableRow = selectedSourceTableRow+1;
             selectNext(selectedSourceTableRow, data);
         }else{
-            clearPartnerOnClick();
+            clearPeopleOnClick();
         }
     }
 
     function selectNext(index, data) {
+        console.log(index+" "+data.length);
         if(index>data.length) {
             $.alert("最終行まで更新しました");
-            clearPartnerOnClick();
+            clearPeopleOnClick();
         } else {
-            var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
+            var row = $('#' + peopleTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
             var rowData = data[index-1];
 
-            var type = $(styleShowTableId + ' option:selected').text();
-            if(type == '取引先一覧'){
-                doEditPeople(rowData);
+            function onSuccess(response) {
+                if(response && response.status) {
+                    if(response.list) {
+                        var data = response.list[0];
+                        doEditPeople(data);
+                    } else {
+                        $.alert("people doesn't esxit");
+                    }
+                } else {
+                    $.alert("unload the people");
+                }
             }
 
-            if(type == '未登録取引先一覧'){
-                doEditDomain(rowData);
+            function onError() {
+                $.alert("unload the people");
             }
+            getDetailPeopleInChargePartner(rowData.id, onSuccess, onError);
+
         }
     }
 
     function selectedRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
-    }
-
-    function styleShowTableChangeListener(){
-        $(styleShowTableId).change(function(){
-            $("#" + partnerTableId).parent().scrollTop(0);
-            var type = $(styleShowTableId + ' option:selected').text();
-            //Show list partner table
-            if(type == '取引先一覧'){
-                disableAddPartner(false);
-                loadBusinessPartners();
-                clearPartnerOnClick();
-                setVisibleCountDomain("hidden")
-            }
-
-            //Show list domainUnregister table
-            if(type == '未登録取引先一覧'){
-                disableAddPartner(true);
-                loadDomainUnregisters();
-                clearPartnerOnClick();
-            }
-
-        });
-    }
-
-    function setVisibleCountDomain(visibility){
-        $(countDomain).css('visibility', visibility);
-    }
-
-    function loadDomainUnregisters(callback) {
-        function onSuccess(response) {
-            if(response && response.status){
-                loadDomainUnregisterData(partnerTableId, response.list);
-            }
-            if(typeof callback == 'function'){
-                callback(response.list);
-            }
-        }
-
-        function onError(error) {
-
-        }
-        getDomainUnregisters(onSuccess, onError);
-
-
-        function onSuccessPartner(response) {
-            if(response && response.status){
-                updatePartnerComboBox(response.list);
-            }
-        }
-
-        function onErrorPartner(error) {
-
-        }
-        getBusinessPartners(onSuccessPartner, onErrorPartner);
-    }
-
-    function loadDomainUnregisterData(tableId, data) {
-        domains = data;
-        $(countDomain).html("<u>未登録の取引先が"+data.length+"件あります</u>");
-        setVisibleCountDomain("visible")
-        removeAllRow(tableId, domainReplaceRow);
-        if (domains.length > 0) {
-            var html = partnerReplaceRow;
-            for (var i = 0; i < domains.length; i++) {
-                html = html + addRowWithData(tableId, data[i], i);
-            }
-            $("#" + tableId + "> thead").html(domainReplaceHead);
-            $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deleteDomain", function () {
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                var rowData = domains[index];
-                if (rowData && rowData.id) {
-                    doDeleteDomain(rowData.id);
-                }
-            });
-            setRowClickListener("avoidRegister", function () {
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                var rowData = domains[index];
-                if (rowData && rowData.id) {
-                    avoidRegister(rowData.id);
-                }
-            });
-            setRowClickListener("editDomain", function () {
-                var row = $(this)[0].parentNode;
-                var index = row.getAttribute("data");
-                selectedSourceTableRow = parseInt(index) + 1;
-                var rowData = domains[index];
-                if (rowData && rowData.id) {
-                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-                    doEditDomain(rowData);
-                }
-            });
-        }
-    }
-
-    function doDeleteDomain(id) {
-        function onSuccess() {
-            loadDomainUnregisters()
-            clearPartnerOnClick();
-        }
-        function onError() {
-            $.alert("取引先の削除に失敗しました。");
-        }
-        $.confirm({
-            title: '',
-            titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
-            buttons: {
-                confirm: {
-                    text: 'はい',
-                    action: function(){
-                        deleteDomain(id, onSuccess, onError);
-                    }
-                },
-                cancel: {
-                    text: 'いいえ',
-                    action: function(){}
-                },
-            }
-        });
-    }
-
-    function avoidRegister(id) {
-        function onSuccess() {
-            loadDomainUnregisters()
-            clearPartnerOnClick();
-        }
-        function onError() {
-            $.alert("取引先の削除に失敗しました。");
-        }
-        $.confirm({
-            title: '',
-            titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">本当にこのドメインを無視しますか？<br/></div>',
-            buttons: {
-                confirm: {
-                    text: 'はい',
-                    action: function(){
-                        avoidRegisterDomain(id, onSuccess, onError);
-                    }
-                },
-                cancel: {
-                    text: 'いいえ',
-                    action: function(){}
-                },
-            }
-        });
     }
 
 })(jQuery);
