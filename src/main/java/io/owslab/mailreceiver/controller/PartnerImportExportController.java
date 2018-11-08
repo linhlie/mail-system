@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,9 @@ public class PartnerImportExportController {
 
     @Autowired
     private EngineerService engineerService;
+
+    @Autowired
+    private PeopleInChargePartnerService peopleInChargePartnerService;
 
     @RequestMapping(value = { "/partnerImportExport" }, method = RequestMethod.GET)
     public String getPartnerImportExport(Model model, HttpServletRequest request) {
@@ -117,6 +121,22 @@ public class PartnerImportExportController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("importEngineer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/importPeopleInChargePartners")
+    @ResponseBody
+    public ResponseEntity<?> importPeopleInChargePartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header, @RequestParam(value = "deleteOld") boolean deleteOld) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<ImportLogDTO> importLogs = peopleInChargePartnerService.importPeopleinChargePartner(file, header, deleteOld);
+            result.setMsg("done");
+            result.setList(importLogs);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("importPeopleInChargePartner: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
