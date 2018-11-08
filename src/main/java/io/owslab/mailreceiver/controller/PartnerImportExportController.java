@@ -53,13 +53,16 @@ public class PartnerImportExportController {
     @RequestMapping(value = "/exportCSV", method = RequestMethod.GET)
     public void exportPartnerCSV(HttpServletResponse response, @RequestParam(value = "header") boolean header, @RequestParam(value = "type") String type) throws IOException {
         response.setContentType("text/csv");
-        CSVBundle csvBundle;
-        if(type.equals("groupPartner")) {
-            csvBundle = partnerService.exportGroups();
-        } else if (type.equals("engineer")) {
-            csvBundle = engineerService.export();
-        }else {
-            csvBundle = partnerService.export();
+        CSVBundle csvBundle = null;
+        switch (type){
+            case "groupPartner": csvBundle = partnerService.exportGroups();
+                break;
+            case "engineer": csvBundle = engineerService.export();
+                break;
+            case "peopleInChargePartner": csvBundle = peopleInChargePartnerService.export();
+                break;
+                default: csvBundle = partnerService.export();
+                    break;
         }
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(csvBundle.getFileName(), "UTF-8"));
         response.setCharacterEncoding("SHIFT_JIS");

@@ -7,6 +7,7 @@ import io.owslab.mailreceiver.dto.PeopleInChargePartnerDTO;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.service.file.UploadFileService;
+import io.owslab.mailreceiver.utils.CSVBundle;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
@@ -27,6 +28,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @CacheConfig(cacheNames = "short_term_matching")
@@ -107,14 +110,39 @@ public class PeopleInChargePartnerService {
         }
     }
 
+    private List<CSVPeopleInChargePartnerDTO> getPeopleInChargePartnersToExport() {
+        List<CSVPeopleInChargePartnerDTO> result = new ArrayList<>();
+        List<PeopleInChargePartner> peopleInChargePartners = peopleInChargePartnerDAO.findAll();
+        for(PeopleInChargePartner people : peopleInChargePartners) {
+            BusinessPartner partner = partnerService.findOne(people.getPartnerId());
+            if(partner != null) {
+                result.add(new CSVPeopleInChargePartnerDTO(people, partner));
+            }
+        }
+        return result;
+    }
+
+    public CSVBundle<CSVPeopleInChargePartnerDTO> export() {
+        CSVBundle<CSVPeopleInChargePartnerDTO> csvBundle = new CSVBundle<CSVPeopleInChargePartnerDTO>();
+        csvBundle.setFileName("担当者.csv");
+        String[] csvHeader = { "所属企業", "ドメイン", "担当者氏姓", "担当者氏名", "所属部署", "役職", "メールアドレス", "代表メールアドレス", "電話番号1", "電話番号2", "特記事項", "休止"};
+        String[] keys = { "partnerCode", "domainPartner", "lastName", "firstName", "department", "position", "emailAddress", "emailInChargePartner", "numberPhone1", "numberPhone2", "note", "pause"};
+        csvBundle.setHeaders(csvHeader);
+        csvBundle.setKeys(keys);
+        List<CSVPeopleInChargePartnerDTO> data = getPeopleInChargePartnersToExport();
+        csvBundle.setData(data);
+        return csvBundle;
+    }
+
     boolean checkValidateEmail(String emailAddress){
-        String pattern = "/^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/";
-        return emailAddress.matches(pattern);
+        Pattern pattern = Pattern.compile("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(emailAddress);
+        return matcher.matches();
     }
 
     public boolean checkValidateNumberPhone(String numberPhone){
-        String pattern1 = "/^\\+\\d+$/";
-        String pattern2 = "/^\\d+$/";
+        String pattern1 = "^\\+\\d+$";
+        String pattern2 = "^\\d+$";
         if(numberPhone.matches(pattern1) || numberPhone.matches(pattern2)){
             return true;
         }
@@ -216,7 +244,17 @@ public class PeopleInChargePartnerService {
                     BusinessPartner existPartner = partnerService.findOneByPartnerCode(partnerCode);
                     if(existPartner != null) {
                         PeopleInChargePartner people = csvPeopleDTO.build(existPartner);
-                        peopleInChargePartnerDAO.save(people);
+                        try {
+                            System.out.println(people.getLastName()+"  "+people.isEmailInChargePartner());
+                            peopleInChargePartnerDAO.save(people);
+                        }catch (Exception e){
+                            String type = "【担当者インポート】";
+                            int lineIndex = skipHeader ? line + 2 : line + 1;
+                            String info = "担当者氏名 " + Objects.toString(lastName+"　"+firstName, "");
+                            String detail = e.getMessage();
+                            ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
+                            importLogs.add(importLog);
+                        }
                     } else {
                         String type = "【担当者インポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;
