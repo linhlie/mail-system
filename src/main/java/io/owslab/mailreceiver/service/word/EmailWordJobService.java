@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.word;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,9 @@ public class EmailWordJobService {
 
     @Autowired
     private FuzzyWordService fuzzyWordService;
+
+    @Autowired
+    private MatchingConditionService matchingConditionService;
 
     @Cacheable(key="\"EmailWordJobService:find:\"+#cacheId+'-'+toFind+'-'+spaceEffective")
     private ArrayList<Integer> find(String cacheId, String toSearch, String toFind, boolean spaceEffective){
@@ -113,7 +117,8 @@ public class EmailWordJobService {
     public MatchingWordResult matchWords(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         MatchingWordResult result = new MatchingWordResult(email);
         for(String word : words){
-            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            String optimizeWord = matchingConditionService.getOptimizedText(word, distinguish);
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), optimizeWord, spaceEffective)){
                 result.addMatchWord(word);
             }
         }
@@ -123,7 +128,8 @@ public class EmailWordJobService {
     public boolean matchingWordEngineer(Email email, List<String> words, boolean spaceEffective, boolean distinguish){
         boolean matching = false;
         for(String word : words){
-            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), word, spaceEffective)){
+            String optimizeWord = matchingConditionService.getOptimizedText(word, distinguish);
+            if(matchWordOR(email.getMessageId(), email.getOptimizedText(distinguish), optimizeWord, spaceEffective)){
             	return true;
             }
         }

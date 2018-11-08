@@ -68,7 +68,6 @@ public class StatisticController {
         model.addAttribute("numberOfMessage", numberOfMessage);
         int matchingCount = matchingConditionService.getMatchingCount();
         model.addAttribute("matchingCount", matchingCount);
-        logger.info("user/statistic");
         return "user/statistic/statistic";
     }
 
