@@ -182,13 +182,11 @@ public class CSVPeopleInChargePartnerDTO {
         people.setPosition(this.position);
         people.setEmailAddress(this.emailAddress);
         boolean emailInCharge = this.emailInChargePartner.equalsIgnoreCase("TRUE");
-        System.out.println(this.lastName+"  "+this.emailInChargePartner+"  "+emailInCharge);
         people.setEmailInChargePartner(emailInCharge);
         people.setNumberPhone1(this.numberPhone1);
         people.setNumberPhone2(this.numberPhone2);
         people.setNote(this.note);
         boolean pause = this.pause.equalsIgnoreCase("TRUE");
-        people.setEmailInChargePartner(pause);
         people.setPause(pause);
         people.setPartnerId(partner.getId());
         return people;

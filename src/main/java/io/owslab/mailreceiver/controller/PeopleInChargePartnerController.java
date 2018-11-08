@@ -61,9 +61,7 @@ public class PeopleInChargePartnerController {
     public ResponseEntity<?> getPeopleInChargePartners(@PathVariable("partnerId") long partnerId) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            logger.info("Partner id :"+partnerId);
             List<PeopleInChargePartnerDTO> listPeole = peopleInChargePartnerService.getByPartnerId(partnerId);
-            logger.info("listPeole :"+listPeole.size());
             result.setList(listPeole);
             result.setMsg("done");
             result.setStatus(true);

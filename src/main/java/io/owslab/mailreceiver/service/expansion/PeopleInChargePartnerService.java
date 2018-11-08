@@ -245,7 +245,6 @@ public class PeopleInChargePartnerService {
                     if(existPartner != null) {
                         PeopleInChargePartner people = csvPeopleDTO.build(existPartner);
                         try {
-                            System.out.println(people.getLastName()+"  "+people.isEmailInChargePartner());
                             peopleInChargePartnerDAO.save(people);
                         }catch (Exception e){
                             String type = "【担当者インポート】";
