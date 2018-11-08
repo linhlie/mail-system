@@ -255,8 +255,16 @@
 
     function numberphone1Validate() {
         var input = $("input[name='numberPhone1']");
-        if(!input.val()) {
+        var vaulue = input.val();
+        var reg1 = /^\+\d+$/;
+        var reg2 = /^\d+$/;
+        if(!vaulue) {
             showError.apply(input, ["必要"]);
+            return false;
+        }
+
+        if(!reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
+            showError.apply(input, ["number phone invalid"]);
             return false;
         }
         return true;
@@ -264,8 +272,12 @@
 
     function numberphone2Validate() {
         var input = $("input[name='numberPhone2']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
+        var vaulue = input.val();
+        var reg1 = /^\+\d+$/;
+        var reg2 = /^\d+$/;
+
+        if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
+            showError.apply(input, ["number phone invalid"]);
             return false;
         }
         return true;
