@@ -1,14 +1,9 @@
 package io.owslab.mailreceiver.dto;
 
-import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
-import io.owslab.mailreceiver.utils.Utils;
 
 import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by khanhlvb on 9/5/18.
@@ -174,20 +169,28 @@ public class CSVPeopleInChargePartnerDTO {
         return sb.toString();
     }
 
-    public PeopleInChargePartner build(BusinessPartner partner) throws EngineerFieldValidationException {
+    public PeopleInChargePartner build(BusinessPartner partner){
         PeopleInChargePartner people = new PeopleInChargePartner();
         people.setLastName(this.lastName);
         people.setFirstName(this.firstName);
         people.setDepartment(this.department);
         people.setPosition(this.position);
         people.setEmailAddress(this.emailAddress);
-        boolean emailInCharge = this.emailInChargePartner.equalsIgnoreCase("TRUE");
-        people.setEmailInChargePartner(emailInCharge);
+        if(this.emailInChargePartner == null){
+            people.setEmailInChargePartner(false);
+        }else{
+            boolean emailInCharge = this.emailInChargePartner.equalsIgnoreCase("TRUE");
+            people.setEmailInChargePartner(emailInCharge);
+        }
         people.setNumberPhone1(this.numberPhone1);
         people.setNumberPhone2(this.numberPhone2);
         people.setNote(this.note);
-        boolean pause = this.pause.equalsIgnoreCase("TRUE");
-        people.setPause(pause);
+        if(this.pause == null){
+            people.setPause(false);
+        }else{
+            boolean pause = this.pause.equalsIgnoreCase("TRUE");
+            people.setPause(pause);
+        }
         people.setPartnerId(partner.getId());
         return people;
     }

@@ -17,7 +17,13 @@ public class PeopleInChargePartnerDTO {
 
     public PeopleInChargePartnerDTO(PeopleInChargePartner people){
         this.id = people.getId();
-        this.name = people.getLastName()+"　"+people.getFirstName();
+        if(people.getLastName() == null){
+            this.name =  people.getFirstName();
+        }else if(people.getFirstName() == null){
+            this.name = people.getLastName();
+        }else{
+            this.name = people.getLastName()+"　"+people.getFirstName();
+        }
         this.department = people.getDepartment();
         this.position = people.getPosition();
         this.emailAddress = people.getEmailAddress();

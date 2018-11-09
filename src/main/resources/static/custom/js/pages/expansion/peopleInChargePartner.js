@@ -36,8 +36,8 @@
         '<th class="dark">役職</th>' +
         '<th class="dark">メールアドレス</th>' +
         '<th class="fit dark" style="text-align: center">休止</th>' +
-        '<th class="fit dark" style="text-align: center"></th>' +
-        '<th class="fit dark" style="text-align: center"></th>' +
+        '<th class="fit dark" style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>' +
+        '<th class="fit dark" style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>' +
         '</tr>';
 
     var peopleReplaceRow = '<tr role="row" class="hidden">' +
@@ -46,13 +46,13 @@
         '<td name="sourceRow" rowspan="1" colspan="1" data="position" style="cursor: pointer"><span></span></td>' +
         '<td name="sourceRow" rowspan="1" colspan="1" data="emailAddress" style="cursor: pointer"><span></span></td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="pause">' +
-        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/dot.png">' +
         '</td>' +
         '<td name="deletePeople" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="emailInChargePartner">' +
-        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/dot.png">' +
         '</td>' +
         '</tr>';
 
@@ -177,15 +177,9 @@
     }
 
     function formValidate() {
-        var validate1 = lastNameValidate();
-        var validate2 = firstNameValidate();
-        var validate3 = departmentValidate();
-        var validate4 = positionValidate();
         var validate5 = emailAddressValidate();
-        var validate6 = numberphone1Validate();
-        var validate7 = numberphone2Validate();
         var validate8 = partnerValidate();
-        return validate1 && validate2 && validate3 && validate4 && validate5 && validate6 && validate7 && validate8;
+        return validate5 && validate8;
     }
 
 
@@ -193,42 +187,6 @@
         var container = $(this).closest("div.form-group.row");
         container.addClass("has-error");
         container.find("span.form-error").text(error);
-    }
-
-    function lastNameValidate() {
-        var input = $("input[name='lastName']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
-            return false;
-        }
-        return true;
-    }
-
-    function firstNameValidate() {
-        var input = $("input[name='firstName']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
-            return false;
-        }
-        return true;
-    }
-
-    function departmentValidate() {
-        var input = $("input[name='department']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
-            return false;
-        }
-        return true;
-    }
-
-    function positionValidate() {
-        var input = $("input[name='position']");
-        if(!input.val()) {
-            showError.apply(input, ["必要"]);
-            return false;
-        }
-        return true;
     }
 
     function emailAddressValidate() {
@@ -243,36 +201,6 @@
 
         if(!re.test(String(vaulue).toLowerCase())){
             showError.apply(input, ["メールアドレス無効な"]);
-            return false;
-        }
-        return true;
-    }
-
-    function numberphone1Validate() {
-        var input = $("input[name='numberPhone1']");
-        var vaulue = input.val();
-        var reg1 = /^\+\d+$/;
-        var reg2 = /^\d+$/;
-        if(!vaulue) {
-            showError.apply(input, ["必要"]);
-            return false;
-        }
-
-        if(!reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効な"]);
-            return false;
-        }
-        return true;
-    }
-
-    function numberphone2Validate() {
-        var input = $("input[name='numberPhone2']");
-        var vaulue = input.val();
-        var reg1 = /^\+\d+$/;
-        var reg2 = /^\d+$/;
-
-        if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効な"]);
             return false;
         }
         return true;
