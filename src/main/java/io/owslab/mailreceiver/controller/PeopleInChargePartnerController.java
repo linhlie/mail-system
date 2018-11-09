@@ -130,7 +130,6 @@ public class PeopleInChargePartnerController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            logger.info(people.getEmailAddress()+" "+people.getPartnerId());
             peopleInChargePartnerService.editPeopleInChargePartner(people);
             result.setMsg("done");
             result.setStatus(true);

@@ -77,7 +77,7 @@ public class PeopleInChargePartnerService {
             throw new Exception("Email esxited");
         }
         if(people.isEmailInChargePartner()){
-            PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByEmailInChargePartner(true);
+            PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByPartnerIdAndEmailInChargePartner(people.getPartnerId(), true);
             if(peopleInChargePartner == null){
                 peopleInChargePartnerDAO.save(people);
             }else{
@@ -92,12 +92,16 @@ public class PeopleInChargePartnerService {
 
     //need transaction
     public void editPeopleInChargePartner(PeopleInChargePartner people) throws Exception {
+        BusinessPartner partner = partnerService.findOne(people.getPartnerId());
+        if(partner == null){
+            throw new Exception("Partner doesn't esxit");
+        }
         PeopleInChargePartner peopleInCharge = peopleInChargePartnerDAO.findByEmailAddress(people.getEmailAddress());
         if(peopleInCharge != null && peopleInCharge.getId() != people.getId()){
             throw new Exception("Email esxited");
         }
         if(people.isEmailInChargePartner()){
-            PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByEmailInChargePartner(true);
+            PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByPartnerIdAndEmailInChargePartner(people.getPartnerId(), true);
             if(peopleInChargePartner != null && peopleInChargePartner.getId() != people.getId()){
                 peopleInChargePartner.setEmailInChargePartner(false);
                 peopleInChargePartnerDAO.save(peopleInChargePartner);
@@ -245,7 +249,7 @@ public class PeopleInChargePartnerService {
                     if(existPartner != null) {
                         PeopleInChargePartner people = csvPeopleDTO.build(existPartner);
                         try {
-                            peopleInChargePartnerDAO.save(people);
+                            addPeopleInChargePartner(people);
                         }catch (Exception e){
                             String type = "【担当者インポート】";
                             int lineIndex = skipHeader ? line + 2 : line + 1;

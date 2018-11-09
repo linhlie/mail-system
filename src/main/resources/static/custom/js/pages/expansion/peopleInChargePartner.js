@@ -99,10 +99,10 @@
         if(!validated) return;
         var data = getFormData();
         data.partnerId = currenntPartnerId;
-        console.log(data);
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
+                    title: "",
                     content: "保存に成功しました",
                     onClose: function () {
                         loadPeopleInChargePartners(currenntPartnerId);
@@ -110,7 +110,7 @@
                     }
                 });
             } else {
-                $.alert(response.msg);
+                $.alert("保存に失敗しました");
             }
         }
 
@@ -148,10 +148,6 @@
         }
     }
 
-    function setFormDomainUpdate(form) {
-        $('#domain1').val(form.domain);
-    }
-
     function updatePeopleOnClick() {
         clearFormValidate();
         var validated = formValidate();
@@ -159,7 +155,6 @@
         var data = getFormData();
         data.partnerId = currenntPartnerId;
         data.id = updatingPeopleId;
-        console.log(data);
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
@@ -316,7 +311,6 @@
     function loadBusinessPartners() {
         function onSuccess(response) {
             if(response && response.status){
-                // console.log(response.list);
                 setDataComboboxPartner(response.list);
             }
         }
@@ -330,7 +324,6 @@
     function loadPeopleInChargePartners(partnerId, callback){
         function onSuccess(response) {
             if(response && response.status){
-                // console.log(response.list);
                 setDataTablePeople(response.list);
                 clearPeopleOnClick();
             }
@@ -340,7 +333,7 @@
         }
 
         function onError(error) {
-            console.log(error);
+            ađg(error);
         }
         getPeopleInChargePartners(partnerId, onSuccess, onError);
     }
@@ -483,7 +476,6 @@
     }
 
     function doEditPeople(data) {
-        // console.log(data);
         updatingPeopleId = data.id;
         clearFormValidate();
         disableUpdatePeople(false);
@@ -534,7 +526,6 @@
     }
 
     function selectNextRow(data){
-        console.log(data);
         if ($(checkboxNextSelectId).is(":checked")){
             selectedSourceTableRow = selectedSourceTableRow+1;
             selectNext(selectedSourceTableRow, data);
@@ -544,7 +535,6 @@
     }
 
     function selectNext(index, data) {
-        console.log(index+" "+data.length);
         if(index>data.length) {
             $.alert("最終行まで更新しました");
             clearPeopleOnClick();

@@ -9,7 +9,7 @@ public interface PeopleInChargePartnerDAO extends JpaRepository<PeopleInChargePa
 
     List<PeopleInChargePartner> findByPartnerId(long partnerId);
 
-    PeopleInChargePartner findByEmailInChargePartner(boolean emailInChargePartner);
+    PeopleInChargePartner findByPartnerIdAndEmailInChargePartner(long partnerId, boolean emailInChargePartner);
 
     PeopleInChargePartner findByEmailAddress(String emailAddress);
 }
