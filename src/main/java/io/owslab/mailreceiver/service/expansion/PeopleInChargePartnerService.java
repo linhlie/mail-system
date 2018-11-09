@@ -70,11 +70,11 @@ public class PeopleInChargePartnerService {
     public void addPeopleInChargePartner(PeopleInChargePartner people) throws Exception {
         BusinessPartner partner = partnerService.findOne(people.getPartnerId());
         if(partner==null){
-            throw new Exception("Partner doesn't esxit");
+            throw new Exception("取引先が存在しません。");
         }
         PeopleInChargePartner peopleInCharge = peopleInChargePartnerDAO.findByEmailAddress(people.getEmailAddress());
         if(peopleInCharge != null){
-            throw new Exception("Email esxited");
+            throw new Exception("メールアドレス存在した。");
         }
         if(people.isEmailInChargePartner()){
             PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByPartnerIdAndEmailInChargePartner(people.getPartnerId(), true);
@@ -94,11 +94,11 @@ public class PeopleInChargePartnerService {
     public void editPeopleInChargePartner(PeopleInChargePartner people) throws Exception {
         BusinessPartner partner = partnerService.findOne(people.getPartnerId());
         if(partner == null){
-            throw new Exception("Partner doesn't esxit");
+            throw new Exception("取引先が存在しません。");
         }
         PeopleInChargePartner peopleInCharge = peopleInChargePartnerDAO.findByEmailAddress(people.getEmailAddress());
         if(peopleInCharge != null && peopleInCharge.getId() != people.getId()){
-            throw new Exception("Email esxited");
+            throw new Exception("メールアドレス存在した。");
         }
         if(people.isEmailInChargePartner()){
             PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerDAO.findByPartnerIdAndEmailInChargePartner(people.getPartnerId(), true);
@@ -201,22 +201,22 @@ public class PeopleInChargePartnerService {
 
                     if(lastName == null || firstName == null || department == null || position == null || emailAddress ==null || numberPhone1 ==null) {
                         if(lastName == null) {
-                            missingList.add("担当者氏姓がありません");
+                            missingList.add("担当者氏姓がありません。");
                         }
                         if(firstName == null) {
-                            missingList.add("担当者氏名がありません");
+                            missingList.add("担当者氏名がありません。");
                         }
                         if(department == null) {
-                            missingList.add("department null");
+                            missingList.add("所属部署がありません。");
                         }
                         if(position == null) {
-                            missingList.add("position null");
+                            missingList.add("役職がありません。");
                         }
                         if(emailAddress == null) {
-                            missingList.add("email null");
+                            missingList.add("メールアドレスがありません。");
                         }
                         if(numberPhone1 == null) {
-                            missingList.add("number phone 1 null");
+                            missingList.add("電話番号1がありません。");
                         }
                         String detail = String.join("、", missingList) + "。";
                         ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
@@ -224,14 +224,14 @@ public class PeopleInChargePartnerService {
                         continue;
                     }
                     if(emailAddress != null && !checkValidateEmail(emailAddress)){
-                        missingList.add("Email invalidate");
+                        missingList.add("メールアドレス無効な。");
                         String detail = String.join("、", missingList) + "。";
                         ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
                         importLogs.add(importLog);
                         continue;
                     }
                     if(numberPhone1 != null && !checkValidateNumberPhone(numberPhone1)){
-                        missingList.add("phone 1 number invalidate");
+                        missingList.add("電話番号1無効な。");
                         String detail = String.join("、", missingList) + "。";
                         ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
                         importLogs.add(importLog);
@@ -239,7 +239,7 @@ public class PeopleInChargePartnerService {
                     }
 
                     if(numberPhone2 != null && !checkValidateNumberPhone(numberPhone2)){
-                        missingList.add("phone 2 number invalidate");
+                        missingList.add("電話番号2無効な。");
                         String detail = String.join("、", missingList) + "。";
                         ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
                         importLogs.add(importLog);

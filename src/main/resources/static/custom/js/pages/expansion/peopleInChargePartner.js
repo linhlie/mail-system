@@ -242,7 +242,7 @@
         }
 
         if(!re.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["email invalid"]);
+            showError.apply(input, ["メールアドレス無効な"]);
             return false;
         }
         return true;
@@ -259,7 +259,7 @@
         }
 
         if(!reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["number phone invalid"]);
+            showError.apply(input, ["電話番号無効な"]);
             return false;
         }
         return true;
@@ -272,7 +272,7 @@
         var reg2 = /^\d+$/;
 
         if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["number phone invalid"]);
+            showError.apply(input, ["電話番号無効な"]);
             return false;
         }
         return true;
@@ -281,7 +281,7 @@
     function partnerValidate() {
         var input = $("#partnerError");
         if(!currenntPartnerId) {
-            showError.apply(input, ["You must select business partner"]);
+            showError.apply(input, ["取引先を選択してください。"]);
             return false;
         }
         return true;
@@ -391,21 +391,21 @@
                                 selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                                 doEditPeople(data);
                             } else {
-                                $.alert("the people doesn't esxit");
+                                $.alert("担当者が存在しません。");
                             }
                         } else {
-                            $.alert("unload infor the people");
+                            $.alert("担当者情報のロードに失敗しました。");
                         }
                     }
 
                     function onError() {
-                        $.alert("unload infor the people");
+                        $.alert("担当者情報のロードに失敗しました。");
                     }
                     getDetailPeopleInChargePartner(rowData.id, onSuccess, onError);
                 }
             });
         }else{
-            $.alert("Don't have the people in charge of this partner");
+            $.alert("この取引先はまだ担当者がいません。");
         }
     }
 
@@ -454,12 +454,12 @@
             loadPeopleInChargePartners(currenntPartnerId);
         }
         function onError() {
-            $.alert("can't delete");
+            $.alert("担当者の削除に失敗しました。");
         }
         $.confirm({
-            title: '<b>【Delete peopple】</b>',
+            title: '<b>【担当者の削除】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">do you want to delete it？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
@@ -549,15 +549,15 @@
                         var data = response.list[0];
                         doEditPeople(data);
                     } else {
-                        $.alert("people doesn't esxit");
+                        $.alert("担当者が存在しません。");
                     }
                 } else {
-                    $.alert("unload the people");
+                    $.alert("担当者情報のロードに失敗しました。");
                 }
             }
 
             function onError() {
-                $.alert("unload the people");
+                $.alert("担当者情報のロードに失敗しました。");
             }
             getDetailPeopleInChargePartner(rowData.id, onSuccess, onError);
 
