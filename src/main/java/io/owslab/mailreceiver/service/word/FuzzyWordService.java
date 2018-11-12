@@ -1,9 +1,9 @@
 package io.owslab.mailreceiver.service.word;
 
 import io.owslab.mailreceiver.dao.FuzzyWordDAO;
+import io.owslab.mailreceiver.dto.FuzzyWordDTO;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
-import io.owslab.mailreceiver.utils.KeyWordItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,10 +22,22 @@ public class FuzzyWordService {
     @Autowired
     private FuzzyWordDAO fuzzyWordDAO;
 
+    @Autowired
+    private WordService wordService;
+
     @CacheEvict(allEntries = true)
-    public void delete(long id){
+    public void deleteFuzzyWord(long id){
         fuzzyWordDAO.delete(id);
     }
+
+    public List<FuzzyWord> findByAssociatedWord(Word word){
+        return fuzzyWordDAO.findByAssociatedWord(word);
+    }
+
+    public FuzzyWord findById(Long id){
+        return fuzzyWordDAO.findOne(id);
+    }
+
 
     @CacheEvict(allEntries = true)
     public void save(FuzzyWord fuzzyWord){
@@ -52,116 +64,86 @@ public class FuzzyWordService {
         return result;
     }
 
-    @Cacheable(key="\"FuzzyWordService:findKeyWordDeep:\"+#word.id")
-    public Word findKeyWordDeep(Word word){
-        Word result = null;
-        long wordId = word.getId();
-        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.SAME);
-        if(fuzzyWordList.size() > 0){
-            result = fuzzyWordList.get(0).getOriginalWord();
-        }
-        return result;
-    }
-
-    @Cacheable(key="\"FuzzyWordService:findKeyWord:\"+#word.id")
-    public Word findKeyWord(Word word){
-        Word result = null;
-        long wordId = word.getId();
-        List<FuzzyWord> fuzzyWordList = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, FuzzyWord.Type.SAME);
-        if(fuzzyWordList.size() > 0){
-            result = fuzzyWordList.get(0).getOriginalWord();
-            Word rootKeyWord = findKeyWordDeep(result);
-            if(rootKeyWord != null) {
-                result = rootKeyWord;
-            }
-        } else {
-            result = word;
-        }
-        return result;
-    }
-
     @Cacheable(key="\"FuzzyWordService:findAllSameWord:\"+#word.id")
     public List<Word> findAllSameWord(Word word){
-        return findAllFuzzyWord(word, FuzzyWord.Type.SAME);
+        if(word!=null && word.getGroupWord()!=null){
+            List<Word> words = wordService.getListWordinGroup(word.getGroupWord());
+            int index = words.indexOf(word);
+            words.remove(index);
+            return words;
+        }
+        return null;
     }
 
-    private List<Word> findAllFuzzyWord(Word word, int fuzzyType){
-        List<Word> result = new ArrayList<Word>();
-        long wordId = word.getId();
-        List<FuzzyWord> fuzzyWordList1 = fuzzyWordDAO.findByWordIdAndFuzzyType(wordId, fuzzyType);
-        List<FuzzyWord> fuzzyWordList2 = fuzzyWordDAO.findByWithWordIdAndFuzzyType(wordId, fuzzyType);
-        for(FuzzyWord fuzzyWord : fuzzyWordList1){
-            result.add(fuzzyWord.getAssociatedWord());
+    public List<FuzzyWordDTO> getExclusion(List<Word> listWordSame){
+        List<FuzzyWord> fuzzyWordList = (List<FuzzyWord>) fuzzyWordDAO.findAll();
+        List<FuzzyWordDTO> listResult = new ArrayList<>();
+        for(Word wordSame: listWordSame){
+            for(FuzzyWord fuzzy : fuzzyWordList){
+                if(fuzzy.getOriginalWord().getId() == wordSame.getId() && fuzzy.getFuzzyType() == FuzzyWord.Type.EXCLUSION){
+                    listResult.add(new FuzzyWordDTO(fuzzy.getId(), fuzzy.getOriginalWord().getWord(), fuzzy.getAssociatedWord().getWord()));
+                }
+            }
         }
-        for(FuzzyWord fuzzyWord : fuzzyWordList2){
-            result.add(fuzzyWord.getOriginalWord());
-        }
-        return result;
+        return listResult;
     }
 
-    public List<KeyWordItem> getDefaultListWord(List<Word> wordList){
-        LinkedHashMap<Long, KeyWordItem> listDefault = new LinkedHashMap<>();
-        for(Word word : wordList){
-            if(!listDefault.containsKey(word.getId())){
-                Set<Word> listWordSame = new LinkedHashSet<>();
-                getWords(word,listWordSame);
-                if(listWordSame.size()>0){
-                    long min = Long.MAX_VALUE;
-                    String rootWord = "";
-                    for(Word w : listWordSame){
-                        if(w.getId()<min){
-                            min = w.getId();
-                            rootWord = w.getWord();
-                        }
-                    }
-                    for(Word w : listWordSame){
-                        if(!listDefault.containsKey(w.getId())){
-                            KeyWordItem key = new KeyWordItem(w.getWord(), rootWord);
-                            listDefault.put(w.getId(), key);
-                        }
-                    }
+    public void addFuzzyWord(FuzzyWordDTO fuzzyWordDTO) throws Exception {
+        Word originalWord = wordService.findOne(fuzzyWordDTO.getWord());
+        Word associatedWord = wordService.findOne(fuzzyWordDTO.getWordExclusion());
+        if(originalWord == null){
+            throw new Exception("主ワードが存在しない、又は消除された");
+        }
+        if(associatedWord != null) {
+            if(originalWord.getGroupWord().equals(associatedWord.getGroupWord())){
+                throw new Exception("除外単語と主ワードは同じ類似グループにしてはいけません。");
+            }
+            FuzzyWord existFuzzyWord = findOne(originalWord, associatedWord);
+            if(existFuzzyWord != null){
+                System.out.println(existFuzzyWord.getId()+" "+existFuzzyWord.getFuzzyType());
+                throw new Exception("データは既に存在します");
+            }
+        } else {
+            associatedWord = new Word();
+            associatedWord.setWord(fuzzyWordDTO.getWordExclusion());
+            wordService.save(associatedWord);
+        }
+        FuzzyWord fuzzyWord = new FuzzyWord(originalWord, associatedWord, 0);
+        save(fuzzyWord);
+    }
+
+    public void deleteFuzzyWordAPI(long id){
+        FuzzyWord fuzzyWord = findById(id);
+        if(fuzzyWord!=null){
+            Word wordExclusion = fuzzyWord.getAssociatedWord();
+            if(wordExclusion.getGroupWord()==null){
+                List<FuzzyWord> checkWord = findByAssociatedWord(wordExclusion);
+                if(checkWord.size()==1){
+                    wordService.delete(wordExclusion);
                 }else{
-                    KeyWordItem key = new KeyWordItem(word.getWord(), word.getWord());
-                    listDefault.put(word.getId(), key);
+                    deleteFuzzyWord(id);
                 }
-            }
-        }
-        List<KeyWordItem> result = new ArrayList<KeyWordItem>();
-        SortedSet<Long> keys = new TreeSet<>(listDefault.keySet());
-        for (long key : keys) {
-            result.add(listDefault.get(key));
-        }
-        return result;
-    }
-
-    public List<KeyWordItem> searchWord(Word word){
-        Set<Word> result = new LinkedHashSet<>();
-        List<KeyWordItem> listWord = new ArrayList<>();
-        result.add(word);
-        getWords(word,result);
-        for(Word w : result){
-            listWord.add(new KeyWordItem(w.getWord(), word.getWord()));
-        }
-        return listWord;
-    }
-
-    public void getWords(Word word, Set<Word> result){
-        for(FuzzyWord fuzzyWord : word.getOriginalWords()){
-            if(fuzzyWord.getFuzzyType() == FuzzyWord.Type.SAME){
-                if(!result.contains(fuzzyWord.getAssociatedWord())){
-                    result.add(fuzzyWord.getAssociatedWord());
-                    getWords(fuzzyWord.getAssociatedWord(), result);
-                }
-            }
-        }
-        for(FuzzyWord fuzzyWord : word.getAssociatedWords()){
-            if(fuzzyWord.getFuzzyType() == FuzzyWord.Type.SAME) {
-                if (!result.contains(fuzzyWord.getOriginalWord())) {
-                    result.add(fuzzyWord.getOriginalWord());
-                    getWords(fuzzyWord.getOriginalWord(), result);
-                }
+            }else{
+                deleteFuzzyWord(id);
             }
         }
     }
 
+    public void getAllSameWordOld(Word word, LinkedHashMap<Long, Word> result){
+        List<FuzzyWord> fuzzyWordSame1 = fuzzyWordDAO.findByWordIdAndFuzzyType(word.getId(),FuzzyWord.Type.SAME);
+        for(FuzzyWord fuzzyWord : fuzzyWordSame1){
+                if(!result.containsKey(fuzzyWord.getAssociatedWord().getId())){
+                    result.put(fuzzyWord.getAssociatedWord().getId(), fuzzyWord.getAssociatedWord());
+                    getAllSameWordOld(fuzzyWord.getAssociatedWord(), result);
+                }
+        }
+
+        List<FuzzyWord> fuzzyWordSame2 = fuzzyWordDAO.findByWithWordIdAndFuzzyType(word.getId(),FuzzyWord.Type.SAME);
+        for(FuzzyWord fuzzyWord : fuzzyWordSame2){
+            if(!result.containsKey(fuzzyWord.getOriginalWord().getId())){
+                result.put(fuzzyWord.getOriginalWord().getId(), fuzzyWord.getOriginalWord());
+                getAllSameWordOld(fuzzyWord.getOriginalWord(), result);
+            }
+        }
+    }
 }

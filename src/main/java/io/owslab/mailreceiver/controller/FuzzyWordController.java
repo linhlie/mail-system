@@ -1,9 +1,13 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dto.FuzzyWordDTO;
+import io.owslab.mailreceiver.form.AddListWordForm;
+import io.owslab.mailreceiver.form.EditWordForm;
 import io.owslab.mailreceiver.form.FuzzyWordForm;
 import io.owslab.mailreceiver.model.FuzzyWord;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.FuzzyWordResponseBody;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
 import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.KeyWordItem;
@@ -18,6 +22,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,49 +45,138 @@ public class FuzzyWordController {
     private FuzzyWordService fuzzyWordService;
 
     @RequestMapping(value = "/fuzzyWord", method = RequestMethod.GET)
-    public String getFuzzyWord(@RequestParam(value = "search", required = false) String search,
-                               @RequestParam(value = "selected", required = false) String selected,
-                               Model model) {
-        int totalFuzzyWord = 0;
-        List<Word> wordList = wordService.findAll();
-        if(search != null && search.length() > 0){
-            model.addAttribute("search", search);
-        }
-        if(selected != null && selected.length() > 0){
-            model.addAttribute("selected", selected);
-            Word word = wordService.findOne(selected);
-            if(word != null){
-                Set<FuzzyWord> originalWords = word.getOriginalWords();
-                Set<FuzzyWord> associatedWords = word.getAssociatedWords();
-                model.addAttribute("word", word);
-                model.addAttribute("originalList", originalWords);
-                model.addAttribute("associatedToList", associatedWords);
-                totalFuzzyWord = originalWords.size() + associatedWords.size();
-            }
-        }
-        List<KeyWordItem> keyWordItems = new ArrayList<>();
-        if(search != null && search.length() > 0){
-            Word wordSearch = wordService.findOne(search);
-            if(wordSearch!=null){
-                keyWordItems = fuzzyWordService.searchWord(wordSearch);
-            }
-        }else{
-            keyWordItems = fuzzyWordService.getDefaultListWord(wordList);
-        }
-        model.addAttribute("wordList", keyWordItems);
-        model.addAttribute("wordListSize", keyWordItems.size());
-        model.addAttribute("totalFuzzyWord", totalFuzzyWord);
+    public String getFuzzyWord(Model model, HttpServletRequest request) {
         return "user/fuzzyword/list";
     }
 
-    @RequestMapping(value = "/fuzzyWord/{id}/delete", method = RequestMethod.DELETE)
+    @RequestMapping(value = { "/fuzzyWord/getListWord" }, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+    public ResponseEntity<?> getListWord() {
+        AjaxResponseBody result = new AjaxResponseBody();
         try {
-            fuzzyWordService.delete(id);
+            List<Word> listWord = wordService.getListWordByGroup();
+            result.setList(listWord);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListWord: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = { "/fuzzyWord/getExclusion" }, method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> getExclusion( @Valid @RequestBody String groupWord, BindingResult bindingResult) {
+        FuzzyWordResponseBody result = new FuzzyWordResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<Word> listWord = wordService.getListWordinGroup(groupWord);
+            List<FuzzyWordDTO> listExclusion = fuzzyWordService.getExclusion(listWord);
+            result.setList(listExclusion);
+            result.setListWord(listWord);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getExclusion: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = { "/fuzzyWord/searchWord" }, method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> searchWord( @Valid @RequestBody String word, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<Word> listWord = wordService.searchWord(word);
+            result.setList(listWord);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("searchWord: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/fuzzyWord/deleteFuzzyWord/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteFuzzyWord(@PathVariable("id") long id) {
+        try {
+            fuzzyWordService.deleteFuzzyWordAPI(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/fuzzyWord/editGroupWord")
+    @ResponseBody
+    public ResponseEntity<?> editGroupWord(@Valid @RequestBody EditWordForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            wordService.editGroupWord(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/fuzzyWord/deleteGroupWord/{group}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteGroupWord(@PathVariable("group") String group) {
+        try {
+            wordService.deleteGroupWord(group);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping(value = "/fuzzyWord/deleteWordInGroup")
+    @ResponseBody
+    public ResponseEntity<?> deleteWordInGroup(@Valid @RequestBody EditWordForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            int words = wordService.deleteWordInGroup(form.getOldWord());
+            result.setMsg(words+"");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
         }
     }
 
@@ -97,11 +191,9 @@ public class FuzzyWordController {
         return "user/fuzzyword/form";
     }
 
-    @PostMapping("/addFuzzyWord")
+    @PostMapping("/fuzzyWord/editWord")
     @ResponseBody
-    public ResponseEntity<?> addFuzzyWord(
-            Model model,
-            @Valid @RequestBody FuzzyWordForm fuzzyWordForm, BindingResult bindingResult) {
+    public ResponseEntity<?> editWord(@Valid @RequestBody EditWordForm form, BindingResult bindingResult) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -110,38 +202,96 @@ public class FuzzyWordController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            String originalWordStr = wordService.normalize(fuzzyWordForm.getOriginal());
-            String associatedWordStr = wordService.normalize(fuzzyWordForm.getAssociatedWord());
-            if(originalWordStr.equals(associatedWordStr)){
-                throw new Exception("同じ単語にすることはできません");
-            }
-            int fuzzyType = fuzzyWordForm.getFuzzyType();
-            Word originalWord = wordService.findOne(originalWordStr);
-            Word associatedWord = wordService.findOne(associatedWordStr);
-            if(originalWord != null && associatedWord != null) {
-                if(originalWord.getId() == associatedWord.getId()){
-                    throw new Exception("同じ単語にすることはできません");
-                }
-                FuzzyWord existFuzzyWord = fuzzyWordService.findOne(originalWord, associatedWord);
-                if(existFuzzyWord != null){
-                    throw new Exception("データは既に存在します");
-                }
-            } else {
-                if(originalWord == null) {
-                    originalWord = new Word();
-                    originalWord.setWord(originalWordStr);
-                    wordService.save(originalWord);
-                }
-                if(associatedWord == null) {
-                    associatedWord = new Word();
-                    associatedWord.setWord(associatedWordStr);
-                    wordService.save(associatedWord);
-                    //TODO: save failed rollback
-                }
-            }
-            FuzzyWord fuzzyWord = new FuzzyWord(originalWord, associatedWord, fuzzyType);
-            fuzzyWordService.save(fuzzyWord);
-            //TODO: save failed rollback
+            wordService.editWord(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/fuzzyWord/addWordToGroup")
+    @ResponseBody
+    public ResponseEntity<?> addWordToGroup(@Valid @RequestBody Word word, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            wordService.addWord(word);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/fuzzyWord/addListWord")
+    @ResponseBody
+    public ResponseEntity<?> addListWord(@Valid @RequestBody AddListWordForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            wordService.addListWord(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/fuzzyWord/addFuzzyWord")
+    @ResponseBody
+    public ResponseEntity<?> addFuzzyWord(@Valid @RequestBody FuzzyWordDTO fuzzyWordDTO, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            fuzzyWordService.addFuzzyWord(fuzzyWordDTO);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/fuzzyWord/editFuzzyWord")
+    @ResponseBody
+    public ResponseEntity<?> editFuzzyWord(@Valid @RequestBody FuzzyWordDTO fuzzyWordDTO, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            fuzzyWordService.deleteFuzzyWordAPI(fuzzyWordDTO.getId());
+            fuzzyWordService.addFuzzyWord(fuzzyWordDTO);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

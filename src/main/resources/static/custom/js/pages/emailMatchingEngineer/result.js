@@ -584,6 +584,7 @@
                 if(data.status){
                     if(data.list && data.list.length > 0){
                         result = data.list[0];
+                        console.log(result);
                     }
                 }
                 if(typeof callback === "function"){
