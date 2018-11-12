@@ -4,6 +4,8 @@ import io.owslab.mailreceiver.service.BeanUtil;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.util.Timer;
@@ -13,6 +15,9 @@ import java.util.TimerTask;
  * Created by khanhlvb on 2/9/18.
  */
 public abstract class AbstractScheduler {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractScheduler.class);
+
     private int delay;
     private long interval;
     private TimerTask timerTask;
@@ -28,8 +33,15 @@ public abstract class AbstractScheduler {
             public void run() {
                 try {
                     doStuff();
-                } catch (Exception e) {
-                    ReportErrorService.sendReportError(ExceptionUtils.getStackTrace(e));
+                } catch (RuntimeException e){
+                    String error = ExceptionUtils.getStackTrace(e);
+                    logger.error("[AbstractScheduler] RuntimeException: ", error);
+                    return; // Keep working
+                }catch (Throwable e){
+                    String error = ExceptionUtils.getStackTrace(e);
+                    logger.error("[AbstractScheduler] Throwable: ", error);
+                    ReportErrorService.sendReportError(error);
+                    return;
                 }
             }
         });
