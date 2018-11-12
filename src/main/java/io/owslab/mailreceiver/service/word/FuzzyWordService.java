@@ -128,4 +128,22 @@ public class FuzzyWordService {
             }
         }
     }
+
+    public void getAllSameWordOld(Word word, LinkedHashMap<Long, Word> result){
+        List<FuzzyWord> fuzzyWordSame1 = fuzzyWordDAO.findByWordIdAndFuzzyType(word.getId(),FuzzyWord.Type.SAME);
+        for(FuzzyWord fuzzyWord : fuzzyWordSame1){
+                if(!result.containsKey(fuzzyWord.getAssociatedWord().getId())){
+                    result.put(fuzzyWord.getAssociatedWord().getId(), fuzzyWord.getAssociatedWord());
+                    getAllSameWordOld(fuzzyWord.getAssociatedWord(), result);
+                }
+        }
+
+        List<FuzzyWord> fuzzyWordSame2 = fuzzyWordDAO.findByWithWordIdAndFuzzyType(word.getId(),FuzzyWord.Type.SAME);
+        for(FuzzyWord fuzzyWord : fuzzyWordSame2){
+            if(!result.containsKey(fuzzyWord.getOriginalWord().getId())){
+                result.put(fuzzyWord.getOriginalWord().getId(), fuzzyWord.getOriginalWord());
+                getAllSameWordOld(fuzzyWord.getOriginalWord(), result);
+            }
+        }
+    }
 }

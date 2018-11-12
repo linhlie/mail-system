@@ -13,10 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by khanhlvb on 2/7/18.
@@ -208,4 +205,49 @@ public class WordService {
         }
     }
 
+    public long countGroupWord(){
+        long count  = wordDAO.countByGroupWordIsNotNull();
+        return count;
+    }
+
+    public void configGroupWord(){
+        List<Word> wordList = (List<Word>) wordDAO.findAll();
+        getDefaultListWord(wordList);
+    }
+
+    public void getDefaultListWord(List<Word> wordList){
+        LinkedHashMap<Long, Word> listDefault = new LinkedHashMap<>();
+        for(Word word : wordList){
+            if(!listDefault.containsKey(word.getId())){
+                LinkedHashMap<Long, Word> listWordSame = new LinkedHashMap<>();
+                listWordSame.put(word.getId(), word);
+                fuzzyWordService.getAllSameWordOld(word,listWordSame);
+                if(listWordSame.size()>0){
+                    long min = Long.MAX_VALUE;
+                    String rootWord = "";
+                    for(Word w : listWordSame.values()){
+                        if(w.getId()<min){
+                            min = w.getId();
+                            rootWord = w.getWord();
+                        }
+                    }
+                    for(Word w : listWordSame.values()){
+                        if(!listDefault.containsKey(w.getId())){
+                            w.setGroupWord(rootWord);
+                            listDefault.put(w.getId(), w);
+                        }
+                    }
+                }else{
+                    word.setGroupWord(word.getWord());
+                    listDefault.put(word.getId(), word);
+                }
+            }
+        }
+        List<Word> result = new ArrayList<Word>();
+        SortedSet<Long> keys = new TreeSet<>(listDefault.keySet());
+        for (long key : keys) {
+            result.add(listDefault.get(key));
+        }
+        wordDAO.save(result);
+    }
 }

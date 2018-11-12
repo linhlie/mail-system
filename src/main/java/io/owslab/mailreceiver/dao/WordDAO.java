@@ -35,4 +35,13 @@ public interface WordDAO extends CrudRepository<Word, Long> {
             nativeQuery = true
     )
     void editGroup(@Param("oldGroup") String oldGroup, @Param("newGroup") String newGroup);
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            value = "SELECT count(w.group_word) FROM words w where w.group_word is  not null",
+            nativeQuery = true
+    )
+    int countGroupWord();
+
+    long countByGroupWordIsNotNull();
 }
