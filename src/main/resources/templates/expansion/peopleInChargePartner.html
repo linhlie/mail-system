@@ -11,6 +11,14 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>取引先 担当者管理</h4>
+                        <div class="form-group row">
+                            <div class="col-md-2">
+                                <select id="styleShowTable" style="width: 100%;">
+                                    <option value="">担当者一覧</option>
+                                    <option value="">未登録担当者一覧</option>
+                                </select>
+                            </div>
+                        </div>
                         <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
                         <div class="form-group row">
                             <div class="col-md-5 showError">
@@ -19,6 +27,7 @@
                                 <span id="partnerError" class="form-error">..</span>
                             </div>
                             <span id="labelDomain" class="control-label col-md-2 text-left" style="margin-top: 8px;"></span>
+                            <span id="labelEmailInChargeUnregister" class="control-label col-md-2 text-left" style="margin-top: 8px; color: red;"></span>
                         </div>
                         </form>
                         <div id="partnerBox" class="partner-part table-container-section" style="height: 200px; position: relative; margin-top: 5px;">
