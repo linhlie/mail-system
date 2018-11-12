@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.dao;
 
 import io.owslab.mailreceiver.model.FuzzyWord;
+import io.owslab.mailreceiver.model.Word;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,4 +28,8 @@ public interface FuzzyWordDAO extends CrudRepository<FuzzyWord, Long> {
             nativeQuery = true
     )
     List<FuzzyWord> findByWithWordIdAndFuzzyType(@Param("withWordId") long withWordId, @Param("fuzzyType") int fuzzyType);
+
+    List<FuzzyWord> findByAssociatedWord(Word word);
+
+    void deleteByOriginalWord(Word word);
 }

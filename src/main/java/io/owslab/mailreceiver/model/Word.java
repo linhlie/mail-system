@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
@@ -17,55 +18,22 @@ public class Word implements Serializable {
     @NotNull
     private String word;
 
-    @OneToMany(mappedBy = "originalWord", fetch = FetchType.EAGER)
-    private Set<FuzzyWord> originalWords;
+    @Column(name="`group_word`")
+    private String groupWord;
 
-    @OneToMany(mappedBy = "associatedWord", fetch = FetchType.EAGER)
-    private Set<FuzzyWord> associatedWords;
+    public long getId() { return id; }
 
-    public Word() {}
-
-    public Word(long id) {
-        this.id = id;
-    }
-
-    public Word(String word, Set<FuzzyWord> originalWords, Set<FuzzyWord> associatedWords) {
-        this.word = word;
-        this.originalWords = originalWords;
-        this.associatedWords = associatedWords;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    public void setId(long id) { this.id = id; }
 
     public String getWord() {
         return word;
     }
 
     public void setWord(String word) {
-        if(word != null){
-            this.word = word.toLowerCase();
-        }
+        this.word = word;
     }
 
-    public Set<FuzzyWord> getOriginalWords() {
-        return originalWords;
-    }
+    public String getGroupWord() { return groupWord; }
 
-    public void setOriginalWords(Set<FuzzyWord> originalWords) {
-        this.originalWords = originalWords;
-    }
-
-    public Set<FuzzyWord> getAssociatedWords() {
-        return associatedWords;
-    }
-
-    public void setAssociatedWords(Set<FuzzyWord> associatedWords) {
-        this.associatedWords = associatedWords;
-    }
+    public void setGroupWord(String groupWord) { this.groupWord = groupWord; }
 }

@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.schedulers.*;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
+import io.owslab.mailreceiver.service.word.WordService;
 import io.owslab.mailreceiver.utils.FileAssert;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SelectOption;
@@ -85,6 +86,9 @@ public class ApplicationStartup {
     @Autowired
     private MailBoxService mailBoxService;
 
+    @Autowired
+    private WordService wordService;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @Bean
@@ -140,6 +144,7 @@ public class ApplicationStartup {
         autoExtendScheduler.start();
         updateDomainUnregisterScheduler.start();
         getDomain();
+        configWordDatabase();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;
 //        List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput("random cacherhhe444h", testData.toLowerCase());
 //        for(FullNumberRange range : rangeList) {
@@ -186,5 +191,11 @@ public class ApplicationStartup {
     	if(enviromentSettingService.getAddNewDomainUnregister()){
         	domainService.saveDomainUnregisteredWithMailAddresses(listEmail);
     	}
+    }
+
+    public void configWordDatabase(){
+        if(wordService.countGroupWord() == 0){
+            wordService.configGroupWord();
+        }
     }
 }

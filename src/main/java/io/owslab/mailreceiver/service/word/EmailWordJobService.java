@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.word;
 
+import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.Word;
 import io.owslab.mailreceiver.service.mail.EmailService;
@@ -8,6 +9,7 @@ import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
  * Created by khanhlvb on 2/9/18.
  */
 @Service
+@CacheConfig(cacheNames = "short_term_data")
 public class EmailWordJobService {
     private static final Logger logger = LoggerFactory.getLogger(EmailWordJobService.class);
 
@@ -135,4 +138,5 @@ public class EmailWordJobService {
         }
         return matching;
     }
+
 }
