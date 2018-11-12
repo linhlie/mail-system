@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.model.BusinessPartnerGroup;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,9 @@ public class PartnerImportExportController {
     @Autowired
     private EngineerService engineerService;
 
+    @Autowired
+    private PeopleInChargePartnerService peopleInChargePartnerService;
+
     @RequestMapping(value = { "/partnerImportExport" }, method = RequestMethod.GET)
     public String getPartnerImportExport(Model model, HttpServletRequest request) {
         return "expansion/partnerImportExport";
@@ -49,13 +53,16 @@ public class PartnerImportExportController {
     @RequestMapping(value = "/exportCSV", method = RequestMethod.GET)
     public void exportPartnerCSV(HttpServletResponse response, @RequestParam(value = "header") boolean header, @RequestParam(value = "type") String type) throws IOException {
         response.setContentType("text/csv");
-        CSVBundle csvBundle;
-        if(type.equals("groupPartner")) {
-            csvBundle = partnerService.exportGroups();
-        } else if (type.equals("engineer")) {
-            csvBundle = engineerService.export();
-        }else {
-            csvBundle = partnerService.export();
+        CSVBundle csvBundle = null;
+        switch (type){
+            case "groupPartner": csvBundle = partnerService.exportGroups();
+                break;
+            case "engineer": csvBundle = engineerService.export();
+                break;
+            case "peopleInChargePartner": csvBundle = peopleInChargePartnerService.export();
+                break;
+                default: csvBundle = partnerService.export();
+                    break;
         }
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(csvBundle.getFileName(), "UTF-8"));
         response.setCharacterEncoding("SHIFT_JIS");
@@ -117,6 +124,22 @@ public class PartnerImportExportController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("importEngineer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/importPeopleInChargePartners")
+    @ResponseBody
+    public ResponseEntity<?> importPeopleInChargePartner(@RequestParam("file") MultipartFile file, @RequestParam(value = "header") boolean header, @RequestParam(value = "deleteOld") boolean deleteOld) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<ImportLogDTO> importLogs = peopleInChargePartnerService.importPeopleinChargePartner(file, header, deleteOld);
+            result.setMsg("done");
+            result.setList(importLogs);
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("importPeopleInChargePartner: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -244,6 +244,12 @@ function getEngineerExport(includeHeader) {
     _doDownload(url);
 }
 
+function getPeopleInChargePartnerExport(includeHeader) {
+    includeHeader = !!includeHeader;
+    var url = "/expansion/exportCSV?type=peopleInChargePartner&&header=" + includeHeader;
+    _doDownload(url);
+}
+
 function forceFetchMail(onSuccess, onError) {
     var url ="/user/dashboard/forceFetchMail";
     _get(url, onSuccess, onError);
@@ -352,6 +358,20 @@ function importEngineers(data, includeHeader, deleteOld, onSuccess, onError) {
     _postString(url, data, onSuccess, onError);
 }
 
+function importPeopleInChargePartners(data, includeHeader, deleteOld, onSuccess, onError) {
+    var url = '/expansion/importPeopleInChargePartners?header=' + includeHeader + "&deleteOld=" + deleteOld;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: onSuccess,
+        error: onError
+    });
+}
+
 function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
     _postString(url, data, onSuccess, onError);
@@ -365,6 +385,38 @@ function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
 function getInforPartnerAPI(data, onSuccess, onError) {
     var url = "/user/matchingResult/getInforPartner";
     _postString(url, data, onSuccess, onError);
+}
+
+
+function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/getPartners";
+    _get(url, onSuccess, onError);
+}
+
+
+function getPeopleInChargePartners(partnerId, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/getPeopleInChargePartners/" + partnerId;
+    _get(url, onSuccess, onError);
+}
+
+function getDetailPeopleInChargePartner(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/info/" + id;
+    _get(url, onSuccess, onError);
+}
+
+function addPeopleInChargePartner(data, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updatePeopleInChargePartner(data, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/edit";
+    _post(url, data, onSuccess, onError);
+}
+
+function deletePeopleInChargePartner(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartner/delete/" + id;
+    _delete(url, onSuccess, onError);
 }
 
 function _doDownload(href){

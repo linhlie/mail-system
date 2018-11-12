@@ -2,24 +2,24 @@
 (function () {
 
     $(function () {
-        $("#engineerActionType").change(function () {
+        $("#peopleInChargeActionType").change(function () {
            setDisplayType(this.value);
         });
-        setButtonClickListenter("#importEngineerBtn", onImportEngineerClick);
-        setButtonClickListenter("#engineerActions", doEngineerActions);
+        setButtonClickListenter("#importPeopleInChargeBtn", importPeopleInChargeOnclick);
+        setButtonClickListenter("#peopleInChargeActions", doPeopleinChargeActions);
         setImportFileChangeListener()
     });
 
-    function onImportEngineerClick() {
-        $("#importEngineerInput").click();
+    function importPeopleInChargeOnclick() {
+        $("#importPeopleInChargeInput").click();
     }
 
-    function doEngineerActions() {
-        var actionType = $("#engineerActionType").val();
-        var includeHeader = $('#engineerIncludeHeader').is(":checked");
-        var deleteOld = $('#engineerDeleteOld').is(":checked");
+    function doPeopleinChargeActions() {
+        var actionType = $("#peopleInChargeActionType").val();
+        var includeHeader = $('#peopleInChargeIncludeHeader').is(":checked");
+        var deleteOld = $('#peopleInChargeDeleteOld').is(":checked");
         if(actionType == "import") {
-            var file = document.getElementById("importEngineerInput").files[0];
+            var file = document.getElementById("importPeopleInChargeInput").files[0];
             if(file) {
                 var formData = new FormData();
                 formData.append('file', file);
@@ -27,37 +27,37 @@
                     hideloading();
                     if(response && response.status) {
                         updateImportLogs(response.list);
-                        $.alert("技術者のインポートに成功しました");
+                        $.alert("担当者のインポートに成功しました");
                     } else {
-                        $.alert("技術者のインポートに失敗しました");
+                        $.alert("担当者のインポートに失敗しました");
                     }
                 }
 
                 function onError(response) {
                     hideloading();
-                    $.alert("技術者のインポートに失敗しました");
+                    $.alert("担当者のインポートに失敗しました");
                 }
                 clearImportLogs();
-                showImportEngineerLoading();
-                importEngineers(formData, includeHeader, deleteOld, onSuccess, onError)
+                showImportPeopleInChargeLoading();
+                importPeopleInChargePartners(formData, includeHeader, deleteOld, onSuccess, onError)
             } else {
                 $.alert("インポートするファイルを選択");
             }
         } else if(actionType == "export") {
             clearImportLogs();
-            getEngineerExport(includeHeader);
+            getPeopleInChargePartnerExport(includeHeader);
         }
     }
 
     function setImportFileChangeListener() {
-        $("#importEngineerInput").change(function (){
+        $("#importPeopleInChargeInput").change(function (){
             var fileName = $(this).val();
             fileName = fileName.replace(/C:\\fakepath\\/i, '');
-            $("#importEngineer").val(fileName);
+            $("#importPeopleInCharge").val(fileName);
         });
     }
 
-    function showImportEngineerLoading() {
+    function showImportPeopleInChargeLoading() {
         showLoading("技術者のインポート中");
     }
 
@@ -98,13 +98,13 @@
 
     function setDisplayType(type) {
         if(type=="export"){
-            $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
-            $("#importEngineerInputDiv").css("display","none");
-            $("#engineerDeleteOldDiv").css("visibility","hidden");
+            $("#peopleInChargeIncludeHeaderText").html("&nbsp;先頭行はタイトルとする");
+            $("#importpeopleInChargeInputDiv").css("display","none");
+            $("#peopleInChargeDeleteOldDiv").css("visibility","hidden");
         }else{
-            $("#engineerIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
-            $("#importEngineerInputDiv").css("display","block");
-            $("#engineerDeleteOldDiv").css("visibility","visible");
+            $("#peopleInChargeIncludeHeaderText").html("&nbsp;先頭行はタイトルとみなす");
+            $("#importpeopleInChargeInputDiv").css("display","block");
+            $("#peopleInChargeDeleteOldDiv").css("visibility","visible");
         }
     }
 

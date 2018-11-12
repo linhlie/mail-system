@@ -5,6 +5,8 @@ import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
 import io.owslab.mailreceiver.dto.CSVPartnerDTO;
 import io.owslab.mailreceiver.dto.CSVPartnerGroupDTO;
 import io.owslab.mailreceiver.dto.ImportLogDTO;
+import io.owslab.mailreceiver.dto.PartnerForPeopleInChargeDTO;
+import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
@@ -17,10 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
@@ -58,6 +57,12 @@ public class BusinessPartnerService {
 
     public List<BusinessPartner> getAll() {
         return (List<BusinessPartner>) partnerDAO.findAll();
+    }
+
+    public List<BusinessPartner> getBusinessPartner() {
+        List<BusinessPartner> list =  getAll();
+        Collections.sort(list, new BusinessPartnerComparator());
+        return list;
     }
 
     public List<BusinessPartnerGroup> getAllGroup() {
@@ -444,5 +449,37 @@ public class BusinessPartnerService {
     	List<Long> listWithPartnerId = partnerGroupDAO.findWithPartnerIdByPartnerId(partnerId);
     	if(listWithPartnerId == null || listWithPartnerId.size()==0) return null;
     	return listWithPartnerId;
+    }
+
+    public List<PartnerForPeopleInChargeDTO> getPartnerForPeopleInCharge() {
+        List<BusinessPartner> list =  partnerDAO.findDistinctByCompanyType(CompanyType.JOINT_STOCK.getValue());
+        Collections.sort(list, new BusinessPartnerComparator());
+        List<PartnerForPeopleInChargeDTO> result =  new ArrayList<>();
+        for(BusinessPartner partner : list){
+            PartnerForPeopleInChargeDTO p = new PartnerForPeopleInChargeDTO();
+            p.setId(partner.getId());
+            p.setName(partner.getName());
+            p.setKanaName(partner.getKanaName());
+            p.setDomain(partner.getDomain1());
+            result.add(p);
+        }
+        return result;
+    }
+
+    public class BusinessPartnerComparator implements Comparator<BusinessPartner> {
+        public int compare(BusinessPartner o1, BusinessPartner o2) {
+            if(o1.isOurCompany() == o2.isOurCompany()) {
+                int value1 = o1.getKanaName().compareTo(o2.getKanaName());
+                if (value1 == 0) {
+                    int value2 = o1.getName().compareTo(o2.getName());
+                    return value2;
+                }
+                return value1;
+            } else if (o1.isOurCompany() && !o2.isOurCompany()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
     }
 }

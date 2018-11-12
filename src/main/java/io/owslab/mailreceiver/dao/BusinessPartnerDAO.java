@@ -21,4 +21,10 @@ public interface BusinessPartnerDAO extends PagingAndSortingRepository<BusinessP
             nativeQuery = true
     )
     List<BusinessPartner> findByDomain(@Param("domain") String domain );
+
+    @Query(
+            value = "select * from business_partners bp where bp.company_type != :companyType",
+            nativeQuery = true
+    )
+    List<BusinessPartner> findDistinctByCompanyType(@Param("companyType") int companyType );
 }

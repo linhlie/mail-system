@@ -204,6 +204,7 @@
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
+                    title: "",
                     content: "保存に成功しました",
                     onClose: function () {
                         loadBusinessPartners();
