@@ -273,6 +273,66 @@ function getMailDataAPI(accountId, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getWords(onSuccess, onError) {
+    var url = "/user/fuzzyWord/getListWord";
+    _get(url, onSuccess, onError);
+}
+
+function getExclusion(groupWord, onSuccess, onError) {
+    var url = "/user/fuzzyWord/getExclusion";
+    _postString(url, groupWord, onSuccess, onError);
+}
+
+function addFuzzyWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addFuzzyWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function editFuzzyWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editFuzzyWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteFuzzyWord(id, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteFuzzyWord/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function editGroupWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editGroupWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteGroupWord(group, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteGroupWord/" + group;
+    _delete(url, onSuccess, onError);
+}
+
+function deleteWordInGroup(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/deleteWordInGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function editWordAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/editWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function addWordToGroupAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addWordToGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function addListWord(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/addListWord";
+    _post(url, data, onSuccess, onError);
+}
+
+function searchWordAPI(data, onSuccess, onError) {
+    var url = "/user/fuzzyWord/searchWord";
+    _postString(url, data, onSuccess, onError);
+}
+
 function saveBulletinBoard(bulletin, onSuccess, onError){
     var url = "/user/dashboard/saveBulletin";
     _post(url, bulletin, onSuccess, onError);
@@ -290,30 +350,12 @@ function updateBulletinBoardPosition(data, onSuccess, onError){
 
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function importEngineers(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importEngineer?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function importPeopleInChargePartners(data, includeHeader, deleteOld, onSuccess, onError) {
@@ -332,16 +374,7 @@ function importPeopleInChargePartners(data, includeHeader, deleteOld, onSuccess,
 
 function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
@@ -351,17 +384,7 @@ function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
 
 function getInforPartnerAPI(data, onSuccess, onError) {
     var url = "/user/matchingResult/getInforPartner";
-    $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        url: url,
-        data: data,
-        dataType: 'json',
-        cache: false,
-        timeout: 600000,
-        success: onSuccess,
-        error: onError
-    });
+    _postString(url, data, onSuccess, onError);
 }
 
 
@@ -423,6 +446,20 @@ function _get(url, onSuccess, onError) {
         type: "GET",
         contentType: "application/json",
         url: url,
+        cache: false,
+        timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function _postString(url, data, onSuccess, onError) {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: url,
+        data: data,
+        dataType: 'json',
         cache: false,
         timeout: 600000,
         success: onSuccess,

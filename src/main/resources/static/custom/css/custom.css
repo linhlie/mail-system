@@ -29,7 +29,7 @@ select:not([multiple]) {
 .fuzzy .fuzzy-form-container {
     width: 100%;
     border: 1px solid #e6e6e6;
-    height: 300px;
+    height: 500px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -39,7 +39,7 @@ select:not([multiple]) {
     height: 100%;
     background-color: darkgray;
     border: 2px solid black;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
 }
 
 .fuzzy .fuzzy-table-container table {
@@ -1341,6 +1341,115 @@ div.bulletinboard-icon-wrapper {
     text-align: center;
     font-size: 30px;
     line-height: 100%;
+}
+
+.fuzzyword-icon-plus{
+    cursor: pointer;
+    color: #7a869d;
+}
+
+.fuzzyword-icon-trash{
+    margin-right: 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    height: 26px;
+}
+
+.fuzzyword-icon-play{
+    width: 30px;
+    cursor: pointer;
+    color: #00c0ef;
+    height: 26px;
+}
+
+.fuzzyword-icon-null{
+    width: 30px;
+    height: 26px;
+}
+
+.fuzzyword-icon-arrow{
+    width: 30px;
+    cursor: pointer;
+    height: 26px;
+}
+
+.fuzzyword-li-group{
+    /*border: 1px solid #3c8dbc;*/
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    padding-top: 15px;
+}
+
+.fuzzyword-li-group-select{
+    background-color: #ffff8d;
+}
+
+.groupFuzzyWord{
+    border-top: 1px solid #eeeeee;
+    padding-top: 5px;
+}
+
+.groupFuzzyWordName{
+    cursor: pointer;
+    height: 26px;
+}
+
+.word-icon-delete{
+    width: 30px;
+    cursor: pointer;
+}
+
+.word-icon-edit {
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.group-icon-edit {
+    margin-right: 15px;
+    cursor: pointer;
+    height: 26px;
+}
+
+.word-edit-text{
+    display: none;
+}
+
+.group-edit-text{
+    display: none;
+}
+
+.word-icon-save-add{
+    margin-right: 15px;
+    cursor: pointer;
+    display: none;
+}
+
+.word-icon-cancel-add{
+    width: 30px;
+    cursor: pointer;
+    display: none;
+}
+
+.word-li{
+    height: 26px;
+    margin-top: 2px;
+    margin-left: 30px;
+    list-style-type: none;
+}
+
+.add_word_member{
+    transform: translateY(10px);
+    cursor: pointer;
+}
+.fuzzyword-ul-word{
+    margin-top: 10px;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.fuzzyword-hr{
+     margin-top: 5px;
+     margin-bottom: 5px;
 }
 
 .bulletinTab{
