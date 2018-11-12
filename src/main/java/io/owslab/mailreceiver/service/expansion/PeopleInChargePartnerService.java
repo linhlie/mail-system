@@ -149,6 +149,15 @@ public class PeopleInChargePartnerService {
         return matcher.matches();
     }
 
+    public boolean checkValidateNumberPhone(String numberPhone){
+        String pattern1 = "^\\+\\d+$";
+        String pattern2 = "^\\d+$";
+        if(numberPhone.matches(pattern1) || numberPhone.matches(pattern2)){
+            return true;
+        }
+        return false;
+    }
+
     public List<ImportLogDTO> importPeopleinChargePartner(MultipartFile multipartFile, boolean skipHeader, boolean deleteOld) throws Exception {
 
         File file = null;
@@ -185,6 +194,8 @@ public class PeopleInChargePartnerService {
                     String lastName = csvPeopleDTO.getLastName();
                     String firstName = csvPeopleDTO.getFirstName();
                     String emailAddress = csvPeopleDTO.getEmailAddress();
+                    String numberPhone1 = csvPeopleDTO.getNumberPhone1();
+                    String numberPhone2 = csvPeopleDTO.getNumberPhone2();
 
                     String typetmp = "【担当者インポート】";
                     int lineIndextmp = skipHeader ? line + 2 : line + 1;
@@ -202,6 +213,21 @@ public class PeopleInChargePartnerService {
                     }
                     if(emailAddress != null && !checkValidateEmail(emailAddress)){
                         missingList.add("メールアドレス無効な。");
+                        String detail = String.join("、", missingList) + "。";
+                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
+                    if(numberPhone1 != null && !checkValidateNumberPhone(numberPhone1)){
+                        missingList.add("電話番号1無効。");
+                        String detail = String.join("、", missingList) + "。";
+                        ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
+                        importLogs.add(importLog);
+                        continue;
+                    }
+
+                    if(numberPhone2 != null && !checkValidateNumberPhone(numberPhone2)){
+                        missingList.add("電話番号2無効。");
                         String detail = String.join("、", missingList) + "。";
                         ImportLogDTO importLog = new ImportLogDTO(typetmp, lineIndextmp, infotmp, detail);
                         importLogs.add(importLog);

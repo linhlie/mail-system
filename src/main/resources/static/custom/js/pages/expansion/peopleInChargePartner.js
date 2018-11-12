@@ -179,12 +179,14 @@
     function formValidate() {
         var validate5 = emailAddressValidate();
         var validate8 = partnerValidate();
-        return validate5 && validate8;
+        var validate6 = numberphone1Validate();
+        var validate7 = numberphone2Validate();
+        return validate5 && validate6 && validate7 && validate8;
     }
 
 
     function showError(error) {
-        var container = $(this).closest("div.form-group.row");
+        var container = $(this).closest("div.showError");
         container.addClass("has-error");
         container.find("span.form-error").text(error);
     }
@@ -195,7 +197,7 @@
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
         if(!vaulue) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["入力必須"]);
             return false;
         }
 
@@ -205,6 +207,33 @@
         }
         return true;
     }
+
+    function numberphone1Validate() {
+        var input = $("input[name='numberPhone1']");
+        var vaulue = input.val();
+        var reg1 = /^\+\d+$/;
+        var reg2 = /^\d+$/;
+
+        if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
+            showError.apply(input, ["電話番号無効"]);
+            return false;
+        }
+        return true;
+    }
+
+    function numberphone2Validate() {
+        var input = $("input[name='numberPhone2']");
+        var vaulue = input.val();
+        var reg1 = /^\+\d+$/;
+        var reg2 = /^\d+$/;
+
+        if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
+            showError.apply(input, ["電話番号無効"]);
+            return false;
+        }
+        return true;
+    }
+
 
     function partnerValidate() {
         var input = $("#partnerError");
