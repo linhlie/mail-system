@@ -25,9 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,12 +56,19 @@ public class PeopleInChargePartnerService {
 
     public List<PeopleInChargePartnerDTO> getByPartnerId(long partnerId){
         List<PeopleInChargePartner> listPeople =  peopleInChargePartnerDAO.findByPartnerId(partnerId);
+        Collections.sort(listPeople, new PeopleInChargePartnerComparator());
         List<PeopleInChargePartnerDTO> listPeopleDTO =  new ArrayList<>();
         for(PeopleInChargePartner people : listPeople){
             PeopleInChargePartnerDTO peopleDTO = new PeopleInChargePartnerDTO(people);
             listPeopleDTO.add(peopleDTO);
         }
         return listPeopleDTO;
+    }
+
+    public class PeopleInChargePartnerComparator implements Comparator<PeopleInChargePartner> {
+        public int compare(PeopleInChargePartner o1, PeopleInChargePartner o2) {
+            return o1.getEmailAddress().compareTo(o2.getEmailAddress());
+        }
     }
 
     //need transaction
