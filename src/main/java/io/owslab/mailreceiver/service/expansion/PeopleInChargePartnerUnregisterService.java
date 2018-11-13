@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.PeopleInChargePartnerUnregisterDAO;
 import io.owslab.mailreceiver.form.EmailsAvoidRegisterPeopleInChargeForm;
+import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -18,6 +19,9 @@ public class PeopleInChargePartnerUnregisterService {
 
     @Autowired
     private PeopleInChargePartnerUnregisterDAO peopleInChargeUnregisterDAO;
+
+    @Autowired
+    private DomainService domainService;
 
     public List<PeopleInChargePartnerUnregister> getAll() {
         return peopleInChargeUnregisterDAO.findAll();
@@ -84,10 +88,20 @@ public class PeopleInChargePartnerUnregisterService {
         }
         LinkedHashMap<String, PeopleInChargePartnerUnregister> mapPeople = getPeopleInChargeFromMailAddresses(listEmail);
         List<PeopleInChargePartnerUnregister> listPeopleInChargeUnregister = getAll();
-
         for(PeopleInChargePartnerUnregister people : listPeopleInChargeUnregister){
             if(mapPeople.containsKey(people.getEmail())){
                 mapPeople.remove(people.getEmail());
+            }
+        }
+        List<DomainUnregister> lisDomainUnregister = domainService.getDomainsByStatus(DomainUnregister.Status.AVOID_REGISTER);
+        for(PeopleInChargePartnerUnregister people : listPeopleInChargeUnregister){
+            String email = people.getEmail();
+            int index = email.indexOf("@");
+            String domain = email.substring(index+1);
+            for(DomainUnregister domainUnregister : lisDomainUnregister){
+                if(domain.equals(domainUnregister.getDomain())){
+                    mapPeople.remove(people.getEmail());
+                }
             }
         }
         try {
