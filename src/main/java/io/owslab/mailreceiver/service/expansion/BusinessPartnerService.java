@@ -460,7 +460,17 @@ public class BusinessPartnerService {
             p.setId(partner.getId());
             p.setName(partner.getName());
             p.setKanaName(partner.getKanaName());
-            p.setDomain(partner.getDomain1());
+            String domain = "";
+            if(partner.getDomain1() != null && !partner.getDomain1().equals("")){
+                domain = domain + partner.getDomain1();
+            }
+            if(partner.getDomain2() != null && !partner.getDomain2().equals("")){
+                domain = domain + ", " + partner.getDomain2();
+            }
+            if(partner.getDomain3() != null && !partner.getDomain3().equals("")){
+                domain = domain + ", " + partner.getDomain3();
+            }
+            p.setDomain(domain);
             result.add(p);
         }
         return result;

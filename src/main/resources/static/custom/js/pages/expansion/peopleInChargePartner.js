@@ -5,6 +5,9 @@
     var checkboxNextSelectId = "#checkboxNext"
     var peopleClearBtnId = "#peopleClear";
 
+    var selectPartnerDivId = "selectPartnerDiv";
+    var partnerIdDivId = "partnerIdDiv";
+
     var peopleTableId = "peopleTable";
     var formId = "#peopleForm";
     var formPartnerId = "#partnerForm";
@@ -12,15 +15,18 @@
     var countPeopleInChargeUnregisterId = "#countPeopleInChargeUnregister";
 
     var selectPartnerId = "selectPartner";
+    var partnerId = "partnerId";
     var labelDomainId = "labelDomain";
 
     var currenntPartnerId;
     var updatingPeopleId;
+    var listPartner;
     var listPeopleInChargePartner;
     var listPeopleInChargePartnerUnregister;
     var selectedSourceTableRow=-1;
 
     var formFields = [
+        {type: "select", name: "partnerId"},
         {type: "input", name: "lastName"},
         {type: "input", name: "firstName"},
         {type: "input", name: "department"},
@@ -108,10 +114,18 @@
             currenntPartnerId = partnerId;
             clearFormValidate();
             clearPeopleOnClick();
-            var type = $(styleShowTableId + ' option:selected').text();
-            if(type == '担当者一覧'){
+            var type = getShowType();
+            if(type == '取引先担当者一覧'){
                 loadPeopleInChargePartners(partnerId);
             }
+        });
+
+        $('#' + partnerId).off('change');
+        $('#' + partnerId).change(function() {
+            var selected = $(this).find("option:selected");
+            var partnerId = selected.attr("data-id");
+            var domain = this.value;
+            $('#labelDomainPartner').text(domain);
         });
     }
 
@@ -120,18 +134,21 @@
         var validated = formValidate();
         if(!validated) return;
         var data = getFormData();
-        data.partnerId = currenntPartnerId;
+        var type = getShowType();
+        if(type == '取引先担当者一覧'){
+            data.partnerId = currenntPartnerId;
+        }
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        var type = $(styleShowTableId + ' option:selected').text();
-                        if(type == '担当者一覧'){
+                        if(type == '取引先担当者一覧'){
                             loadPeopleInChargePartners(currenntPartnerId);
                         }else{
                             loadPeoleInChargeUnregisters();
+                            $('#labelDomainPartner').text("");
                         }
                         clearPeopleOnClick();
                     }
@@ -155,7 +172,9 @@
                 form[field.name] = $("input" + "[name='" + field.name + "']").is(':checked');
             } else if (field.type == "radio") {
                 form[field.name] = $('input[name=' + field.name + ']:checked', formId).val()
-            } else {
+            } else if(field.type == "select"){
+                form[field.name] = $("" + field.type + "[name='" + field.name + "']").find("option:selected").attr('data-id');
+            }else{
                 form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
             }
         }
@@ -204,11 +223,20 @@
     }
 
     function formValidate() {
-        var validate5 = emailAddressValidate();
-        var validate8 = partnerValidate();
-        var validate6 = numberphone1Validate();
-        var validate7 = numberphone2Validate();
-        return validate5 && validate6 && validate7 && validate8;
+        var type = getShowType();
+        if(type == "取引先担当者一覧"){
+            var validate5 = emailAddressValidate();
+            var validate8 = partnerValidate();
+            var validate6 = numberphone1Validate();
+            var validate7 = numberphone2Validate();
+            return validate5 && validate6 && validate7 && validate8;
+        }else{
+            var validate5 = emailAddressValidate();
+            var validate8 = partnerValidate2();
+            var validate6 = numberphone1Validate();
+            var validate7 = numberphone2Validate();
+            return validate5 && validate6 && validate7 && validate8;
+        }
     }
 
 
@@ -271,6 +299,15 @@
         return true;
     }
 
+    function partnerValidate2() {
+        var input = $("select[name='partnerId']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["選んでください"]);
+            return false;
+        }
+        return true;
+    }
     function clearPeopleOnClick() {
         resetForm();
         clearFormValidate();
@@ -295,6 +332,7 @@
     function loadBusinessPartners() {
         function onSuccess(response) {
             if(response && response.status){
+                listPartner = response.list;
                 setDataComboboxPartner(response.list);
             }
         }
@@ -324,7 +362,7 @@
 
     function setDataComboboxPartner(options) {
         options = options ? options.slice(0) : [];
-        options.sort(comparePartner);
+        // options.sort(comparePartner);
         $('#' + selectPartnerId).empty();
         $('#' + selectPartnerId).empty();
         $('#' + selectPartnerId).append($('<option>', {
@@ -334,8 +372,22 @@
             text : "所属企業",
         }));
 
+        $('#' + partnerId).empty();
+        $('#' + partnerId).empty();
+        $('#' + partnerId).append($('<option>', {
+            selected: true,
+            disabled: true,
+            value: "",
+            text : "所属企業",
+        }));
+
         $.each(options, function (i, item) {
             $('#' + selectPartnerId).append($('<option>', {
+                value: item.domain,
+                text : item.name,
+            }).attr('data-id',item.id));
+
+            $('#' + partnerId).append($('<option>', {
                 value: item.domain,
                 text : item.name,
             }).attr('data-id',item.id));
@@ -555,18 +607,27 @@
     function styleShowTableChangeListener(){
         $(styleShowTableId).change(function(){
             $("#" + peopleTableId).parent().scrollTop(0);
-            var type = $(styleShowTableId + ' option:selected').text();
-            //Show list partner table
-            if(type == '担当者一覧'){
-                loadPeopleInChargePartners(currenntPartnerId);
+            var type = getShowType();
+            //Show list people table
+            if(type == '取引先担当者一覧'){
+                if(currenntPartnerId){
+                    loadPeopleInChargePartners(currenntPartnerId);
+                }else{
+                    $("#" + peopleTableId + "> thead").html(peopleReplaceHead);
+                    $("#" + peopleTableId + "> tbody").html(peopleReplaceRow);
+                }
                 clearPeopleOnClick();
-                setVisibleCountPeopleUnregister("hidden")
+                setVisibleCountPeopleUnregister("hidden");
+                $("#" + selectPartnerDivId).css("display", "block");
+                $("#" + partnerIdDivId).css("display", "none");
             }
 
-            //Show list domainUnregister table
-            if(type == '未登録担当者一覧'){
+            //Show list peopleUnregister table
+            if(type == '未登録取引先担当者'){
                 loadPeoleInChargeUnregisters();
                 clearPeopleOnClick();
+                $("#" + selectPartnerDivId).css("display", "none");
+                $("#" + partnerIdDivId).css("display", "block");
             }
 
         });
@@ -636,6 +697,8 @@
     function doEditPeopleInChargeUnregister(data) {
         clearFormValidate();
         $("#emailAddress").val(data.email);
+        var domain = getDomainFormEmail(data.email);
+        selectPartner(domain);
         disableUpdatePeople(true);
     }
 
@@ -690,4 +753,40 @@
             }
         });
     }
+
+    function getShowType() {
+        return type = $(styleShowTableId + ' option:selected').text();
+    }
+
+    function getDomainFormEmail(email){
+        var index  = email.indexOf("@");
+        if(index>0){
+            return email.substring(index+1, email.length);
+        }else{
+            return null;
+        }
+    }
+
+    function selectPartner(domain){
+        var index = 1 ;
+        for(var i=0;i<listPartner.length;i++){
+            var domains = [];
+            if(listPartner[i].domain){
+                domains = listPartner[i].domain.split(",");
+            }
+            for(var j=0; j<domains.length; j++){
+                if(domains[j] && domain == domains[j].trim()){
+                    index = i + 2;
+                    break;
+                }
+            }
+        }
+        $('#'+ partnerId +' :nth-child('+ index +')').prop('selected', true);
+        if(index>1){
+            $("#labelDomainPartner").text(listPartner[index-2].domain);
+        }else{
+            $("#labelDomainPartner").text("");
+        }
+    }
+
 })(jQuery);

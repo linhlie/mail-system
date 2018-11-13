@@ -42,7 +42,7 @@ public class PeopleInChargePartnerController {
     PeopleInChargePartnerUnregisterService peopleInChargePartnerUnregisterService;
 
     @RequestMapping(value = { "/peopleInChargePartner" }, method = RequestMethod.GET)
-    public String getBusinessPartnerRegist(Model model, HttpServletRequest request) {
+    public String getPeopleInChargePartner(Model model, HttpServletRequest request) {
         return "expansion/peopleInChargePartner";
     }
 
