@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PeopleInChargePartnerUnregisterService {
@@ -25,7 +23,14 @@ public class PeopleInChargePartnerUnregisterService {
     }
 
     public List<PeopleInChargePartnerUnregister> getPeopleInChargeUnregisterByStatus(int status) {
-        return peopleInChargeUnregisterDAO.findByStatus(status);
+        List<PeopleInChargePartnerUnregister> listPeople = peopleInChargeUnregisterDAO.findByStatus(status);
+        Collections.sort(listPeople, new Comparator<PeopleInChargePartnerUnregister>() {
+            @Override
+            public int compare(PeopleInChargePartnerUnregister o1, PeopleInChargePartnerUnregister o2) {
+                return o1.getEmail().compareTo(o2.getEmail());
+            }
+        });
+        return listPeople;
     }
 
     public PeopleInChargePartnerUnregister getPeoleInChargeUnregister(Long id) {
