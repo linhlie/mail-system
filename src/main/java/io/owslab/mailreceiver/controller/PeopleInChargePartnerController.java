@@ -2,6 +2,8 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.PartnerForPeopleInChargeDTO;
 import io.owslab.mailreceiver.dto.PeopleInChargePartnerDTO;
+import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
+import io.owslab.mailreceiver.form.EmailsAvoidRegisterPeopleInChargeForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
@@ -193,5 +195,50 @@ public class PeopleInChargePartnerController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping(value = { "/emailAvoidRegisterPeopleInCharge" }, method = RequestMethod.GET)
+    public String getPeopleInChargeAvoidRegister(Model model, HttpServletRequest request) {
+        return "expansion/PeopleInChargePartnerAvoidRegister";
+    }
+
+    @RequestMapping(value = { "/emailsAvoidRegisterPeopleInCharge/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getEmailsAvoidRegisterPeopleInCharge() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<PeopleInChargePartnerUnregister> listPeople = peopleInChargePartnerUnregisterService.getPeopleInChargeUnregisterByStatus(PeopleInChargePartnerUnregister.Status.AVOID_REGISTER);
+            result.setList(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPeopleInChargePartnerUnregister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/emailsAvoidRegisterPeopleInCharge/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveEmailAvoidRegister(
+            @Valid @RequestBody EmailsAvoidRegisterPeopleInChargeForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            peopleInChargePartnerUnregisterService.saveEmailsAvoidRegisterPeopleInCharge(form);
+            result.setMsg("done");
+            result.setStatus(true);
+        }  catch (Exception e) {
+            e.printStackTrace();
+            logger.error("updateEmailAvoidRegister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }

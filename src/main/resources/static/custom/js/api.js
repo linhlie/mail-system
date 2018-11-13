@@ -434,6 +434,16 @@ function avoidRegisterPeopleInChargeUnregister(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getEmailsAvoidRegisterPeopleInCharge(onSuccess, onError) {
+    var url = "/expansion/emailsAvoidRegisterPeopleInCharge/list";
+    _get(url, onSuccess, onError);
+}
+
+function saveEmailAvoidRegister(data, onSuccess, onError) {
+    var url = "/expansion/emailsAvoidRegisterPeopleInCharge/update";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;

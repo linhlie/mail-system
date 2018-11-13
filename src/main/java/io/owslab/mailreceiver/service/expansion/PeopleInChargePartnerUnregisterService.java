@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.PeopleInChargePartnerUnregisterDAO;
+import io.owslab.mailreceiver.form.EmailsAvoidRegisterPeopleInChargeForm;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -33,10 +34,6 @@ public class PeopleInChargePartnerUnregisterService {
         return listPeople;
     }
 
-    public PeopleInChargePartnerUnregister getPeoleInChargeUnregister(Long id) {
-        return peopleInChargeUnregisterDAO.findOne(id);
-    }
-
     public PeopleInChargePartnerUnregister getPeoleInChargeUnregisterByIdAndStatus(Long id, int status) {
         List<PeopleInChargePartnerUnregister>  peoleInChargeUnregister = peopleInChargeUnregisterDAO.findByIdAndStatus(id, status);
         return peoleInChargeUnregister != null && peoleInChargeUnregister.size() > 0 ? peoleInChargeUnregister.get(0) : null;
@@ -54,11 +51,7 @@ public class PeopleInChargePartnerUnregisterService {
         peopleInChargeUnregisterDAO.delete(id);
     }
 
-    public void deleteDomainByListEmail(List<String> enmail){
-        peopleInChargeUnregisterDAO.deleteByEmailIn(enmail);
-    }
-
-    public void deleteDomainByListPeopleInChargeUnregister(List<PeopleInChargePartnerUnregister> listPeople){
+    public void deleteByListPeopleInChargeUnregister(List<PeopleInChargePartnerUnregister> listPeople){
         peopleInChargeUnregisterDAO.delete(listPeople);
     }
 
@@ -70,14 +63,6 @@ public class PeopleInChargePartnerUnregisterService {
         PeopleInChargePartnerUnregister people = getPeoleInChargeUnregisterByIdAndStatus(id, PeopleInChargePartnerUnregister.Status.ALLOW_REGISTER);
         if(people != null){
             people.setStatus(PeopleInChargePartnerUnregister.Status.AVOID_REGISTER);
-            savePeopleInChargeUnregister(people);
-        }
-    }
-
-    public void changeStatus(long id, int newStatus){
-        PeopleInChargePartnerUnregister people = getPeoleInChargeUnregister(id);
-        if(people != null){
-            people.setStatus(newStatus);
             savePeopleInChargeUnregister(people);
         }
     }
@@ -115,14 +100,6 @@ public class PeopleInChargePartnerUnregisterService {
         }
     }
 
-    public LinkedHashMap<String, PeopleInChargePartnerUnregister> getPeopleInChargeUnregister(List<Email> listEmail){
-        List<String> mailAddressList = new ArrayList<>();
-        for(Email mail : listEmail){
-            mailAddressList.add(mail.getFrom());
-        }
-        return getPeopleInChargeFromMailAddresses(mailAddressList);
-    }
-
     public LinkedHashMap<String, PeopleInChargePartnerUnregister> getPeopleInChargeFromMailAddresses(List<String> listEmail){
         LinkedHashMap<String, PeopleInChargePartnerUnregister> hashMap = new LinkedHashMap<String, PeopleInChargePartnerUnregister>();
         for(String from : listEmail){
@@ -136,16 +113,16 @@ public class PeopleInChargePartnerUnregisterService {
         return hashMap;
     }
 
-//    public void savePeopleInChargeAvoidRegister(DomainAvoidRegisterForm form){
-//        if(form != null){
-//            List<DomainUnregister> listDomainUpdate = form.getDomainsUpdate();
-//            if(listDomainUpdate != null && listDomainUpdate.size()>0){
-//                saveListPeopleInChargeUnregister(listDomainUpdate);
-//            }
-//            List<DomainUnregister> listDomainDelete = form.getDomainsDelete();
-//            if(listDomainDelete != null && listDomainDelete.size()>0){
-//                deleteDomainByListPeopleInChargeUnregister(listDomainDelete);
-//            }
-//        }
-//    }
+    public void saveEmailsAvoidRegisterPeopleInCharge(EmailsAvoidRegisterPeopleInChargeForm form){
+        if(form != null){
+            List<PeopleInChargePartnerUnregister> listEmailUpdate = form.getEmailsUpdate();
+            if(listEmailUpdate != null && listEmailUpdate.size()>0){
+                saveListPeopleInChargeUnregister(listEmailUpdate);
+            }
+            List<PeopleInChargePartnerUnregister> listEmailDelete = form.getEmailsDelete();
+            if(listEmailDelete != null && listEmailDelete.size()>0){
+                deleteByListPeopleInChargeUnregister(listEmailDelete);
+            }
+        }
+    }
 }
