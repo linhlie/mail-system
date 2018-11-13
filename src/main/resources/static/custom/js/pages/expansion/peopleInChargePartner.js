@@ -8,6 +8,8 @@
     var peopleTableId = "peopleTable";
     var formId = "#peopleForm";
     var formPartnerId = "#partnerForm";
+    var styleShowTableId = "#styleShowTable";
+    var countPeopleInChargeUnregisterId = "#countPeopleInChargeUnregister";
 
     var selectPartnerId = "selectPartner";
     var labelDomainId = "labelDomain";
@@ -15,6 +17,7 @@
     var currenntPartnerId;
     var updatingPeopleId;
     var listPeopleInChargePartner;
+    var listPeopleInChargePartnerUnregister;
     var selectedSourceTableRow=-1;
 
     var formFields = [
@@ -57,6 +60,21 @@
         '</tr>';
 
 
+    var peopleInChargeUnregisterReplaceHead = '<tr>' +
+        '<th class="dark">メールアドレス</th>' +
+        '<th colspan="2"></th>' +
+        '</tr>';
+
+    var peopleInChargeUnregisterReplaceRow = '<tr role="row" class="hidden">' +
+        '<td name="editPeopleInChargeUnregister" rowspan="1" colspan="1" data="email" style="cursor: pointer"><span></span></td>' +
+        '<td name="avoidRegister" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">無視</button>' +
+        '</td>' +
+        '<td name="deletePeopleInChargeUnregister" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">削除</button>' +
+        '</td>' +
+        '</tr>';
+
     $(function () {
         initStickyHeader();
         partnerComboBoxListener();
@@ -65,6 +83,7 @@
         setButtonClickListenter(peopleClearBtnId, clearPeopleOnClick);
         loadBusinessPartners();
         draggingSetup();
+        styleShowTableChangeListener();
     });
 
     function initStickyHeader() {
@@ -89,7 +108,10 @@
             currenntPartnerId = partnerId;
             clearFormValidate();
             clearPeopleOnClick();
-            loadPeopleInChargePartners(partnerId);
+            var type = $(styleShowTableId + ' option:selected').text();
+            if(type == '担当者一覧'){
+                loadPeopleInChargePartners(partnerId);
+            }
         });
     }
 
@@ -105,7 +127,12 @@
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadPeopleInChargePartners(currenntPartnerId);
+                        var type = $(styleShowTableId + ' option:selected').text();
+                        if(type == '担当者一覧'){
+                            loadPeopleInChargePartners(currenntPartnerId);
+                        }else{
+                            loadPeoleInChargeUnregisters();
+                        }
                         clearPeopleOnClick();
                     }
                 });
@@ -290,7 +317,7 @@
         }
 
         function onError(error) {
-            ađg(error);
+            console.log(error);
         }
         getPeopleInChargePartners(partnerId, onSuccess, onError);
     }
@@ -525,4 +552,142 @@
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
     }
 
+    function styleShowTableChangeListener(){
+        $(styleShowTableId).change(function(){
+            $("#" + peopleTableId).parent().scrollTop(0);
+            var type = $(styleShowTableId + ' option:selected').text();
+            //Show list partner table
+            if(type == '担当者一覧'){
+                loadPeopleInChargePartners(currenntPartnerId);
+                clearPeopleOnClick();
+                setVisibleCountPeopleUnregister("hidden")
+            }
+
+            //Show list domainUnregister table
+            if(type == '未登録担当者一覧'){
+                loadPeoleInChargeUnregisters();
+                clearPeopleOnClick();
+            }
+
+        });
+    }
+
+    function setVisibleCountPeopleUnregister(visibility){
+        $(countPeopleInChargeUnregisterId).css('visibility', visibility);
+    }
+
+    function loadPeoleInChargeUnregisters(callback) {
+        function onSuccess(response) {
+            if(response && response.status){
+                loadPeopleInChargeUnregisterData(response.list);
+            }
+            if(typeof callback == 'function'){
+                callback(response.list);
+            }
+        }
+
+        function onError(error) {
+
+        }
+        getPeopleInChargePartnerUnregisters(onSuccess, onError);
+    }
+
+    function loadPeopleInChargeUnregisterData(data) {
+        listPeopleInChargePartnerUnregister = data;
+        $(countPeopleInChargeUnregisterId).html("<u>未登録の担当者が"+data.length+"件あります</u>");
+        setVisibleCountPeopleUnregister("visible")
+        removeAllRow(peopleTableId, peopleInChargeUnregisterReplaceRow);
+        if (listPeopleInChargePartnerUnregister.length > 0) {
+            var html = peopleInChargeUnregisterReplaceRow;
+            for (var i = 0; i < listPeopleInChargePartnerUnregister.length; i++) {
+                html = html + addRowWithData(peopleTableId, listPeopleInChargePartnerUnregister[i], i);
+            }
+            $("#" + peopleTableId + "> thead").html(peopleInChargeUnregisterReplaceHead);
+            $("#" + peopleTableId + "> tbody").html(html);
+            setRowClickListener("deletePeopleInChargeUnregister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    doDeletePeopleInChargeUnregister(rowData.id);
+                }
+            });
+            setRowClickListener("avoidRegister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    doAvoidRegisterPeopleInChargeUnregister(rowData.id);
+                }
+            });
+            setRowClickListener("editPeopleInChargeUnregister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                selectedSourceTableRow = parseInt(index) + 1;
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                    doEditPeopleInChargeUnregister(rowData);
+                }
+            });
+        }
+    }
+
+    function doEditPeopleInChargeUnregister(data) {
+        clearFormValidate();
+        $("#emailAddress").val(data.email);
+        disableUpdatePeople(true);
+    }
+
+    function doAvoidRegisterPeopleInChargeUnregister(id) {
+        function onSuccess() {
+            loadPeoleInChargeUnregisters();
+        }
+        function onError() {
+            $.alert("don't avoid register people in charge partner。");
+        }
+        $.confirm({
+            title: '<b>【avoid register people in charge partner】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">do you want to avoid register people in charge partner？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        avoidRegisterPeopleInChargeUnregister(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
+
+    function doDeletePeopleInChargeUnregister(id) {
+        function onSuccess() {
+            loadPeoleInChargeUnregisters();
+        }
+        function onError() {
+            $.alert("未登録の担当の削除に失敗しました。");
+        }
+        $.confirm({
+            title: '<b>【未登録の担当の削除】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deletePeopleInChargePartnerUnregister(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
 })(jQuery);

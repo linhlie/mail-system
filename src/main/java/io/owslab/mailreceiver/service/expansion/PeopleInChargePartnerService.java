@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.dto.ImportLogDTO;
 import io.owslab.mailreceiver.dto.PeopleInChargePartnerDTO;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
+import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -41,6 +42,9 @@ public class PeopleInChargePartnerService {
 
     @Autowired
     UploadFileService uploadFileService;
+
+    @Autowired
+    PeopleInChargePartnerUnregisterService peopleInChargeUnregisterService;
 
     public PeopleInChargePartner getById(long id){
         return peopleInChargePartnerDAO.findOne(id);
@@ -93,6 +97,7 @@ public class PeopleInChargePartnerService {
         }else{
             peopleInChargePartnerDAO.save(people);
         }
+        peopleInChargeUnregisterService.deleteByEmail(people.getEmailAddress().toLowerCase());
     }
 
     //need transaction
@@ -117,6 +122,7 @@ public class PeopleInChargePartnerService {
         }else{
             peopleInChargePartnerDAO.save(people);
         }
+        peopleInChargeUnregisterService.deleteByEmail(people.getEmailAddress().toLowerCase());
     }
 
     private List<CSVPeopleInChargePartnerDTO> getPeopleInChargePartnersToExport() {

@@ -4,9 +4,11 @@ import io.owslab.mailreceiver.dto.PartnerForPeopleInChargeDTO;
 import io.owslab.mailreceiver.dto.PeopleInChargePartnerDTO;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
+import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerUnregisterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class PeopleInChargePartnerController {
 
     @Autowired
     PeopleInChargePartnerService peopleInChargePartnerService;
+
+    @Autowired
+    PeopleInChargePartnerUnregisterService peopleInChargePartnerUnregisterService;
 
     @RequestMapping(value = { "/peopleInChargePartner" }, method = RequestMethod.GET)
     public String getBusinessPartnerRegist(Model model, HttpServletRequest request) {
@@ -151,4 +156,42 @@ public class PeopleInChargePartnerController {
         }
     }
 
+    @RequestMapping(value = { "/peopleInChargePartnerUnregister/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getPeopleInChargePartnerUnregister() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<PeopleInChargePartnerUnregister> listPeople = peopleInChargePartnerUnregisterService.getPeopleInChargeUnregisterByStatus(PeopleInChargePartnerUnregister.Status.ALLOW_REGISTER);
+            result.setList(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPeopleInChargePartnerUnregister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
+    @RequestMapping(value = "/peopleInChargePartnerUnregister/delete/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deletePeopleInChargePartnerUnregister(@PathVariable("id") long id) {
+        try {
+            peopleInChargePartnerUnregisterService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/peopleInChargePartnerUnregister/avoidRegister/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> avoidRegister(@PathVariable("id") long id) {
+        try {
+            peopleInChargePartnerUnregisterService.changeFromAllowToAvoid(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

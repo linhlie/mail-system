@@ -419,6 +419,21 @@ function deletePeopleInChargePartner(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getPeopleInChargePartnerUnregisters(onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartnerUnregister/list";
+    _get(url, onSuccess, onError);
+}
+
+function deletePeopleInChargePartnerUnregister(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartnerUnregister/delete/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function avoidRegisterPeopleInChargeUnregister(id, onSuccess, onError) {
+    var url = "/expansion/peopleInChargePartnerUnregister/avoidRegister/" + id;
+    _delete(url, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
