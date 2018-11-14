@@ -707,7 +707,7 @@
             loadPeoleInChargeUnregisters();
         }
         function onError() {
-            $.alert("don't avoid register people in charge partner。");
+            $.alert("担当者登録無視に失敗しました。");
         }
         $.confirm({
             title: '<b>【担当者登録無視】</b>',
