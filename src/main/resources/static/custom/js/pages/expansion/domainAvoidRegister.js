@@ -14,7 +14,7 @@
     	'</tr>';
 	
     var domainReplaceRow = '<tr role="row" class="hidden">' +
-		'<td name="editDomain" rowspan="1" colspan="1" data="domain">'+
+		'<td name="editDomain" rowspan="1" colspan="1" data="domain" style="cursor: pointer;"> '+
 		'<span></span>' +
     	'</td>' +
 		'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
@@ -23,7 +23,7 @@
 		'</tr>';
     
     var domainReplaceAddRow = '<tr role="row">' +
-		'<td name="addDomain" rowspan="1" colspan="1" data="domain">'+
+		'<td name="addDomain" rowspan="1" colspan="1" data="domain" style="cursor: pointer;">'+
 		'<span>&nbsp;</span>' +
 		'</td>' +
 		'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
