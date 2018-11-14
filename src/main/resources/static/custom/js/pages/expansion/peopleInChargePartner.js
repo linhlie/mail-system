@@ -257,7 +257,7 @@
         }
 
         if(!re.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["メールアドレス無効な"]);
+            showError.apply(input, ["無効なメールアドレス"]);
             return false;
         }
         return true;
@@ -270,7 +270,7 @@
         var reg2 = /^\d+$/;
 
         if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効"]);
+            showError.apply(input, ["無効な電話番号"]);
             return false;
         }
         return true;
@@ -283,7 +283,7 @@
         var reg2 = /^\d+$/;
 
         if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効"]);
+            showError.apply(input, ["無効な電話番号"]);
             return false;
         }
         return true;
@@ -710,9 +710,9 @@
             $.alert("don't avoid register people in charge partner。");
         }
         $.confirm({
-            title: '<b>【avoid register people in charge partner】</b>',
+            title: '<b>【担当者登録無視】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">do you want to avoid register people in charge partner？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">担当者登録を無視してもよろしいですか？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
