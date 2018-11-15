@@ -110,7 +110,10 @@
             var selected = $(this).find("option:selected");
             var partnerId = selected.attr("data-id");
             var domain = this.value;
-            $('#' + labelDomainId).text(domain);
+            if(domain){
+                var domains = domain.split(",");
+                $('#' + labelDomainId).text(domains[0]);
+            }
             currenntPartnerId = partnerId;
             clearFormValidate();
             clearPeopleOnClick();
@@ -125,7 +128,10 @@
             var selected = $(this).find("option:selected");
             var partnerId = selected.attr("data-id");
             var domain = this.value;
-            $('#labelDomainPartner').text(domain);
+            if(domain){
+                var domains = domain.split(",");
+                $("#labelDomainPartner").text(domains[0]);
+            }
         });
     }
 
@@ -783,7 +789,10 @@
         }
         $('#'+ partnerId +' :nth-child('+ index +')').prop('selected', true);
         if(index>1){
-            $("#labelDomainPartner").text(listPartner[index-2].domain);
+            if(listPartner[index-2].domain){
+                var domains = listPartner[index-2].domain.split(",");
+                $("#labelDomainPartner").text(domains[0]);
+            }
         }else{
             $("#labelDomainPartner").text("");
         }
