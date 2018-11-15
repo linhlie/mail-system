@@ -132,6 +132,20 @@
         '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
+        '<td class="text-center fit" rowspan="1" colspan="1"></td>' +
+        '</tr>';
+
+    var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">返信</button>' +
+        '</td>' +
+        '<td class="clickable text-center fit" name="sendToEngineer" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
+        '</td>' +
         '</tr>';
 
     $(function () {
@@ -205,6 +219,7 @@
                     if(data && data.status){
                         matchingResult = data.list;
                         mailList = data.mailList || {};
+                        // console.log(matchingResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -392,12 +407,21 @@
                 animation: 'doubleBounce',
             });
             var word = data.word;
-            var source = data.source;
+            var email = data.engineerMatchingDTO.mailAddress;
             currentDestinationResult = data.listEmailDTO;
-            removeAllRow(tableId, replaceDestinationHTML);
+            if(email != null && email != ""){
+                removeAllRow(tableId, replaceDestinationHasMailHTML);
+            }else{
+                removeAllRow(tableId, replaceDestinationHTML);
+            }
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
-                    var html = replaceDestinationHTML;
+                    var html = "";
+                    if(email != null && email != ""){
+                        html = replaceDestinationHasMailHTML;
+                    }else{
+                        html = replaceDestinationHTML;
+                    }
                     for(var i = 0; i < currentDestinationResult.length; i++){
                         currentDestinationResult[i].word = word;
                         var messageId = currentDestinationResult[i].messageId;
@@ -409,12 +433,19 @@
                         showDestinationMail($(this).closest('tr'))
                     });
                     setRowClickListener("reply", function () {
-                    	console.log("reply");
                         var row = $(this)[0].parentNode;
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.messageId) {
                             showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO.id);
+                        }
+                    });
+                    setRowClickListener("sendToEngineer", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if(rowData && rowData.messageId) {
+                            // showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, data.engineerMatchingDTO, data.engineerMatchingDTO.id, "sendToEngineer")
                         }
                     });
                 }
