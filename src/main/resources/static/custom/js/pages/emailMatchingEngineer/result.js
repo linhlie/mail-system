@@ -1409,8 +1409,8 @@
         var range = emailData.range;
         var matchRange = emailData.matchRange;
         var replaceType = 5;
-        var emailEngineer = engineer.mailAddress;
-        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&emailEngineer=" + emailEngineer;
+        var engineerId = engineer.id+"";
+        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
         var type = 10;
         url = url + "&type=" + type;
         if(!!accountId){

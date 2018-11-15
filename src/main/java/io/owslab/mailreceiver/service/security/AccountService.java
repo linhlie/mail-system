@@ -118,4 +118,13 @@ public class AccountService {
         MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user.getUserId();
     }
+
+    public String getUserNameLogged(){
+        Long userId = getLoggedInAccountId();
+        Account account = findById(userId);
+        if(account.getName() != null && !account.getName().trim().equals("")){
+            return  account.getName();
+        }
+        return  account.getUserName();
+    }
 }

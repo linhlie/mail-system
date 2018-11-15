@@ -182,14 +182,15 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
-                                          @RequestParam(value = "emailEngineer", required = false) String emailEngineer,
+                                          @RequestParam(value = "engineerId", required = false) String engineerId,
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
-            if(emailEngineer!=null){
-                List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer();
+            if(engineerId != null){
+                long id = Long.parseLong(engineerId);
+                List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer(id);
                 result.setList(accountList);
             }else{
                 List<EmailAccount> accountList = mailAccountsService.list();
