@@ -2,11 +2,15 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.PartnerForPeopleInChargeDTO;
 import io.owslab.mailreceiver.dto.PeopleInChargePartnerDTO;
+import io.owslab.mailreceiver.form.DomainAvoidRegisterForm;
+import io.owslab.mailreceiver.form.EmailsAvoidRegisterPeopleInChargeForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
+import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerUnregisterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +38,11 @@ public class PeopleInChargePartnerController {
     @Autowired
     PeopleInChargePartnerService peopleInChargePartnerService;
 
+    @Autowired
+    PeopleInChargePartnerUnregisterService peopleInChargePartnerUnregisterService;
+
     @RequestMapping(value = { "/peopleInChargePartner" }, method = RequestMethod.GET)
-    public String getBusinessPartnerRegist(Model model, HttpServletRequest request) {
+    public String getPeopleInChargePartner(Model model, HttpServletRequest request) {
         return "expansion/peopleInChargePartner";
     }
 
@@ -151,4 +158,87 @@ public class PeopleInChargePartnerController {
         }
     }
 
+    @RequestMapping(value = { "/peopleInChargePartnerUnregister/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getPeopleInChargePartnerUnregister() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<PeopleInChargePartnerUnregister> listPeople = peopleInChargePartnerUnregisterService.getPeopleInChargeUnregisterByStatus(PeopleInChargePartnerUnregister.Status.ALLOW_REGISTER);
+            result.setList(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPeopleInChargePartnerUnregister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
+    @RequestMapping(value = "/peopleInChargePartnerUnregister/delete/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deletePeopleInChargePartnerUnregister(@PathVariable("id") long id) {
+        try {
+            peopleInChargePartnerUnregisterService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/peopleInChargePartnerUnregister/avoidRegister/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> avoidRegister(@PathVariable("id") long id) {
+        try {
+            peopleInChargePartnerUnregisterService.changeFromAllowToAvoid(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = { "/emailAvoidRegisterPeopleInCharge" }, method = RequestMethod.GET)
+    public String getPeopleInChargeAvoidRegister(Model model, HttpServletRequest request) {
+        return "expansion/PeopleInChargePartnerAvoidRegister";
+    }
+
+    @RequestMapping(value = { "/emailsAvoidRegisterPeopleInCharge/list" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getEmailsAvoidRegisterPeopleInCharge() {AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<PeopleInChargePartnerUnregister> listPeople = peopleInChargePartnerUnregisterService.getPeopleInChargeUnregisterByStatus(PeopleInChargePartnerUnregister.Status.AVOID_REGISTER);
+            result.setList(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getPeopleInChargePartnerUnregister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/emailsAvoidRegisterPeopleInCharge/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> saveEmailAvoidRegister(
+            @Valid @RequestBody EmailsAvoidRegisterPeopleInChargeForm form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            peopleInChargePartnerUnregisterService.saveEmailsAvoidRegisterPeopleInCharge(form);
+            result.setMsg("done");
+            result.setStatus(true);
+        }  catch (Exception e) {
+            e.printStackTrace();
+            logger.error("updateEmailAvoidRegister: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
 }

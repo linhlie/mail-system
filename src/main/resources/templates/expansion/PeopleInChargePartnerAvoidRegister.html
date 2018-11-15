@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
 <head>
-    <title>無視ドメインリスト</title>
+    <title>担当者登録を怠るメール</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -11,16 +11,16 @@
                 <div class="box box-default">
                     <div class="box-body">
                     	 <div>
-                    		<span style="margin-right: 20px;">無視ドメイン リスト</span>
+                    		<span style="margin-right: 20px;">無視メールリスト</span>
 						</div>
 						 <div id="domainBox" class="domain-part table-container-section" style="height: 450px; position: relative; margin-top: 5px;">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
-                                <table id="domainTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                                <table id="emailTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
                                     <thead class="sticky-header">
                                     <tr>
-                                        <th class="dark">無視ドメイン</th>
+                                        <th class="dark">メールアドレス</th>
                                         <th th:colspan="1"></th>
                                     </tr>
                                     </thead>
@@ -32,12 +32,12 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div style="width: 90%;">
-                                    <button id="saveDomains" name="saveDomains" type="button" class="btn btn-success btn-block">更新</button>
+                                    <button id="saveEmails" type="button" class="btn btn-success btn-block">更新</button>
                                 </div>
                             </div>
 	                        <div class="col-md-3">
                                 <div style="width: 90%; margin: auto;">
-                                    <button id="revertDomains" name="revertDomains" type="button" class="btn btn-default btn-block">元に戻す</button>
+                                    <button id="revertEmails" type="button" class="btn btn-default btn-block">元に戻す</button>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="dataModalTitle" class="modal-title">無視ドメイン</h4>
+                    <h4 id="dataModalTitle" class="modal-title">メールアドレス</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group row">
@@ -75,7 +75,7 @@
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>
     <script src="/custom/js/api.js"></script>
-    <script src="/custom/js/pages/expansion/domainAvoidRegister.js"></script>
+    <script src="/custom/js/pages/expansion/peopleInChargePartnerAvoidRegister.js"></script>
 </th:block>
 </body>
 </html>

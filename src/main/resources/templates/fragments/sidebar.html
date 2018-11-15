@@ -157,7 +157,7 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
             </a>
-            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'domainAvoidRegister' || currentMenu == 'peopleInChargePartner' ||currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport' || currentMenu == 'peopleInChargePartnerImportExport' || currentMenu == 'engineerImportExport'})?'treeview-menu visible':'treeview-menu'">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'businessPartnerRegist' || currentMenu == 'domainAvoidRegister' || currentMenu == 'peopleInChargePartner' || currentMenu == 'emailAvoidRegisterPeopleInCharge' ||currentMenu == 'engineerManagement' || currentMenu == 'partnerImportExport' || currentMenu == 'peopleInChargePartnerImportExport' || currentMenu == 'engineerImportExport'})?'treeview-menu visible':'treeview-menu'">
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'businessPartnerRegist'})?'active':''">
                     <a href="#" th:href="@{/expansion/businessPartnerRegist}">
                         <i class="fa fa-handshake-o"></i> <span>取引先登録</span>
@@ -168,6 +168,9 @@
                         </li>
                         <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'peopleInChargePartner'})?'active':''">
                             <a href="#" th:href="@{/expansion/peopleInChargePartner}"><span>取引先 担当者管理</span></a>
+                        </li>
+                        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailAvoidRegisterPeopleInCharge'})?'active':''">
+                            <a href="#" th:href="@{/expansion/emailAvoidRegisterPeopleInCharge}"><span>担当者登録無視リスト</span></a>
                         </li>
                     </ul>
                 </li>

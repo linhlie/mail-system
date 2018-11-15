@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerUnregisterService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
@@ -82,7 +83,6 @@ public class MailBoxService {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
-
     @Autowired
     private NumberRangeService numberRangeService;
 
@@ -106,6 +106,9 @@ public class MailBoxService {
     
     @Autowired
     private BusinessPartnerService partnerService;
+
+    @Autowired
+    private PeopleInChargePartnerUnregisterService peopleInChargeUnregisterService;
     
     private List<Email> cachedEmailList = null;
 
@@ -750,6 +753,10 @@ public class MailBoxService {
         boolean isAddNewDomainUnregister = enviromentSettingService.getAddNewDomainUnregister();
         if(isAddNewDomainUnregister){
             domainService.saveDomainUnregistered(listEmailToCheckDomain);
+        }
+//        boolean isAddNewPeopleInChargeUnregister = enviromentSettingService.getAddPeopleInChargePartnerUnregister();
+        if(true){
+            peopleInChargeUnregisterService.savePeopleInChargeUnregistered(listEmailToCheckDomain);
         }
     }
 

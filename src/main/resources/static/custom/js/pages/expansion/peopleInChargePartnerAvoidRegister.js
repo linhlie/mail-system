@@ -1,42 +1,42 @@
 
 (function () {
-    var domainTableId = "domainTable";
-    var saveDomainsId = "#saveDomains";
-    var revertDomainsId = "#revertDomains";
-    
-    var domains = [];
-    var domainsOriginal = [];
-    var domainsDelete = [];
-    
-	var domainReplaceHead = '<tr>'+
-    	'<th class="dark">無視ドメイン</th>'+
-    	'<th th:colspan="1"></th>'+
-    	'</tr>';
-	
-    var domainReplaceRow = '<tr role="row" class="hidden">' +
-		'<td name="editDomain" rowspan="1" colspan="1" data="domain" style="cursor: pointer;"> '+
-		'<span></span>' +
-    	'</td>' +
-		'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
-		'<button type="button">削除</button>' +
-		'</td>' +
-		'</tr>';
-    
-    var domainReplaceAddRow = '<tr role="row">' +
-		'<td name="addDomain" rowspan="1" colspan="1" data="domain" style="cursor: pointer;">'+
-		'<span>&nbsp;</span>' +
-		'</td>' +
-		'<td name="deleteDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
-		'</td>' +
-		'</tr>';
-	
+    var emailTableId = "emailTable";
+    var saveEmailsId = "#saveEmails";
+    var revertEmailId = "#revertEmails";
+
+    var emails = [];
+    var emailsOriginal = [];
+    var emailsDelete = [];
+
+    var emailReplaceHead = '<tr>'+
+        '<th class="dark">メールアドレス</th>'+
+        '<th th:colspan="1"></th>'+
+        '</tr>';
+
+    var emailReplaceRow = '<tr role="row" class="hidden">' +
+        '<td name="editEmail" rowspan="1" colspan="1" data="email" style="cursor: pointer;">'+
+        '<span></span>' +
+        '</td>' +
+        '<td name="deleteEmail" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">削除</button>' +
+        '</td>' +
+        '</tr>';
+
+    var emailReplaceAddRow = '<tr role="row">' +
+        '<td name="addEmail" rowspan="1" colspan="1" data="email" style="cursor: pointer;">'+
+        '<span>&nbsp;</span>' +
+        '</td>' +
+        '<td class="fit action" rowspan="1" colspan="1" data="id">' +
+        '</td>' +
+        '</tr>';
+
     $(function () {
         initStickyHeader();
-        loadDomainsAvoidRegister();
-        setButtonClickListenter(saveDomainsId, saveDomainsOnClick);
-        setButtonClickListenter(revertDomainsId, revertDomainsOnClick);
+        loadEmailsAvoidRegister();
+        setButtonClickListenter(saveEmailsId, saveEmailsOnClick);
+        setButtonClickListenter(revertEmailId, revertEmailsOnClick);
     });
-    
+
     function initStickyHeader() {
         $(".table-container-wrapper").scroll(function () {
             $(this).find("thead.sticky-header")
@@ -48,71 +48,71 @@
                 });
         });
     }
-    
-    function loadDomainsAvoidRegister(){
-    	function onSuccess(response) {
+
+    function loadEmailsAvoidRegister(){
+        function onSuccess(response) {
             if(response && response.status){
                 response.list.sort(function (a, b) {
-                    if(a.domain>b.domain) return 1;
+                    if(a.email>b.email) return 1;
                     return -1;
                 });
-                domainsOriginal = [];
-            	for(var i=0;i<response.list.length;i++){
-            		var domain = {
-        					id: response.list[i].id,
-        					domain: response.list[i].domain,
-        					status: response.list[i].status
-        			}
-            		domainsOriginal.push(domain);
-            	}
-            	domainsDelete = [];
-                loadDomainDataTable(domainTableId, response.list);
+                emailsOriginal = [];
+                for(var i=0;i<response.list.length;i++){
+                    var email = {
+                        id: response.list[i].id,
+                        email: response.list[i].email,
+                        status: response.list[i].status
+                    }
+                    emailsOriginal.push(email);
+                }
+                emailsDelete = [];
+                loadEmailDataTable(response.list);
             }
             if(typeof callback == 'function'){
-            	callback(response.list);
+                callback(response.list);
             }
         }
-        
+
         function onError(error) {
 
         }
-        getDomainAvoidRegister(onSuccess, onError);
+        getEmailsAvoidRegisterPeopleInCharge(onSuccess, onError);
     }
-    
-    function loadDomainDataTable(tableId, data) {
-        domains = data;
-        removeAllRow(tableId, domainReplaceRow);
-        if (domains.length >= 0) {
-            var html = domainReplaceRow;
-            for (var i = 0; i < domains.length; i++) {
-                html = html + addRowWithData(tableId, data[i], i);
+
+    function loadEmailDataTable(data) {
+        emails = data;
+        removeAllRow(emailTableId, emailReplaceRow);
+        if (emails.length >= 0) {
+            var html = emailReplaceRow;
+            for (var i = 0; i < emails.length; i++) {
+                html = html + addRowWithData(emailTableId, data[i], i);
             }
-            html = html + domainReplaceAddRow;
-            $("#" + tableId + "> thead").html(domainReplaceHead);
-            $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("deleteDomain", function () {
+            html = html + emailReplaceAddRow;
+            $("#" + emailTableId + "> thead").html(emailReplaceHead);
+            $("#" + emailTableId + "> tbody").html(html);
+            setRowClickListener("deleteEmail", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                var rowData = domains[index];
-                if (rowData && rowData.domain) {
-                	doDeleteDomain(rowData.domain);
+                var rowData = emails[index];
+                if (rowData && rowData.email) {
+                    doDeleteEmail(rowData.email);
                 }
             });
-            setRowClickListener("editDomain", function () {
+            setRowClickListener("editEmail", function () {
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                var rowData = domains[index];
+                var rowData = emails[index];
                 if (rowData) {
                     $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
-                    doEditDomain(rowData);
+                    doEditEmail(rowData);
                 }
             });
-            setRowClickListener("addDomain", function () {
-                 doAddDomain("");
+            setRowClickListener("addEmail", function () {
+                doAddEmail("");
             });
         }
     }
-    
+
     function addRowWithData(tableId, data, index) {
         var table = document.getElementById(tableId);
         if (!table) return "";
@@ -141,32 +141,32 @@
         }
         return row.outerHTML;
     }
-    
+
     function removeAllRow(tableId, replaceHtml) { //Except header row
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
-    
-    function saveDomainsOnClick(){
-    	var domainsUpdate=[];
-    	for(var i=0;i<domains.length;i++){
-    		var index = -1;
-    		for(var j=0;j<domainsOriginal.length;j++){
-    			if(domains[i].domain == domainsOriginal[j].domain){
-    				index = j;
-    			}
-    		}
-    		if(index == -1){
-    			domainsUpdate.push(domains[i]);
-    		}
-    	}
-    	
+
+    function saveEmailsOnClick(){
+        var emailsUpdate=[];
+        for(var i=0;i<emails.length;i++){
+            var index = -1;
+            for(var j=0;j<emailsOriginal.length;j++){
+                if(emails[i].email == emailsOriginal[j].email){
+                    index = j;
+                }
+            }
+            if(index == -1){
+                emailsUpdate.push(emails[i]);
+            }
+        }
+
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadDomainsAvoidRegister();
+                        loadEmailsAvoidRegister();
 
                     }
                 });
@@ -174,34 +174,34 @@
                 $.alert("保存に失敗しました");
             }
         }
-        
+
         function onError(response) {
             $.alert("保存に失敗しました");
         }
-        
-        saveDomainAvoidRegister({
-        	domainsUpdate: domainsUpdate,
-        	domainsDelete: domainsDelete,
+
+        saveEmailAvoidRegister({
+            emailsUpdate: emailsUpdate,
+            emailsDelete: emailsDelete,
         }, onSuccess, onError)
-        
+
     }
-    
-    function revertDomainsOnClick(){
-    	if(domainsOriginal){
-    	    domains = [];
-    	    domainsDelete = [];
-    		for(var i=0;i<domainsOriginal.length;i++){
-    			var domain = {
-    					id: domainsOriginal[i].id,
-    					domain: domainsOriginal[i].domain,
-    					status: domainsOriginal[i].status
-    			}
-    			domains.push(domain);
-    		}		
-    		loadDomainDataTable(domainTableId, domains)
-    	}
+
+    function revertEmailsOnClick(){
+        if(emailsOriginal){
+            emails = [];
+            emailsDelete = [];
+            for(var i=0;i<emailsOriginal.length;i++){
+                var email = {
+                    id: emailsOriginal[i].id,
+                    email: emailsOriginal[i].email,
+                    status: emailsOriginal[i].status
+                }
+                emails.push(email);
+            }
+            loadEmailDataTable(emails)
+        }
     }
-    
+
     function setRowClickListener(name, callback) {
         $("td[name='" + name + "']").off('click');
         $("td[name='" + name + "']").click(function () {
@@ -210,8 +210,8 @@
             }
         })
     }
-    
-    function doDeleteDomain(domain) {
+
+    function doDeleteEmail(email) {
         $.confirm({
             title: '',
             titleClass: 'text-center',
@@ -220,15 +220,15 @@
                 confirm: {
                     text: 'はい',
                     action: function(){
-                    	for(var i=0;i<domains.length;i++){
-                    		if(domains[i].domain == domain){
-                    			if(domains[i].id){
-                    				domainsDelete.push(domains[i]);
-                    			}
-                    			domains.splice(i,1);                			
-                    		}
-                    	}
-                    	loadDomainDataTable(domainTableId, domains);
+                        for(var i=0;i<emails.length;i++){
+                            if(emails[i].email == email){
+                                if(emails[i].id){
+                                    emailsDelete.push(emails[i]);
+                                }
+                                emails.splice(i,1);
+                            }
+                        }
+                        loadEmailDataTable(emails);
                     }
                 },
                 cancel: {
@@ -238,50 +238,49 @@
             }
         });
     }
-    
-    function doAddDomain(data){
-        showNamePrompt(data, function (domain) {
-            if (domain != null && domain.length > 0) {
-            	var newDomain = {
-            		domain : domain,
-            		status : 2
-            	}
-            	domains.push(newDomain);
-            	loadDomainDataTable(domainTableId, domains);
+
+    function doAddEmail(data){
+        showNamePrompt(data, function (email) {
+            if (email != null && email.length > 0) {
+                var newEmail = {
+                    email : email,
+                    status : 2
+                }
+                emails.push(newEmail);
+                loadEmailDataTable(emails);
             }
         })
     }
-    
-    function doEditDomain(data){
-        showNamePrompt(data.domain, function (domain) {
-            if (domain != null && domain.length > 0) {
-            	data.domain = domain;
-            	loadDomainDataTable(domainTableId, domains);
+
+    function doEditEmail(data){
+        showNamePrompt(data.email, function (email) {
+            if (email != null && email.length > 0) {
+                data.email = email;
+                loadEmailDataTable(emails);
             }
         })
     }
-    
-    function showNamePrompt(domain, callback) {
-    	removeError.apply($( '#dataModalName'));
+
+    function showNamePrompt(email, callback) {
+        removeError.apply($( '#dataModalName'));
         $('#dataModal').modal();
-        $('#dataModalName').val(domain);
+        $('#dataModalName').val(email);
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
-            var domain = $( '#dataModalName').val();
-            var test = "abc@"+domain;
-            var isValid = isValidEmailAddress(test);
-            var isExist = isExistDomain(domain)
+            var email = $( '#dataModalName').val();
+            var isValid = isValidEmailAddress(email);
+            var isExist = isExistEmail(email)
             if(isExist){
-            	showError.apply($( '#dataModalName'), ["Domain existed"]);
+                showError.apply($( '#dataModalName'), ["メールアドレス存在した。"]);
             }
             if(!isValid){
-            	showError.apply($( '#dataModalName'), ["Domain invalid"]);
+                showError.apply($( '#dataModalName'), ["メールアドレス無効な。"]);
             }
-            
+
             if(isValid && !isExist){
-            	$('#dataModal').modal('hide');
+                $('#dataModal').modal('hide');
                 if(typeof callback === "function"){
-                    callback(domain);
+                    callback(email);
                 }
             }
         });
@@ -293,33 +292,33 @@
             }
         });
     }
-    
+
     function showError(error, selector) {
         selector = selector || "div.form-group.row";
         var container = $(this).closest(selector);
         container.addClass("has-error");
         container.find("span.form-error").text(error);
     }
-    
+
     function removeError(error, selector) {
         selector = selector || "div.form-group.row";
         var container = $(this).closest(selector);
         container.removeClass("has-error");
         container.find("span.form-error").text("");
     }
-    
+
     function isValidEmailAddress(emailAddress) {
         var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
         return pattern.test(emailAddress);
     }
-    
-    function isExistDomain(domain) {
-    	for(var i=0;i<domains.length;i++){
-    		if(domains[i].domain == domain){
-    			return true;
-    		}
-    	}
+
+    function isExistEmail(email) {
+        for(var i=0;i<emails.length;i++){
+            if(emails[i].email == email){
+                return true;
+            }
+        }
         return false;
     }
-    
+
 })(jQuery);

@@ -5,19 +5,28 @@
     var checkboxNextSelectId = "#checkboxNext"
     var peopleClearBtnId = "#peopleClear";
 
+    var selectPartnerDivId = "selectPartnerDiv";
+    var partnerIdDivId = "partnerIdDiv";
+
     var peopleTableId = "peopleTable";
     var formId = "#peopleForm";
     var formPartnerId = "#partnerForm";
+    var styleShowTableId = "#styleShowTable";
+    var countPeopleInChargeUnregisterId = "#countPeopleInChargeUnregister";
 
     var selectPartnerId = "selectPartner";
+    var partnerId = "partnerId";
     var labelDomainId = "labelDomain";
 
     var currenntPartnerId;
     var updatingPeopleId;
+    var listPartner;
     var listPeopleInChargePartner;
+    var listPeopleInChargePartnerUnregister;
     var selectedSourceTableRow=-1;
 
     var formFields = [
+        {type: "select", name: "partnerId"},
         {type: "input", name: "lastName"},
         {type: "input", name: "firstName"},
         {type: "input", name: "department"},
@@ -57,6 +66,21 @@
         '</tr>';
 
 
+    var peopleInChargeUnregisterReplaceHead = '<tr>' +
+        '<th class="dark">メールアドレス</th>' +
+        '<th colspan="2"></th>' +
+        '</tr>';
+
+    var peopleInChargeUnregisterReplaceRow = '<tr role="row" class="hidden">' +
+        '<td name="editPeopleInChargeUnregister" rowspan="1" colspan="1" data="email" style="cursor: pointer"><span></span></td>' +
+        '<td name="avoidRegister" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">無視</button>' +
+        '</td>' +
+        '<td name="deletePeopleInChargeUnregister" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<button type="button">削除</button>' +
+        '</td>' +
+        '</tr>';
+
     $(function () {
         initStickyHeader();
         partnerComboBoxListener();
@@ -65,6 +89,7 @@
         setButtonClickListenter(peopleClearBtnId, clearPeopleOnClick);
         loadBusinessPartners();
         draggingSetup();
+        styleShowTableChangeListener();
     });
 
     function initStickyHeader() {
@@ -85,11 +110,28 @@
             var selected = $(this).find("option:selected");
             var partnerId = selected.attr("data-id");
             var domain = this.value;
-            $('#' + labelDomainId).text(domain);
+            if(domain){
+                var domains = domain.split(",");
+                $('#' + labelDomainId).text(domains[0]);
+            }
             currenntPartnerId = partnerId;
             clearFormValidate();
             clearPeopleOnClick();
-            loadPeopleInChargePartners(partnerId);
+            var type = getShowType();
+            if(type == '取引先担当者一覧'){
+                loadPeopleInChargePartners(partnerId);
+            }
+        });
+
+        $('#' + partnerId).off('change');
+        $('#' + partnerId).change(function() {
+            var selected = $(this).find("option:selected");
+            var partnerId = selected.attr("data-id");
+            var domain = this.value;
+            if(domain){
+                var domains = domain.split(",");
+                $("#labelDomainPartner").text(domains[0]);
+            }
         });
     }
 
@@ -98,14 +140,22 @@
         var validated = formValidate();
         if(!validated) return;
         var data = getFormData();
-        data.partnerId = currenntPartnerId;
+        var type = getShowType();
+        if(type == '取引先担当者一覧'){
+            data.partnerId = currenntPartnerId;
+        }
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
-                        loadPeopleInChargePartners(currenntPartnerId);
+                        if(type == '取引先担当者一覧'){
+                            loadPeopleInChargePartners(currenntPartnerId);
+                        }else{
+                            loadPeoleInChargeUnregisters();
+                            $('#labelDomainPartner').text("");
+                        }
                         clearPeopleOnClick();
                     }
                 });
@@ -128,7 +178,9 @@
                 form[field.name] = $("input" + "[name='" + field.name + "']").is(':checked');
             } else if (field.type == "radio") {
                 form[field.name] = $('input[name=' + field.name + ']:checked', formId).val()
-            } else {
+            } else if(field.type == "select"){
+                form[field.name] = $("" + field.type + "[name='" + field.name + "']").find("option:selected").attr('data-id');
+            }else{
                 form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
             }
         }
@@ -177,11 +229,20 @@
     }
 
     function formValidate() {
-        var validate5 = emailAddressValidate();
-        var validate8 = partnerValidate();
-        var validate6 = numberphone1Validate();
-        var validate7 = numberphone2Validate();
-        return validate5 && validate6 && validate7 && validate8;
+        var type = getShowType();
+        if(type == "取引先担当者一覧"){
+            var validate5 = emailAddressValidate();
+            var validate8 = partnerValidate();
+            var validate6 = numberphone1Validate();
+            var validate7 = numberphone2Validate();
+            return validate5 && validate6 && validate7 && validate8;
+        }else{
+            var validate5 = emailAddressValidate();
+            var validate8 = partnerValidate2();
+            var validate6 = numberphone1Validate();
+            var validate7 = numberphone2Validate();
+            return validate5 && validate6 && validate7 && validate8;
+        }
     }
 
 
@@ -202,7 +263,7 @@
         }
 
         if(!re.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["メールアドレス無効な"]);
+            showError.apply(input, ["無効なメールアドレス"]);
             return false;
         }
         return true;
@@ -215,7 +276,7 @@
         var reg2 = /^\d+$/;
 
         if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効"]);
+            showError.apply(input, ["無効な電話番号"]);
             return false;
         }
         return true;
@@ -228,7 +289,7 @@
         var reg2 = /^\d+$/;
 
         if(vaulue && !reg1.test(String(vaulue).toLowerCase()) && !reg2.test(String(vaulue).toLowerCase())){
-            showError.apply(input, ["電話番号無効"]);
+            showError.apply(input, ["無効な電話番号"]);
             return false;
         }
         return true;
@@ -244,6 +305,15 @@
         return true;
     }
 
+    function partnerValidate2() {
+        var input = $("select[name='partnerId']");
+        var value = input.val();
+        if(!value) {
+            showError.apply(input, ["選んでください"]);
+            return false;
+        }
+        return true;
+    }
     function clearPeopleOnClick() {
         resetForm();
         clearFormValidate();
@@ -268,6 +338,7 @@
     function loadBusinessPartners() {
         function onSuccess(response) {
             if(response && response.status){
+                listPartner = response.list;
                 setDataComboboxPartner(response.list);
             }
         }
@@ -290,14 +361,14 @@
         }
 
         function onError(error) {
-            ađg(error);
+            console.log(error);
         }
         getPeopleInChargePartners(partnerId, onSuccess, onError);
     }
 
     function setDataComboboxPartner(options) {
         options = options ? options.slice(0) : [];
-        options.sort(comparePartner);
+        // options.sort(comparePartner);
         $('#' + selectPartnerId).empty();
         $('#' + selectPartnerId).empty();
         $('#' + selectPartnerId).append($('<option>', {
@@ -307,8 +378,22 @@
             text : "所属企業",
         }));
 
+        $('#' + partnerId).empty();
+        $('#' + partnerId).empty();
+        $('#' + partnerId).append($('<option>', {
+            selected: true,
+            disabled: true,
+            value: "",
+            text : "所属企業",
+        }));
+
         $.each(options, function (i, item) {
             $('#' + selectPartnerId).append($('<option>', {
+                value: item.domain,
+                text : item.name,
+            }).attr('data-id',item.id));
+
+            $('#' + partnerId).append($('<option>', {
                 value: item.domain,
                 text : item.name,
             }).attr('data-id',item.id));
@@ -523,6 +608,194 @@
 
     function selectedRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+
+    function styleShowTableChangeListener(){
+        $(styleShowTableId).change(function(){
+            $("#" + peopleTableId).parent().scrollTop(0);
+            var type = getShowType();
+            //Show list people table
+            if(type == '取引先担当者一覧'){
+                if(currenntPartnerId){
+                    loadPeopleInChargePartners(currenntPartnerId);
+                }else{
+                    $("#" + peopleTableId + "> thead").html(peopleReplaceHead);
+                    $("#" + peopleTableId + "> tbody").html(peopleReplaceRow);
+                }
+                clearPeopleOnClick();
+                setVisibleCountPeopleUnregister("hidden");
+                $("#" + selectPartnerDivId).css("display", "block");
+                $("#" + partnerIdDivId).css("display", "none");
+            }
+
+            //Show list peopleUnregister table
+            if(type == '未登録取引先担当者'){
+                loadPeoleInChargeUnregisters();
+                clearPeopleOnClick();
+                $("#" + selectPartnerDivId).css("display", "none");
+                $("#" + partnerIdDivId).css("display", "block");
+            }
+
+        });
+    }
+
+    function setVisibleCountPeopleUnregister(visibility){
+        $(countPeopleInChargeUnregisterId).css('visibility', visibility);
+    }
+
+    function loadPeoleInChargeUnregisters(callback) {
+        function onSuccess(response) {
+            if(response && response.status){
+                loadPeopleInChargeUnregisterData(response.list);
+            }
+            if(typeof callback == 'function'){
+                callback(response.list);
+            }
+        }
+
+        function onError(error) {
+
+        }
+        getPeopleInChargePartnerUnregisters(onSuccess, onError);
+    }
+
+    function loadPeopleInChargeUnregisterData(data) {
+        listPeopleInChargePartnerUnregister = data;
+        $(countPeopleInChargeUnregisterId).html("<u>未登録の担当者が"+data.length+"件あります</u>");
+        setVisibleCountPeopleUnregister("visible")
+        removeAllRow(peopleTableId, peopleInChargeUnregisterReplaceRow);
+        if (listPeopleInChargePartnerUnregister.length > 0) {
+            var html = peopleInChargeUnregisterReplaceRow;
+            for (var i = 0; i < listPeopleInChargePartnerUnregister.length; i++) {
+                html = html + addRowWithData(peopleTableId, listPeopleInChargePartnerUnregister[i], i);
+            }
+            $("#" + peopleTableId + "> thead").html(peopleInChargeUnregisterReplaceHead);
+            $("#" + peopleTableId + "> tbody").html(html);
+            setRowClickListener("deletePeopleInChargeUnregister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    doDeletePeopleInChargeUnregister(rowData.id);
+                }
+            });
+            setRowClickListener("avoidRegister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    doAvoidRegisterPeopleInChargeUnregister(rowData.id);
+                }
+            });
+            setRowClickListener("editPeopleInChargeUnregister", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                selectedSourceTableRow = parseInt(index) + 1;
+                var rowData = listPeopleInChargePartnerUnregister[index];
+                if (rowData && rowData.id) {
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                    doEditPeopleInChargeUnregister(rowData);
+                }
+            });
+        }
+    }
+
+    function doEditPeopleInChargeUnregister(data) {
+        clearFormValidate();
+        $("#emailAddress").val(data.email);
+        var domain = getDomainFormEmail(data.email);
+        selectPartner(domain);
+        disableUpdatePeople(true);
+    }
+
+    function doAvoidRegisterPeopleInChargeUnregister(id) {
+        function onSuccess() {
+            loadPeoleInChargeUnregisters();
+        }
+        function onError() {
+            $.alert("担当者登録無視に失敗しました。");
+        }
+        $.confirm({
+            title: '<b>【担当者登録無視】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">担当者登録を無視してもよろしいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        avoidRegisterPeopleInChargeUnregister(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
+
+    function doDeletePeopleInChargeUnregister(id) {
+        function onSuccess() {
+            loadPeoleInChargeUnregisters();
+        }
+        function onError() {
+            $.alert("未登録の担当の削除に失敗しました。");
+        }
+        $.confirm({
+            title: '<b>【未登録の担当の削除】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deletePeopleInChargePartnerUnregister(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
+
+    function getShowType() {
+        return type = $(styleShowTableId + ' option:selected').text();
+    }
+
+    function getDomainFormEmail(email){
+        var index  = email.indexOf("@");
+        if(index>0){
+            return email.substring(index+1, email.length);
+        }else{
+            return null;
+        }
+    }
+
+    function selectPartner(domain){
+        var index = 1 ;
+        for(var i=0;i<listPartner.length;i++){
+            var domains = [];
+            if(listPartner[i].domain){
+                domains = listPartner[i].domain.split(",");
+            }
+            for(var j=0; j<domains.length; j++){
+                if(domains[j] && domain == domains[j].trim()){
+                    index = i + 2;
+                    break;
+                }
+            }
+        }
+        $('#'+ partnerId +' :nth-child('+ index +')').prop('selected', true);
+        if(index>1){
+            if(listPartner[index-2].domain){
+                var domains = listPartner[index-2].domain.split(",");
+                $("#labelDomainPartner").text(domains[0]);
+            }
+        }else{
+            $("#labelDomainPartner").text("");
+        }
     }
 
 })(jQuery);

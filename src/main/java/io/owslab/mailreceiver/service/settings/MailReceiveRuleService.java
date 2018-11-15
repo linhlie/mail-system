@@ -12,6 +12,7 @@ import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.ReceiveRule;
 import io.owslab.mailreceiver.response.JsonStringResponseBody;
 import io.owslab.mailreceiver.service.expansion.DomainService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerUnregisterService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.FilterRule;
 
@@ -66,6 +67,9 @@ public class MailReceiveRuleService {
 
     @Autowired
     private EmailDAO emailDAO;
+
+    @Autowired
+    private PeopleInChargePartnerUnregisterService peopleInChargeUnregisterService;
 
     public JSONObject getReceiveRuleSettings() throws JSONException {
         JSONObject obj = new JSONObject();
@@ -192,6 +196,11 @@ public class MailReceiveRuleService {
         boolean addNewDomainUnregister = enviromentSettingService.getAddNewDomainUnregister();
         if(addNewDomainUnregister){
             domainService.saveDomainUnregistered(listEmailToCheckDomain);
+        }
+
+//        boolean isAddNewPeopleInChargeUnregister = enviromentSettingService.getAddPeopleInChargePartnerUnregister();
+        if(true){
+            peopleInChargeUnregisterService.savePeopleInChargeUnregistered(listEmailToCheckDomain);
         }
     }
 
