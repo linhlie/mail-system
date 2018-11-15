@@ -268,17 +268,23 @@
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var domain = $( '#dataModalName').val();
+            if(domain){
+                domain = domain.toLowerCase();
+                domain = domain.trim();
+            }
             var test = "abc@"+domain;
             var isValid = isValidEmailAddress(test);
             var isExist = isExistDomain(domain)
             if(isExist){
-            	showError.apply($( '#dataModalName'), ["Domain existed"]);
+            	showError.apply($( '#dataModalName'), ["ドメイン存在した。"]);
             }
             if(!isValid){
-            	showError.apply($( '#dataModalName'), ["Domain invalid"]);
+            	showError.apply($( '#dataModalName'), ["ドメイン無効な。"]);
             }
             
             if(isValid && !isExist){
+                domain = domain.trim();
+                domain = domain.toLowerCase();
             	$('#dataModal').modal('hide');
                 if(typeof callback === "function"){
                     callback(domain);

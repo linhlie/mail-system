@@ -268,6 +268,10 @@
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var email = $( '#dataModalName').val();
+            if(email){
+                email = email.toLowerCase();
+                email = email.trim();
+            }
             var isValid = isValidEmailAddress(email);
             var isExist = isExistEmail(email)
             if(isExist){
