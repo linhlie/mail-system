@@ -32,7 +32,14 @@ public class PeopleInChargePartnerUnregisterService {
         Collections.sort(listPeople, new Comparator<PeopleInChargePartnerUnregister>() {
             @Override
             public int compare(PeopleInChargePartnerUnregister o1, PeopleInChargePartnerUnregister o2) {
-                return o1.getEmail().compareTo(o2.getEmail());
+                if(o1.getEmail() != null && o2.getEmail() != null){
+                    int index1 = o1.getEmail().indexOf("@");
+                    String domain1 = o1.getEmail().substring(index1+1);
+                    int index2 = o2.getEmail().indexOf("@");
+                    String domain2 = o2.getEmail().substring(index2+1);
+                    return domain1.compareTo(domain2);
+                }
+                return 0;
             }
         });
         return listPeople;
