@@ -162,17 +162,21 @@
                     <a href="#" th:href="@{/expansion/businessPartnerRegist}">
                         <i class="fa fa-handshake-o"></i> <span>取引先登録</span>
                     </a>
-                    <ul class="treeview-menu visible">
-                        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'domainAvoidRegister'})?'active':''">
-                        	<a href="#" th:href="@{/expansion/domainAvoidRegister}"><span>無視ドメインリスト</span></a>
-                        </li>
-                        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'peopleInChargePartner'})?'active':''">
-                            <a href="#" th:href="@{/expansion/peopleInChargePartner}"><span>取引先 担当者管理</span></a>
-                        </li>
-                        <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailAvoidRegisterPeopleInCharge'})?'active':''">
-                            <a href="#" th:href="@{/expansion/emailAvoidRegisterPeopleInCharge}"><span>担当者登録無視リスト</span></a>
-                        </li>
-                    </ul>
+                </li>
+                <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'peopleInChargePartner'})?'active':''">
+                    <a href="#" th:href="@{/expansion/peopleInChargePartner}">
+                        <i class="fa fa-users"></i><span>取引先 担当者管理</span>
+                    </a>
+                </li>
+                <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'domainAvoidRegister'})?'active':''">
+                    <a href="#" th:href="@{/expansion/domainAvoidRegister}">
+                        <i class="fa fa-ban"></i><span>無視ドメインリスト</span>
+                    </a>
+                </li>
+                <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailAvoidRegisterPeopleInCharge'})?'active':''">
+                    <a href="#" th:href="@{/expansion/emailAvoidRegisterPeopleInCharge}">
+                        <i class="fa fa-ban"></i><span>担当者登録無視リスト</span>
+                    </a>
                 </li>
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerManagement'})?'active':''">
                     <a href="#" th:href="@{/expansion/engineerManagement}">
@@ -197,8 +201,8 @@
             </ul>
         </li>
         <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'statistic'})?'active':''">
-            <a href="#" th:href="@{/user/statistic}">
-                <i class="fa "></i> <span>週次報告</span>
+            <a href="#" th:href="@{/user/statistic}" style="border-left-color: #222d32;">
+                <i class="fa fa-line-chart"></i> <span>週次報告</span>
             </a>
         </li>
     </ul>
