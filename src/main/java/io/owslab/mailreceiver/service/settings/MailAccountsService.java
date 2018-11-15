@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.settings;
 import io.owslab.mailreceiver.dao.EmailAccountDAO;
 import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
 import io.owslab.mailreceiver.dao.EmailDAO;
+import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.EmailAccountSetting;
@@ -87,5 +88,11 @@ public class MailAccountsService {
             }
         }
         return account;
+    }
+
+    public List<EmailAccountEngineerDTO> getEmailAccountForSendMailEngineer() {
+        List<EmailAccount> listAccount = list();
+        System.out.println("Account for Engineer");
+        return null;
     }
 }

@@ -437,7 +437,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.messageId) {
-                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO.id);
+                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO, "reply");
                         }
                     });
                     setRowClickListener("sendToEngineer", function () {
@@ -445,7 +445,7 @@
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if(rowData && rowData.messageId) {
-                            // showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, data.engineerMatchingDTO, data.engineerMatchingDTO.id, "sendToEngineer")
+                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO, "sendToEngineer");
                         }
                     });
                 }
@@ -730,21 +730,21 @@
         }
     }
     
-    function showMailEditor(messageId, accountId, receiver, engineerId) {
+    function showMailEditor(messageId, accountId, receiver, engineer, sendTo) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-            showMailEditorInNewTab(messageId, accountId, receiver, engineerId);
+            showMailEditorInNewTab(messageId, accountId, receiver, engineer, sendTo);
         } else {
-            showMailEditorInTab(messageId, accountId, receiver, engineerId);
+            showMailEditorInTab(messageId, accountId, receiver, engineer, sendTo);
         }
     }
     
-    function showMailEditorInNewTab(messageId, accountId, receiver, engineerId) {
+    function showMailEditorInNewTab(messageId, accountId, receiver, engineer, sendTo) {
         var data = {
-        	"type" : "replyFromEngineerMatching",
+        	"type" : sendTo,
             "accountId" : accountId,
             "messageId" : messageId,
-            "engineerId" : engineerId,
+            "engineerId" : engineer.id,
             "receiver" : receiver,
             "historyType": getHistoryType(),
         };
@@ -757,13 +757,21 @@
         }
     }
 
-    function showMailEditorInTab(messageId, accountId, receiver, engineerId) {
+    function showMailEditorInTab(messageId, accountId, receiver, engineer, sendTo) {
         $('#sendMailModal').modal();
         lastReceiver = receiver;
         lastMessageId = messageId;
-        showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver, engineerId)
-        });
+        lastSendTo = sendTo;
+        if(lastSendTo == "sendToEngineer") {
+            showMailWithReplacedRangeEngineer(messageId, accountId, receiver, engineer, function (email, accounts) {
+                showMailContentToEditor(email, accounts, receiver, engineer.id)
+            });
+        } else {
+            showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
+                showMailContentToEditor(email, accounts, receiver, engineer.id)
+            });
+        }
+
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function () {
@@ -819,31 +827,47 @@
                 sendType: getHistoryType(),
                 historyType: getHistoryType(),
             };
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    $('#sendMailModal').modal('hide');
-                    if (data && data.status) {
-                        //TODO: noti send mail success
-                    } else {
-                        //TODO: noti send mail failed
-                    }
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
-                }
-            });
+            function sendMail() {
+                btn.button('loading');
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/user/sendRecommendationMail",
+                    data: JSON.stringify(form),
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        btn.button('reset');
+                        $('#sendMailModal').modal('hide');
+                        if (data && data.status) {
+                            //TODO: noti send mail success
+                        } else {
+                            //TODO: noti send mail failed
+                        }
+
+                    },
+                    error: function (e) {
+                        btn.button('reset');
+                        console.log("ERROR : sendSuggestMail: ", e);
+                        $('#sendMailModal').modal('hide');
+                        //TODO: noti send mail error
+                    }
+                });
+            }
+
+            var stripped = strip(form.content, originalContentWrapId);
+            var afterEditDataLines = getHeaderFooterLines(stripped);
+            if(lastSendTo == "sendToEngineer") {
+                checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
+                    if(allowSend) {
+                        sendMail();
+                    }
+                });
+            } else {
+                sendMail();
+            }
         })
     }
     
@@ -1371,6 +1395,49 @@
             error: function (e) {
                 console.error("showMailWithReplacedRange ERROR : ", e);
                 if (typeof callback === "function") {
+                    callback();
+                }
+            }
+        });
+    }
+
+    function showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, callback) {
+        console.log(emailData);
+        console.log(engineer);
+        messageId = messageId.replace(/\+/g, '%2B');
+        var replyId = messageId;
+        var range = emailData.range;
+        var matchRange = emailData.matchRange;
+        var replaceType = 5;
+        var emailEngineer = engineer.mailAddress;
+        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&emailEngineer=" + emailEngineer;
+        var type = 10;
+        url = url + "&type=" + type;
+        if(!!accountId){
+            url = url + "&accountId=" + accountId;
+        }
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                var email;
+                var accounts;
+                if(data.status){
+                    email = data.mail;
+                    accounts = data.list;
+                    console.log(email);
+                    console.log(accounts);
+                }
+                if(typeof callback === "function"){
+                    callback(email, accounts);
+                }
+            },
+            error: function (e) {
+                console.error("getMail ERROR : ", e);
+                if(typeof callback === "function"){
                     callback();
                 }
             }
