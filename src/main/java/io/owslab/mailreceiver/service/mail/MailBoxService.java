@@ -754,8 +754,8 @@ public class MailBoxService {
         if(isAddNewDomainUnregister){
             domainService.saveDomainUnregistered(listEmailToCheckDomain);
         }
-//        boolean isAddNewPeopleInChargeUnregister = enviromentSettingService.getAddPeopleInChargePartnerUnregister();
-        if(true){
+        boolean isAddNewPeopleInChargeUnregister = enviromentSettingService.getAddNewPeopleInChargePartnerUnregister();
+        if(isAddNewPeopleInChargeUnregister){
             peopleInChargeUnregisterService.savePeopleInChargeUnregistered(listEmailToCheckDomain);
         }
     }

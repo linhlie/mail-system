@@ -110,6 +110,21 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-sm-5 col-xs-6 control-label text-left">受信メールのメールで取引先に登録されていないメールを未登録リストに登録する</label>
+                                <div class="col-sm-7 col-xs-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input
+                                                    type="checkbox"
+                                                    th:field="*{map['__add_new_email_to_people_in_charge_partner_unregister__']}"
+                                                    th:value="1"
+                                                    th:checked="*{map['__add_new_email_to_people_in_charge_partner_unregister__'] != '1' ? false : true}"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label for="inputSkills" class="col-sm-3 col-xs-4 control-label text-left">PC起動時に常駐する</label>
 
                                 <div class="col-sm-9 col-xs-8">
