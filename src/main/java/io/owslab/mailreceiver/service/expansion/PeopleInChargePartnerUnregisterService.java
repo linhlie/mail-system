@@ -84,9 +84,11 @@ public class PeopleInChargePartnerUnregisterService {
         }
         List<String> mailAddressList = new ArrayList<>();
         for(Email mail : listEmail){
-            mailAddressList.add(mail.getFrom());
+            mailAddressList.add(mail.getFrom().toLowerCase());
         }
-        savePeopleInChargeUnregisteredWithMailAddresses(mailAddressList);
+        if(mailAddressList.size()>0){
+            savePeopleInChargeUnregisteredWithMailAddresses(mailAddressList);
+        }
     }
 
     public void savePeopleInChargeUnregisteredWithMailAddresses(List<String> listEmail){
@@ -95,20 +97,46 @@ public class PeopleInChargePartnerUnregisterService {
         }
         LinkedHashMap<String, PeopleInChargePartnerUnregister> mapPeople = getPeopleInChargeFromMailAddresses(listEmail);
         List<PeopleInChargePartnerUnregister> listPeopleInChargeUnregister = getAll();
+        List<String> domainDeletes = new ArrayList<>();
         for(PeopleInChargePartnerUnregister people : listPeopleInChargeUnregister){
-            if(mapPeople.containsKey(people.getEmail())){
-                mapPeople.remove(people.getEmail());
+            String email = people.getEmail();
+            if(mapPeople.containsKey(email)){
+                mapPeople.remove(email);
+            }
+            int index = email.indexOf("@");
+            String domain = email.substring(index+1);
+            String predomain = email.substring(0,index);
+            if(predomain.equalsIgnoreCase("*")){
+                domainDeletes.add(domain);
             }
         }
         List<DomainUnregister> lisDomainUnregister = domainService.getDomainsByStatus(DomainUnregister.Status.AVOID_REGISTER);
-        for(PeopleInChargePartnerUnregister people : listPeopleInChargeUnregister){
-            String email = people.getEmail();
+        List<PeopleInChargePartnerUnregister> listPeopleInChargeRemove = new ArrayList<>();
+        for(PeopleInChargePartnerUnregister peopleInChargeUnregister : mapPeople.values()) {
+            String email = peopleInChargeUnregister.getEmail();
             int index = email.indexOf("@");
             String domain = email.substring(index+1);
-            for(DomainUnregister domainUnregister : lisDomainUnregister){
-                if(domain.equals(domainUnregister.getDomain())){
-                    mapPeople.remove(people.getEmail());
+            boolean removeFlag = false;
+            for(String domaindelete : domainDeletes){
+                if(domain.equals(domaindelete)){
+                    listPeopleInChargeRemove.add(peopleInChargeUnregister);
+                    removeFlag = true;
+                    break;
                 }
+            }
+            if(!removeFlag){
+                for(DomainUnregister domainUnregister : lisDomainUnregister){
+                    if(domain.equals(domainUnregister.getDomain())){
+                        listPeopleInChargeRemove.add(peopleInChargeUnregister);
+                        break;
+                    }
+                }
+            }
+        }
+        for(PeopleInChargePartnerUnregister people : listPeopleInChargeRemove){
+            String email = people.getEmail();
+            if(mapPeople.containsKey(email)){
+                mapPeople.remove(email);
             }
         }
         try {
@@ -137,13 +165,49 @@ public class PeopleInChargePartnerUnregisterService {
     public void saveEmailsAvoidRegisterPeopleInCharge(EmailsAvoidRegisterPeopleInChargeForm form){
         if(form != null){
             List<PeopleInChargePartnerUnregister> listEmailUpdate = form.getEmailsUpdate();
+            List<String> listEmailSpecial = new ArrayList<>();
             if(listEmailUpdate != null && listEmailUpdate.size()>0){
+                for(int i=listEmailUpdate.size()-1;i>=0;i--){
+                    if(checkEmailSpecial(listEmailUpdate.get(i))){
+                        listEmailSpecial.add(listEmailUpdate.get(i).getEmail().substring(2));
+                    }
+                }
                 saveListPeopleInChargeUnregister(listEmailUpdate);
             }
             List<PeopleInChargePartnerUnregister> listEmailDelete = form.getEmailsDelete();
             if(listEmailDelete != null && listEmailDelete.size()>0){
                 deleteByListPeopleInChargeUnregister(listEmailDelete);
             }
+            List<PeopleInChargePartnerUnregister> listPeopleDelete = new ArrayList<>();
+            if(listEmailSpecial.size()>0){
+                List<PeopleInChargePartnerUnregister> listEmail = getAll();
+                for(PeopleInChargePartnerUnregister people : listEmail){
+                    int index = people.getEmail().indexOf("@");
+                    String domain = people.getEmail().substring(index+1);
+                    for(String domainDelete : listEmailSpecial){
+                        if (domain.equalsIgnoreCase(domainDelete) && !people.getEmail().equalsIgnoreCase("*@"+domain)){
+                            listPeopleDelete.add(people);
+                        }
+                    }
+                }
+            }
+            if(listPeopleDelete != null && listPeopleDelete.size()>0){
+                deleteByListPeopleInChargeUnregister(listPeopleDelete);
+            }
         }
+    }
+
+    public boolean checkEmailSpecial(PeopleInChargePartnerUnregister peopleInChargePartnerUnregister){
+        String email = peopleInChargePartnerUnregister.getEmail();
+        if(email == null || email.trim().equals("")){
+            return false;
+        }
+        int index = email.indexOf("@");
+        String domain = email.substring(index+1);
+        domain = "*@"+domain;
+        if(email.equalsIgnoreCase(domain)){
+            return true;
+        }
+        return false;
     }
 }
