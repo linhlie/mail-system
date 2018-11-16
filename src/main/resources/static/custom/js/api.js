@@ -34,12 +34,11 @@ function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRa
 }
 
 function showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, callback) {
-    console.log(emailData);
     messageId = messageId.replace(/\+/g, '%2B');
     var replyId = messageId;
     var range = emailData.matchRange;
     var matchRange = emailData.range;
-    var replaceType = 4;
+    var replaceType = 1;
     var engineerId = engineer.id+"";
     var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
     var type = 10;
@@ -59,7 +58,6 @@ function showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engi
             if(data.status){
                 email = data.mail;
                 accounts = data.list;
-                console.log(email);
             }
             if(typeof callback === "function"){
                 callback(email, accounts);
