@@ -36,6 +36,10 @@ public class BusinessPartner {
 
     private boolean ourCompany;
 
+    private int alertLevel;
+
+    private String alertContent;
+
     public BusinessPartner() {
     }
 
@@ -131,6 +135,22 @@ public class BusinessPartner {
         this.ourCompany = ourCompany;
     }
 
+    public int getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(int alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
+    }
+
     //Builder Class
     public static class Builder{
         private long id;
@@ -144,6 +164,8 @@ public class BusinessPartner {
         private String domain2;
         private String domain3;
         private boolean ourCompany;
+        private int alertLevel;
+        private String alertContent;
 
         public Builder setId(long id) {
             this.id = id;
@@ -200,6 +222,22 @@ public class BusinessPartner {
             return this;
         }
 
+        public int getAlertLevel() {
+            return alertLevel;
+        }
+
+        public void setAlertLevel(int alertLevel) {
+            this.alertLevel = alertLevel;
+        }
+
+        public String getAlertContent() {
+            return alertContent;
+        }
+
+        public void setAlertContent(String alertContent) {
+            this.alertContent = alertContent;
+        }
+
         public BusinessPartner build(){
             BusinessPartner partner = new BusinessPartner();
             partner.id = this.id;
@@ -217,6 +255,8 @@ public class BusinessPartner {
             partner.domain2 = this.domain2;
             partner.domain3 = this.domain3;
             partner.ourCompany = this.ourCompany;
+            partner.alertLevel = this.alertLevel;
+            partner.alertContent = this.alertContent;
             return partner;
         }
 
@@ -272,6 +312,13 @@ public class BusinessPartner {
             public static final int FOUNDATION = 5;
             public static final int CORPORATION = 6;
             public static final int OTHER = 7;
+        }
+
+        public static class AlertLevel {
+            public static final int NONE = 0;
+            public static final int LOW = 1;
+            public static final int MEDIUM = 2;
+            public static final int HIGH = 3;
         }
     }
 

@@ -28,6 +28,8 @@
         {type: "radio", name: "companyType"},
         {type: "input", name: "companySpecificType"},
         {type: "radio", name: "stockShare"},
+        {type: "radio", name: "alertLevel"},
+        {type: "textarea", name: "alertContent"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -48,12 +50,14 @@
 	var partnerReplaceHead = '<tr>' +
 		'<th class="dark">取引先名</th>' +
 		'<th class="fit dark" style="text-align: center">識別ID</th>' +
+        '<th class="fit dark" style="text-align: center">アラート</th>' +
 		'<th colspan="2"></th>' +
 		'</tr>';
 
     var partnerReplaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="alertLevel" style="text-align: center"><span></span></td>' +
         '<td name="editPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">編集</button>' +
         '</td>' +
@@ -99,7 +103,8 @@
         styleShowTableChangeListener();
         loadBusinessPartners();
         draggingSetup();
-        setVisibleCountDomain("hidden")
+        showAlertLevelListener();
+        setVisibleCountDomain("hidden");
     });
 
     function initStickyHeader() {
@@ -308,6 +313,12 @@
                 $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
             }
         }
+        var alertType = form.alertLevel > 0? 1 : 0;
+        var showAlertLevel = form.alertLevel > 0? "visible" : "hidden";
+        var disibaleAlertContent = form.alertLevel > 0? false : true;
+        $("input[name = alertType][value=" + alertType +"]").prop('checked', true);
+        $(".showAlertLevel").css("visibility", showAlertLevel);
+        $("#alertContent").prop("disabled", disibaleAlertContent);
     }
     
     function setFormDomainUpdate(form) {
@@ -515,6 +526,17 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
+                        if(cellKeysData === "alertLevel"){
+                            switch (cellData) {
+                                case 1:cellData = "底";
+                                    break;
+                                case 2:cellData = "中";
+                                    break;
+                                case 3:cellData = "高";
+                                    break;
+                                default: cellData="";
+                            }
+                        }
                         cellNode.textContent = cellData;
                     }
                 }
@@ -860,6 +882,24 @@
                 },
             }
         });
+    }
+
+    function showAlertLevelListener() {
+        $('input[type=radio][name=alertType]').change(function() {
+            showAlertPartner(this.value);
+        });
+    }
+
+    function showAlertPartner(value){
+        if(value == 0){
+            $("input[name = alertLevel][value=" + 0 +"]").prop('checked', true);
+            $(".showAlertLevel").css("visibility", "hidden");
+            $("#alertContent").prop("disabled", true);
+        }else{
+            $("input[name = alertLevel][value=" + 3 +"]").prop('checked', true);
+            $(".showAlertLevel").css("visibility", "visible");
+            $("#alertContent").prop("disabled", false);
+        }
     }
 
 })(jQuery);

@@ -27,6 +27,7 @@
                                     <tr>
                                         <th class="dark">取引先名</th>
                                         <th class="fit dark" style="text-align: center">識別ID</th>
+                                        <th class="fit dark" style="text-align: center">アラート</th>
                                         <th th:colspan="2"></th>
                                     </tr>
                                     </thead>
@@ -158,6 +159,37 @@
                                                     </table>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-2 text-left">アラート</label>
+                                        <div class="col-md-10">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="alertType" checked="checked" value="0"/>無し
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="alertType" value="1"/>有り
+                                            </label>
+                                            <label class="radio-inline showAlertLevel" style="margin-left: 0px; visibility: hidden">(アラート重要度</label>
+                                            <label class="radio-inline showAlertLevel" style="visibility: hidden;">
+                                                <input type="radio" name="alertLevel" value="1"/>底
+                                            </label>
+                                            <label class="radio-inline showAlertLevel" style="visibility: hidden;">
+                                                <input type="radio" name="alertLevel" value="2"/>中
+                                            </label>
+                                            <label class="radio-inline showAlertLevel" style="visibility: hidden;">
+                                                <input type="radio" name="alertLevel" value="3"/>高
+                                            </label>
+                                            <label class="radio-inline showAlertLevel" style="padding-left: 0px; margin-left: 0px; visibility: hidden;">)</label>
+                                            <label class="radio-inline" style="visibility: hidden;">
+                                                <input type="radio" name="alertLevel" value="0" checked="checked"/>None
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="alertContent" class="control-label col-md-2 text-left"></label>
+                                        <div class="col-md-10">
+                                            <textarea id="alertContent" name="alertContent" class="form-control" placeholder="" type="text" disabled="true"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
