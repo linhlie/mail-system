@@ -813,7 +813,6 @@
             ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
-            btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: messageId,
