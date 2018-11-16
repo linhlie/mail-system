@@ -746,7 +746,7 @@
         	"type" : sendTo,
             "accountId" : accountId,
             "messageId" : messageId,
-            "engineerId" : engineer.id,
+            "engineer" : engineer,
             "receiver" : receiver,
             "historyType": getHistoryType(),
         };

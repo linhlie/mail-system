@@ -24,7 +24,7 @@
     var lastReplaceType;
     var lastSendTo;
     var lastHistoryType;
-    var engineerId;
+    var engineer;
     var type;
     var matching = false;
 
@@ -87,9 +87,9 @@
         lastSendTo = separateSendMailData.sendTo;
         lastHistoryType = separateSendMailData.historyType;
         type = separateSendMailData.type;
-        engineerId = separateSendMailData.engineerId;
+        engineer = separateSendMailData.engineer;
         matching = !!lastSendTo;
-        showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, type, engineerId);
+        showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, type, engineer);
     }
 
     function autoResizeHeight() {
@@ -106,10 +106,10 @@
         tinyMCE.DOM.setStyle(tinyMCE.DOM.get(rdMailBodyId + '_ifr'), 'height', newHeight + 'px');
     }
 
-    function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo, type, enginnerId) {
+    function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo, type, enginner) {
         setSendMailTitle(sendTo);
         showMailWithData(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver, sendTo, type, enginnerId)
+            showMailContentToEditor(email, accounts, receiver, sendTo, type, enginner)
         });
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -197,7 +197,7 @@
             }
             var stripped = strip(form.content, originalContentWrapId);
             var afterEditDataLines = getHeaderFooterLines(stripped);
-            if(matching) {
+            if(matching || type === "sendToEngineer") {
                 checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
                     if(allowSend) {
                         sendMail();
@@ -221,7 +221,7 @@
         if(matching) {
             showMailContentToEditorMatching(data, accounts, receiverData, sendTo);
         } else {
-            showMailContentToEditorReply(data, accounts, receiverData, type, engineerId);
+            showMailContentToEditorReply(data, accounts, receiverData, type, engineer);
         }
         autoResizeHeight();
     }
@@ -308,9 +308,9 @@
         }
     }
     
-    function showMailContentToEditorReply(data, accounts, receiverData, type, enginnerId) {
+    function showMailContentToEditorReply(data, accounts, receiverData, type, enginner) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getMoreInformationMailContent(receiverListStr, enginnerId, function(moreInfor){
+        getMoreInformationMailContent(receiverListStr, enginner.id, function(moreInfor){
         	updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
             $('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
