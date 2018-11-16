@@ -168,6 +168,11 @@
                         <i class="fa fa-users"></i><span>取引先 担当者管理</span>
                     </a>
                 </li>
+                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerManagement'})?'active':''">
+                    <a href="#" th:href="@{/expansion/engineerManagement}">
+                        <i class="fa fa-code"></i> <span>技術者管理</span>
+                    </a>
+                </li>
                 <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'domainAvoidRegister'})?'active':''">
                     <a href="#" th:href="@{/expansion/domainAvoidRegister}">
                         <i class="fa fa-ban"></i><span>無視ドメインリスト</span>
@@ -176,11 +181,6 @@
                 <li class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailAvoidRegisterPeopleInCharge'})?'active':''">
                     <a href="#" th:href="@{/expansion/emailAvoidRegisterPeopleInCharge}">
                         <i class="fa fa-ban"></i><span>担当者登録無視リスト</span>
-                    </a>
-                </li>
-                <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'engineerManagement'})?'active':''">
-                    <a href="#" th:href="@{/expansion/engineerManagement}">
-                        <i class="fa fa-code"></i> <span>技術者管理</span>
                     </a>
                 </li>
                 <li sec:authorize="hasRole('ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'partnerImportExport'})?'active':''">
