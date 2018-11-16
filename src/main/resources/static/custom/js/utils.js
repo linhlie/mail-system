@@ -85,6 +85,23 @@ function loadGreeting(type, emailAccount) {
     return greeting
 }
 
+
+function getSignature(accountId, accounts) {
+    for (var i=0;i<accounts.length;i++){
+        if (accountId == accounts[i].id){
+            return accounts[i].signature;
+        }
+    }
+}
+
+function getGreeting(accountId, accounts) {
+    for (var i=0;i<accounts.length;i++){
+        if (accountId == accounts[i].id){
+            return accounts[i].greeting;
+        }
+    }
+}
+
 function loadGreetingData(emailAccount) {
     var greetingDataInStr = localStorage.getItem("greetingData-"+emailAccount);
     var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);

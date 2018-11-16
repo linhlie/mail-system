@@ -10,7 +10,8 @@ public enum ClickType {
     REPLY_DESTINATION(7, "先抽出後、「返信」"),
     EMAIL_MATCHING_ENGINEER(8, "DB⇔メールマッチング"),
     REPLY_EMAIL_MATCHING_ENGINEER(9, "DB⇔メールマッチング後、「返信」"),
-    OTHER(10, "Other");
+    SEND_TO_ENGINEER(10, "DB⇔メールマッチング後、「技術者へ」"),
+    OTHER(11, "Other");
 
     private final int value;
     private final String text;
@@ -48,6 +49,8 @@ public enum ClickType {
                 return EMAIL_MATCHING_ENGINEER;
             case 9:
                 return REPLY_EMAIL_MATCHING_ENGINEER;
+            case 10:
+                return SEND_TO_ENGINEER;
         }
         return OTHER;
     }
@@ -72,6 +75,8 @@ public enum ClickType {
                 return EMAIL_MATCHING_ENGINEER;
             case "DB⇔メールマッチング後、「返信」":
                 return REPLY_EMAIL_MATCHING_ENGINEER;
+            case "DB⇔メールマッチング後、「技術者へ」":
+                return SEND_TO_ENGINEER;
             case "Other":
             default:
                 return OTHER;
