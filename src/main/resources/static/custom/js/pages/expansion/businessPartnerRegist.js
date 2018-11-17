@@ -599,7 +599,7 @@
     function doEditDomain(data) {
         clearFormValidate();
         updatingDomainId = data.id;
-        disableUpdatePartner(false);
+        disableAddPartner(false);
         setFormDomainUpdate(data);
     }
     
