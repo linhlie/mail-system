@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.dto;
 
+import io.owslab.mailreceiver.enums.AlertLevel;
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.enums.StockShareType;
 import io.owslab.mailreceiver.model.BusinessPartner;
@@ -17,11 +18,13 @@ public class CSVPartnerDTO {
     private String domain2;
     private String domain3;
     private String ourCompany;
+    private String alertLevel;
+    private String alertContent;
 
     public CSVPartnerDTO(){
     }
 
-    public CSVPartnerDTO(String name, String kanaName, String companyType, String stockShare, String partnerCode, String domain1, String domain2, String domain3, String ourCompany) {
+    public CSVPartnerDTO(String name, String kanaName, String companyType, String stockShare, String partnerCode, String domain1, String domain2, String domain3, String ourCompany, String alertLevel, String alertContent) {
         super();
         this.name = name;
         this.kanaName = kanaName;
@@ -32,6 +35,8 @@ public class CSVPartnerDTO {
         this.domain2 = domain2;
         this.domain3 = domain3;
         this.ourCompany = ourCompany;
+        this.alertLevel = alertLevel;
+        this.alertContent = alertContent;
     }
 
     public CSVPartnerDTO(BusinessPartner partner) {
@@ -47,6 +52,13 @@ public class CSVPartnerDTO {
         this.setDomain2(partner.getDomain2());
         this.setDomain3(partner.getDomain3());
         this.setOurCompany(Boolean.toString(partner.isOurCompany()).toUpperCase());
+        AlertLevel alert = AlertLevel.fromValue(partner.getAlertLevel());
+        if(alert.getValue()==0){
+            this.setAlertLevel("");
+        }else{
+            this.setAlertLevel(alert.getText());
+        }
+        this.setAlertContent(partner.getAlertContent());
     }
 
     public String getName() {
@@ -121,12 +133,29 @@ public class CSVPartnerDTO {
         this.ourCompany = ourCompany;
     }
 
+    public String getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(String alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
+    }
+
     @Override
     public String toString() {
         return "Partner [name=" + name + ", kanaName="
                 + kanaName + ", companyType=" + companyType + ", stockShare="
                 + stockShare + ", partnerCode=" + partnerCode + ", domain1="
-                + domain1 + ", domain2=" + domain2 + ", domain3=" + domain3 +  ", ourCompany=" + ourCompany + "]";
+                + domain1 + ", domain2=" + domain2 + ", domain3=" + domain3 +  ", ourCompany="
+                + ourCompany + ", alertLevel=" + alertLevel + ", alertContent=" + alertContent + "]";
     }
 
     public BusinessPartner build(){
@@ -144,6 +173,13 @@ public class CSVPartnerDTO {
         partner.setDomain2(this.domain2);
         partner.setDomain3(this.domain3);
         partner.setOurCompany(this.ourCompany.equalsIgnoreCase("TRUE"));
+        AlertLevel alert = AlertLevel.fromText(this.alertLevel);
+        partner.setAlertLevel(alert.getValue());
+        if(alert.getValue()==0){
+            partner.setAlertContent("");
+        }else{
+            partner.setAlertContent(this.alertContent);
+        }
         return partner;
     }
 }

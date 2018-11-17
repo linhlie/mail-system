@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.enums.CompanyType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Comparator;
@@ -245,7 +247,7 @@ public class BusinessPartner {
             partner.name = this.name;
             partner.kanaName = this.kanaName;
             partner.companyType = this.companyType;
-            if(this.companyType == CompanyTypes.OTHER) {
+            if(this.companyType == CompanyType.OTHER.getValue()) {
                 partner.companySpecificType = this.companySpecificType;
             } else {
                 partner.companySpecificType = null;
@@ -302,23 +304,6 @@ public class BusinessPartner {
 
         public boolean isOurCompany() {
             return ourCompany;
-        }
-
-        public static class CompanyTypes {
-            public static final int LTD = 1;
-            public static final int LIMITED = 2;
-            public static final int GROUP = 3;
-            public static final int JOINT_STOCK = 4;
-            public static final int FOUNDATION = 5;
-            public static final int CORPORATION = 6;
-            public static final int OTHER = 7;
-        }
-
-        public static class AlertLevel {
-            public static final int NONE = 0;
-            public static final int LOW = 1;
-            public static final int MEDIUM = 2;
-            public static final int HIGH = 3;
         }
     }
 

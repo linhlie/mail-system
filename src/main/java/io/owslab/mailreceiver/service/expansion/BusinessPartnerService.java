@@ -129,8 +129,8 @@ public class BusinessPartnerService {
         CSVBundle<CSVPartnerDTO> csvBundle = new CSVBundle<CSVPartnerDTO>();
         csvBundle.setFileName("取引先.csv");
         String[] csvHeader = { "取引先名称", "カナ名称", "会社形態", "前株後株",
-                "識別ID", "ドメイン", "ドメイン", "ドメイン", "自社" };
-        String[] keys = {"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
+                "識別ID", "ドメイン", "ドメイン", "ドメイン", "自社", "アラート重要度", "アラート内容" };
+        String[] keys = {"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany", "alertLevel", "alertContent"};
         csvBundle.setHeaders(csvHeader);
         csvBundle.setKeys(keys);
         List<CSVPartnerDTO> data = getPartnerListToExport();
@@ -198,7 +198,7 @@ public class BusinessPartnerService {
                             Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
-                final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany"};
+                final String[] headers = new String[]{"name", "kanaName", "companyType", "stockShare", "partnerCode", "domain1", "domain2", "domain3", "ourCompany", "alertLevel", "alertContent"};
 
                 CSVPartnerDTO partnerDTO;
                 if(skipHeader) {

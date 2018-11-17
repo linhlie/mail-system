@@ -315,6 +315,7 @@
                 $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
             }
         }
+        alertLevelValue = form.alertLevel;
         alertContentValue = form.alertContent;
         var alertType = form.alertLevel > 0? 1 : 0;
         var showAlertLevel = form.alertLevel > 0? "visible" : "hidden";
@@ -449,6 +450,7 @@
 
     function resetForm() {
         $(formId).trigger("reset");
+        $(".showAlertLevel").css("visibility", "hidden");
     }
     
     function clearFormValidate() {
