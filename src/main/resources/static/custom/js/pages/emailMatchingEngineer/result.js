@@ -132,6 +132,20 @@
         '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
+        '<td class="text-center fit" rowspan="1" colspan="1"></td>' +
+        '</tr>';
+
+    var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">返信</button>' +
+        '</td>' +
+        '<td class="clickable text-center fit" name="sendToEngineer" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
+        '</td>' +
         '</tr>';
 
     $(function () {
@@ -392,12 +406,21 @@
                 animation: 'doubleBounce',
             });
             var word = data.word;
-            var source = data.source;
+            var email = data.engineerMatchingDTO.mailAddress;
             currentDestinationResult = data.listEmailDTO;
-            removeAllRow(tableId, replaceDestinationHTML);
+            if(email != null && email != ""){
+                removeAllRow(tableId, replaceDestinationHasMailHTML);
+            }else{
+                removeAllRow(tableId, replaceDestinationHTML);
+            }
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
-                    var html = replaceDestinationHTML;
+                    var html = "";
+                    if(email != null && email != ""){
+                        html = replaceDestinationHasMailHTML;
+                    }else{
+                        html = replaceDestinationHTML;
+                    }
                     for(var i = 0; i < currentDestinationResult.length; i++){
                         currentDestinationResult[i].word = word;
                         var messageId = currentDestinationResult[i].messageId;
@@ -409,12 +432,19 @@
                         showDestinationMail($(this).closest('tr'))
                     });
                     setRowClickListener("reply", function () {
-                    	console.log("reply");
                         var row = $(this)[0].parentNode;
                         var index = row.getAttribute("data");
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.messageId) {
-                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO.id);
+                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO, "reply");
+                        }
+                    });
+                    setRowClickListener("sendToEngineer", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if(rowData && rowData.messageId) {
+                            showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO, "sendToEngineer");
                         }
                     });
                 }
@@ -699,21 +729,22 @@
         }
     }
     
-    function showMailEditor(messageId, accountId, receiver, engineerId) {
+    function showMailEditor(messageId, accountId, receiver, engineer, sendTo) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-            showMailEditorInNewTab(messageId, accountId, receiver, engineerId);
+            showMailEditorInNewTab(messageId, accountId, receiver, engineer, sendTo);
         } else {
-            showMailEditorInTab(messageId, accountId, receiver, engineerId);
+            showMailEditorInTab(messageId, accountId, receiver, engineer, sendTo);
         }
     }
     
-    function showMailEditorInNewTab(messageId, accountId, receiver, engineerId) {
+    function showMailEditorInNewTab(messageId, accountId, receiver, engineer, sendTo) {
+        lastSendTo = sendTo;
         var data = {
-        	"type" : "replyFromEngineerMatching",
+        	"type" : sendTo,
             "accountId" : accountId,
             "messageId" : messageId,
-            "engineerId" : engineerId,
+            "engineer" : engineer,
             "receiver" : receiver,
             "historyType": getHistoryType(),
         };
@@ -726,13 +757,21 @@
         }
     }
 
-    function showMailEditorInTab(messageId, accountId, receiver, engineerId) {
+    function showMailEditorInTab(messageId, accountId, emailData, engineer, sendTo) {
         $('#sendMailModal').modal();
-        lastReceiver = receiver;
+        lastReceiver = emailData;
         lastMessageId = messageId;
-        showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver, engineerId)
-        });
+        lastSendTo = sendTo;
+        if(lastSendTo == "sendToEngineer") {
+            showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, function (email, accounts) {
+                showMailContentToEditorEngineer(email, messageId, accounts, emailData, engineer)
+            });
+        } else {
+            showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
+                showMailContentToEditor(email, accounts, emailData, engineer.id)
+            });
+        }
+
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function () {
@@ -774,7 +813,6 @@
             ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
             var btn = $(this);
-            btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
                 messageId: messageId,
@@ -788,31 +826,47 @@
                 sendType: getHistoryType(),
                 historyType: getHistoryType(),
             };
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    $('#sendMailModal').modal('hide');
-                    if (data && data.status) {
-                        //TODO: noti send mail success
-                    } else {
-                        //TODO: noti send mail failed
-                    }
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
-                }
-            });
+            function sendMail() {
+                btn.button('loading');
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/user/sendRecommendationMail",
+                    data: JSON.stringify(form),
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        btn.button('reset');
+                        $('#sendMailModal').modal('hide');
+                        if (data && data.status) {
+                            //TODO: noti send mail success
+                        } else {
+                            //TODO: noti send mail failed
+                        }
+
+                    },
+                    error: function (e) {
+                        btn.button('reset');
+                        console.log("ERROR : sendSuggestMail: ", e);
+                        $('#sendMailModal').modal('hide');
+                        //TODO: noti send mail error
+                    }
+                });
+            }
+
+            var stripped = strip(form.content, originalContentWrapId);
+            var afterEditDataLines = getHeaderFooterLines(stripped);
+            if(lastSendTo == "sendToEngineer") {
+                checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
+                    if(allowSend) {
+                        sendMail();
+                    }
+                });
+            } else {
+                sendMail();
+            }
         })
     }
     
@@ -1310,7 +1364,11 @@
 
 
     function getHistoryType() {
-        return 5;
+        if(lastSendTo == "reply"){
+            return 5;
+        }else{
+            return 6;
+        }
     }
     
     function showMailWithReplacedRangeNew(messageId, accountId, callback) {
@@ -1356,6 +1414,26 @@
                 getMailData(receiverData, this.value, moreInfor);
             });
             getMailData(receiverData, $('#' + rdMailSenderId).val(), moreInfor);
+        });
+    }
+
+    function showMailContentToEditorEngineer(data, messageId, accounts, receiver, engineer) {
+        var receiverListStr = engineer.mailAddress;
+        getMoreInformationMailContent(receiverListStr, engineer.id, function(moreInfor){
+            updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
+            $('#' + rdMailSenderId).off('change');
+            $('#' + rdMailSenderId).change(function() {
+                lastSelectedSendMailAccountId = this.value;
+                getMailDataToSendEngineer(messageId, lastSelectedSendMailAccountId, receiver, engineer, moreInfor)
+            });
+            lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
+            getMailDataToSendEngineer(messageId, lastSelectedSendMailAccountId, receiver, engineer, moreInfor)
+        });
+    }
+
+    function getMailDataToSendEngineer(messageId, accountId, receiver, engineer, moreInfor){
+        showMailWithReplacedRangeEngineer(messageId, accountId, receiver, engineer, function (email, accounts) {
+            showMailContentToEditorFinalEngineer(email, accountId, accounts, receiver , engineer, moreInfor);
         });
     }
     
@@ -1409,6 +1487,56 @@
             updateMailEditorContent(data.originalBody);
         }
         updateDropzoneData(attachmentDropzone);
+    }
+
+    function showMailContentToEditorFinalEngineer(data, accountId, accounts, receiverData, engineer, partnerInfor) {
+        var receiverListStr = engineer.mailAddress;
+        resetValidation();
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
+        updateMailEditorContent("");
+        if(data){
+            senderGlobal = data.account;
+            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
+            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            externalCCGlobal = externalCC;
+            cc = updateCCList(cc,to);
+            var indexOfSender = cc.indexOf(data.account);
+            if(indexOfSender > -1){
+                cc.splice(indexOfSender, 1);
+            }
+            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
+            for(var i = 0; i < receiverList.length; i++) {
+                var receiver = receiverList[i];
+                var indexOfReceiver = cc.indexOf(receiver);
+                if (indexOfReceiver > -1) {
+                    cc.splice(indexOfReceiver, 1)
+                }
+            }
+            cc = updateCCList(cc, externalCC);
+            $('#' + rdMailCCId).importTags(cc.join(","));
+            document.getElementById(rdMailSubjectId).value = data.subject;
+            data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
+            data.originalBody = wrapText(data.originalBody);
+            data.originalBody = wrapInDivWithId(originalContentWrapId,data.originalBody);
+            var stripped = strip(data.originalBody, originalContentWrapId);
+            dataLinesConfirm = getHeaderFooterLines(stripped);
+            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            data.replyOrigin = getReplyWrapper(data);
+            data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
+            var greeting = getGreeting(accountId, accounts);
+            var signature = getSignature(accountId, accounts);
+            updateMailEditorContent(greeting + data.originalBody + signature);
+            if( data.replacedBody != null){
+                data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
+                stripped = strip(data.replacedBody, originalContentWrapId);
+                dataLinesConfirm = getHeaderFooterLines(stripped);
+                data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
+                updateMailEditorContent(greeting + data.replacedBody + signature, true);
+            }
+            var files = data.files ? data.files : [];
+            updateDropzoneData(attachmentDropzone, files);
+        }
     }
     
     function getMoreInformationMailContent(sentTo, enginnerId, callback){
