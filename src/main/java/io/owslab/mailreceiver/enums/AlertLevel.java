@@ -4,7 +4,7 @@ package io.owslab.mailreceiver.enums;
  * Created by khanhlvb on 8/27/18.
  */
 public enum AlertLevel {
-    NONE(0, "無し"),
+    NONE(0, ""),
     LOW(1, "底"),
     MEDIUM(2, "中"),
     HIGH(3, "高");
@@ -41,7 +41,7 @@ public enum AlertLevel {
 
     public static AlertLevel fromText(String text) {
         switch(String.valueOf(text)) {
-            case "無し":
+            case "":
                 return NONE;
             case "底":
                 return LOW;

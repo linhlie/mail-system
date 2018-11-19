@@ -19,6 +19,12 @@ public class PreviewMailDTO {
 
     private String replyTo;
 
+    private String alertLevel;
+
+    private String alertContent;
+
+    private String partnerName;
+
     public PreviewMailDTO(Email email) {
         this.setAccountId(email.getAccountId());
         this.setFrom(email.getFrom());
@@ -84,4 +90,29 @@ public class PreviewMailDTO {
     public void setReplyTo(String replyTo) {
         this.replyTo = replyTo;
     }
+
+    public String getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(String alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getPartnerName() {
+        return partnerName;
+    }
+
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
+    }
+
 }

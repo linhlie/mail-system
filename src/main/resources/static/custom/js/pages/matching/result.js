@@ -117,6 +117,7 @@
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
+        '<td class="clickable" name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center"><span></span></td>' +
         '</tr>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
@@ -132,6 +133,7 @@
         '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
         '</td>' +
+        '<td class="clickable" name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center"><span></span></td>' +
         '</tr>';
 
     $(function () {
@@ -382,6 +384,17 @@
             setRowClickListener("sourceRow", function () {
                 selectedRow($(this).closest('tr'))
             });
+            setRowClickListener("alertLevelSourceRow", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.source.alertLevel) {
+                    $.alert({
+                        title: '取引先アラート:' + rowData.source.alertLevel + '\n 取 引 先 名:' + rowData.source.partnerName,
+                        content: rowData.source.alertContent
+                    });
+                }
+            });
         }
         initSortSource();
         selectFirstRow();
@@ -451,6 +464,18 @@
                                 lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
                                 showMailEditor(lastSelectedSendMailAccountId, selectedRowData.source.messageId, rowData, rowData.range, rowData.matchRange, replaceType, "saki")
                             }
+                        }
+                    });
+                    setRowClickListener("alertLevelDestinationMail", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if (rowData && rowData.alertLevel) {
+                            $.alert({
+                                title: '取引先アラート:' + rowData.alertLevel + '\n 取 引 先 名:' + rowData.partnerName,
+                                // content: rowData.alertContent
+                                content: 'fgdfgdfg\nfgdfgdfgdfgdf\ndfgdf'
+                            });
                         }
                     });
                 }

@@ -45,16 +45,10 @@
                                     <th class="fit">受信日時</th>
                                     <th class="fit">送信者</th>
                                     <th>件名</th>
+                                    <th class="fit">取引先アラート</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr role="row" class="hidden">
-                                    <td class="clickable fit" name="sourceRow" th:data="word"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="destinationList"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="source.receivedAt"><span></span></td>
-                                    <td class="clickable fit" name="sourceRow" th:data="source.from"><span></span></td>
-                                    <td class="clickable" name="sourceRow" th:data="source.subject"><span></span></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -62,7 +56,7 @@
                             <h4 id="totalDestinationMatching">絞り込み先</h4>
                         </div>
                         <div class="table-container table-container-wrapper">
-                            <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
+                            <table id="destinationMatch" class="table table-bordered table-hover tablesorter sticky-header-table ">
                                 <thead class="sticky-header">
                                 <tr>
                                     <th class="fit">ワード</th>
@@ -73,23 +67,10 @@
                                     <th>件名</th>
                                     <th class="fit"></th>
                                     <th class="fit"></th>
+                                    <th class="fit">取引先アラート</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr role="row" class="hidden">
-                                    <td class="clickable fit" name="showDestinationMail" th:data="word"><span></span></td>
-                                    <td class="clickable fit" name="showDestinationMail" th:data="range"><span></span></td>
-                                    <td class="clickable fit" name="showDestinationMail" th:data="matchRange"><span></span></td>
-                                    <td class="clickable fit" name="showDestinationMail" th:data="receivedAt"><span></span></td>
-                                    <td class="clickable fit" name="showDestinationMail" th:data="from"><span></span></td>
-                                    <td class="clickable" name="showDestinationMail" th:data="subject"><span></span></td>
-                                    <td class="clickable text-center fit" name="sendToMoto">
-                                        <button type="button" class="btn btn-xs btn-default">元へ</button>
-                                    </td>
-                                    <td class="clickable text-center fit" name="sendToSaki">
-                                        <button type="button" class="btn btn-xs btn-default">先へ</button>
-                                    </td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
