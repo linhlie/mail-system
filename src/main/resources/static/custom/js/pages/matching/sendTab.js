@@ -315,14 +315,23 @@
     
     function showMailContentToEditorReply(data, accounts, receiverData, type, enginner) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getMoreInformationMailContent(receiverListStr, enginner.id, function(moreInfor){
-        	updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
+        if(enginner){
+            getMoreInformationMailContent(receiverListStr, enginner.id, function(moreInfor){
+                updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
+                $('#' + rdMailSenderId).change(function() {
+                    lastSelectedSendMailAccountId = this.value;
+                    getMailDataToEditorReply(moreInfor, type, this.value);
+                });
+                getMailDataToEditorReply(moreInfor, type, $('#' + rdMailSenderId).val());
+            });
+        }else{
+            updateSenderSelector(data, accounts);
             $('#' + rdMailSenderId).change(function() {
                 lastSelectedSendMailAccountId = this.value;
-                getMailDataToEditorReply(moreInfor, type, this.value);
+                getMailDataToEditorReply(null, type, this.value);
             });
-            getMailDataToEditorReply(moreInfor, type, $('#' + rdMailSenderId).val());
-        });
+            getMailDataToEditorReply(null, type, $('#' + rdMailSenderId).val());
+        }
     }
     
     function getMailDataToEditorReply(moreInfor, type, accountId){
@@ -522,8 +531,8 @@
         		{
         			"emailAddress": sentTo,
         			"engineerId": enginnerId,
-        		}, 
-        		onSuccess, 
+        		},
+        		onSuccess,
         		onError
         );
     }
