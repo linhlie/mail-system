@@ -564,30 +564,10 @@
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
         if(data){
-            // updateSenderSelector(data, accounts);
             senderGlobal = data.account;
-            var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
-            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
-            cc = updateCCList(cc,to);
-            var indexOfSender = cc.indexOf(data.account);
-            if(indexOfSender > -1){
-                cc.splice(indexOfSender, 1);
-            }
-            var receiverList = receiverListStr.replace(/\s*,\s*/g, ",").split(",");
-            // if(receiverList.length > 0) {
-            //     cc = updateCCList(cc, [receiverData.from]);
-            // }
-            for(var i = 0; i < receiverList.length; i++) {
-                var receiver = receiverList[i];
-                var indexOfReceiver = cc.indexOf(receiver);
-                if (indexOfReceiver > -1) {
-                    cc.splice(indexOfReceiver, 1)
-                }
-            }
-            cc = updateCCList(cc, externalCC);
-            $('#' + rdMailCCId).importTags(cc.join(","));
+            $('#' + rdMailCCId).importTags(externalCC.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
             data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
             data.originalBody = wrapText(data.originalBody);
