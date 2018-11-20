@@ -392,8 +392,15 @@
                 var rowData = data[index];
                 if (rowData && rowData.source.alertLevel) {
                     $.alert({
-                        title: '取引先アラート:' + rowData.source.alertLevel + '\n 取 引 先 名:' + rowData.source.partnerName,
-                        content: rowData.source.alertContent
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                                '<div class="form-group">' +
+                                    '<label>取引先アラート:'+ rowData.source.alertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.source.alertContent + '</span>' +
+                            '</form>',
                     });
                 }
             });
@@ -474,9 +481,15 @@
                         var rowData = currentDestinationResult[index];
                         if (rowData && rowData.alertLevel) {
                             $.alert({
-                                title: '取引先アラート:' + rowData.alertLevel + '\n 取 引 先 名:' + rowData.partnerName,
-                                // content: rowData.alertContent
-                                content: 'fgdfgdfg\nfgdfgdfgdfgdf\ndfgdf'
+                                title: '',
+                                content: '' +
+                                    '<form action="" class="formName">' +
+                                    '<div class="form-group">' +
+                                    '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.alertContent + '</span>' +
+                                    '</form>',
                             });
                         }
                     });
