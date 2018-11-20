@@ -1,8 +1,12 @@
 package io.owslab.mailreceiver.dto;
 
+import io.owslab.mailreceiver.enums.AlertLevel;
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import org.apache.commons.lang.time.DateFormatUtils;
+
+import java.util.List;
 
 public class PreviewMailDTO {
     private long accountId;
@@ -33,6 +37,36 @@ public class PreviewMailDTO {
         this.setReplyTo(email.getReplyTo());
         this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
         this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
+    }
+
+    public PreviewMailDTO(Email email, List<BusinessPartner> listPartner) {
+        this.setAccountId(email.getAccountId());
+        this.setFrom(email.getFrom());
+        this.setSubject(email.getSubject());
+        this.setTo(email.getTo());
+        this.setReplyTo(email.getReplyTo());
+        this.setSentAt(DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
+        this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
+
+        BusinessPartner businessPartner = null;
+        String emailAddress = email.getFrom();
+        if (emailAddress!=null && !emailAddress.equals("")){
+            int index = emailAddress.indexOf("@");
+            String domain = emailAddress.toLowerCase().substring(index+1);
+            for(BusinessPartner partner : listPartner){
+                if(domain.equalsIgnoreCase(partner.getDomain1()) || domain.equalsIgnoreCase(partner.getDomain2()) || domain.equalsIgnoreCase(partner.getDomain3())){
+                    businessPartner = partner;
+                    break;
+                }
+            }
+        }
+
+        if(businessPartner != null){
+            String alertLevel = AlertLevel.fromValue(businessPartner.getAlertLevel()).getText();
+            this.alertLevel = alertLevel;
+            this.alertContent =businessPartner.getAlertContent();
+            this.partnerName =businessPartner.getName();
+        }
     }
 
     public long getAccountId() {

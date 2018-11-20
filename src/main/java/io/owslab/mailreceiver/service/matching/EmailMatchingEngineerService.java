@@ -2,46 +2,23 @@ package io.owslab.mailreceiver.service.matching;
 
 import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
 import io.owslab.mailreceiver.dto.PreviewMailDTO;
-import io.owslab.mailreceiver.enums.ConditionOption;
-import io.owslab.mailreceiver.enums.MailItemOption;
-import io.owslab.mailreceiver.enums.NumberCompare;
 import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
-import io.owslab.mailreceiver.form.MatchingConditionForm;
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.model.NumberTreatment;
-import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
+import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
-import io.owslab.mailreceiver.service.expansion.EngineerService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
-import io.owslab.mailreceiver.utils.EmailMatchingEngineerResult;
-import io.owslab.mailreceiver.utils.FilterRule;
-import io.owslab.mailreceiver.utils.FinalEmailMatchingEngineerResult;
-import io.owslab.mailreceiver.utils.FinalMatchingResult;
-import io.owslab.mailreceiver.utils.FullNumberRange;
-import io.owslab.mailreceiver.utils.MatchingPartResult;
-import io.owslab.mailreceiver.utils.MatchingResult;
-import io.owslab.mailreceiver.utils.MatchingWordResult;
-import io.owslab.mailreceiver.utils.SimpleNumberRange;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import io.owslab.mailreceiver.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.*;
 
 @Service
 @CacheConfig(cacheNames = "short_term_data")
@@ -63,6 +40,9 @@ public class EmailMatchingEngineerService {
     
     @Autowired
     private DomainService domainService;
+
+    @Autowired
+	private BusinessPartnerService partnerService;
     
     public List<Email> getEmailFromDestinationCondition(EmailMatchingEngineerForm form){
         numberTreatment = numberTreatmentService.getFirst();
@@ -89,6 +69,7 @@ public class EmailMatchingEngineerService {
     public FinalEmailMatchingEngineerResult matchingEmailsWithEngineerCondition(EmailMatchingEngineerForm form){
         logger.info("start matching");
     	List<EngineerMatchingDTO> listEngineerMatchingDTO = form.getListEngineerMatchingDTO();
+		List<BusinessPartner> listPartner = partnerService.getAll();
     	if(listEngineerMatchingDTO==null || listEngineerMatchingDTO.size()==0)  return null;
     	
     	List<EmailMatchingEngineerResult> listResult = new  ArrayList<EmailMatchingEngineerResult>();
@@ -137,12 +118,12 @@ public class EmailMatchingEngineerService {
         					 FullNumberRange matchRange = matchingPartResult.getMatchRange();
         	                 FullNumberRange range = matchingPartResult.getRange();
         	                 result.addEmailDTO(email, matchRange, range);
-        	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email));
+        	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner));
         				 }
     				}
     				else{
     					result.addEmailDTO(email, null, null);
-   	    			 	previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email));
+   	    			 	previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner));
     				}
     			}
     		}

@@ -258,7 +258,7 @@ public class MatchingConditionService {
     	}       
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
-            previewMailDTOList.put(sourceMail.getMessageId(), buildPreviewMail(sourceMail, listPartner));
+            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail, listPartner));
             for(String word : sourceResult.getWords()){
                 addToList(matchingResultMap, word, sourceMail, null);
             }
@@ -294,7 +294,7 @@ public class MatchingConditionService {
                     Email destinationMail = matchingPartResult.getDestinationMail();
                     FullNumberRange matchRange = matchingPartResult.getMatchRange();
                     FullNumberRange range = matchingPartResult.getRange();
-                    previewMailDTOList.put(destinationMail.getMessageId(), buildPreviewMail(destinationMail, listPartner));
+                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail, listPartner));
                     if(matchingWords.size() == 0){
                         addToList(matchingResultMap, null, soureMail, destinationMail, matchRange, range);
                     } else {
@@ -1166,28 +1166,4 @@ public class MatchingConditionService {
         return this.getMatchingCounter();
     }
 
-    public PreviewMailDTO buildPreviewMail(Email email, List<BusinessPartner> listPartner){
-        PreviewMailDTO previewMailDTO = new PreviewMailDTO(email);
-        BusinessPartner businessPartner = null;
-        String emailAddress = email.getFrom();
-        if (emailAddress!=null && !emailAddress.equals("")){
-            int index = emailAddress.indexOf("@");
-            String domain = emailAddress.toLowerCase().substring(index+1);
-            for(BusinessPartner partner : listPartner){
-                if(domain.equalsIgnoreCase(partner.getDomain1()) || domain.equalsIgnoreCase(partner.getDomain2()) || domain.equalsIgnoreCase(partner.getDomain3())){
-                    businessPartner = partner;
-                    break;
-                }
-            }
-        }
-
-        if(businessPartner != null){
-            String alertLevel = AlertLevel.fromValue(businessPartner.getAlertLevel()).getText();
-            previewMailDTO.setAlertLevel(alertLevel);
-            previewMailDTO.setAlertContent(businessPartner.getAlertContent());
-            previewMailDTO.setPartnerName(businessPartner.getName());
-        }
-
-        return previewMailDTO;
-    }
 }
