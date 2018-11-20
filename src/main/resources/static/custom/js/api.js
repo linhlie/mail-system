@@ -33,6 +33,45 @@ function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRa
     });
 }
 
+function showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, callback) {
+    messageId = messageId.replace(/\+/g, '%2B');
+    var replyId = messageId;
+    var range = emailData.matchRange;
+    var matchRange = emailData.range;
+    var replaceType = 1;
+    var engineerId = engineer.id+"";
+    var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
+    var type = 10;
+    url = url + "&type=" + type;
+    if(!!accountId){
+        url = url + "&accountId=" + accountId;
+    }
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: url,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            var email;
+            var accounts;
+            if(data.status){
+                email = data.mail;
+                accounts = data.list;
+            }
+            if(typeof callback === "function"){
+                callback(email, accounts);
+            }
+        },
+        error: function (e) {
+            console.error("getMail ERROR : ", e);
+            if(typeof callback === "function"){
+                callback();
+            }
+        }
+    });
+}
+
 function showReplyMail(accountId, messageId, callback) {
     messageId = messageId.replace(/\+/g, '%2B');
     var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;

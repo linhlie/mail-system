@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
 import io.owslab.mailreceiver.enums.ClickType;
@@ -181,16 +182,23 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
+                                          @RequestParam(value = "engineerId", required = false) String engineerId,
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
-            List<EmailAccount> accountList = mailAccountsService.list();
+            if(engineerId != null){
+                long id = Long.parseLong(engineerId);
+                List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer(id);
+                result.setList(accountList);
+            }else{
+                List<EmailAccount> accountList = mailAccountsService.list();
+                result.setList(accountList);
+            }
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);
-            result.setList(accountList);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("getEditEmailInJSON: " + e.getMessage());

@@ -710,7 +710,6 @@
     }
     
     function showMailContentToEditorFinal(data, accounts, receiverData, sendTo, partnerInfor) {
-    	console.log(partnerInfor);
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
