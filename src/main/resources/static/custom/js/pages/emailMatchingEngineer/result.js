@@ -135,6 +135,8 @@
         '<td class="text-center fit" rowspan="1" colspan="1"></td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
+        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
@@ -149,6 +151,8 @@
         '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
         '</td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
+        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
@@ -469,6 +473,26 @@
                             });
                         }
                     });
+                    setRowClickListener("alertLevelPeopleInCharge", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if (rowData && rowData.peopleInChargeAlertLevel) {
+                            $.alert({
+                                title: '',
+                                content: '' +
+                                    '<form action="" class="formName">' +
+                                    '<div class="form-group form-alert">' +
+                                    '<label>取引先アラート:'+ rowData.peopleInChargeAlertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                                    '<label>担 当 者 名:' + rowData.peopleInChargeName + '</label>' +
+                                    '<label>メールアドレス:' + rowData.peopleinChargeEmail + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.peopleInChargeAlertContent + '</span>' +
+                                    '</form>',
+                            });
+                        }
+                    });
                 }
                 updateDestinationDataTrigger();
                 $('body').loadingModal('hide');
@@ -536,7 +560,7 @@
                     if(Array.isArray(cellData)){
                         cellNode.textContent = cellData.length;
                     } else {
-                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel")){
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "peopleInChargeAlertLevel")){
                             cell.setAttribute("Class", "clickable");
                         }
                         cellNode.textContent = cellData;

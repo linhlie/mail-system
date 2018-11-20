@@ -144,8 +144,8 @@ public class PeopleInChargePartnerService {
     public CSVBundle<CSVPeopleInChargePartnerDTO> export() {
         CSVBundle<CSVPeopleInChargePartnerDTO> csvBundle = new CSVBundle<CSVPeopleInChargePartnerDTO>();
         csvBundle.setFileName("担当者.csv");
-        String[] csvHeader = { "所属企業", "ドメイン", "担当者氏姓", "担当者氏名", "所属部署", "役職", "メールアドレス", "代表メールアドレス", "電話番号1", "電話番号2", "特記事項", "休止"};
-        String[] keys = { "partnerCode", "domainPartner", "lastName", "firstName", "department", "position", "emailAddress", "emailInChargePartner", "numberPhone1", "numberPhone2", "note", "pause"};
+        String[] csvHeader = { "所属企業", "ドメイン", "担当者氏姓", "担当者氏名", "所属部署", "役職", "メールアドレス", "代表メールアドレス", "電話番号1", "電話番号2", "特記事項", "休止", "アラート重要度", "アラート内容"};
+        String[] keys = { "partnerCode", "domainPartner", "lastName", "firstName", "department", "position", "emailAddress", "emailInChargePartner", "numberPhone1", "numberPhone2", "note", "pause", "alertLevel", "alertContent"};
         csvBundle.setHeaders(csvHeader);
         csvBundle.setKeys(keys);
         List<CSVPeopleInChargePartnerDTO> data = getPeopleInChargePartnersToExport();
@@ -186,7 +186,7 @@ public class PeopleInChargePartnerService {
                             Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
-                final String[] headers = new String[]{ "partnerCode", "domainPartner", "lastName", "firstName", "department", "position", "emailAddress", "emailInChargePartner", "numberPhone1", "numberPhone2", "note", "pause"};
+                final String[] headers = new String[]{ "partnerCode", "domainPartner", "lastName", "firstName", "department", "position", "emailAddress", "emailInChargePartner", "numberPhone1", "numberPhone2", "note", "pause", "alertLevel", "alertContent"};
 
                 CSVPeopleInChargePartnerDTO peopleDTO;
                 if(skipHeader) {
