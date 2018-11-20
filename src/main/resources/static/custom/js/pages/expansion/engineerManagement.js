@@ -51,8 +51,8 @@
     }
 
     var replaceRow = '<tr role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="partnerName"><span></span></td>' +
+        '<td name="editEngineer" rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
+        '<td name="editEngineer" rowspan="1" colspan="1" data="partnerName" style="cursor: pointer;"><span></span></td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
@@ -61,9 +61,6 @@
         '</td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
-        '</td>' +
-        '<td name="editEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">編集</button>' +
         '</td>' +
         '<td name="deleteEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
