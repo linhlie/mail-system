@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dao.PeopleInChargePartnerUnregisterDAO;
 import io.owslab.mailreceiver.form.EmailsAvoidRegisterPeopleInChargeForm;
 import io.owslab.mailreceiver.model.DomainUnregister;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartnerUnregister;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,9 @@ public class PeopleInChargePartnerUnregisterService {
 
     @Autowired
     private DomainService domainService;
+
+    @Autowired
+    private PeopleInChargePartnerService peopleInChargeService;
 
     public List<PeopleInChargePartnerUnregister> getAll() {
         return peopleInChargeUnregisterDAO.findAll();
@@ -110,6 +114,17 @@ public class PeopleInChargePartnerUnregisterService {
                 domainDeletes.add(domain);
             }
         }
+
+        List<PeopleInChargePartner> listPeople = peopleInChargeService.getAll();
+        for(PeopleInChargePartner people : listPeople){
+            if(people.getEmailAddress()!=null){
+                String email = people.getEmailAddress();
+                if(mapPeople.containsKey(email.toLowerCase())){
+                    mapPeople.remove(email);
+                }
+            }
+        }
+
         List<DomainUnregister> lisDomainUnregister = domainService.getDomainsByStatus(DomainUnregister.Status.AVOID_REGISTER);
         List<PeopleInChargePartnerUnregister> listPeopleInChargeRemove = new ArrayList<>();
         for(PeopleInChargePartnerUnregister peopleInChargeUnregister : mapPeople.values()) {
