@@ -249,6 +249,7 @@ public class SendMailService {
     }
 
     public void sendReportMail(ReportErrorService.ReportErrorParams report) {
+        System.out.println("sendReportMail");
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.ssl.enable", "true");
@@ -267,6 +268,7 @@ public class SendMailService {
         String subject = "[e!Helper] - SYSTEM ERROR REPORT @ " + Utils.formatGMT2(new Date());
         String content = report.getContent();
         try {
+            System.out.println("Transport.send(message)");
             String encodingOptions = "text/html; charset=UTF-8";
             MimeMessage message = new MimeMessage(session);
             message.setHeader("Content-Type", encodingOptions);
@@ -281,6 +283,7 @@ public class SendMailService {
             message.setContent(multipart);
             Transport.send(message);
         } catch (MessagingException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

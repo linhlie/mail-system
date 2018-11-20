@@ -6,6 +6,9 @@ import io.owslab.mailreceiver.startup.ApplicationStartup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,7 @@ public class EnviromentSettingService {
     public static final String MARK_B_CONDITIONS_KEY = "MARK_B_CONDITIONS_KEY";
     public static final String MARK_REFLECTION_SCOPE_KEY = "MARK_REFLECTION_SCOPE_KEY";
     public static final String UPDATE_DOMAIN_UNREGISTER_INTERVAL= "update_domain_unregister_interval";
+    public static final String CHECK_TIME_FETCH_MAIL= "check_time_fetch_mail";
 
     private static final String DEFAULT_STORAGE_PATH = ApplicationStartup.DEFAULT_STORAGE_PATH;
     private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
@@ -60,6 +64,7 @@ public class EnviromentSettingService {
     private static final String DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL = "1";
 
     public static final HashMap<String, String> defaultKVStore = createMap();
+    private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     private static HashMap<String, String> createMap()
     {
@@ -217,5 +222,23 @@ public class EnviromentSettingService {
     public int getUpdateDomainTimeInterval(){
         String timeIntervalStr = this.getSetting(UPDATE_DOMAIN_UNREGISTER_INTERVAL, DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL);
         return Integer.parseInt(timeIntervalStr);
+    }
+
+    public String getCheckTimeFetchMail(){
+        EnviromentSetting env = enviromentSettingDAO.findOne(CHECK_TIME_FETCH_MAIL);
+        if(env==null){
+            return "";
+        }else{
+            return env.getValue();
+        }
+    }
+
+    public void saveCheckTimeFetchMail(){
+        Date now = new Date();
+        EnviromentSetting env = new EnviromentSetting();
+        env.setKey(CHECK_TIME_FETCH_MAIL);
+        String time = df.format(now);
+        env.setValue(time);
+        enviromentSettingDAO.save(env);
     }
 }
