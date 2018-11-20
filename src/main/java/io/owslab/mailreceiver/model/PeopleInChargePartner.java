@@ -21,8 +21,6 @@ public class PeopleInChargePartner {
     private String note;
     private boolean pause;
     private long partnerId;
-    private int alertLevel;
-    private String alertContent;
 
     public long getId() {
         return id;
@@ -118,21 +116,5 @@ public class PeopleInChargePartner {
 
     public void setPartnerId(long partnerId) {
         this.partnerId = partnerId;
-    }
-
-    public int getAlertLevel() {
-        return alertLevel;
-    }
-
-    public void setAlertLevel(int alertLevel) {
-        this.alertLevel = alertLevel;
-    }
-
-    public String getAlertContent() {
-        return alertContent;
-    }
-
-    public void setAlertContent(String alertContent) {
-        this.alertContent = alertContent;
     }
 }
