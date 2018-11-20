@@ -1481,3 +1481,7 @@ div.bulletinboard-icon-wrapper {
 .close {
     margin-left: 10px;
 }
+
+.form-alert label{
+    display: block;
+}

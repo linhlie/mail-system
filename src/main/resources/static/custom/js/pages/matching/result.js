@@ -119,6 +119,8 @@
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
         '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
+        '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="source.peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
@@ -135,6 +137,8 @@
         '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
         '</td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
+        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
@@ -395,11 +399,31 @@
                         title: '',
                         content: '' +
                             '<form action="" class="formName">' +
-                                '<div class="form-group">' +
+                                '<div class="form-group form-alert">' +
                                     '<label>取引先アラート:'+ rowData.source.alertLevel +'</label>' +
                                     '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
                                     '<hr>'+
                                     '<span>' + rowData.source.alertContent + '</span>' +
+                            '</form>',
+                    });
+                }
+            });
+            setRowClickListener("alertLevelPeopleInChargeSource", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.source.peopleInChargeAlertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                            '<div class="form-group form-alert">' +
+                            '<label>取引先アラート:'+ rowData.source.peopleInChargeAlertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                            '<label>担 当 者 名:' + rowData.source.peopleInChargeName + '</label>' +
+                            '<label>メールアドレス:' + rowData.source.peopleinChargeEmail + '</label>' +
+                            '<hr>'+
+                            '<span>' + rowData.source.peopleInChargeAlertContent + '</span>' +
                             '</form>',
                     });
                 }
@@ -426,6 +450,7 @@
     }
     
     function showDestinationData(tableId, data) {
+        console.log(data);
         setTimeout(function () {
             $('body').loadingModal('destroy');
             $('body').loadingModal({
@@ -484,11 +509,31 @@
                                 title: '',
                                 content: '' +
                                     '<form action="" class="formName">' +
-                                    '<div class="form-group">' +
+                                    '<div class="form-group form-alert">' +
                                     '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
                                     '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
                                     '<hr>'+
                                     '<span>' + rowData.alertContent + '</span>' +
+                                    '</form>',
+                            });
+                        }
+                    });
+                    setRowClickListener("alertLevelPeopleInCharge", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if (rowData && rowData.peopleInChargeAlertLevel) {
+                            $.alert({
+                                title: '',
+                                content: '' +
+                                    '<form action="" class="formName">' +
+                                    '<div class="form-group form-alert">' +
+                                    '<label>取引先アラート:'+ rowData.peopleInChargeAlertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                                    '<label>担 当 者 名:' + rowData.peopleInChargeName + '</label>' +
+                                    '<label>メールアドレス:' + rowData.peopleinChargeEmail + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.peopleInChargeAlertContent + '</span>' +
                                     '</form>',
                             });
                         }
@@ -556,7 +601,7 @@
                     if(Array.isArray(cellData)){
                         cellNode.textContent = cellData.length;
                     } else {
-                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "source.alertLevel")){
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "source.alertLevel" || cellKeysData === "source.peopleInChargeAlertLevel" || cellKeysData === "peopleInChargeAlertLevel" )){
                             cell.setAttribute("Class", "clickable");
                         }
                         cellNode.textContent = cellData;

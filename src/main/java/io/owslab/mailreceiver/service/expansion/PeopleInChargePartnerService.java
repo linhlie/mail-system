@@ -58,6 +58,10 @@ public class PeopleInChargePartnerService {
         peopleInChargePartnerDAO.deleteAll();
     }
 
+    public List<PeopleInChargePartner> getAll(){
+        return peopleInChargePartnerDAO.findAll();
+    }
+
     public List<PeopleInChargePartnerDTO> getByPartnerId(long partnerId){
         List<PeopleInChargePartner> listPeople =  peopleInChargePartnerDAO.findByPartnerId(partnerId);
         Collections.sort(listPeople, new PeopleInChargePartnerComparator());

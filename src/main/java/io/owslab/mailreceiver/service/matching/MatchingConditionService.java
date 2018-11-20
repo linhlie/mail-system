@@ -8,11 +8,9 @@ import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
-import io.owslab.mailreceiver.model.BusinessPartner;
-import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.MatchingCondition;
-import io.owslab.mailreceiver.model.NumberTreatment;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
@@ -65,6 +63,9 @@ public class MatchingConditionService {
 
     @Autowired
     private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private PeopleInChargePartnerService peopleInChargeService;
 
     private NumberTreatment numberTreatment;
 
@@ -204,6 +205,11 @@ public class MatchingConditionService {
         logger.info("start matching");
         List<MatchingResult> matchingResults = new ArrayList<>();
         List<BusinessPartner> listPartner = partnerService.getAll();
+        List<PeopleInChargePartner> peoleIncharges = peopleInChargeService.getAll();
+        LinkedHashMap<String, PeopleInChargePartner> peopleInChargeMap = new LinkedHashMap<>();
+        for(PeopleInChargePartner people : peoleIncharges){
+            peopleInChargeMap.put(people.getEmailAddress().toLowerCase(), people);
+        }
         Map<String, PreviewMailDTO> previewMailDTOList = new HashMap<>();
         numberTreatment = numberTreatmentService.getFirst();
         FilterRule sourceRule = matchingConditionForm.getSourceConditionData();
@@ -258,7 +264,7 @@ public class MatchingConditionService {
     	}       
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
-            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail, listPartner));
+            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail, listPartner, peopleInChargeMap));
             for(String word : sourceResult.getWords()){
                 addToList(matchingResultMap, word, sourceMail, null);
             }
@@ -294,7 +300,7 @@ public class MatchingConditionService {
                     Email destinationMail = matchingPartResult.getDestinationMail();
                     FullNumberRange matchRange = matchingPartResult.getMatchRange();
                     FullNumberRange range = matchingPartResult.getRange();
-                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail, listPartner));
+                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail, listPartner, peopleInChargeMap));
                     if(matchingWords.size() == 0){
                         addToList(matchingResultMap, null, soureMail, destinationMail, matchRange, range);
                     } else {

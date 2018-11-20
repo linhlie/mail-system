@@ -6,8 +6,10 @@ import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.NumberTreatment;
+import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.DomainService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.word.EmailWordJobService;
@@ -43,6 +45,9 @@ public class EmailMatchingEngineerService {
 
     @Autowired
 	private BusinessPartnerService partnerService;
+
+	@Autowired
+	private PeopleInChargePartnerService peopleInChargeService;
     
     public List<Email> getEmailFromDestinationCondition(EmailMatchingEngineerForm form){
         numberTreatment = numberTreatmentService.getFirst();
@@ -70,6 +75,11 @@ public class EmailMatchingEngineerService {
         logger.info("start matching");
     	List<EngineerMatchingDTO> listEngineerMatchingDTO = form.getListEngineerMatchingDTO();
 		List<BusinessPartner> listPartner = partnerService.getAll();
+		List<PeopleInChargePartner> peoleIncharges = peopleInChargeService.getAll();
+		LinkedHashMap<String, PeopleInChargePartner> peopleInChargeMap = new LinkedHashMap<>();
+		for(PeopleInChargePartner people : peoleIncharges){
+			peopleInChargeMap.put(people.getEmailAddress().toLowerCase(), people);
+		}
     	if(listEngineerMatchingDTO==null || listEngineerMatchingDTO.size()==0)  return null;
     	
     	List<EmailMatchingEngineerResult> listResult = new  ArrayList<EmailMatchingEngineerResult>();
@@ -118,12 +128,12 @@ public class EmailMatchingEngineerService {
         					 FullNumberRange matchRange = matchingPartResult.getMatchRange();
         	                 FullNumberRange range = matchingPartResult.getRange();
         	                 result.addEmailDTO(email, matchRange, range);
-        	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner));
+        	    			 previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner, peopleInChargeMap));
         				 }
     				}
     				else{
     					result.addEmailDTO(email, null, null);
-   	    			 	previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner));
+   	    			 	previewMailDTOList.put(email.getMessageId(), new PreviewMailDTO(email, listPartner, peopleInChargeMap));
     				}
     			}
     		}

@@ -3,31 +3,28 @@ package io.owslab.mailreceiver.dto;
 import io.owslab.mailreceiver.enums.AlertLevel;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import org.apache.commons.lang.time.DateFormatUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class PreviewMailDTO {
     private long accountId;
-
     private String from;
-
     private String subject;
-
     private String to;
-
     private String sentAt;
-
     private String receivedAt;
-
     private String replyTo;
-
     private String alertLevel;
-
     private String alertContent;
-
     private String partnerName;
+    private String peopleInChargeAlertLevel;
+    private String peopleInChargeAlertContent;
+    private String peopleInChargeName;
+    private String peopleinChargeEmail;
 
     public PreviewMailDTO(Email email) {
         this.setAccountId(email.getAccountId());
@@ -39,7 +36,7 @@ public class PreviewMailDTO {
         this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
     }
 
-    public PreviewMailDTO(Email email, List<BusinessPartner> listPartner) {
+    public PreviewMailDTO(Email email, List<BusinessPartner> listPartner, LinkedHashMap<String, PeopleInChargePartner> lisPeople) {
         this.setAccountId(email.getAccountId());
         this.setFrom(email.getFrom());
         this.setSubject(email.getSubject());
@@ -49,6 +46,7 @@ public class PreviewMailDTO {
         this.setReceivedAt(DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
 
         BusinessPartner businessPartner = null;
+        PeopleInChargePartner people = null;
         String emailAddress = email.getFrom();
         if (emailAddress!=null && !emailAddress.equals("")){
             int index = emailAddress.indexOf("@");
@@ -59,6 +57,8 @@ public class PreviewMailDTO {
                     break;
                 }
             }
+
+            people = lisPeople.get(emailAddress.toLowerCase());
         }
 
         if(businessPartner != null){
@@ -66,6 +66,14 @@ public class PreviewMailDTO {
             this.alertLevel = alertLevel;
             this.alertContent =businessPartner.getAlertContent();
             this.partnerName =businessPartner.getName();
+        }
+
+        if(people != null){
+            String alertLevel = AlertLevel.fromValue(people.getAlertLevel()).getText();
+            this.peopleInChargeAlertLevel = alertLevel;
+            this.peopleInChargeAlertContent =people.getAlertContent();
+            this.peopleInChargeName = people.getLastName()+ "　" + people.getFirstName();
+            this.peopleinChargeEmail = people.getEmailAddress();
         }
     }
 
@@ -149,4 +157,35 @@ public class PreviewMailDTO {
         this.alertContent = alertContent;
     }
 
+    public String getPeopleInChargeAlertLevel() {
+        return peopleInChargeAlertLevel;
+    }
+
+    public void setPeopleInChargeAlertLevel(String peopleInChargeAlertLevel) {
+        this.peopleInChargeAlertLevel = peopleInChargeAlertLevel;
+    }
+
+    public String getPeopleInChargeAlertContent() {
+        return peopleInChargeAlertContent;
+    }
+
+    public void setPeopleInChargeAlertContent(String peopleInChargeAlertContent) {
+        this.peopleInChargeAlertContent = peopleInChargeAlertContent;
+    }
+
+    public String getPeopleInChargeName() {
+        return peopleInChargeName;
+    }
+
+    public void setPeopleInChargeName(String peopleInChargeName) {
+        this.peopleInChargeName = peopleInChargeName;
+    }
+
+    public String getPeopleinChargeEmail() {
+        return peopleinChargeEmail;
+    }
+
+    public void setPeopleinChargeEmail(String peopleinChargeEmail) {
+        this.peopleinChargeEmail = peopleinChargeEmail;
+    }
 }
