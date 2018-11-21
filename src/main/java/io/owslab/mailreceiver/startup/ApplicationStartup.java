@@ -16,8 +16,6 @@ import io.owslab.mailreceiver.service.schedulers.*;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.word.WordService;
-import io.owslab.mailreceiver.utils.FileAssert;
-import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SelectOption;
 import io.owslab.mailreceiver.utils.Utils;
 
@@ -62,6 +60,9 @@ public class ApplicationStartup {
     @Autowired
     private AutoExtendScheduler autoExtendScheduler;
     
+    @Autowired
+    private MonitoringScheduler motoringScheduler;
+
     @Autowired
     private UpdateDomainUnregisterScheduler updateDomainUnregisterScheduler;
 
@@ -143,6 +144,7 @@ public class ApplicationStartup {
         receiveMailScheduler.start();
         autoExtendScheduler.start();
         updateDomainUnregisterScheduler.start();
+        motoringScheduler.start();
         getDomain();
         configWordDatabase();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;

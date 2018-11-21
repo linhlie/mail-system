@@ -383,7 +383,7 @@
     function partnerNameValidate() {
         var input = $("input[name='name']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -398,7 +398,7 @@
     function partnerKanaNameValidate() {
         var input = $("input[name='kanaName']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -407,7 +407,7 @@
     function partnerPartnerCodeValidate() {
         var input = $("input[name='partnerCode']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -418,7 +418,7 @@
         var domain2 = $("#domain2");
         var domain3 = $("#domain3");
         if(!domain1.val() && !domain2.val() && !domain3.val()) {
-            showError.apply(domain1, ["せめて一つのドメインを入力してください"]);
+            showError.apply(domain1, ["最小限1つのドメインを入力して下さい"]);
             return false;
         }
         return true;
@@ -445,6 +445,7 @@
     function resetForm() {
         $(formId).trigger("reset");
         $(".showAlertLevel").css("visibility", "hidden");
+        $("#alertContent").prop("disabled", true);
     }
     
     function clearFormValidate() {
@@ -592,6 +593,7 @@
     
     function doEditDomain(data) {
         clearFormValidate();
+        clearPartnerOnClick();
         updatingDomainId = data.id;
         disableAddPartner(false);
         setFormDomainUpdate(data);
@@ -901,6 +903,7 @@
         }else{
             if(!alertLevelValue || alertLevelValue == 0){
                 $("input[name = alertLevel][value=" + 3 +"]").prop('checked', true);
+                alertContentValue = "";
             }else{
                 $("input[name = alertLevel][value=" + alertLevelValue +"]").prop('checked', true);
             }
