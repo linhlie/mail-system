@@ -345,6 +345,9 @@
     function resetForm() {
         $(formId).trigger("reset");
         $(".showAlertLevel").css("visibility", "hidden");
+        $("#alertContent").prop("disabled", true);
+        alertLevelValue=0;
+        alertContentValue="";
     }
 
     function clearFormValidate() {
@@ -548,6 +551,7 @@
     function doEditPeople(data) {
         updatingPeopleId = data.id;
         clearFormValidate();
+        clearPeopleOnClick();
         disableUpdatePeople(false);
         setFormData(data);
     }
@@ -843,6 +847,7 @@
         }else{
             if(!alertLevelValue || alertLevelValue == 0){
                 $("input[name = alertLevel][value=" + 3 +"]").prop('checked', true);
+                alertContentValue = "";
             }else{
                 $("input[name = alertLevel][value=" + alertLevelValue +"]").prop('checked', true);
             }
