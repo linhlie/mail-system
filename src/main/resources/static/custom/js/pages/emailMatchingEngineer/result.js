@@ -133,6 +133,8 @@
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
         '<td class="text-center fit" rowspan="1" colspan="1"></td>' +
+        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
@@ -146,6 +148,8 @@
         '<td class="clickable text-center fit" name="sendToEngineer" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
         '</td>' +
+        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     $(function () {
@@ -447,6 +451,24 @@
                             showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData, data.engineerMatchingDTO, "sendToEngineer");
                         }
                     });
+                    setRowClickListener("alertLevelDestinationMail", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if (rowData && rowData.alertLevel) {
+                            $.alert({
+                                title: '',
+                                content: '' +
+                                    '<form action="" class="formName">' +
+                                    '<div class="form-group">' +
+                                    '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.alertContent + '</span>' +
+                                    '</form>',
+                            });
+                        }
+                    });
                 }
                 updateDestinationDataTrigger();
                 $('body').loadingModal('hide');
@@ -514,6 +536,9 @@
                     if(Array.isArray(cellData)){
                         cellNode.textContent = cellData.length;
                     } else {
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel")){
+                            cell.setAttribute("Class", "clickable");
+                        }
                         cellNode.textContent = cellData;
                     }
                 }

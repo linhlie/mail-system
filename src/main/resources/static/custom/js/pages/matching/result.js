@@ -117,6 +117,8 @@
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
         '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
+        '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
@@ -132,6 +134,8 @@
         '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
         '</td>' +
+        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     $(function () {
@@ -382,6 +386,24 @@
             setRowClickListener("sourceRow", function () {
                 selectedRow($(this).closest('tr'))
             });
+            setRowClickListener("alertLevelSourceRow", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.source.alertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                                '<div class="form-group">' +
+                                    '<label>取引先アラート:'+ rowData.source.alertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.source.alertContent + '</span>' +
+                            '</form>',
+                    });
+                }
+            });
         }
         initSortSource();
         selectFirstRow();
@@ -453,6 +475,24 @@
                             }
                         }
                     });
+                    setRowClickListener("alertLevelDestinationMail", function () {
+                        var row = $(this)[0].parentNode;
+                        var index = row.getAttribute("data");
+                        var rowData = currentDestinationResult[index];
+                        if (rowData && rowData.alertLevel) {
+                            $.alert({
+                                title: '',
+                                content: '' +
+                                    '<form action="" class="formName">' +
+                                    '<div class="form-group">' +
+                                    '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
+                                    '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                                    '<hr>'+
+                                    '<span>' + rowData.alertContent + '</span>' +
+                                    '</form>',
+                            });
+                        }
+                    });
                 }
                 updateDestinationDataTrigger();
                 $('body').loadingModal('hide');
@@ -516,6 +556,9 @@
                     if(Array.isArray(cellData)){
                         cellNode.textContent = cellData.length;
                     } else {
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "source.alertLevel")){
+                            cell.setAttribute("Class", "clickable");
+                        }
                         cellNode.textContent = cellData;
                     }
                 }

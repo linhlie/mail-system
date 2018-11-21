@@ -190,11 +190,6 @@ function getBusinessPartners(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getBusinessPartnersForEngineer(onSuccess, onError) {
-    var url = "/expansion/engineer/partnerList";
-    _get(url, onSuccess, onError);
-}
-
 function getBusinessPartnerGroup(partnerId, onSuccess, onError) {
     var url = "/expansion/businessPartner/group/list/" + partnerId;
     _get(url, onSuccess, onError);
@@ -389,31 +384,22 @@ function updateBulletinBoardPosition(data, onSuccess, onError){
 
 function importPartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartner?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    _postString(url, data, onSuccess, onError);
+    _import(url, data, onSuccess, onError);
 }
 
 function importEngineers(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importEngineer?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    _postString(url, data, onSuccess, onError);
+    _import(url, data, onSuccess, onError);
 }
 
 function importPeopleInChargePartners(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPeopleInChargePartners?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: onSuccess,
-        error: onError
-    });
+    _import(url, data, onSuccess, onError);
 }
 
 function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
-    _postString(url, data, onSuccess, onError);
+    _import(url, data, onSuccess, onError);
 }
 
 function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
@@ -425,7 +411,6 @@ function getInforPartnerAPI(data, onSuccess, onError) {
     var url = "/user/matchingResult/getInforPartner";
     _postString(url, data, onSuccess, onError);
 }
-
 
 function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {
     var url = "/expansion/peopleInChargePartner/getPartners";
@@ -526,6 +511,19 @@ function _postString(url, data, onSuccess, onError) {
         dataType: 'json',
         cache: false,
         timeout: 600000,
+        success: onSuccess,
+        error: onError
+    });
+}
+
+function _import(url, data, onSuccess, onError) {
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
         success: onSuccess,
         error: onError
     });

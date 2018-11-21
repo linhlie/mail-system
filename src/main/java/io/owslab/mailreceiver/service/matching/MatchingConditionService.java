@@ -203,6 +203,7 @@ public class MatchingConditionService {
     public FinalMatchingResult matching(MatchingConditionForm matchingConditionForm){
         logger.info("start matching");
         List<MatchingResult> matchingResults = new ArrayList<>();
+        List<BusinessPartner> listPartner = partnerService.getAll();
         Map<String, PreviewMailDTO> previewMailDTOList = new HashMap<>();
         numberTreatment = numberTreatmentService.getFirst();
         FilterRule sourceRule = matchingConditionForm.getSourceConditionData();
@@ -257,7 +258,7 @@ public class MatchingConditionService {
     	}       
         for(MatchingWordResult sourceResult : matchWordSource) {
             Email sourceMail = sourceResult.getEmail();
-            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail));
+            previewMailDTOList.put(sourceMail.getMessageId(), new PreviewMailDTO(sourceMail, listPartner));
             for(String word : sourceResult.getWords()){
                 addToList(matchingResultMap, word, sourceMail, null);
             }
@@ -293,7 +294,7 @@ public class MatchingConditionService {
                     Email destinationMail = matchingPartResult.getDestinationMail();
                     FullNumberRange matchRange = matchingPartResult.getMatchRange();
                     FullNumberRange range = matchingPartResult.getRange();
-                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail));
+                    previewMailDTOList.put(destinationMail.getMessageId(), new PreviewMailDTO(destinationMail, listPartner));
                     if(matchingWords.size() == 0){
                         addToList(matchingResultMap, null, soureMail, destinationMail, matchRange, range);
                     } else {
@@ -1164,4 +1165,5 @@ public class MatchingConditionService {
     public int getMatchingCount() {
         return this.getMatchingCounter();
     }
+
 }

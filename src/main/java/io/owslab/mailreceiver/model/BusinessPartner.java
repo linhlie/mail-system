@@ -1,5 +1,7 @@
 package io.owslab.mailreceiver.model;
 
+import io.owslab.mailreceiver.enums.CompanyType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Comparator;
@@ -35,6 +37,10 @@ public class BusinessPartner {
     private String domain3;
 
     private boolean ourCompany;
+
+    private int alertLevel;
+
+    private String alertContent;
 
     public BusinessPartner() {
     }
@@ -131,6 +137,22 @@ public class BusinessPartner {
         this.ourCompany = ourCompany;
     }
 
+    public int getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(int alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
+    }
+
     //Builder Class
     public static class Builder{
         private long id;
@@ -144,6 +166,8 @@ public class BusinessPartner {
         private String domain2;
         private String domain3;
         private boolean ourCompany;
+        private int alertLevel;
+        private String alertContent;
 
         public Builder setId(long id) {
             this.id = id;
@@ -200,6 +224,22 @@ public class BusinessPartner {
             return this;
         }
 
+        public int getAlertLevel() {
+            return alertLevel;
+        }
+
+        public void setAlertLevel(int alertLevel) {
+            this.alertLevel = alertLevel;
+        }
+
+        public String getAlertContent() {
+            return alertContent;
+        }
+
+        public void setAlertContent(String alertContent) {
+            this.alertContent = alertContent;
+        }
+
         public BusinessPartner build(){
             BusinessPartner partner = new BusinessPartner();
             partner.id = this.id;
@@ -207,7 +247,7 @@ public class BusinessPartner {
             partner.name = this.name;
             partner.kanaName = this.kanaName;
             partner.companyType = this.companyType;
-            if(this.companyType == CompanyTypes.OTHER) {
+            if(this.companyType == CompanyType.OTHER.getValue()) {
                 partner.companySpecificType = this.companySpecificType;
             } else {
                 partner.companySpecificType = null;
@@ -217,6 +257,8 @@ public class BusinessPartner {
             partner.domain2 = this.domain2;
             partner.domain3 = this.domain3;
             partner.ourCompany = this.ourCompany;
+            partner.alertLevel = this.alertLevel;
+            partner.alertContent = this.alertContent;
             return partner;
         }
 
@@ -262,16 +304,6 @@ public class BusinessPartner {
 
         public boolean isOurCompany() {
             return ourCompany;
-        }
-
-        public static class CompanyTypes {
-            public static final int LTD = 1;
-            public static final int LIMITED = 2;
-            public static final int GROUP = 3;
-            public static final int JOINT_STOCK = 4;
-            public static final int FOUNDATION = 5;
-            public static final int CORPORATION = 6;
-            public static final int OTHER = 7;
         }
     }
 

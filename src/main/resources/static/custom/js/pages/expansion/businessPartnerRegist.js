@@ -16,6 +16,8 @@
     var updatingPartnerId = null;
     var selectedSourceTableRow=-1;
     var updatingDomainId = null;
+    var alertContentValue = "";
+    var alertLevelValue = "";
 
     var formFields = [
         {type: "input", name: "name"},
@@ -28,6 +30,8 @@
         {type: "radio", name: "companyType"},
         {type: "input", name: "companySpecificType"},
         {type: "radio", name: "stockShare"},
+        {type: "radio", name: "alertLevel"},
+        {type: "textarea", name: "alertContent"},
     ];
 
     var GroupPartnerRowTypes = {
@@ -48,12 +52,14 @@
 	var partnerReplaceHead = '<tr>' +
 		'<th class="dark">取引先名</th>' +
 		'<th class="fit dark" style="text-align: center">識別ID</th>' +
+        '<th class="fit dark" style="text-align: center">アラート</th>' +
 		'<th colspan="2"></th>' +
 		'</tr>';
 
     var partnerReplaceRow = '<tr role="row" class="hidden">' +
         '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="alertLevel" style="text-align: center"><span></span></td>' +
         '<td name="editPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">編集</button>' +
         '</td>' +
@@ -99,7 +105,8 @@
         styleShowTableChangeListener();
         loadBusinessPartners();
         draggingSetup();
-        setVisibleCountDomain("hidden")
+        showAlertLevelListener();
+        setVisibleCountDomain("hidden");
     });
 
     function initStickyHeader() {
@@ -308,6 +315,14 @@
                 $("" + field.type + "[name='" + field.name + "']").val(form[field.name]);
             }
         }
+        alertLevelValue = form.alertLevel;
+        alertContentValue = form.alertContent;
+        var alertType = form.alertLevel > 0? 1 : 0;
+        var showAlertLevel = form.alertLevel > 0? "visible" : "hidden";
+        var disibaleAlertContent = form.alertLevel > 0? false : true;
+        $("input[name = alertType][value=" + alertType +"]").prop('checked', true);
+        $(".showAlertLevel").css("visibility", showAlertLevel);
+        $("#alertContent").prop("disabled", disibaleAlertContent);
     }
     
     function setFormDomainUpdate(form) {
@@ -374,7 +389,7 @@
     function partnerNameValidate() {
         var input = $("input[name='name']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -389,7 +404,7 @@
     function partnerKanaNameValidate() {
         var input = $("input[name='kanaName']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -398,7 +413,7 @@
     function partnerPartnerCodeValidate() {
         var input = $("input[name='partnerCode']");
         if(!input.val()) {
-            showError.apply(input, ["必要"]);
+            showError.apply(input, ["必須"]);
             return false;
         }
         return true;
@@ -409,7 +424,7 @@
         var domain2 = $("#domain2");
         var domain3 = $("#domain3");
         if(!domain1.val() && !domain2.val() && !domain3.val()) {
-            showError.apply(domain1, ["せめて一つのドメインを入力してください"]);
+            showError.apply(domain1, ["最小限1つのドメインを入力して下さい"]);
             return false;
         }
         return true;
@@ -435,6 +450,8 @@
 
     function resetForm() {
         $(formId).trigger("reset");
+        $(".showAlertLevel").css("visibility", "hidden");
+        $("#alertContent").prop("disabled", true);
     }
     
     function clearFormValidate() {
@@ -515,6 +532,17 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
+                        if(cellKeysData === "alertLevel"){
+                            switch (cellData) {
+                                case 1:cellData = "底";
+                                    break;
+                                case 2:cellData = "中";
+                                    break;
+                                case 3:cellData = "高";
+                                    break;
+                                default: cellData="";
+                            }
+                        }
                         cellNode.textContent = cellData;
                     }
                 }
@@ -571,8 +599,9 @@
     
     function doEditDomain(data) {
         clearFormValidate();
+        clearPartnerOnClick();
         updatingDomainId = data.id;
-        disableUpdatePartner(false);
+        disableAddPartner(false);
         setFormDomainUpdate(data);
     }
     
@@ -860,6 +889,33 @@
                 },
             }
         });
+    }
+
+    function showAlertLevelListener() {
+        $('input[type=radio][name=alertType]').change(function() {
+            showAlertPartner(this.value);
+        });
+    }
+
+    function showAlertPartner(value){
+        if(value == 0){
+            alertLevelValue = $("input[name = alertLevel]:checked").val();
+            $("input[name = alertLevel][value=" + 0 +"]").prop('checked', true);
+            $(".showAlertLevel").css("visibility", "hidden");
+            alertContentValue = $("#alertContent").val();
+            $("#alertContent").val("");
+            $("#alertContent").prop("disabled", true);
+        }else{
+            if(!alertLevelValue || alertLevelValue == 0){
+                $("input[name = alertLevel][value=" + 3 +"]").prop('checked', true);
+                alertContentValue = "";
+            }else{
+                $("input[name = alertLevel][value=" + alertLevelValue +"]").prop('checked', true);
+            }
+            $(".showAlertLevel").css("visibility", "visible");
+            $("#alertContent").prop("disabled", false);
+            $("#alertContent").val(alertContentValue);
+        }
     }
 
 })(jQuery);
