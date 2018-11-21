@@ -249,11 +249,8 @@ public class SendMailService {
     }
 
     public void sendReportMail(ReportErrorService.ReportErrorParams report) {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.host", report.getHost());
-        props.put("mail.smtp.port", report.getPort());
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSendByEmail(report.getUserName());
+        Properties props = MailUtils.buildProperties(accountSetting);
 
         // Get the Session object.
         Session session = Session.getInstance(props,
@@ -281,6 +278,7 @@ public class SendMailService {
             message.setContent(multipart);
             Transport.send(message);
         } catch (MessagingException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
