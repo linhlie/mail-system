@@ -10,6 +10,8 @@ public class PeopleInChargePartnerDTO {
     private String emailAddress;
     private boolean pause;
     private boolean emailInChargePartner;
+    private int alertLevel;
+    private String alertContent;
 
     public PeopleInChargePartnerDTO(){
 
@@ -29,6 +31,8 @@ public class PeopleInChargePartnerDTO {
         this.emailAddress = people.getEmailAddress();
         this.pause = people.isPause();
         this.emailInChargePartner = people.isEmailInChargePartner();
+        this.alertLevel = people.getAlertLevel();
+        this.alertContent = people.getAlertContent();
     }
 
     public long getId() {
@@ -85,5 +89,21 @@ public class PeopleInChargePartnerDTO {
 
     public void setEmailInChargePartner(boolean emailInChargePartner) {
         this.emailInChargePartner = emailInChargePartner;
+    }
+
+    public int getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(int alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
     }
 }

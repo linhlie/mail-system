@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.dto;
 
+import io.owslab.mailreceiver.enums.AlertLevel;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.PeopleInChargePartner;
 
@@ -21,6 +22,8 @@ public class CSVPeopleInChargePartnerDTO {
     private String numberPhone2;
     private String note;
     private String pause;
+    private String alertLevel;
+    private String alertContent;
 
     public CSVPeopleInChargePartnerDTO(){
     }
@@ -53,6 +56,13 @@ public class CSVPeopleInChargePartnerDTO {
         this.setNumberPhone2(people.getNumberPhone2());
         this.setNote(people.getNote());
         this.setPause(Boolean.toString(people.isPause()).toUpperCase());
+        AlertLevel alert = AlertLevel.fromValue(people.getAlertLevel());
+        if(alert.getValue()==0){
+            this.setAlertLevel("");
+        }else{
+            this.setAlertLevel(alert.getText());
+        }
+        this.setAlertContent(people.getAlertContent());
     }
 
     public String getPartnerCode() {
@@ -151,6 +161,22 @@ public class CSVPeopleInChargePartnerDTO {
         this.pause = pause;
     }
 
+    public String getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(String alertLevel) {
+        this.alertLevel = alertLevel;
+    }
+
+    public String getAlertContent() {
+        return alertContent;
+    }
+
+    public void setAlertContent(String alertContent) {
+        this.alertContent = alertContent;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -192,6 +218,13 @@ public class CSVPeopleInChargePartnerDTO {
             people.setPause(pause);
         }
         people.setPartnerId(partner.getId());
+        AlertLevel alert = AlertLevel.fromText(this.alertLevel);
+        people.setAlertLevel(alert.getValue());
+        if(alert.getValue()==0){
+            people.setAlertContent("");
+        }else{
+            people.setAlertContent(this.alertContent);
+        }
         return people;
     }
 }
