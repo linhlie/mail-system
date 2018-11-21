@@ -53,16 +53,13 @@
 		'<th class="dark">取引先名</th>' +
 		'<th class="fit dark" style="text-align: center">識別ID</th>' +
         '<th class="fit dark" style="text-align: center">アラート</th>' +
-		'<th colspan="2"></th>' +
+		'<th colspan="1"></th>' +
 		'</tr>';
 
     var partnerReplaceRow = '<tr role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="name"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="partnerCode"><span></span></td>' +
+        '<td name="editPartner" rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
+        '<td name="editPartner" rowspan="1" colspan="1" data="partnerCode" style="cursor: pointer;"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="alertLevel" style="text-align: center"><span></span></td>' +
-        '<td name="editPartner" class="fit action" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">編集</button>' +
-        '</td>' +
         '<td name="deletePartner" class="fit action" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
@@ -70,14 +67,11 @@
     
 	var domainReplaceHead = '<tr>' +
 		'<th class="dark">Domain</th>' +
-		'<th colspan="3"></th>' +
+		'<th colspan="2"></th>' +
 		'</tr>';
 	
     var domainReplaceRow = '<tr role="row" class="hidden">' +
-    	'<td rowspan="1" colspan="1" data="domain"><span></span></td>' +
-    	'<td name="editDomain" class="fit action" rowspan="1" colspan="1" data="id">' +
-    	'<button type="button">編集</button>' +
-    	'</td>' +
+    	'<td name="editDomain" owspan="1" colspan="1" data="domain" style="cursor: pointer;"><span></span></td>' +
     	'<td name="avoidRegister" class="fit action" rowspan="1" colspan="1" data="id">' +
     	'<button type="button">無視</button>' +
     	'</td>' +
@@ -452,6 +446,8 @@
         $(formId).trigger("reset");
         $(".showAlertLevel").css("visibility", "hidden");
         $("#alertContent").prop("disabled", true);
+        alertLevelValue=0;
+        alertContentValue="";
     }
     
     function clearFormValidate() {
@@ -832,6 +828,7 @@
                 if (rowData && rowData.id) {
                     $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                     doEditDomain(rowData);
+                    console.log(rowData);
                 }
             });
         }
