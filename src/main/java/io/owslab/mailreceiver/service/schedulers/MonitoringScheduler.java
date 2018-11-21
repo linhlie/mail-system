@@ -59,7 +59,6 @@ public class MonitoringScheduler extends AbstractScheduler{
                 Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
                 Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
                 Date now = new Date();
-                System.err.println(nextTimeToFetchMail.compareTo(now));
                 if(nextTimeToFetchMail.compareTo(now) < 0){
                     logger.info("Send mail report");
                     ReportErrorService.sendReportError("Auto fetch mail is not working",false);
