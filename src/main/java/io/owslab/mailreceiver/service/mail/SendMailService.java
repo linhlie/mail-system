@@ -249,12 +249,8 @@ public class SendMailService {
     }
 
     public void sendReportMail(ReportErrorService.ReportErrorParams report) {
-        System.out.println("sendReportMail");
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.host", report.getHost());
-        props.put("mail.smtp.port", report.getPort());
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSendByEmail(report.getUserName());
+        Properties props = MailUtils.buildProperties(accountSetting);
 
         // Get the Session object.
         Session session = Session.getInstance(props,
@@ -268,7 +264,6 @@ public class SendMailService {
         String subject = "[e!Helper] - SYSTEM ERROR REPORT @ " + Utils.formatGMT2(new Date());
         String content = report.getContent();
         try {
-            System.out.println("Transport.send(message)");
             String encodingOptions = "text/html; charset=UTF-8";
             MimeMessage message = new MimeMessage(session);
             message.setHeader("Content-Type", encodingOptions);

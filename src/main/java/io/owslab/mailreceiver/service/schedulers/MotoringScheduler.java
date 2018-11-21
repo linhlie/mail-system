@@ -19,6 +19,7 @@ public class MotoringScheduler extends AbstractScheduler{
     private static final Logger logger = LoggerFactory.getLogger(MotoringScheduler.class);
     private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 2L;
     private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    private boolean isReadyReport = false;
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
@@ -32,13 +33,11 @@ public class MotoringScheduler extends AbstractScheduler{
     @Override
     public void doStuff() {
         if(isNeedToCheck()){
-            System.out.println("startUpdate");
             startUpdate();
         }
     }
 
     private boolean isNeedToCheck(){
-        System.out.println("isNeedToCheck");
         Optional<Date> lastTimeCheckFetchMailOpt = getLastTimeUpdate();
         if(lastTimeCheckFetchMailOpt.isPresent()){
             Date now = new Date();
@@ -54,23 +53,29 @@ public class MotoringScheduler extends AbstractScheduler{
         lastTimeUpdate = new Date();
         String timeFetchMailBefore = enviromentSettingService.getCheckTimeFetchMail();
         int checkMailInMinute = enviromentSettingService.getCheckMailTimeInterval();
-        try {
-            if(timeFetchMailBefore!=null){
-                Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
-                Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
-                System.out.println(TimeFetchMailLastest);
-                System.out.println(checkMailInMinute);
-                System.out.println(nextTimeToFetchMail);
-                Date now = new Date();
-                System.out.println(nextTimeToFetchMail.compareTo(now));
-                if(nextTimeToFetchMail.compareTo(now) < 0){
-                    System.out.println("send mail "+timeFetchMailBefore);
-                    ReportErrorService.sendReportError("Auto fetch mail is not working",false);
+        logger.info("Start check fetch mail process ");
+        if(isReadyReport){
+            try {
+                if(timeFetchMailBefore!=null){
+                    Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
+                    Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
+                    System.out.println(TimeFetchMailLastest);
+                    System.out.println(checkMailInMinute);
+                    System.out.println(nextTimeToFetchMail);
+                    Date now = new Date();
+                    System.out.println(nextTimeToFetchMail.compareTo(now));
+                    if(nextTimeToFetchMail.compareTo(now) < 0){
+                        System.out.println("send mail "+timeFetchMailBefore);
+                        ReportErrorService.sendReportError("Auto fetch mail is not working",false);
+                    }
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        }else{
+            isReadyReport = true;
         }
+
     }
 
     private Optional<Date> getLastTimeUpdate(){

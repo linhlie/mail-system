@@ -104,25 +104,22 @@ public class ReportErrorService {
     }
 
     private static void report(String error) {
-        System.out.println("report");
-        System.out.println(sendFrom);
-        System.out.println(administratorMailAddress);
-        System.out.println(sendUserName);
-        System.out.println(sendPassword);
-        lastReportSentAt = new Date();
-        try {
-            ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
-                    .setFrom(sendFrom)
-                    .setTo(administratorMailAddress)
-                    .setContent(error)
-                    .setUserName(sendUserName)
-                    .setPassword(sendPassword)
-                    .setHost(sendHost)
-                    .setPort(sendPort)
-                    .build();
-            sms.sendReportMail(reportErrorParams);
-        } catch (Exception e) {
-            System.err.println("Can't send report");
+        if(sendUserName!=null){
+            lastReportSentAt = new Date();
+            try {
+                ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
+                        .setFrom(sendFrom)
+                        .setTo(administratorMailAddress)
+                        .setContent(error)
+                        .setUserName(sendUserName)
+                        .setPassword(sendPassword)
+                        .setHost(sendHost)
+                        .setPort(sendPort)
+                        .build();
+                sms.sendReportMail(reportErrorParams);
+            } catch (Exception e) {
+                System.err.println("Can't send report");
+            }
         }
     }
 

@@ -104,7 +104,7 @@ public class FetchMailJob implements Runnable {
             OwsMimeMessage messages[] = getMessages(emailFolder, msgnum, beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
-//            enviromentSettingService.saveCheckTimeFetchMail();
+            enviromentSettingService.saveCheckTimeFetchMail();
             mailProgress.setTotal(messages.length);
             for (int i = 0; i < messages.length; i++) {
                 OwsMimeMessage message = (OwsMimeMessage) messages[i];

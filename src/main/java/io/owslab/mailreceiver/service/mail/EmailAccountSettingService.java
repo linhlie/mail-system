@@ -40,6 +40,11 @@ public class EmailAccountSettingService {
         return findOneWithAccountIdAndType(accountId, EmailAccountSetting.Type.SEND);
     }
 
+    public EmailAccountSetting findOneSendByEmail(String email){
+        List<EmailAccountSetting> emailAccountSettingList = emailAccountSettingsDAO.findByUserNameAndType(email, EmailAccountSetting.Type.SEND);
+        return emailAccountSettingList.size() > 0 ? emailAccountSettingList.get(0) : null;
+    }
+
     private EmailAccountSetting findOneWithAccountIdAndType(long accountId, int type){
         List<EmailAccountSetting> emailAccountSettingList = emailAccountSettingsDAO.findByAccountIdAndType(accountId, type);
         return emailAccountSettingList.size() > 0 ? emailAccountSettingList.get(0) : null;
