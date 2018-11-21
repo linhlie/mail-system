@@ -14,4 +14,6 @@ public interface EmailAccountSettingsDAO extends PagingAndSortingRepository<Emai
     List<EmailAccountSetting> findByAccountIdAndType(long accountId, int type);
     List<EmailAccountSetting> findById(long id);
 
+    List<EmailAccountSetting> findByUserNameAndType(String username, int type);
+
 }
