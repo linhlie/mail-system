@@ -16,8 +16,6 @@ import io.owslab.mailreceiver.service.schedulers.*;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.word.WordService;
-import io.owslab.mailreceiver.utils.FileAssert;
-import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.SelectOption;
 import io.owslab.mailreceiver.utils.Utils;
 
@@ -63,7 +61,7 @@ public class ApplicationStartup {
     private AutoExtendScheduler autoExtendScheduler;
     
     @Autowired
-    private MotoringScheduler motoringScheduler;
+    private MonitoringScheduler motoringScheduler;
 
     @Autowired
     private UpdateDomainUnregisterScheduler updateDomainUnregisterScheduler;

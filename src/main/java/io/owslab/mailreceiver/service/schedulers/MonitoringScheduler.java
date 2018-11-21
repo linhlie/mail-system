@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.Optional;
 
 @Component
-public class MotoringScheduler extends AbstractScheduler{
-    private static final Logger logger = LoggerFactory.getLogger(MotoringScheduler.class);
+public class MonitoringScheduler extends AbstractScheduler{
+    private static final Logger logger = LoggerFactory.getLogger(MonitoringScheduler.class);
     private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 2L;
     private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     private boolean isReadyReport = false;
@@ -26,7 +26,7 @@ public class MotoringScheduler extends AbstractScheduler{
 
     private Date lastTimeUpdate;
 
-    public MotoringScheduler() {
+    public MonitoringScheduler() {
         super(0, CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND);
     }
 
@@ -53,24 +53,21 @@ public class MotoringScheduler extends AbstractScheduler{
         lastTimeUpdate = new Date();
         String timeFetchMailBefore = enviromentSettingService.getCheckTimeFetchMail();
         int checkMailInMinute = enviromentSettingService.getCheckMailTimeInterval();
-        logger.info("Start check fetch mail process ");
-        if(isReadyReport){
-            try {
-                if(timeFetchMailBefore!=null){
-                    Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
-                    Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
-                    Date now = new Date();
-                    if(nextTimeToFetchMail.compareTo(now) < 0){
-                        ReportErrorService.sendReportError("Auto fetch mail is not working",false);
-                    }
+        logger.info("Check fetch mail process ");
+        try {
+            if(timeFetchMailBefore!=null){
+                Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
+                Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
+                Date now = new Date();
+                System.err.println(nextTimeToFetchMail.compareTo(now));
+                if(nextTimeToFetchMail.compareTo(now) < 0){
+                    logger.info("Send mail report");
+                    ReportErrorService.sendReportError("Auto fetch mail is not working",false);
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
-        }else{
-            isReadyReport = true;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-
     }
 
     private Optional<Date> getLastTimeUpdate(){
