@@ -446,6 +446,8 @@
         $(formId).trigger("reset");
         $(".showAlertLevel").css("visibility", "hidden");
         $("#alertContent").prop("disabled", true);
+        alertLevelValue=0;
+        alertContentValue="";
     }
     
     function clearFormValidate() {
