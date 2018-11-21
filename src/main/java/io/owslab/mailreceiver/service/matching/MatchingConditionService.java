@@ -685,7 +685,7 @@ public class MatchingConditionService {
         if(part == null) return false;
         boolean match = false;
         ConditionOption option = condition.getConditionOption();
-        String dateValue = condition.getValue();
+        String dateValue = getOptimizedText(condition.getValue(), false);
         try {
 //            ConditionOption option = ConditionOption.fromValue(condition.getCondition());
 //            String dateValue = condition.getValue();

@@ -59,13 +59,8 @@ public class MotoringScheduler extends AbstractScheduler{
                 if(timeFetchMailBefore!=null){
                     Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
                     Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
-                    System.out.println(TimeFetchMailLastest);
-                    System.out.println(checkMailInMinute);
-                    System.out.println(nextTimeToFetchMail);
                     Date now = new Date();
-                    System.out.println(nextTimeToFetchMail.compareTo(now));
                     if(nextTimeToFetchMail.compareTo(now) < 0){
-                        System.out.println("send mail "+timeFetchMailBefore);
                         ReportErrorService.sendReportError("Auto fetch mail is not working",false);
                     }
                 }
