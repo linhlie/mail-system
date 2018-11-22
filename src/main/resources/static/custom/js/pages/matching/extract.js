@@ -76,6 +76,10 @@
         '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
+        '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
+        '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' +
         '</tr>';
 
     $(function () {
@@ -217,6 +221,7 @@
                     $('body').loadingModal('hide');
                     if (data && data.status) {
                         extractResult = data.list;
+                        console.log(extractResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -265,6 +270,44 @@
                 if (rowData && rowData.messageId) {
                     lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
                     showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData)
+                }
+            });
+            setRowClickListener("alertLevelSourceRow", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.source.alertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                            '<div class="form-group form-alert">' +
+                            '<label>取引先アラート:'+ rowData.source.alertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                            '<hr>'+
+                            '<span>' + rowData.source.alertContent + '</span>' +
+                            '</form>',
+                    });
+                }
+            });
+            setRowClickListener("alertLevelPeopleInChargeSource", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.source.peopleInChargeAlertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                            '<div class="form-group form-alert">' +
+                            '<label>取引先アラート:'+ rowData.source.peopleInChargeAlertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                            '<label>担 当 者 名:' + rowData.source.peopleInChargeName + '</label>' +
+                            '<label>メールアドレス:' + rowData.source.peopleinChargeEmail + '</label>' +
+                            '<hr>'+
+                            '<span>' + rowData.source.peopleInChargeAlertContent + '</span>' +
+                            '</form>',
+                    });
                 }
             });
         }
@@ -318,6 +361,9 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "peopleInChargeAlertLevel" )){
+                            cell.setAttribute("Class", "clickable");
+                        }
                         cellNode.textContent = cellData;
                     }
                 }
