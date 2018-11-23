@@ -1,6 +1,6 @@
 CREATE TABLE `number_ranges` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(191) NOT NULL,
+  `message_id` VARCHAR(500) NOT NULL,
   `number` DOUBLE DEFAULT NULL,
   `letter_id` INT DEFAULT NULL,
   `appear_order` INT NOT NULL DEFAULT '0',
