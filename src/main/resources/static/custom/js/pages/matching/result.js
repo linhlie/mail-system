@@ -112,10 +112,10 @@
     }
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
         '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
@@ -124,16 +124,16 @@
         '</tr>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="sendToMoto" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="sendToMoto" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">元へ</button>' +
         '</td>' +
-        '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="sendToSaki" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
         '</td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
@@ -345,7 +345,8 @@
         );
         $("#" + tableId).colResizable(
             {
-                resizeMode:'overflow'
+                resizeMode:'overflow',
+                minWidth: 30
             }
         );
     }

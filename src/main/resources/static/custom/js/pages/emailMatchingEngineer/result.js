@@ -112,27 +112,27 @@
     var replaceEngineerHTML = '<tr role="row" class="hidden">'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.name"><span></span></td>'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.partnerName"><span></span></td>'+
-        '<td align="center" class="clickable fit" name="sourceRow" data="engineerMatchingDTO.active">'+
+        '<td align="center" class="clickable" name="sourceRow" data="engineerMatchingDTO.active">'+
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>'+
-        '<td align="center" class="clickable fit" name="sourceRow" data="engineerMatchingDTO.autoExtend">'+
+        '<td align="center" class="clickable" name="sourceRow" data="engineerMatchingDTO.autoExtend">'+
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>'+
-        '<td align="center" class="clickable fit" name="sourceRow" data="engineerMatchingDTO.dormant">'+
+        '<td align="center" class="clickable" name="sourceRow" data="engineerMatchingDTO.dormant">'+
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
     	'</tr>';
     
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
-        '<td class="text-center fit" rowspan="1" colspan="1"></td>' +
+        '<td class="text-center" rowspan="1" colspan="1"></td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
         '<span style="display: inline-block;"></span></td>' +
         '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
@@ -140,14 +140,14 @@
         '</tr>';
 
     var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
-        '<td class="clickable text-center fit" name="sendToEngineer" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="sendToEngineer" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
         '</td>' +
         '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
@@ -321,7 +321,7 @@
             }
         });
     }
-    
+
     function enableResizeSourceColumns() {
         enableResizeColums(engineerTableId);
     }
@@ -338,7 +338,8 @@
         );
         $("#" + tableId).colResizable(
             {
-                resizeMode:'overflow'
+                resizeMode:'overflow',
+                minWidth: 30
             }
         );
     }

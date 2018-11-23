@@ -69,11 +69,11 @@
     }
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
         '</td>' +
         '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
@@ -192,6 +192,7 @@
         $("#" + sourceTableId).colResizable(
             {
                 resizeMode: 'overflow',
+                minWidth: 30
             }
         );
     }
