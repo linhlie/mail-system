@@ -41,7 +41,7 @@ CREATE TABLE `email_account_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `emails` (
-  `message_id` VARCHAR(500) PRIMARY KEY COLLATE utf8_unicode_ci,
+  `message_id` VARCHAR(191) PRIMARY KEY COLLATE utf8_unicode_ci,
   `account_id` INT NOT NULL,
   `from` VARCHAR(120) NOT NULL,
   `subject` TEXT NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE `emails` (
 
 CREATE TABLE `files` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(500) NOT NULL,
+  `message_id` VARCHAR(191) NOT NULL,
   `file_name` VARCHAR(191) NOT NULL COLLATE utf8_general_ci,
   `storage_path` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT NULL,

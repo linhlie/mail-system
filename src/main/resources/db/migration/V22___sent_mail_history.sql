@@ -1,7 +1,7 @@
 CREATE TABLE `sent_mail_histories` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(500) NOT NULL COLLATE utf8_unicode_ci,
-  `matching_message_id` VARCHAR(500) DEFAULT NULL COLLATE utf8_unicode_ci,
+  `message_id` VARCHAR(191) NOT NULL COLLATE utf8_unicode_ci,
+  `matching_message_id` VARCHAR(191) DEFAULT NULL COLLATE utf8_unicode_ci,
   `account_id` INT NOT NULL,
   `from` VARCHAR(120) NOT NULL,
   `subject` TEXT NOT NULL,

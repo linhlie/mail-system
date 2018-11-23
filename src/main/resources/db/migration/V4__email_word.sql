@@ -1,6 +1,6 @@
 CREATE TABLE `emails_words` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `message_id` VARCHAR(500) NOT NULL,
+  `message_id` VARCHAR(191) NOT NULL,
   `word_id` INT NOT NULL,
   `appear_indexs` TEXT DEFAULT NULL,
   FOREIGN KEY fk_belong_to_email(message_id)
