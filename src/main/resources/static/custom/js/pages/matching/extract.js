@@ -276,16 +276,16 @@
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = data[index];
-                if (rowData && rowData.source.alertLevel) {
+                if (rowData && rowData.alertLevel) {
                     $.alert({
                         title: '',
                         content: '' +
                             '<form action="" class="formName">' +
                             '<div class="form-group form-alert">' +
-                            '<label>取引先アラート:'+ rowData.source.alertLevel +'</label>' +
-                            '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
+                            '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
                             '<hr>'+
-                            '<span>' + rowData.source.alertContent + '</span>' +
+                            '<span>' + rowData.alertContent + '</span>' +
                             '</form>',
                     });
                 }
@@ -294,18 +294,18 @@
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = data[index];
-                if (rowData && rowData.source.peopleInChargeAlertLevel) {
+                if (rowData && rowData.peopleInChargeAlertLevel) {
                     $.alert({
                         title: '',
                         content: '' +
                             '<form action="" class="formName">' +
                             '<div class="form-group form-alert">' +
-                            '<label>取引先アラート:'+ rowData.source.peopleInChargeAlertLevel +'</label>' +
-                            '<label>取 引 先 名:' + rowData.source.partnerName + '</label>' +
-                            '<label>担 当 者 名:' + rowData.source.peopleInChargeName + '</label>' +
-                            '<label>メールアドレス:' + rowData.source.peopleinChargeEmail + '</label>' +
+                            '<label>取引先アラート:'+ rowData.peopleInChargeAlertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                            '<label>担 当 者 名:' + rowData.peopleInChargeName + '</label>' +
+                            '<label>メールアドレス:' + rowData.peopleinChargeEmail + '</label>' +
                             '<hr>'+
-                            '<span>' + rowData.source.peopleInChargeAlertContent + '</span>' +
+                            '<span>' + rowData.peopleInChargeAlertContent + '</span>' +
                             '</form>',
                     });
                 }
