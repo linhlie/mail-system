@@ -30,12 +30,6 @@ public class HelpController {
         List<Variable> baseDirList = variableDAO.findByVariableName("basedir");
         String version = versionList.size() > 0 ? versionList.get(0).getValue() : "Unknown";
         String baseDir = baseDirList.size() > 0 ? baseDirList.get(0).getValue() : "Unknown";
-        if(applicationVersion != null){
-            String str[]  = applicationVersion.split("-");
-            if(str.length>0){
-                applicationVersion = str[0];
-            }
-        }
         model.addAttribute("serverPath", request.getSession().getServletContext().getRealPath("."));
         model.addAttribute("serverVersion", applicationVersion);
         model.addAttribute("osName", System.getProperty("os.name"));
