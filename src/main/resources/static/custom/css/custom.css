@@ -1483,5 +1483,10 @@ div.bulletinboard-icon-wrapper {
 }
 
 .form-alert label{
-    display: block;
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow: hidden;
+    width: 100%;
+    white-space: nowrap;
+    vertical-align: middle;
 }

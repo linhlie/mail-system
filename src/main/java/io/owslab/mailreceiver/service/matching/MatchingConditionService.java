@@ -173,6 +173,12 @@ public class MatchingConditionService {
 
     public List<ExtractMailDTO> extract(ExtractForm extractForm){
         List<ExtractMailDTO> extractResult = new ArrayList<>();
+        List<BusinessPartner> listPartner = partnerService.getAll();
+        List<PeopleInChargePartner> peoleIncharges = peopleInChargeService.getAll();
+        LinkedHashMap<String, PeopleInChargePartner> peopleInChargeMap = new LinkedHashMap<>();
+        for(PeopleInChargePartner people : peoleIncharges){
+            peopleInChargeMap.put(people.getEmailAddress().toLowerCase(), people);
+        }
         numberTreatment = numberTreatmentService.getFirst();
         FilterRule rootRule = extractForm.getConditionData();
         boolean filterSender = extractForm.isHandleDuplicateSender();
@@ -195,7 +201,7 @@ public class MatchingConditionService {
                 List<FullNumberRange> rangeList = numberRangeService.buildNumberRangeForInput(email.getMessageId(), optimizedPart);
                 email.setRangeList(rangeList);
             }
-            extractResult.add(new ExtractMailDTO(email));
+            extractResult.add(new ExtractMailDTO(email, listPartner, peopleInChargeMap));
         }
 
         return extractResult;

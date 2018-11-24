@@ -68,15 +68,32 @@
         ".pptx": "ms-powerpoint:ofv|u|",
     }
 
+    var headerOrigin = '<tr>'+
+        '<th class="col-sm-1" >金額</th>'+
+        '<th class="col-sm-1" >受信日時</th>'+
+        '<th class="col-sm-2" >送信者</th>'+
+        '<th class="col-sm-7" >件名</th>'+
+        '<th class="col-sm-1" ></th>';
+    // </tr>
+
+    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="reply" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
-        '</td>' +
-        '</tr>';
+        '</td>';
+        // '</tr>';
+
+    var replaceAlertBusinessPartnerHTML = '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
+
+    var replaceAlertPeopleInChargePartnerHTML = '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
 
     $(function () {
         initSearch();
@@ -188,6 +205,7 @@
         $("#" + sourceTableId).colResizable(
             {
                 resizeMode: 'overflow',
+                minWidth: 30
             }
         );
     }
@@ -243,17 +261,43 @@
     }
 
     function updateData() {
-        showSourceData(sourceTableId, extractResult);
+        var replaceBody = replaceSourceHTML;
+        var replaceHeader = headerOrigin;
+        var isAlertpartner = false;
+        var isAlertpeople = false;
+        for(var i=0;i<extractResult.length;i++){
+            if(extractResult[i].alertLevel != null && extractResult[i].alertLevel != ""){
+                isAlertpartner = true;
+            }
+            if(extractResult[i].peopleInChargeAlertLevel != null && extractResult[i].peopleInChargeAlertLevel !=""){
+                isAlertpeople = true;
+            }
+        }
+
+        if(isAlertpartner){
+            replaceBody = replaceBody + replaceAlertBusinessPartnerHTML;
+            replaceHeader = replaceHeader + headerAlertPartner;
+        }
+
+        if(isAlertpeople){
+            replaceBody = replaceBody + replaceAlertPeopleInChargePartnerHTML;
+            replaceHeader = replaceHeader + headerAlertPeople;
+        }
+        replaceBody = replaceBody + '</tr>';
+        replaceHeader = replaceHeader + '</tr>';
+        showSourceData(sourceTableId, extractResult, replaceHeader, replaceBody);
     }
 
-    function showSourceData(tableId, data) {
+    function showSourceData(tableId, data, replaceHeader, replaceBody) {
         destroySortSource();
-        removeAllRow(tableId, replaceSourceHTML);
+        $("#" + tableId + "> thead").html(replaceHeader);
+        removeAllRow(tableId, replaceBody);
         if (data.length > 0) {
-            var html = replaceSourceHTML;
+            var html = replaceBody;
             for (var i = 0; i < data.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
+            $("#" + tableId + "> thead").html(replaceHeader);
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", function () {
                 selectedRow($(this).closest('tr'))
@@ -265,6 +309,44 @@
                 if (rowData && rowData.messageId) {
                     lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
                     showMailEditor(rowData.messageId, lastSelectedSendMailAccountId, rowData)
+                }
+            });
+            setRowClickListener("alertLevelSourceRow", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.alertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                            '<div class="form-group form-alert">' +
+                            '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                            '<hr>'+
+                            '<span>' + rowData.alertContent + '</span>' +
+                            '</form>',
+                    });
+                }
+            });
+            setRowClickListener("alertLevelPeopleInChargeSource", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = data[index];
+                if (rowData && rowData.peopleInChargeAlertLevel) {
+                    $.alert({
+                        title: '',
+                        content: '' +
+                            '<form action="" class="formName">' +
+                            '<div class="form-group form-alert">' +
+                            '<label>取引先アラート:'+ rowData.peopleInChargeAlertLevel +'</label>' +
+                            '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
+                            '<label>担 当 者 名:' + rowData.peopleInChargeName + '</label>' +
+                            '<label>メールアドレス:' + rowData.peopleinChargeEmail + '</label>' +
+                            '<hr>'+
+                            '<span>' + rowData.peopleInChargeAlertContent + '</span>' +
+                            '</form>',
+                    });
                 }
             });
         }
@@ -318,6 +400,9 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
+                        if( (cellData != null && cellData != "") && (cellKeysData === "alertLevel" || cellKeysData === "peopleInChargeAlertLevel" )){
+                            cell.setAttribute("Class", "clickable");
+                        }
                         cellNode.textContent = cellData;
                     }
                 }
@@ -996,7 +1081,6 @@
             {
                 var container = $('#table-section');
                 var topHeight = (e.pageY - container.offset().top);
-                console.log("topHeight: ", topHeight);
                 var tableHeight = Math.floor(topHeight - 55);
                 tableHeight = tableHeight > 60 ? tableHeight : 60;
                 tableHeight = tableHeight < 800 ? tableHeight : 800;

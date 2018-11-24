@@ -1,9 +1,12 @@
 package io.owslab.mailreceiver.dto;
 
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.PeopleInChargePartner;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import org.apache.commons.lang.time.DateFormatUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -13,8 +16,8 @@ public class ExtractMailDTO extends PreviewMailDTO {
     private String messageId;
     private String range;
 
-    public ExtractMailDTO(Email email) {
-        super(email);
+    public ExtractMailDTO(Email email, List<BusinessPartner> listPartner, LinkedHashMap<String, PeopleInChargePartner> lisPeople) {
+        super(email, listPartner, lisPeople);
         this.setMessageId(email.getMessageId());
         List<FullNumberRange> rangeList = email.getRangeList();
         if(rangeList.size() > 0)

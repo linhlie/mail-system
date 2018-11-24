@@ -111,36 +111,60 @@
         ".pptx": "ms-powerpoint:ofv|u|",
     }
 
+    var headerOriginSource = '<tr>'+
+        '<th class="col-sm-1" >ワード</th>'+
+        '<th class="col-sm-1" >マッチ件数</th>'+
+        '<th class="col-sm-2" >受信日時</th>'+
+        '<th class="col-sm-2" >送信者</th>'+
+        '<th class="col-sm-6" >件名</th>';
+        // </tr>
+
+    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>' +
-        '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="source.peopleInChargeAlertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '</tr>';
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="destinationList"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.receivedAt"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.from"><span></span></td>' +
+        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="source.subject"><span></span></td>';
+        // '</tr>';
+
+    var replaceSourceAlertPartner = '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="source.alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
+
+    var replaceSourceAlertPeople = '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="source.peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' ;
+
+    var headerDestination = '<tr>'+
+        '<th class="col-sm-2">ワード</th>'+
+        '<th class="col-sm-2">元数値</th>'+
+        '<th class="col-sm-2">先数値</th>'+
+        '<th class="col-sm-4">受信日時</th>'+
+        '<th class="col-sm-4">送信者</th>'+
+        '<th class="col-sm-10">件名</th>'+
+        '<th class="col-sm-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>'+
+        '<th class="col-sm-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="range"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
+        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center fit" name="sendToMoto" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="sendToMoto" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">元へ</button>' +
         '</td>' +
-        '<td class="clickable text-center fit" name="sendToSaki" rowspan="1" colspan="1">' +
+        '<td class="clickable text-center" name="sendToSaki" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">先へ</button>' +
-        '</td>' +
-        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '</tr>';
+        '</td>';
+
+    var replaceDestinationAlertPartner = '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>' ;
+
+    var replaceDestinationAlertPeople = '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
 
     $(function () {
         previewDraggingSetup();
@@ -236,7 +260,6 @@
 
     function keydownHandler(e) {
         var button = undefined;
-        console.log("keydownHandler: ", e.shiftKey, e.keyCode);
         if(e.shiftKey && (e.which || e.keyCode) == 113) {
             e.preventDefault();
             button = $("#" + sourceFirstBtnId);
@@ -345,7 +368,8 @@
         );
         $("#" + tableId).colResizable(
             {
-                resizeMode:'overflow'
+                resizeMode:'overflow',
+                minWidth: 30
             }
         );
     }
@@ -368,14 +392,48 @@
     }
     
     function updateData() {
-        showSourceData(sourceTableId, matchingResult);
+        var replaceBody = replaceSourceHTML;
+        var replaceHeader = headerOriginSource;
+        var isAlertpartner = false;
+        var isAlertpeople = false;
+
+        if(matchingResult.length > 0){
+            for(var i = 0; i < matchingResult.length; i ++){
+                if(onlyDisplayNonZeroRow && matchingResult[i]
+                    && matchingResult[i].destinationList && matchingResult[i].destinationList.length == 0){
+                    continue;
+                }
+                var messageId = matchingResult[i].source.messageId;
+                var data = Object.assign(matchingResult[i].source, mailList[messageId]);
+                if(data.alertLevel != null && data.alertLevel != ""){
+                    isAlertpartner = true;
+                }
+                if(data.peopleInChargeAlertLevel != null && data.peopleInChargeAlertLevel !=""){
+                    isAlertpeople = true;
+                }
+            }
+        }
+
+        if(isAlertpartner){
+            replaceBody = replaceBody + replaceSourceAlertPartner;
+            replaceHeader = replaceHeader + headerAlertPartner;
+        }
+
+        if(isAlertpeople){
+            replaceBody = replaceBody + replaceSourceAlertPeople;
+            replaceHeader = replaceHeader + headerAlertPeople;
+        }
+        replaceBody = replaceBody + '</tr>';
+        replaceHeader = replaceHeader + '</tr>';
+        showSourceData(sourceTableId, matchingResult, replaceHeader, replaceBody);
     }
 
-    function showSourceData(tableId, data) {
-        removeAllRow(tableId, replaceSourceHTML);
+    function showSourceData(tableId, data, replaceHeader, replaceBody) {
+        $("#" + tableId + "> thead").html(replaceHeader);
+        removeAllRow(tableId, replaceBody);
         var sourceMatchingCounter = 0;
         if(data.length > 0){
-            var html = replaceSourceHTML;
+            var html = replaceBody;
             for(var i = 0; i < data.length; i ++){
                 if(onlyDisplayNonZeroRow && data[i]
                     && data[i].destinationList && data[i].destinationList.length == 0){
@@ -449,8 +507,7 @@
 
     }
     
-    function showDestinationData(tableId, data) {
-        console.log(data);
+    function showDestinationDataTable(tableId, data, replaceHeader, replaceBody) {
         setTimeout(function () {
             $('body').loadingModal('destroy');
             $('body').loadingModal({
@@ -464,16 +521,17 @@
             var word = data.word;
             var source = data.source;
             currentDestinationResult = data.destinationList;
-            removeAllRow(tableId, replaceDestinationHTML);
+            removeAllRow(tableId, replaceBody);
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
-                    var html = replaceDestinationHTML;
+                    var html = replaceBody;
                     for(var i = 0; i < currentDestinationResult.length; i++){
                         currentDestinationResult[i].word = word;
                         var messageId = currentDestinationResult[i].messageId;
                         currentDestinationResult[i] = Object.assign(currentDestinationResult[i], mailList[messageId]);
                         html = html + addRowWithData(tableId, currentDestinationResult[i], i);
                     }
+                    $("#"+ tableId + "> thead").html(replaceHeader);
                     $("#"+ tableId + "> tbody").html(html);
                     setRowClickListener("showDestinationMail", function () {
                         showDestinationMail($(this).closest('tr'))
@@ -676,6 +734,35 @@
         showDestinationData(destinationTableId, rowData);
     }
 
+    function showDestinationData(destinationTableId, rowData){
+        var replaceBody = replaceDestinationHTML;
+        var replaceHeader = headerDestination;
+        var isAlertpartner = false;
+        var isAlertpeople = false;
+        var dataDes = rowData.destinationList;
+        for(var i=0;i<dataDes.length;i++){
+            var messageId = dataDes[i].messageId;
+            var data = Object.assign(dataDes[i], mailList[messageId]);
+            if(data.alertLevel != null && data.alertLevel != ""){
+                isAlertpartner = true;
+            }
+            if(data.peopleInChargeAlertLevel != null && data.peopleInChargeAlertLevel !=""){
+                isAlertpeople = true;
+            }
+        }
+        if(isAlertpartner){
+            replaceBody = replaceBody + replaceDestinationAlertPartner;
+            replaceHeader = replaceHeader + headerAlertPartner;
+        }
+        if(isAlertpeople){
+            replaceBody = replaceBody + replaceDestinationAlertPeople;
+            replaceHeader = replaceHeader + headerAlertPeople;
+        }
+        replaceBody = replaceBody + '</tr>';
+        replaceHeader = replaceHeader + '</tr>';
+        showDestinationDataTable(destinationTableId, rowData, replaceHeader, replaceBody);
+    }
+
     function removeAllRow(tableId, replaceHtml) { //Except header row
         $("#"+ tableId + "> tbody").html(replaceHtml);
     }
@@ -771,7 +858,6 @@
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
-        console.log(receiverListStr);
         updateMailEditorContent("");
         if(data){
             updateSenderSelector(data, accounts);
@@ -1375,19 +1461,16 @@
                 if(leftWidth == 3) {
                     var keeperHeight = $('#saki-preview-content-wrapper').outerHeight();
                     keeperHeight = keeperHeight > 0 ? keeperHeight : 600;
-                    console.log("keeperHeight: ", keeperHeight);
                     $('#moto-preview-content-keeper').css("height", keeperHeight + "px");
                     $('#moto-preview-content-keeper').show();
                     $('#moto-preview-content-wrapper').hide();
                 } else {
-                    console.log("hide keeperHeight: ");
                     $('#moto-preview-content-keeper').hide();
                     $('#moto-preview-content-wrapper').show();
                 }
                 var percentage = (leftWidth / container.width()) * 100;
                 percentage = percentage > 75 ? 100 : percentage;
                 var mainPercentage = 100-percentage;
-                console.log("percentage: ", percentage, mainPercentage);
                 if(mainPercentage == 0) {
                     $('#saki-preview-content-wrapper').hide();
                 } else {
