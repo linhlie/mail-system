@@ -549,11 +549,11 @@
     }
 
     function doEditPeople(data) {
-        updatingPeopleId = data.id;
         clearFormValidate();
         clearPeopleOnClick();
         disableUpdatePeople(false);
         setFormData(data);
+        updatingPeopleId = data.id;
     }
 
 
@@ -734,6 +734,7 @@
 
     function doEditPeopleInChargeUnregister(data) {
         clearFormValidate();
+        clearPeopleOnClick();
         $("#emailAddress").val(data.email);
         var domain = getDomainFormEmail(data.email);
         selectPartner(domain);

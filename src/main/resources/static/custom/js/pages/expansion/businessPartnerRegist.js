@@ -585,11 +585,12 @@
     
     function doEditPartner(data) {
         clearFormValidate();
-        updatingPartnerId = data.id;
+        clearPartnerOnClick();
         loadBusinessPartnerGroup(data.id);
         disableUpdatePartner(false);
         setFormData(data);
         updateCompanySpecificType(data.companyType);
+        updatingPartnerId = data.id;
         
     }
     
