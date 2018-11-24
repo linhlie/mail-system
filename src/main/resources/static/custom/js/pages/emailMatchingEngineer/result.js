@@ -122,6 +122,17 @@
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
     	'</tr>';
+
+    var headerOriginDestination= '<tr>'+
+        '<th class="col-sm-2" >金額</th>'+
+        '<th class="col-sm-2" >受信日時</th>'+
+        '<th class="col-sm-2" >送信者</th>'+
+        '<th class="col-sm-5" >件名</th>'+
+        '<th class="col-sm-1" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+
+    var headerSendToEngineer = '<th class="col-sm-1" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
     
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
@@ -131,30 +142,16 @@
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
-        '</td>' +
-        '<td class="text-center" rowspan="1" colspan="1"></td>' +
-        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '</tr>';
+        '</td>';
 
-    var replaceDestinationHasMailHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="matchRange"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
-        '<button type="button" class="btn btn-xs btn-default">返信</button>' +
-        '</td>' +
-        '<td class="clickable text-center" name="sendToEngineer" rowspan="1" colspan="1">' +
-        '<button type="button" class="btn btn-xs btn-default">技術者へ</button>' +
-        '</td>' +
-        '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '</tr>';
+    var replaceSendToEngineer = '<td class="clickable text-center" name="sendToEngineer" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">技術者へ</button></td>';
+
+    var replaceDestinationAlertPartner = '<td name="alertLevelDestinationMail" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
+
+    var replaceDestinationAlertPeople = '<td name="alertLevelPeopleInCharge" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
 
     $(function () {
     	previewDraggingSetup1();
@@ -402,8 +399,43 @@
             });
     	$("#enginnerTable").css('margin-top',0+'px');
     }
+
+    function showDestinationData(tableId, rowData) {
+        var replaceBody = replaceDestinationHTML;
+        var replaceHeader = headerOriginDestination;
+        var isAlertpartner = false;
+        var isAlertpeople = false;
+        var dataDes = rowData.listEmailDTO;
+        var email = rowData.engineerMatchingDTO.mailAddress;
+        for(var i=0;i<dataDes.length;i++){
+            var messageId = dataDes[i].messageId;
+            var data = Object.assign(dataDes[i], mailList[messageId]);
+            if(data.alertLevel != null && data.alertLevel != ""){
+                isAlertpartner = true;
+            }
+            if(data.peopleInChargeAlertLevel != null && data.peopleInChargeAlertLevel !=""){
+                isAlertpeople = true;
+            }
+        }
+        if(email != null && email != ""){
+            replaceBody = replaceBody + replaceSendToEngineer;
+            replaceHeader = replaceHeader + headerSendToEngineer;
+        }
+        if(isAlertpartner){
+            replaceBody = replaceBody + replaceDestinationAlertPartner;
+            replaceHeader = replaceHeader + headerAlertPartner;
+        }
+        if(isAlertpeople){
+            replaceBody = replaceBody + replaceDestinationAlertPeople;
+            replaceHeader = replaceHeader + headerAlertPeople;
+        }
+        replaceBody = replaceBody + '</tr>';
+        replaceHeader = replaceHeader + '</tr>';
+
+        showDestinationDataTable(tableId, rowData, replaceHeader, replaceBody);
+    }
     
-    function showDestinationData(tableId, data) {
+    function showDestinationDataTable(tableId, data, replaceHeader, replaceBody) {
         setTimeout(function () {
             $('body').loadingModal('destroy');
             $('body').loadingModal({
@@ -415,27 +447,18 @@
                 animation: 'doubleBounce',
             });
             var word = data.word;
-            var email = data.engineerMatchingDTO.mailAddress;
             currentDestinationResult = data.listEmailDTO;
-            if(email != null && email != ""){
-                removeAllRow(tableId, replaceDestinationHasMailHTML);
-            }else{
-                removeAllRow(tableId, replaceDestinationHTML);
-            }
+            removeAllRow(tableId, replaceBody);
             setTimeout(function () {
                 if(currentDestinationResult.length > 0){
-                    var html = "";
-                    if(email != null && email != ""){
-                        html = replaceDestinationHasMailHTML;
-                    }else{
-                        html = replaceDestinationHTML;
-                    }
+                    var html = replaceBody;
                     for(var i = 0; i < currentDestinationResult.length; i++){
                         currentDestinationResult[i].word = word;
                         var messageId = currentDestinationResult[i].messageId;
                         currentDestinationResult[i] = Object.assign(currentDestinationResult[i], mailList[messageId]);
                         html = html + addRowWithData(tableId, currentDestinationResult[i], i);
                     }
+                    $("#"+ tableId + "> thead").html(replaceHeader);
                     $("#"+ tableId + "> tbody").html(html);
                     setRowClickListener("showDestinationMail", function () {
                         showDestinationMail($(this).closest('tr'))
@@ -664,7 +687,6 @@
                 if(data.status){
                     if(data.list && data.list.length > 0){
                         result = data.list[0];
-                        console.log(result);
                     }
                 }
                 if(typeof callback === "function"){

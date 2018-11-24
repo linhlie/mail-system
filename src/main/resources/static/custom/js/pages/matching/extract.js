@@ -68,6 +68,17 @@
         ".pptx": "ms-powerpoint:ofv|u|",
     }
 
+    var headerOrigin = '<tr>'+
+        '<th class="col-sm-1" >金額</th>'+
+        '<th class="col-sm-1" >受信日時</th>'+
+        '<th class="col-sm-2" >送信者</th>'+
+        '<th class="col-sm-7" >件名</th>'+
+        '<th class="col-sm-1" ></th>';
+    // </tr>
+
+    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
@@ -75,12 +86,14 @@
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center" name="reply" rowspan="1" colspan="1">' +
         '<button type="button" class="btn btn-xs btn-default">返信</button>' +
-        '</td>' +
-        '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
-        '<span style="display: inline-block;"></span></td>' +
-        '</tr>';
+        '</td>';
+        // '</tr>';
+
+    var replaceAlertBusinessPartnerHTML = '<td name="alertLevelSourceRow" rowspan="1" colspan="1" data="alertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
+
+    var replaceAlertPeopleInChargePartnerHTML = '<td name="alertLevelPeopleInChargeSource" rowspan="1" colspan="1" data="peopleInChargeAlertLevel" style="text-align: center;">' +
+        '<span style="display: inline-block;"></span></td>';
 
     $(function () {
         initSearch();
@@ -222,7 +235,6 @@
                     $('body').loadingModal('hide');
                     if (data && data.status) {
                         extractResult = data.list;
-                        console.log(extractResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -249,17 +261,43 @@
     }
 
     function updateData() {
-        showSourceData(sourceTableId, extractResult);
+        var replaceBody = replaceSourceHTML;
+        var replaceHeader = headerOrigin;
+        var isAlertpartner = false;
+        var isAlertpeople = false;
+        for(var i=0;i<extractResult.length;i++){
+            if(extractResult[i].alertLevel != null && extractResult[i].alertLevel != ""){
+                isAlertpartner = true;
+            }
+            if(extractResult[i].peopleInChargeAlertLevel != null && extractResult[i].peopleInChargeAlertLevel !=""){
+                isAlertpeople = true;
+            }
+        }
+
+        if(isAlertpartner){
+            replaceBody = replaceBody + replaceAlertBusinessPartnerHTML;
+            replaceHeader = replaceHeader + headerAlertPartner;
+        }
+
+        if(isAlertpeople){
+            replaceBody = replaceBody + replaceAlertPeopleInChargePartnerHTML;
+            replaceHeader = replaceHeader + headerAlertPeople;
+        }
+        replaceBody = replaceBody + '</tr>';
+        replaceHeader = replaceHeader + '</tr>';
+        showSourceData(sourceTableId, extractResult, replaceHeader, replaceBody);
     }
 
-    function showSourceData(tableId, data) {
+    function showSourceData(tableId, data, replaceHeader, replaceBody) {
         destroySortSource();
-        removeAllRow(tableId, replaceSourceHTML);
+        $("#" + tableId + "> thead").html(replaceHeader);
+        removeAllRow(tableId, replaceBody);
         if (data.length > 0) {
-            var html = replaceSourceHTML;
+            var html = replaceBody;
             for (var i = 0; i < data.length; i++) {
                 html = html + addRowWithData(tableId, data[i], i);
             }
+            $("#" + tableId + "> thead").html(replaceHeader);
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("sourceRow", function () {
                 selectedRow($(this).closest('tr'))
@@ -1043,7 +1081,6 @@
             {
                 var container = $('#table-section');
                 var topHeight = (e.pageY - container.offset().top);
-                console.log("topHeight: ", topHeight);
                 var tableHeight = Math.floor(topHeight - 55);
                 tableHeight = tableHeight > 60 ? tableHeight : 60;
                 tableHeight = tableHeight < 800 ? tableHeight : 800;
