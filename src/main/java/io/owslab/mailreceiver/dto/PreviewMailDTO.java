@@ -71,8 +71,8 @@ public class PreviewMailDTO {
         if(people != null){
             String alertLevel = AlertLevel.fromValue(people.getAlertLevel()).getText();
             this.peopleInChargeAlertLevel = alertLevel;
-            this.peopleInChargeAlertContent =people.getAlertContent();
-            this.peopleInChargeName = people.getLastName()+ "　" + people.getFirstName();
+            this.peopleInChargeAlertContent = people.getAlertContent() == null?"":people.getAlertContent();
+            this.peopleInChargeName = people.getPepleName();
             this.peopleinChargeEmail = people.getEmailAddress();
         }
     }
