@@ -47,7 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
-        String profileName = account.getName() != null ? account.getName() : account.getUserName();
+        String profileName = account.getAccountName();
         UserDetails userDetails = (UserDetails) new MyUser(account.getUserName(), //
                 account.getEncryptedPassword(), enabled, accountNonExpired, //
                 credentialsNonExpired, accountNonLocked, grantList, profileName, account.getId());

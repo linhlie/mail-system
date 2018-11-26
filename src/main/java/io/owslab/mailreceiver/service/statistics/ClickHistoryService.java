@@ -149,10 +149,10 @@ public class ClickHistoryService {
             }
             for( Object[] object : listObject){
                 String username = "";
-                if(object[2] == null || (object[2]+"").trim().equals("")){
+                if(object[2] == null || object[3] == null){
                     username = ""+object[0];
                 }else {
-                    username = "" + object[2];
+                    username = object[2] + "　" + object[3];
                 }
                 int quantity = Integer.parseInt((object[1]+"").trim());
                 if(topUserSentMail.containsKey(quantity)){

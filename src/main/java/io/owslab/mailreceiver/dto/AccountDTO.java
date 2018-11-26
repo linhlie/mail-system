@@ -16,7 +16,9 @@ public class AccountDTO {
 
     private String userRole;
 
-    private String name;
+    private String lastName;
+
+    private String firstName;
 
     private boolean expansion;
 
@@ -25,7 +27,8 @@ public class AccountDTO {
         this.setUserName(account.getUserName());
         this.setActive(account.isActive());
         this.setUserRole(account.getUserRole());
-        this.setName(account.getName());
+        this.setLastName(account.getLastName());
+        this.setFirstName(account.getFirstName());
         this.setExpansion(Account.Role.MEMBER_EXPANSION.equals(account.getUserRole()));
     }
 
@@ -61,12 +64,20 @@ public class AccountDTO {
         this.userRole = userRole;
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public boolean isExpansion() {

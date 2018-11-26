@@ -86,7 +86,8 @@ public class AccountService {
 
     private void updateUser(Account user, UserAccountForm form) {
         user.setUserName(form.getUserName());
-        user.setName(form.getName());
+        user.setLastName(form.getLastName());
+        user.setFirstName(form.getFirstName());
         user.setActive(true);
         String newPassword = form.getNewPassword();
         if(newPassword != null && newPassword.length() > 0) {
@@ -103,7 +104,8 @@ public class AccountService {
     private void addUser(UserAccountForm form) {
         Account user = new Account();
         user.setUserName(form.getUserName());
-        user.setName(form.getName());
+        user.setLastName(form.getLastName());
+        user.setFirstName(form.getFirstName());
         user.setEncryptedPassword(passwordEncoder.encode(form.getNewPassword()));
         user.setActive(true);
         if(form.isExpansion()) {
@@ -122,9 +124,6 @@ public class AccountService {
     public String getUserNameLogged(){
         Long userId = getLoggedInAccountId();
         Account account = findById(userId);
-        if(account.getName() != null && !account.getName().trim().equals("")){
-            return  account.getName();
-        }
-        return  account.getUserName();
+        return  account.getAccountName();
     }
 }

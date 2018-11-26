@@ -93,13 +93,7 @@ public class BulletinBoardService {
             String date = df.format(bulletin.getTimeEdit());
             bulletinBoardDTO.setTimeEdit(date);
             Account account = accountService.findById(bulletin.getAccountId());
-            bulletinBoardDTO.setUsername("");
-            if(account!=null){
-                bulletinBoardDTO.setUsername(account.getUserName());
-            }
-            if(account!=null && account.getName()!=null && !account.getName().equalsIgnoreCase("")){
-                bulletinBoardDTO.setUsername(account.getName());
-            }
+            bulletinBoardDTO.setUsername(account.getAccountName());
             bulletinBoardDTO.setTabName(bulletin.getTabName());
             bulletinBoardDTO.setTabNumber(bulletin.getTabNumber());
             bulletinBoardDTOs.add(bulletinBoardDTO);

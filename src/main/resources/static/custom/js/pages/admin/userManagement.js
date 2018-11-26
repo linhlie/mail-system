@@ -5,7 +5,8 @@
     var userDataTable;
     var selectedRowData;
     var accountInput = "userName";
-    var userNameInput = "name";
+    var lastNameInput = "lastName";
+    var firstNameInput = "firstName";
     var newPasswordInput = "newPassword";
     var confirmNewPasswordInput = "confirmNewPassword";
     var expansionCheckboxInput = "expansion";
@@ -61,7 +62,6 @@
             timeout: 600000,
             success: function (data) {
                 $('body').loadingModal('hide');
-                console.log("loadUserData: ", data);
                 if (data && data.status) {
                     users = data.list;
                 } else {
@@ -173,7 +173,11 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
-                        cellNode.textContent = cellData;
+                        if(cellKeys[0] === "name"){
+                            cellNode.textContent = getAccountName(data);
+                        }else{
+                            cellNode.textContent = cellData;
+                        }
                     }
                 } else if (cellNode.type === "checkbox") {
                     var cellData = data[cellKeys[0]];
@@ -221,7 +225,8 @@
         editingUserIndex = index;
         updateEnableUpdateUserAccountBtn();
         setAccount(user.userName);
-        setUserName(user.name);
+        setLastName(user.lastName);
+        setFirstName(user.firstName);
         setPassword();
         setConfirmPassword();
         setExpansion(user.expansion);
@@ -230,7 +235,8 @@
     function addUser() {
         var user = {
             userName: getAccount(),
-            name: getUserName(),
+            lastName: getLastName(),
+            firstName: getFirstName(),
             newPassword: getPassword(),
             confirmNewPassword: getConfirmassword(),
             expansion: getExpansion(),
@@ -242,7 +248,8 @@
         var user = {
             id: users[editingUserIndex] ? users[editingUserIndex].id : undefined,
             userName: getAccount(),
-            name: getUserName(),
+            lastName: getLastName(),
+            firstName: getFirstName(),
             newPassword: getPassword(),
             confirmNewPassword: getConfirmassword(),
             expansion: getExpansion(),
@@ -297,7 +304,7 @@
     }
     
     function clearErrors() {
-        var fields = [accountInput, userNameInput, newPasswordInput, confirmNewPasswordInput];
+        var fields = [accountInput, lastNameInput, firstNameInput, newPasswordInput, confirmNewPasswordInput];
         for(var i = 0; i < fields.length; i++ ){
             var field = fields[i];
             $("span[name='" + field + "']").text();
@@ -314,7 +321,8 @@
     
     function clearUserFormInput() {
         setAccount();
-        setUserName();
+        setLastName();
+        setFirstName();
         setPassword();
         setConfirmPassword();
         setExpansion(false);
@@ -331,13 +339,24 @@
         return account;
     }
 
-    function setUserName(userName) {
+    function setLastName(userName) {
         userName = userName || "";
-        $("input[name='" + userNameInput + "']").val(userName);
+        $("input[name='" + lastNameInput + "']").val(userName);
     }
 
-    function getUserName() {
-        var userName = $("input[name='" + userNameInput + "']").val();
+    function setFirstName(userName) {
+        userName = userName || "";
+        $("input[name='" + firstNameInput + "']").val(userName);
+    }
+
+    function getLastName() {
+        var userName = $("input[name='" + lastNameInput + "']").val();
+        userName = userName || "";
+        return userName;
+    }
+
+    function getFirstName() {
+        var userName = $("input[name='" + firstNameInput + "']").val();
         userName = userName || "";
         return userName;
     }
@@ -382,4 +401,15 @@
         return !!editingUserIndex;
     }
 
+    function getAccountName(data) {
+        if(data.firstName && data.lastName){
+            return data.lastName + "　" + data.firstName;
+        }
+
+        if(data.firstName){
+            return data.firstName;
+        }
+
+        return data.lastName;
+    }
 })(jQuery);

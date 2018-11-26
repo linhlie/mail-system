@@ -25,8 +25,11 @@ public class Account {
     @Column(name = "User_Role", length = 20, nullable = false)
     private String userRole;
 
-    @Column(name = "Name", length = 50)
-    private String name;
+    @Column(name = "Last_Name", length = 50)
+    private String lastName;
+
+    @Column(name = "First_Name", length = 50)
+    private String firstName;
 
     public Account(){
 
@@ -50,12 +53,13 @@ public class Account {
         this.userRole = userRole;
     }
 
-    public Account(String userName, String encryptedPassword, boolean active, String userRole, String name) {
+    public Account(String userName, String encryptedPassword, boolean active, String userRole, String lastName, String firstName) {
         this.userName = userName;
         this.encryptedPassword = encryptedPassword;
         this.active = active;
         this.userRole = userRole;
-        this.name = name;
+        this.lastName = lastName;
+        this.firstName = firstName;
     }
 
     public long getId() {
@@ -98,12 +102,27 @@ public class Account {
         this.userRole = userRole;
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getAccountName(){
+        if(this.lastName != null && this.firstName != null){
+            return this.lastName + "　" + this.firstName;
+        }
+        return this.userName;
     }
 
     public class Role {
