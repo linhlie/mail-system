@@ -488,7 +488,7 @@
                                 title: '',
                                 content: '' +
                                     '<form action="" class="formName">' +
-                                    '<div class="form-group">' +
+                                    '<div class="form-group form-alert">' +
                                     '<label>取引先アラート:'+ rowData.alertLevel +'</label>' +
                                     '<label>取 引 先 名:' + rowData.partnerName + '</label>' +
                                     '<hr>'+
