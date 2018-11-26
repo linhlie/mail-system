@@ -1,7 +1,5 @@
 package io.owslab.mailreceiver.dto;
 
-import io.owslab.mailreceiver.enums.CompanyType;
-import io.owslab.mailreceiver.enums.StockShareType;
 import io.owslab.mailreceiver.exception.EngineerFieldValidationException;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Engineer;
@@ -16,8 +14,10 @@ import java.util.Objects;
  * Created by khanhlvb on 9/5/18.
  */
 public class CSVEngineerDTO {
-    private String name;
-    private String kanaName;
+    private String lastName;
+    private String firstName;
+    private String kanaLastName;
+    private String kanaFirstName;
     private String initial;
     private String mailAddress;
     private String employmentStatus;
@@ -38,30 +38,11 @@ public class CSVEngineerDTO {
     public CSVEngineerDTO(){
     }
 
-    public CSVEngineerDTO(String name, String kanaName, String initial, String mailAddress, String employmentStatus, String partnerCode, String projectPeriodStart, String projectPeriodEnd, String autoExtend, String extendMonth, String matchingWord, String notGoodWord, String monetaryMoney, String stationLine, String stationNearest, String commutingTime, String skillSheet, String introduction) {
-        this.name = name;
-        this.kanaName = kanaName;
-        this.initial = initial;
-        this.mailAddress = mailAddress;
-        this.employmentStatus = employmentStatus;
-        this.partnerCode = partnerCode;
-        this.projectPeriodStart = projectPeriodStart;
-        this.projectPeriodEnd = projectPeriodEnd;
-        this.autoExtend = autoExtend;
-        this.extendMonth = extendMonth;
-        this.matchingWord = matchingWord;
-        this.notGoodWord = notGoodWord;
-        this.monetaryMoney = monetaryMoney;
-        this.stationLine = stationLine;
-        this.stationNearest = stationNearest;
-        this.commutingTime = commutingTime;
-        this.skillSheet = skillSheet;
-        this.introduction = introduction;
-    }
-
     public CSVEngineerDTO(Engineer engineer, BusinessPartner partner) {
-        this.setName(engineer.getName());
-        this.setKanaName(engineer.getKanaName());
+        this.setLastName(engineer.getLastName());
+        this.setFirstName(engineer.getFirstName());
+        this.setKanaLastName(engineer.getKanaLastName());
+        this.setKanaFirstName(engineer.getKanaFirstName());
         this.setInitial(engineer.getInitial());
         this.setMailAddress(engineer.getMailAddress());
         this.setEmploymentStatus(Integer.toString(engineer.getEmploymentStatus()));
@@ -88,20 +69,36 @@ public class CSVEngineerDTO {
         this.setIntroduction(engineer.getIntroduction());
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getKanaName() {
-        return kanaName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setKanaName(String kanaName) {
-        this.kanaName = kanaName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getKanaLastName() {
+        return kanaLastName;
+    }
+
+    public void setKanaLastName(String kanaLastName) {
+        this.kanaLastName = kanaLastName;
+    }
+
+    public String getKanaFirstName() {
+        return kanaFirstName;
+    }
+
+    public void setKanaFirstName(String kanaFirstName) {
+        this.kanaFirstName = kanaFirstName;
     }
 
     public String getMailAddress() {
@@ -252,8 +249,10 @@ public class CSVEngineerDTO {
 
     public Engineer build(BusinessPartner partner) throws EngineerFieldValidationException {
         Engineer engineer = new Engineer();
-        engineer.setName(this.name);
-        engineer.setKanaName(this.kanaName);
+        engineer.setLastName(this.lastName);
+        engineer.setFirstName(this.firstName);
+        engineer.setKanaLastName(this.kanaLastName);
+        engineer.setKanaFirstName(this.kanaFirstName);
         engineer.setInitial(this.initial);
         engineer.setMailAddress(this.mailAddress);
         int employmentStatus;

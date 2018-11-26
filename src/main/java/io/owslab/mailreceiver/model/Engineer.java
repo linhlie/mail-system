@@ -20,10 +20,16 @@ public class Engineer {
     private long id;
 
     @NotNull
-    private String name;
+    private String lastName;
 
     @NotNull
-    private String kanaName;
+    private String firstName;
+
+    @NotNull
+    private String kanaLastName;
+
+    @NotNull
+    private String kanaFirstName;
 
     private String mailAddress;
 
@@ -70,13 +76,13 @@ public class Engineer {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getLastName() { return lastName; }
 
-    public String getKanaName() {
-        return kanaName;
-    }
+    public String getFirstName() { return firstName; }
+
+    public String getKanaLastName() { return kanaLastName; }
+
+    public String getKanaFirstName() { return kanaFirstName; }
 
     public String getMailAddress() {
         return mailAddress;
@@ -98,9 +104,7 @@ public class Engineer {
         return projectPeriodEnd;
     }
 
-    public boolean isAutoExtend() {
-        return autoExtend;
-    }
+    public boolean isAutoExtend() { return autoExtend; }
 
     public int getExtendMonth() {
         return extendMonth;
@@ -138,13 +142,13 @@ public class Engineer {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setKanaName(String kanaName) {
-        this.kanaName = kanaName;
-    }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public void setKanaLastName(String kanaLastName) { this.kanaLastName = kanaLastName; }
+
+    public void setKanaFirstName(String kanaFirstName) { this.kanaFirstName = kanaFirstName; }
 
     public void setMailAddress(String mailAddress) {
         this.mailAddress = mailAddress;
@@ -238,9 +242,13 @@ public class Engineer {
     }
     
     public static class Builder{
-    	private String name;
+        private String lastName;
 
-        private String kanaName;
+        private String firstName;
+
+        private String kanaLastName;
+
+        private String kanaFirstName;
 
         private String mailAddress;
 
@@ -277,8 +285,10 @@ public class Engineer {
         private String introduction;
 
         public Builder(Engineer engineer) {
-            this.name = engineer.getName();
-            this.kanaName = engineer.getKanaName();
+            this.lastName = engineer.getLastName();
+            this.firstName = engineer.getFirstName();
+            this.kanaLastName = engineer.getKanaLastName();
+            this.kanaFirstName = engineer.getKanaFirstName();
             this.mailAddress = engineer.getMailAddress();
             this.employmentStatus = engineer.getEmploymentStatus();
             this.partnerId = engineer.getPartnerId();
@@ -307,8 +317,10 @@ public class Engineer {
 
         public Engineer build() throws ParseException {
             Engineer engineer = new Engineer();
-            engineer.setName(this.getName());
-            engineer.setKanaName(this.getKanaName());
+            engineer.setLastName(this.getLastName());
+            engineer.setFirstName(this.getFirstName());
+            engineer.setKanaLastName(this.getKanaLastName());
+            engineer.setKanaFirstName(this.getKanaFirstName());
             engineer.setMailAddress(this.getMailAddress());
             engineer.setEmploymentStatus(this.getEmploymentStatus());
             if(this.getProjectPeriodStart() != null && !this.getProjectPeriodStart().equals("")){
@@ -335,20 +347,36 @@ public class Engineer {
             return engineer;
         }
 
-        public String getName() {
-            return name;
+        public String getLastName() {
+            return lastName;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
         }
 
-        public String getKanaName() {
-            return kanaName;
+        public String getFirstName() {
+            return firstName;
         }
 
-        public void setKanaName(String kanaName) {
-            this.kanaName = kanaName;
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getKanaLastName() {
+            return kanaLastName;
+        }
+
+        public void setKanaLastName(String kanaLastName) {
+            this.kanaLastName = kanaLastName;
+        }
+
+        public String getKanaFirstName() {
+            return kanaFirstName;
+        }
+
+        public void setKanaFirstName(String kanaFirstName) {
+            this.kanaFirstName = kanaFirstName;
         }
 
         public String getMailAddress() {

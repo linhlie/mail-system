@@ -123,11 +123,11 @@ public class MailAccountsService {
                 String greeting = "";
                 if(partners.size()>0){
                     if(partners.get(0).getId() == engineer.getPartnerId()){
-                        greeting = engineer.getName() + "さん<br />" + "お疲れ様です　" + username + "です。<br /><br />";
+                        greeting = engineer.getLastName() + "さん<br />" + "お疲れ様です　" + username + "です。<br /><br />";
                     }else{
                         BusinessPartner partnerEngineer = partnerService.findOne(engineer.getPartnerId());
                         if(partnerEngineer != null){
-                            greeting = partnerEngineer.getName() +" " + engineer.getName() + "様<br />" + "お世話になっております。　" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
+                            greeting = partnerEngineer.getName() +" " + engineer.getLastName() + "様<br />" + "お世話になっております。　" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
                         }
 
                     }

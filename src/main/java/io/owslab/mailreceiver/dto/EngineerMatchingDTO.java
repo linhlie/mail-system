@@ -21,32 +21,9 @@ public class EngineerMatchingDTO {
     private boolean autoExtend;
     private boolean dormant;
     FilterRule moneyCondition;
+
     public EngineerMatchingDTO(){
-    	
-    }
-    
-    public EngineerMatchingDTO(Engineer engineer){
-    	this.id = engineer.getId();
-    	this.name =engineer.getName();
-    	this.partnerName = "Partner Name";
-    }
-    
-    public EngineerMatchingDTO(Engineer engineer, String partnerName, Timestamp now) {
-        this.setId(engineer.getId());
-        this.setName(engineer.getName());
-        this.setAutoExtend(engineer.isAutoExtend());
-        this.setDormant(engineer.isDormant());
-        this.setPartnerName(partnerName);
-        boolean dormant = engineer.isDormant();
-        Timestamp from = new Timestamp(engineer.getProjectPeriodStart());
-        Timestamp to = new Timestamp(engineer.getProjectPeriodEnd());
-        boolean active = !dormant && (!now.before(from) && !now.after(to));
-        this.setActive(active);
-        this.setPartnerId(engineer.getPartnerId());
-        this.setMonetaryMoney(engineer.getMonetaryMoney());
-        this.setMailAddress(engineer.getMailAddress());
-        this.setMatchingWord(engineer.getMatchingWord());
-        this.setNotGoodWord(engineer.getNotGoodWord());
+
     }
     
     public EngineerMatchingDTO(EngineerMatchingFilter engineer) {

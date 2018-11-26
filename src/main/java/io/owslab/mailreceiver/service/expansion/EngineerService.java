@@ -303,7 +303,7 @@ public class EngineerService {
                             Charset.forName(encoding))), CsvPreference.STANDARD_PREFERENCE))
             {
                 // the header elements are used to map the values to the bean
-                final String[] headers = new String[]{ "name", "kanaName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet",  "introduction"};
+                final String[] headers = new String[]{ "lastName", "firstName", "kanaLastName", "kanaFirstName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet",  "introduction"};
 
                 CSVEngineerDTO engineerDTO;
                 if(skipHeader) {
@@ -317,8 +317,10 @@ public class EngineerService {
                 }
                 for(int line = 0; line < engineerDTOS.size(); line++) {
                     CSVEngineerDTO csvEngineerDTO = engineerDTOS.get(line);
-                    String name = csvEngineerDTO.getName();
-                    String kanaName = csvEngineerDTO.getKanaName();
+                    String lastName = csvEngineerDTO.getLastName();
+                    String firstName = csvEngineerDTO.getFirstName();
+                    String kanaLastName = csvEngineerDTO.getKanaLastName();
+                    String kanaFirstName = csvEngineerDTO.getKanaFirstName();
                     String employmentStatus = csvEngineerDTO.getEmploymentStatus();
                     String partnerCode = csvEngineerDTO.getPartnerCode();
                     String projectPeriodStart = csvEngineerDTO.getProjectPeriodStart();
@@ -327,14 +329,20 @@ public class EngineerService {
                     
                     String typetmp = "【技術者インポート】";
                     int lineIndextmp = skipHeader ? line + 2 : line + 1;
-                    String infotmp = "技術者名 " + Objects.toString(name, "");
+                    String infotmp = "技術者名 " + Objects.toString(lastName, "");
                     List<String> missingList = new ArrayList<>();
                     
-                    if(name == null || kanaName == null || employmentStatus == null || partnerCode == null) {
-                        if(name == null) {
+                    if(lastName == null || kanaLastName == null || firstName == null || kanaFirstName == null || employmentStatus == null || partnerCode == null) {
+                        if(lastName == null) {
                             missingList.add("技術者名がありません");
                         }
-                        if(kanaName == null) {
+                        if(firstName == null) {
+                            missingList.add("技術者名がありません");
+                        }
+                        if(kanaLastName == null) {
+                            missingList.add("カナ氏名がありません");
+                        }
+                        if(kanaFirstName == null) {
                             missingList.add("カナ氏名がありません");
                         }
                         if(employmentStatus == null) {
@@ -365,7 +373,7 @@ public class EngineerService {
                         } catch (EngineerFieldValidationException efve) {
                             String type = "【技術者インポート】";
                             int lineIndex = skipHeader ? line + 2 : line + 1;
-                            String info = "技術者名 " + Objects.toString(name, "");
+                            String info = "技術者名 " + Objects.toString(lastName, "");
                             String detail = efve.getMessage();
                             ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
                             importLogs.add(importLog);
@@ -373,7 +381,7 @@ public class EngineerService {
                     } else {
                         String type = "【技術者インポート】";
                         int lineIndex = skipHeader ? line + 2 : line + 1;
-                        String info = "技術者名 " + Objects.toString(name, "");
+                        String info = "技術者名 " + Objects.toString(lastName, "");
                         String detail = "所属識別ID「" + partnerCode + "」はは存在しないIDです。";
                         ImportLogDTO importLog = new ImportLogDTO(type, lineIndex, info, detail);
                         importLogs.add(importLog);
@@ -397,9 +405,9 @@ public class EngineerService {
     public CSVBundle<CSVEngineerDTO> export() {
         CSVBundle<CSVEngineerDTO> csvBundle = new CSVBundle<CSVEngineerDTO>();
         csvBundle.setFileName("技術者.csv");
-        String[] csvHeader = { "技術者名", "カナ氏名", "イニシャル", "メールアドレス", "雇用形態",
+        String[] csvHeader = { "技術者姓", "技術者名", "カナ氏姓", "カナ氏名", "イニシャル", "メールアドレス", "雇用形態",
                 "所属企業", "案件期間 開始", "案件期間 終了", "延長", "延長期間", "マッチングワード", "NGワード", "単金", "最寄り駅 線", "最寄り駅 駅", "通勤時間", "スキルシートのフォルダー", "技術者紹介文" };
-        String[] keys = { "name", "kanaName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet", "introduction" };
+        String[] keys = { "lastName", "firstName", "kanaLastName", "kanaFirstName", "initial", "mailAddress", "employmentStatus", "partnerCode", "projectPeriodStart", "projectPeriodEnd", "autoExtend", "extendMonth", "matchingWord", "notGoodWord", "monetaryMoney", "stationLine", "stationNearest", "commutingTime", "skillSheet", "introduction" };
         csvBundle.setHeaders(csvHeader);
         csvBundle.setKeys(keys);
         List<CSVEngineerDTO> data = getEngineerListToExport();

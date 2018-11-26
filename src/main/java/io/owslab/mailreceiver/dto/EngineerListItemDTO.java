@@ -15,23 +15,8 @@ public class EngineerListItemDTO {
     private boolean active;
     private boolean autoExtend;
     private boolean dormant;
-    
-    
 
     public EngineerListItemDTO() {}
-
-	public EngineerListItemDTO(Engineer engineer, String partnerName, Timestamp now) {
-        this.setId(engineer.getId());
-        this.setName(engineer.getName());
-        this.setAutoExtend(engineer.isAutoExtend());
-        this.setDormant(engineer.isDormant());
-        this.setPartnerName(partnerName);
-        boolean dormant = engineer.isDormant();
-        Timestamp from = new Timestamp(engineer.getProjectPeriodStart());
-        Timestamp to = new Timestamp(engineer.getProjectPeriodEnd());
-        boolean active = !dormant && (!now.before(from) && !now.after(to));
-        this.setActive(active);
-    }
 
     public long getId() {
         return id;
