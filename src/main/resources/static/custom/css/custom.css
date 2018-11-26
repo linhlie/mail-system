@@ -1484,7 +1484,7 @@ div.bulletinboard-icon-wrapper {
 
 .form-alert label{
     text-overflow: ellipsis;
-    display: inline-block;
+    display: block;
     overflow: hidden;
     width: 100%;
     white-space: nowrap;
