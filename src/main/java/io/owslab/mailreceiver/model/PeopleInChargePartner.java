@@ -135,4 +135,17 @@ public class PeopleInChargePartner {
     public void setAlertContent(String alertContent) {
         this.alertContent = alertContent;
     }
+
+    public String getPepleName(){
+        if(this.lastName !=null && this.firstName !=null){
+            return this.lastName+ "　" + this.firstName;
+        }
+        if(this.lastName != null){
+            return this.lastName;
+        }
+        if(this.firstName != null){
+            return this.firstName;
+        }
+        return "";
+    }
 }
