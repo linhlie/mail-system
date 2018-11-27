@@ -64,8 +64,8 @@ public class PreviewMailDTO {
         if(businessPartner != null){
             String alertLevel = AlertLevel.fromValue(businessPartner.getAlertLevel()).getText();
             this.alertLevel = alertLevel;
-            this.alertContent =businessPartner.getAlertContent();
-            this.partnerName =businessPartner.getName();
+            this.alertContent = businessPartner.getAlertContent()==null? "" :businessPartner.getAlertContent();
+            this.partnerName = businessPartner.getName()==null? "" :businessPartner.getName();
         }
 
         if(people != null){
