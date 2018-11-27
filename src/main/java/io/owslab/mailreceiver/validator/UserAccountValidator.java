@@ -1,14 +1,12 @@
 package io.owslab.mailreceiver.validator;
 
 import io.owslab.mailreceiver.dao.AccountDAO;
-import io.owslab.mailreceiver.form.AdministratorSettingForm;
 import io.owslab.mailreceiver.form.UserAccountForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -29,8 +27,11 @@ public class UserAccountValidator implements Validator {
     @Value("${NotEmpty.userAccountForm.userName}")
     private String userAccountRequired;
 
-    @Value("${NotEmpty.userAccountForm.name}")
-    private String userNameRequired;
+    @Value("${NotEmpty.userAccountForm.lastName}")
+    private String lastNameRequired;
+
+    @Value("${NotEmpty.userAccountForm.firstName}")
+    private String firstNameRequired;
 
     @Value("${NotEmpty.userAccountForm.newPassword}")
     private String newPasswordRequired;
@@ -63,7 +64,8 @@ public class UserAccountValidator implements Validator {
         UserAccountForm userAccountForm = (UserAccountForm) target;
         boolean isUpdate = isUpdate(userAccountForm);
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "NotEmpty.userAccountForm.userName", userAccountRequired);
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "NotEmpty.userAccountForm.name", userNameRequired);
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.userAccountForm.name", lastNameRequired);
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.userAccountForm.name", firstNameRequired);
         if(!isUpdate) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newPassword", "NotEmpty.userAccountForm.newPassword", newPasswordRequired);
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmNewPassword", "NotEmpty.userAccountForm.confirmNewPassword", confirmNewPasswordRequired);

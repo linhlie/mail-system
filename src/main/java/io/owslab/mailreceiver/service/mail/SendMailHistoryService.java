@@ -45,11 +45,7 @@ public class SendMailHistoryService {
         List<Account> listAccount = accountService.getAllUserRoleAccounts();
         HashMap<Long, String>  mapAccount = new HashMap<>();
         for(Account account : listAccount){
-            if(account.getName()!=null && !account.getName().equals("")){
-                mapAccount.put(account.getId(), account.getName());
-            }else{
-                mapAccount.put(account.getId(), account.getUserName());
-            }
+            mapAccount.put(account.getId(), account.getAccountName());
         }
         List<SentMailHistoryDTO> histories = new ArrayList<>();
         for(SentMailHistory history : rawHistories) {
