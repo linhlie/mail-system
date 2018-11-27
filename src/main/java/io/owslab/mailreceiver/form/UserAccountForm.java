@@ -6,30 +6,11 @@ package io.owslab.mailreceiver.form;
 public class UserAccountForm {
     private String id;
     private String userName;
-    private String name;
+    private String lastName;
+    private String firstName;
     private String newPassword;
     private String confirmNewPassword;
     private boolean expansion;
-
-    public UserAccountForm() {
-    }
-
-    public UserAccountForm(String userName, String name, String newPassword, String confirmNewPassword, boolean expansion) {
-        this.userName = userName;
-        this.name = name;
-        this.newPassword = newPassword;
-        this.confirmNewPassword = confirmNewPassword;
-        this.expansion = expansion;
-    }
-
-    public UserAccountForm(String id, String userName, String name, String newPassword, String confirmNewPassword, boolean expansion) {
-        this.id = id;
-        this.userName = userName;
-        this.name = name;
-        this.newPassword = newPassword;
-        this.confirmNewPassword = confirmNewPassword;
-        this.expansion = expansion;
-    }
 
     public String getId() {
         return id;
@@ -47,12 +28,20 @@ public class UserAccountForm {
         this.userName = userName;
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getNewPassword() {

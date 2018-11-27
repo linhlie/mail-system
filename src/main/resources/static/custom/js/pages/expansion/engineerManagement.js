@@ -24,8 +24,10 @@
     var introductionId = "introduction";
 
     var formFields = [
-        {type: "input", name: "name"},
-        {type: "input", name: "kanaName"},
+        {type: "input", name: "lastName"},
+        {type: "input", name: "firstName"},
+        {type: "input", name: "kanaLastName"},
+        {type: "input", name: "kanaFirstName"},
         {type: "input", name: "mailAddress"},
         {type: "select", name: "employmentStatus"},
         {type: "select", name: "partnerId"},
@@ -223,7 +225,6 @@
     }
 
     function addEngineerOnClick() {
-        console.log("addEngineerOnClick");
         clearFormValidate();
         var validated = engineerFormValidate();
         if(!validated) return;
@@ -352,20 +353,31 @@
     }
 
     function engineerFormValidate() {
-        var validate1 = engineerNameValidate();
-        var validate2 = engineerKanaNameValidate();
-        var validate3 = engineerMailAddressValidate();
-        var validate4 = engineerMonetaryMoneyValidate();
-        var validate5 = engineerEmploymentStatusValidate();
-        var validate6 = engineerPartnerValidate();
-        var validate7 = engineerProjectPeriodValidate();
-        var validate9 = engineerExtendMonthValidate();
+        var validate1 = engineerLastNameValidate();
+        var validate2 = engineerKanaLastNameValidate();
+        var validate3 = engineerFirstNameValidate();
+        var validate4 = engineerKanaFirstNameValidate();
+        var validate5 = engineerMailAddressValidate();
+        var validate6 = engineerMonetaryMoneyValidate();
+        var validate7 = engineerEmploymentStatusValidate();
+        var validate8 = engineerPartnerValidate();
+        var validate9 = engineerProjectPeriodValidate();
+        var validate10 = engineerExtendMonthValidate();
         return validate1 && validate2 && validate3 && validate4 && validate5
-            && validate6 && validate7 && validate9;
+            && validate6 && validate7 && validate8 && validate9 && validate10;
     }
 
-    function engineerNameValidate() {
-        var input = $("input[name='name']");
+    function engineerLastNameValidate() {
+        var input = $("input[name='lastName']");
+        if(!input.val()) {
+            showError.apply(input, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function engineerFirstNameValidate() {
+        var input = $("input[name='firstName']");
         if(!input.val()) {
             showError.apply(input, ["必須"]);
             return false;
@@ -380,8 +392,17 @@
         container.find("span.form-error").text(error);
     }
 
-    function engineerKanaNameValidate() {
-        var input = $("input[name='kanaName']");
+    function engineerKanaLastNameValidate() {
+        var input = $("input[name='kanaLastName']");
+        if(!input.val()) {
+            showError.apply(input, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function engineerKanaFirstNameValidate() {
+        var input = $("input[name='kanaFirstName']");
         if(!input.val()) {
             showError.apply(input, ["必須"]);
             return false;
@@ -597,9 +618,6 @@
                 } else if (cellNode.nodeName == "SPAN") {
                     var cellData = data[cellKey];
                     cellNode.textContent = cellData;
-                    console.log(data);
-                    console.log(cellKey);
-                    console.log(cellData);
                 }
             }
         }
@@ -761,7 +779,6 @@
     }
     
     function selectNext(index, data) {
-    	console.log(index+" "+data.length);
         if(index>data.length) {
         	$.alert("最終行まで更新しました");
         	clearEngineerOnClick();

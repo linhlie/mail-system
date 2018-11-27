@@ -16,7 +16,7 @@ public class EngineerMatchingFilter extends EngineerFilter{
 	    
 	    public EngineerMatchingFilter(Engineer engineer, String partnerName, Timestamp now) {
 	        this.setId(engineer.getId());
-	        this.setName(engineer.getName());
+	        this.setName(engineer.getLastName() + "　" + engineer.getFirstName());
 	        this.setAutoExtend(engineer.isAutoExtend());
 	        this.setDormant(engineer.isDormant());
 	        this.setPartnerName(partnerName);
