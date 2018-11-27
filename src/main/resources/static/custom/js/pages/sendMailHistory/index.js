@@ -26,6 +26,7 @@
 
     var externalCCGlobal = [];
     var senderGlobal = "";
+    var reSendEmail;
 
     var replaceHistoryHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="sentAt"><span></span></td>' +
@@ -146,7 +147,6 @@
             }
         });
         $('#' + historyQuickFilterId).change(function() {
-            console.log("historyQuickFilterId: ", this.value);
             updateDisableDatePickers(this.value);
         });
     }
@@ -193,7 +193,6 @@
                 $('body').loadingModal('hide');
                 if (data && data.status) {
                     histories = data.list;
-                    console.log(data.list);
                 } else {
                     console.error("[ERROR] submit failed: ");
                 }
@@ -360,9 +359,22 @@
     function showMailEditor(id) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
         if(cachedSeparateTab) {
-        //     showMailEditorInNewTab(id);
+            showMailEditorInNewTab(id);
         } else {
             showMailEditorInTab(id);
+        }
+    }
+
+    function showMailEditorInNewTab(id) {
+        var data = {
+            "id" : id
+        };
+        sessionStorage.setItem("separateReSendMailData", JSON.stringify(data));
+        var win = window.open('/user/reSendNewTab', '_blank');
+        if (win) {
+            win.focus();
+        } else {
+            alert('Please allow popups for this website');
         }
     }
 
@@ -370,12 +382,12 @@
         $('#sendMailModal').modal();
         lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
         getDetailMailHistory(id, function (email, accounts) {
+            reSendEmail = email;
             updateSenderSelector(email, accounts, function (account) {
                 showMailContentToEditor(email, accounts);
 
                 $('#' + rdMailSenderId).off('change');
                 $('#' + rdMailSenderId).change(function() {
-                    lastSelectedSendMailAccountId = this.value;
                     showMailContentToEditor(email, accounts);
                 });
             });
@@ -409,7 +421,7 @@
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
                 }
@@ -418,14 +430,15 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            // receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
-            // ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
+            receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
+            ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
             if(!(receiverValidate && ccValidate)) return;
+            if(!reSendEmail) return;
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
             var form = {
-                messageId: messageId,
+                messageId: reSendEmail.messageId,
                 subject: $("#" + rdMailSubjectId).val(),
                 receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
                 cc: $("#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
@@ -433,8 +446,8 @@
                 originAttachment: attachmentData.origin,
                 uploadAttachment: attachmentData.upload,
                 accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
-                sendType: getHistoryType(),
-                historyType: getHistoryType(),
+                sendType: reSendEmail.sendType,
+                historyType: 11,
             };
             $.ajax({
                 type: "POST",
@@ -462,6 +475,11 @@
                 }
             });
         })
+    }
+
+    function getMailEditorContent() {
+        var editor = tinymce.get(rdMailBodyId);
+        return editor.getContent();
     }
 
     function updateSenderSelector(email, accounts, callback) {
@@ -505,17 +523,15 @@
     function showMailContentToEditor(data, accounts) {
         var receiverListStr = data.to;
         resetValidation();
-        var senderId = $('#' + rdMailSenderId).val();
+        lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
         var account;
         for(var i=0;i<accounts.length;i++){
-            if(accounts[i].id == senderId){
+            if(accounts[i].id == lastSelectedSendMailAccountId){
                 account = accounts[i];
             }
         }
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
-        console.log(data);
-        console.log(account);
         if (data && account) {
             senderGlobal = account.account;
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];

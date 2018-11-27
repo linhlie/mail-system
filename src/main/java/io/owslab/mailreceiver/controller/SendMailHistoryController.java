@@ -90,4 +90,10 @@ public class SendMailHistoryController {
         }
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "/reSendNewTab", method = RequestMethod.GET)
+    public String getSendTab() {
+        return "user/reSendNewTab";
+    }
+
 }
