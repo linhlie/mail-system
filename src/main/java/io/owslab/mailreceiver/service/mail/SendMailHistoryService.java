@@ -28,6 +28,10 @@ public class SendMailHistoryService {
     @Autowired
     AccountService accountService;
 
+    public SentMailHistory getOne(long id){
+        return sentMailHistoryDAO.findOne(id);
+    }
+
     public List<SentMailHistory> search(SentMailHistoryForm form) {
         String filterType = form.getFilterType();
         String fromDateStr = form.getFromDateStr();

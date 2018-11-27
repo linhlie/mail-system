@@ -12,18 +12,38 @@
     var historyDataTable;
     var selectedRowData;
 
+    var lastSelectedSendMailAccountId;
+    var rdMailSubjectId = 'rdMailSubject';
+    var rdMailBodyId = 'rdMailBody';
+    var rdMailSenderId = 'rdMailSender';
+    var rdMailReceiverId = 'rdMailReceiver';
+    var rdMailCCId = 'rdMailCC';
+    var attachmentDropzoneId = "#reply-dropzone";
+    var attachmentDropzone;
+
+    var receiverValidate = true;
+    var ccValidate = true;
+
+    var externalCCGlobal = [];
+    var senderGlobal = "";
+
     var replaceHistoryHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="sentAt"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="to"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="sentAt"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="sendType"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="originalReceivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingReceivedAt"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
-        '<td class="clickable fit" name="historyRow" rowspan="1" colspan="1" data="username"><span></span></td>' +
-        '</tr>';
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="sendType"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="originalReceivedAt"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="matchingReceivedAt"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="matchingMailAddress"><span></span></td>' +
+        '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="username"><span></span></td>' +
+        '<td class="clickable text-center" name="reSend" rowspan="1" colspan="1">' +
+        '<button type="button" class="btn btn-xs btn-default">再送</button>' +
+        '</td>';
+    '</tr>';
     $(function () {
+        initTagsInput();
+        initDropzone();
         initSortHistory();
         setupDatePickers();
         updateDisableDatePickers($('#' + historyQuickFilterId).val());
@@ -32,11 +52,65 @@
         initStickyHeader();
         addEventListeners();
     });
-    
+
+    function initTagsInput() {
+        $('#' + rdMailCCId).tagsInput({
+            defaultText: '',
+            minInputWidth: 150,
+            maxInputWidth: 600,
+            width: 'auto',
+            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            validationMsg: 'メールアドレスを入力してください',
+            onChange: function (elem, elem_tags) {
+                $('.tag').each(function () {
+                    var tag = $(this).text();
+                    var email = tag.substring(0, tag.length - 3);
+                    var globalMailDoman = getEmailDomain(senderGlobal);
+                    var emailDomain = getEmailDomain(email);
+                    if (globalMailDoman == emailDomain) {
+                        $(this).css('background-color', 'yellow');
+                    } else if(externalCCGlobal.indexOf(email) >= 0) {
+                        $(this).css('background-color', 'yellow');
+                    }
+                });
+            }
+        });
+    }
+
+    function initDropzone() {
+        Dropzone.autoDiscover = false;
+        attachmentDropzone = new Dropzone("div" + attachmentDropzoneId, {
+            url: "/upload",
+            addRemoveLinks: true,
+            maxFilesize: 2,
+            filesizeBase: 1000,
+            dictRemoveFile: "削除",
+            dictCancelUpload: "キャンセル",
+            dictDefaultMessage: "Drop files here or click to upload.",
+            init: function () {
+                this.on("success", function (file, response) {
+                    if (response && response.status) {
+                        var data = response.list && response.list.length > 0 ? response.list[0] : null;
+                        if (data) {
+                            file.id = data.id;
+                        }
+                    }
+                });
+                this.on("removedfile", function (file) {
+                    if (!!file && !!file.upload && !!file.id) {
+                        removeFile(file.id)
+                    }
+                });
+            },
+            thumbnail: function (file, dataUrl) {
+            }
+        })
+    }
+
     function addEventListeners() {
         addHistorySearchButtonClickListener()
     }
-    
+
     function addHistorySearchButtonClickListener() {
         $('#' + historySearchBtnId).off('click');
         $('#' + historySearchBtnId).click(function () {
@@ -44,7 +118,7 @@
             loadHistoryData(payload);
         });
     }
-    
+
     function getSearchPayload() {
         var payload = {
             filterType: $("#" + historyQuickFilterId).val(),
@@ -72,8 +146,8 @@
             }
         });
         $('#' + historyQuickFilterId).change(function() {
-           console.log("historyQuickFilterId: ", this.value);
-           updateDisableDatePickers(this.value);
+            console.log("historyQuickFilterId: ", this.value);
+            updateDisableDatePickers(this.value);
         });
     }
 
@@ -147,6 +221,14 @@
             }
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("historyRow", selectedRow);
+            setRowClickListener("reSend", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = histories[index];
+                if (rowData && rowData.id) {
+                    showMailEditor(rowData.id);
+                }
+            });
         }
         selectFirstRow();
         updateHistoryDataTrigger(tableId);
@@ -273,6 +355,189 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+
+    function showMailEditor(id) {
+        var cachedSeparateTab = getCachedSeparateTabSetting();
+        if(cachedSeparateTab) {
+        //     showMailEditorInNewTab(id);
+        } else {
+            showMailEditorInTab(id);
+        }
+    }
+
+    function showMailEditorInTab(id) {
+        $('#sendMailModal').modal();
+        lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
+        getDetailMailHistory(id, function (email, accounts) {
+            updateSenderSelector(email, accounts, function (account) {
+                showMailContentToEditor(email, accounts);
+
+                $('#' + rdMailSenderId).off('change');
+                $('#' + rdMailSenderId).change(function() {
+                    lastSelectedSendMailAccountId = this.value;
+                    showMailContentToEditor(email, accounts);
+                });
+            });
+        });
+
+        $("button[name='sendSuggestMailClose']").off('click');
+        $('#cancelSendSuggestMail').button('reset');
+        $("button[name='sendSuggestMailClose']").click(function () {
+            var btn = $('#cancelSendSuggestMail');
+            btn.button('loading');
+            var attachmentData = getAttachmentData(attachmentDropzone);
+            if (attachmentData.upload.length == 0) {
+                btn.button('reset');
+                $('#sendMailModal').modal('hide');
+                return;
+            }
+            var form = {
+                uploadAttachment: attachmentData.upload,
+            };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/removeUploadedFiles",
+                data: JSON.stringify(form),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+
+                },
+                error: function (e) {
+                    console.log("ERROR : sendSuggestMail: ", e);
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+                }
+            });
+        });
+        $('#sendSuggestMail').off('click');
+        $('#sendSuggestMail').button('reset');
+        $("#sendSuggestMail").click(function () {
+            // receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
+            // ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
+            if(!(receiverValidate && ccValidate)) return;
+            var btn = $(this);
+            btn.button('loading');
+            var attachmentData = getAttachmentData(attachmentDropzone);
+            var form = {
+                messageId: messageId,
+                subject: $("#" + rdMailSubjectId).val(),
+                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
+                cc: $("#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
+                content: getMailEditorContent(),
+                originAttachment: attachmentData.origin,
+                uploadAttachment: attachmentData.upload,
+                accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
+                sendType: getHistoryType(),
+                historyType: getHistoryType(),
+            };
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/user/sendRecommendationMail",
+                data: JSON.stringify(form),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    btn.button('reset');
+                    $('#sendMailModal').modal('hide');
+                    if (data && data.status) {
+                        //TODO: noti send mail success
+                    } else {
+                        //TODO: noti send mail failed
+                    }
+
+                },
+                error: function (e) {
+                    btn.button('reset');
+                    console.log("ERROR : sendSuggestMail: ", e);
+                    $('#sendMailModal').modal('hide');
+                    //TODO: noti send mail error
+                }
+            });
+        })
+    }
+
+    function updateSenderSelector(email, accounts, callback) {
+        accounts = accounts || [];
+        var flagAccount = false;
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            if(item.account == email.from){
+                flagAccount = true;
+                lastSelectedSendMailAccountId = item.id;
+            }
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.account.toString() === email.from)
+            }));
+        });
+
+        if(!flagAccount){
+            $('#' + rdMailSenderId).empty();
+            $.each(accounts, function (i, item) {
+                $('#' + rdMailSenderId).append($('<option>', {
+                    value: item.id,
+                    text : item.account,
+                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
+                }));
+            });
+        }
+        if (typeof callback === "function") {
+            callback();
+        }
+    }
+
+    function resetValidation() {
+        receiverValidate = true;
+        ccValidate = true;
+        $('#' + rdMailCCId + '-container').removeClass('has-error')
+        $('#' + rdMailReceiverId + '-container').removeClass('has-error')
+    }
+
+    function showMailContentToEditor(data, accounts) {
+        var receiverListStr = data.to;
+        resetValidation();
+        var senderId = $('#' + rdMailSenderId).val();
+        var account;
+        for(var i=0;i<accounts.length;i++){
+            if(accounts[i].id == senderId){
+                account = accounts[i];
+            }
+        }
+        document.getElementById(rdMailReceiverId).value = receiverListStr;
+        updateMailEditorContent("");
+        console.log(data);
+        console.log(account);
+        if (data && account) {
+            senderGlobal = account.account;
+            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = account.cc ? account.cc.replace(/\s*,\s*/g, ",").split(",") : [];
+            externalCCGlobal = externalCC;
+            cc = updateCCList(cc,externalCC);
+            $('#' + rdMailCCId).importTags(cc.join(","));
+
+            document.getElementById(rdMailSubjectId).value = data.subject;
+            updateMailEditorContent(data.body);
+        }
+        updateDropzoneData(attachmentDropzone);
+    }
+
+
+    function updateMailEditorContent(content, preventClear) {
+        var editor = tinymce.get(rdMailBodyId);
+        editor.setContent(content);
+        if (!preventClear) {
+            editor.undoManager.clear();
+        }
+        editor.undoManager.add();
     }
 
 })(jQuery);
