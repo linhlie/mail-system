@@ -126,7 +126,7 @@ public class MailAccountsService {
                     }else{
                         BusinessPartner partnerEngineer = partnerService.findOne(engineer.getPartnerId());
                         if(partnerEngineer != null){
-                            greeting = partnerEngineer.getName() +"　" + engineer.getLastName() + "様<br />" + "お世話になっております。　" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
+                            greeting = partnerEngineer.getName() +"　" + engineer.getLastName() + "様<br />" + "お世話になっております。" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
                         }
 
                     }
