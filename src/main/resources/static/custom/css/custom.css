@@ -1168,7 +1168,7 @@ section.sendTab.content {
 .stickyHeaderTable td {
     border: 1px solid black !important;
     border-left: none !important;
-    padding: 1px 6px !important;
+    padding: 4px 6px !important;
 }
 
 .stickyHeaderTable td {
@@ -1489,4 +1489,9 @@ div.bulletinboard-icon-wrapper {
     width: 100%;
     white-space: nowrap;
     vertical-align: middle;
+}
+
+.engineer-part td{
+    font-size: 15px;
+    height: 30px;
 }

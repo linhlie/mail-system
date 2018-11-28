@@ -19,10 +19,12 @@
     var skillSheetTxtId = "#skillSheetEngineer";
     var engineers = null;
     var updatingEngineerId = null;
-    var selectedSourceTableRow;
-    var idEngineerSelected = -1;
     var partners = null;
     var introductionId = "introduction";
+
+    var selectedSourceTableRow;
+    var idEngineerSelected = -1;
+    var currentSortOrder;
 
     var formFields = [
         {type: "input", name: "lastName"},
@@ -57,13 +59,13 @@
         '<td name="editEngineer" rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
         '<td name="editEngineer" rowspan="1" colspan="1" data="partnerName" style="cursor: pointer;"><span></span></td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="active">' +
-        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '<img class="hidden" style="padding: 2px; width:14px; height: 14px;" src="/custom/img/checkmark.png">' +
         '</td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="autoExtend">' +
-        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '<img class="hidden" style="padding: 2px; width:14px; height: 14px;" src="/custom/img/checkmark.png">' +
         '</td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
-        '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
+        '<img class="hidden" style="padding: 2px; width:14px; height: 14px;" src="/custom/img/checkmark.png">' +
         '</td>' +
         '<td name="deleteEngineer" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
@@ -128,11 +130,55 @@
     }
 
     function initSortEngineer() {
+        $("#" + engineerTableId).css("transform", "translateY(-10px)");
         $("#" + engineerTableId).trigger("destroy");
-        $("#" + engineerTableId).tablesorter(
-            {
-                sortList: [[0,0], [1,0]]
-            });
+        if(currentSortOrder){
+            $("#" + engineerTableId).tablesorter(
+                {
+                    headers: {
+                        2: {
+                            sorter: false
+                        },
+                        3: {
+                            sorter: false
+                        },
+                        4: {
+                            sorter: false
+                        },
+                        5: {
+                            sorter: false
+                        }
+                    },
+                    sortList: currentSortOrder
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }else{
+            $("#" + engineerTableId).tablesorter(
+                {
+                    headers: {
+                        2: {
+                            sorter: false
+                        },
+                        3: {
+                            sorter: false
+                        },
+                        4: {
+                            sorter: false
+                        },
+                        5: {
+                            sorter: false
+                        }
+                    },
+                    sortList: [[0,0]]
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }
     }
 
     function updateExtendFields() {
@@ -245,6 +291,7 @@
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
+                        selectedSourceTableRow = null;
                         loadEngineers();
                         clearEngineerOnClick();
                     }
@@ -337,6 +384,7 @@
                     title: "",
                     content: "保存に成功しました",
                     onClose: function () {
+                        selectedSourceTableRow=null;
                         loadEngineers(selectNextRow);
                     }
                 });
@@ -583,7 +631,6 @@
                             if(response.list && response.list.length > 0) {
                                 var data = response.list[0];
                                 selectedRow(rowSelected.closest('tr'));
-                                idEngineerSelected = rowData.id;
                                 doEditEngineer(rowData.id, data);
                             } else {
                                 $.alert("技術者が存在しません。");
@@ -797,7 +844,7 @@
                 }
             });
             if(selectedSourceTableRow != null){
-                selectNext(selectedSourceTableRow.next());
+                selectNext(selectedSourceTableRow);
             }
     	}else{
     		clearEngineerOnClick();
@@ -810,7 +857,6 @@
         	$.alert("最終行まで更新しました");
         	clearEngineerOnClick();
         } else {
-            selectedRow(rowSelect);
             var findRow = rowSelect.find(".deleteEngineerRow");
             var row = findRow[0].parentNode;
             var index = row.getAttribute("data");
@@ -820,7 +866,7 @@
                 if(response && response.status) {
                     if(response.list && response.list.length > 0) {
                         var dataEng = response.list[0];
-                        idEngineerSelected = rowData.id;
+                        selectedRow(rowSelect, rowData.id);
                         doEditEngineer(rowData.id, dataEng);
                     } else {
                         $.alert("技術者が存在しません。");
@@ -838,8 +884,26 @@
     }
     
     function selectedRow(row) {
-        selectedSourceTableRow = row;
+        setNextRow(row);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+
+    function setNextRow(row){
+        if(!row){
+            return;
+        }
+        var indexArray = row.index();
+        selectedSourceTableRow = row;
+        if(indexArray<engineers.length-1) {
+            var findRow = row.next().find(".deleteEngineerRow");
+            var rowtmp = findRow[0].parentNode;
+            var index = rowtmp.getAttribute("data");
+            var rowData = engineers[index];
+            idEngineerSelected = rowData.id;
+        }else{
+            idEngineerSelected = -1;
+            selectedSourceTableRow = null;
+        }
     }
     
     function updatePartnerComboBoxTable(options) {
