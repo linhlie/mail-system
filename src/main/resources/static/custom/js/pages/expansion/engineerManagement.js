@@ -19,7 +19,8 @@
     var skillSheetTxtId = "#skillSheetEngineer";
     var engineers = null;
     var updatingEngineerId = null;
-    var selectedSourceTableRow=-1;
+    var selectedSourceTableRow;
+    var idEngineerSelected = -1;
     var partners = null;
     var introductionId = "introduction";
 
@@ -64,7 +65,7 @@
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="dormant">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/checkmark.png">' +
         '</td>' +
-        '<td name="deleteEngineer" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<td name="deleteEngineer" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
@@ -124,6 +125,14 @@
                 });
             }
         });
+    }
+
+    function initSortEngineer() {
+        $("#" + engineerTableId).trigger("destroy");
+        $("#" + engineerTableId).tablesorter(
+            {
+                sortList: [[0,0], [1,0]]
+            });
     }
 
     function updateExtendFields() {
@@ -531,11 +540,11 @@
         var form = getFilterForm();
         function onSuccess(response) {
             if(response && response.status){
-                loadEngineersData(engineerTableId, response.list);
-            }
-            
-            if(typeof callback == 'function'){
-            	callback(response.list);
+                if(typeof callback == 'function'){
+                    loadEngineersData(engineerTableId, response.list, callback);
+                }else{
+                    loadEngineersData(engineerTableId, response.list);
+                }
             }
         }
 
@@ -545,7 +554,7 @@
         getEngineers(form, onSuccess, onError);
     }
 
-    function loadEngineersData(tableId, data) {
+    function loadEngineersData(tableId, data, callback) {
         engineers = data;
         removeAllRow(tableId, replaceRow);
         if (engineers.length > 0) {
@@ -564,17 +573,17 @@
                 }
             });
             setRowClickListener("editEngineer", function () {
-                var $this = $(this);
+                var rowSelected = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = engineers[index];
                 if (rowData && rowData.id) {
                     function onSuccess(response) {
                         if(response && response.status) {
                             if(response.list && response.list.length > 0) {
                                 var data = response.list[0];
-                                selectedRow($('#' + engineerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                                selectedRow(rowSelected.closest('tr'));
+                                idEngineerSelected = rowData.id;
                                 doEditEngineer(rowData.id, data);
                             } else {
                                 $.alert("技術者が存在しません。");
@@ -590,6 +599,10 @@
                     getEngineer(rowData.id, onSuccess, onError);
                 }
             });
+            initSortEngineer();
+            if(typeof callback == 'function'){
+                callback();
+            }
         }
     }
 
@@ -769,29 +782,46 @@
         }
     }
     
-    function selectNextRow(data){
-    	if ($(checkboxNextSelectId).is(":checked")){
-    		selectedSourceTableRow = selectedSourceTableRow+1;
-    		selectNext(selectedSourceTableRow, data);
+    function selectNextRow(){
+    	if ($(checkboxNextSelectId).is(":checked") && idEngineerSelected>0){
+            selectedSourceTableRow  = null;
+            $( ".deleteEngineerRow" ).each(function() {
+                var rowSelected = $(this);
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = engineers[index];
+                if(rowData){
+                    if(rowData.id == idEngineerSelected){
+                        selectedSourceTableRow = rowSelected.closest('tr');
+                    }
+                }
+            });
+            if(selectedSourceTableRow != null){
+                selectNext(selectedSourceTableRow.next());
+            }
     	}else{
     		clearEngineerOnClick();
     	}
     }
     
-    function selectNext(index, data) {
-        if(index>data.length) {
+    function selectNext(rowSelect) {
+        var index = rowSelect ? rowSelect.index() : -1;
+        if(index>engineers.length) {
         	$.alert("最終行まで更新しました");
         	clearEngineerOnClick();
         } else {
-        	var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
-            selectedRow(row);
-            var rowData = data[index-1];
+            selectedRow(rowSelect);
+            var findRow = rowSelect.find(".deleteEngineerRow");
+            var row = findRow[0].parentNode;
+            var index = row.getAttribute("data");
+            var rowData = engineers[index];
             
             function onSuccess(response) {
                 if(response && response.status) {
                     if(response.list && response.list.length > 0) {
-                        var data = response.list[0];
-                        doEditEngineer(rowData.id, data);
+                        var dataEng = response.list[0];
+                        idEngineerSelected = rowData.id;
+                        doEditEngineer(rowData.id, dataEng);
                     } else {
                         $.alert("技術者が存在しません。");
                     }
@@ -804,11 +834,11 @@
                 $.alert("技術者情報のロードに失敗しました。");
             }
             getEngineer(rowData.id, onSuccess, onError);
-            
         }
     }
     
     function selectedRow(row) {
+        selectedSourceTableRow = row;
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
     }
     
