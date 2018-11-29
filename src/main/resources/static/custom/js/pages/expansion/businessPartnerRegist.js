@@ -14,10 +14,13 @@
     var partners = null;
     var domains = null;
     var updatingPartnerId = null;
-    var selectedSourceTableRow=-1;
     var updatingDomainId = null;
     var alertContentValue = "";
     var alertLevelValue = "";
+
+    var currentSortOrder;
+    var selectedSourceTableRow;
+    var idPartnerNextSelect = -1;
 
     var formFields = [
         {type: "input", name: "name"},
@@ -60,7 +63,7 @@
         '<td name="editPartner" rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
         '<td name="editPartner" rowspan="1" colspan="1" data="partnerCode" style="cursor: pointer;"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="alertLevel" style="text-align: center"><span></span></td>' +
-        '<td name="deletePartner" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<td name="deletePartner" class="fit action deletePartnerRow" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
@@ -113,6 +116,38 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+
+    function initSortPartner() {
+        if(currentSortOrder){
+            $("#" + partnerTableId).tablesorter(
+                {
+                    headers: {
+                        3: {
+                            sorter: false
+                        }
+                    },
+                    sortList: currentSortOrder
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }else{
+            $("#" + partnerTableId).tablesorter(
+                {
+                    headers: {
+                        3: {
+                            sorter: false
+                        }
+                    },
+                    sortList: [[0,0]]
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }
     }
     
     function addPartnerComboBox() {
@@ -455,13 +490,15 @@
     }
     
     function loadBusinessPartners(callback) {
+        selectedSourceTableRow=null;
         function onSuccess(response) {
             if(response && response.status){
-                loadBusinessPartnersData(partnerTableId, response.list);
+                if(typeof callback == 'function'){
+                    loadBusinessPartnersData(partnerTableId, response.list, callback);
+                }else{
+                    loadBusinessPartnersData(partnerTableId, response.list);
+                }
                 updatePartnerComboBox(response.list);
-            }
-            if(typeof callback == 'function'){
-            	callback(response.list);
             }
         }
         
@@ -471,9 +508,11 @@
         getBusinessPartners(onSuccess, onError);
     }
     
-    function loadBusinessPartnersData(tableId, data) {
+    function loadBusinessPartnersData(tableId, data, callback) {
+        $("#" + tableId).css("transform", "translateY(-10px)");
+        $("#" + tableId).trigger("destroy");
         partners = data;
-        removeAllRow(tableId, partnerReplaceRow);
+        removeAllRow(tableId, partnerReplaceRow, partnerReplaceHead);
         if (partners.length > 0) {
             var html = partnerReplaceRow;
             for (var i = 0; i < partners.length; i++) {
@@ -482,7 +521,6 @@
             $("#" + tableId + "> thead").html(partnerReplaceHead);
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("deletePartner", function () {
-
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = partners[index];
@@ -491,20 +529,27 @@
                 }
             });
             setRowClickListener("editPartner", function () {
+                var rowSelected = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
-                selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = partners[index];
                 if (rowData && rowData.id) {
                     doEditPartner(rowData);
-                    selectedRow($('#' + partnerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                    selectedRow(rowSelected.closest('tr'));
                 }
             });
+            initSortPartner();
+            if(typeof callback == 'function'){
+                callback();
+            }
         }
     }
 
-    function removeAllRow(tableId, replaceHtml) { //Except header row
+    function removeAllRow(tableId, replaceHtml, replaceHead) { //Except header row
         $("#" + tableId + "> tbody").html(replaceHtml);
+        if(replaceHead){
+            $("#" + tableId + "> thead").html(replaceHead);
+        }
     }
 
     function addRowWithData(tableId, data, index) {
@@ -703,25 +748,38 @@
         });
     }
     
-    function selectNextRow(data){
-    	if ($(checkboxNextSelectId).is(":checked")){
-    		var type = $(styleShowTableId + ' option:selected').text();
-    		if(type == '取引先一覧'){
-    			selectedSourceTableRow = selectedSourceTableRow+1;
-    		}
-    		selectNext(selectedSourceTableRow, data);
+    function selectNextRow(){
+        if ($(checkboxNextSelectId).is(":checked") && idPartnerNextSelect>0){
+            selectedSourceTableRow  = null;
+            $( ".deletePartnerRow" ).each(function() {
+                var rowSelected = $(this);
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = partners[index];
+                if(rowData){
+                    if(rowData.id == idPartnerNextSelect){
+                        selectedSourceTableRow = rowSelected.closest('tr');
+                    }
+                }
+            });
+            if(selectedSourceTableRow != null){
+                selectNext(selectedSourceTableRow);
+            }
     	}else{
     		clearPartnerOnClick();
     	}
     }
-    
-    function selectNext(index, data) {
-        if(index>data.length) {
+
+    function selectNext(rowSelect) {
+        var index = rowSelect ? rowSelect.index() : -1;
+        if(index>partners.length) {
         	$.alert("最終行まで更新しました");
         	clearPartnerOnClick();
         } else {
-        	var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
-            var rowData = data[index-1];
+            var findRow = rowSelect.find(".deletePartnerRow");
+            var row = findRow[0].parentNode;
+            var index = row.getAttribute("data");
+            var rowData = partners[index];
            
             var type = $(styleShowTableId + ' option:selected').text();
     		if(type == '取引先一覧'){
@@ -731,12 +789,31 @@
     		if(type == '未登録取引先一覧'){
     			doEditDomain(rowData);
     		}
-            selectedRow(row);
+            selectedRow(rowSelect);
         }
     }
     
     function selectedRow(row) {
+        setNextRow(row);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+
+    function setNextRow(row){
+        if(!row){
+            return;
+        }
+        var indexArray = row.index();
+        selectedSourceTableRow = row;
+        if(indexArray<partners.length-1) {
+            var findRow = row.next().find(".deletePartnerRow");
+            var rowtmp = findRow[0].parentNode;
+            var index = rowtmp.getAttribute("data");
+            var rowData = partners[index];
+            idPartnerNextSelect = rowData.id;
+        }else{
+            idPartnerNextSelect = -1;
+            selectedSourceTableRow = null;
+        }
     }
     
     function styleShowTableChangeListener(){
@@ -797,7 +874,7 @@
         domains = data;
         $(countDomain).html("<u>未登録の取引先が"+data.length+"件あります</u>");
         setVisibleCountDomain("visible")
-        removeAllRow(tableId, domainReplaceRow);
+        removeAllRow(tableId, domainReplaceRow, domainReplaceHead);
         if (domains.length > 0) {
             var html = partnerReplaceRow;
             for (var i = 0; i < domains.length; i++) {
