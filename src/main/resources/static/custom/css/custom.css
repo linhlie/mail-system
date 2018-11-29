@@ -1492,6 +1492,10 @@ div.bulletinboard-icon-wrapper {
 }
 
 .engineer-part td{
-    font-size: 15px;
+    font-size: 14px;
+    height: 30px;
+}
+.partner-part td{
+    font-size: 14px;
     height: 30px;
 }

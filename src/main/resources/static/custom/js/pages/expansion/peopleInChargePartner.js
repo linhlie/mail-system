@@ -523,6 +523,7 @@
                 callback();
             }
         }else{
+            initSortPeopleInCharge();
             $.alert("この取引先はまだ担当者がいません。");
         }
     }
