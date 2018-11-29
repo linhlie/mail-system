@@ -12,7 +12,16 @@ public class SentMailFiles {
 
     private long sentMailHistoriesId;
 
-    private long uploadFileId;
+    private long uploadFilesId;
+
+    public SentMailFiles(){
+
+    }
+
+    public SentMailFiles(long sentMailHistoriesId, long uploadFilesId){
+        this.sentMailHistoriesId = sentMailHistoriesId;
+        this.uploadFilesId = uploadFilesId;
+    }
 
     public long getId() {
         return id;
@@ -30,11 +39,11 @@ public class SentMailFiles {
         this.sentMailHistoriesId = sentMailHistoriesId;
     }
 
-    public long getUploadFileId() {
-        return uploadFileId;
+    public long getUploadFilesId() {
+        return uploadFilesId;
     }
 
-    public void setUploadFileId(long uploadFileId) {
-        this.uploadFileId = uploadFileId;
+    public void setUploadFilesId(long uploadFilesId) {
+        this.uploadFilesId = uploadFilesId;
     }
 }
