@@ -23,9 +23,12 @@
     var listPartner;
     var listPeopleInChargePartner;
     var listPeopleInChargePartnerUnregister;
-    var selectedSourceTableRow=-1;
     var alertContentValue = "";
     var alertLevelValue = "";
+
+    var currentSortOrder;
+    var selectedSourceTableRow;
+    var idPeopleNextSelect = -1;
 
     var formFields = [
         {type: "select", name: "partnerId"},
@@ -63,7 +66,7 @@
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="pause">' +
         '<img class="hidden" style="padding: 5px; width:20px; height: 20px;" src="/custom/img/dot.png">' +
         '</td>' +
-        '<td name="deletePeople" class="fit action" rowspan="1" colspan="1" data="id">' +
+        '<td name="deletePeople" class="fit action deletePeopleRow" rowspan="1" colspan="1" data="id">' +
         '<button type="button">削除</button>' +
         '</td>' +
         '<td class="fit" style="text-align: center" rowspan="1" colspan="1" data="emailInChargePartner">' +
@@ -109,6 +112,50 @@
                     "transform": "translate(0px, " + $(this).scrollTop() + "px)"
                 });
         });
+    }
+
+    function initSortPeopleInCharge() {
+        if(currentSortOrder){
+            $("#" + peopleTableId).tablesorter(
+                {
+                    headers: {
+                        5: {
+                            sorter: false
+                        },
+                        6: {
+                            sorter: false
+                        },
+                        7: {
+                            sorter: false
+                        }
+                    },
+                    sortList: currentSortOrder
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }else{
+            $("#" + peopleTableId).tablesorter(
+                {
+                    headers: {
+                        5: {
+                            sorter: false
+                        },
+                        6: {
+                            sorter: false
+                        },
+                        7: {
+                            sorter: false
+                        }
+                    },
+                    sortList: [[0,0]]
+                })
+                .bind('sortEnd', function(event) {
+                    currentSortOrder = event.target.config.sortList;
+                    setNextRow(selectedSourceTableRow);
+                });
+        }
     }
 
     function partnerComboBoxListener() {
@@ -370,13 +417,15 @@
     }
 
     function loadPeopleInChargePartners(partnerId, callback){
+        selectedSourceTableRow=null;
         function onSuccess(response) {
             if(response && response.status){
-                setDataTablePeople(response.list);
+                if(typeof callback == 'function'){
+                    setDataTablePeople(response.list, callback);
+                }else{
+                    setDataTablePeople(response.list);
+                }
                 clearPeopleOnClick();
-            }
-            if(typeof callback == 'function'){
-                callback(response.list);
             }
         }
 
@@ -420,9 +469,11 @@
         });
     }
 
-    function setDataTablePeople(listPeople) {
+    function setDataTablePeople(listPeople, callback) {
+        $("#" + peopleTableId).css("transform", "translateY(-10px)");
+        $("#" + peopleTableId).trigger("destroy");
         listPeopleInChargePartner = listPeople;
-        removeAllRow(peopleTableId, peopleReplaceRow);
+        removeAllRow(peopleTableId, peopleReplaceRow, peopleReplaceHead);
         if (listPeople.length > 0) {
             var html = peopleReplaceRow;
             for (var i = 0; i < listPeople.length; i++) {
@@ -441,6 +492,7 @@
             });
 
             setRowClickListener("sourceRow", function () {
+                var rowSelected = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 selectedSourceTableRow = parseInt(index) + 1;
@@ -451,7 +503,7 @@
                             if(response.list && response.list.length > 0) {
                                 var data = response.list[0]
                                 doEditPeople(data);
-                                selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                                selectedRow(rowSelected.closest('tr'));
                             } else {
                                 $.alert("担当者が存在しません。");
                             }
@@ -466,13 +518,20 @@
                     getDetailPeopleInChargePartner(rowData.id, onSuccess, onError);
                 }
             });
+            initSortPeopleInCharge();
+            if(typeof callback == 'function'){
+                callback();
+            }
         }else{
             $.alert("この取引先はまだ担当者がいません。");
         }
     }
 
-    function removeAllRow(tableId, replaceHtml) { //Except header row
+    function removeAllRow(tableId, replaceHtml, replaceHead) { //Except header row
         $("#" + tableId + "> tbody").html(replaceHtml);
+        if(replaceHead){
+            $("#" + tableId + "> thead").html(replaceHead);
+        }
     }
 
     function addRowWithData(tableId, data, index) {
@@ -599,28 +658,45 @@
         });
     }
 
-    function selectNextRow(data){
-        if ($(checkboxNextSelectId).is(":checked")){
-            selectedSourceTableRow = selectedSourceTableRow+1;
-            selectNext(selectedSourceTableRow, data);
+    function selectNextRow(){
+        if ($(checkboxNextSelectId).is(":checked") && idPeopleNextSelect>0){
+            selectedSourceTableRow  = null;
+            $( ".deletePeopleRow" ).each(function() {
+                var rowSelected = $(this);
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = listPeopleInChargePartner[index];
+                if(rowData){
+                    if(rowData.id == idPeopleNextSelect){
+                        selectedSourceTableRow = rowSelected.closest('tr');
+                    }
+                }
+            });
+            if(selectedSourceTableRow != null){
+                selectNext(selectedSourceTableRow);
+            }
         }else{
             clearPeopleOnClick();
         }
     }
 
-    function selectNext(index, data) {
-        if(index>data.length) {
+    function selectNext(rowSelect) {
+        var index = rowSelect ? rowSelect.index() : -1;
+        if(index>listPeopleInChargePartner.length) {
             $.alert("最終行まで更新しました");
             clearPeopleOnClick();
         } else {
-            var row = $('#' + peopleTableId).find(' tbody tr:eq('+index+')');
-            var rowData = data[index-1];
+            var findRow = rowSelect.find(".deletePeopleRow");
+            var row = findRow[0].parentNode;
+            var index = row.getAttribute("data");
+            var rowData = listPeopleInChargePartner[index];
+
             function onSuccess(response) {
                 if(response && response.status) {
                     if(response.list) {
                         var data = response.list[0];
                         doEditPeople(data);
-                        selectedRow(row);
+                        selectedRow(rowSelect);
                     } else {
                         $.alert("担当者が存在しません。");
                     }
@@ -638,7 +714,26 @@
     }
 
     function selectedRow(row) {
+        setNextRow(row);
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+
+    function setNextRow(row){
+        if(!row){
+            return;
+        }
+        var indexArray = row.index();
+        selectedSourceTableRow = row;
+        if(indexArray<listPeopleInChargePartner.length-1) {
+            var findRow = row.next().find(".deletePeopleRow");
+            var rowtmp = findRow[0].parentNode;
+            var index = rowtmp.getAttribute("data");
+            var rowData = listPeopleInChargePartner[index];
+            idPeopleNextSelect = rowData.id;
+        }else{
+            idPeopleNextSelect = -1;
+            selectedSourceTableRow = null;
+        }
     }
 
     function styleShowTableChangeListener(){
@@ -694,7 +789,7 @@
         listPeopleInChargePartnerUnregister = data;
         $(countPeopleInChargeUnregisterId).html("<u>未登録の担当者が"+data.length+"件あります</u>");
         setVisibleCountPeopleUnregister("visible")
-        removeAllRow(peopleTableId, peopleInChargeUnregisterReplaceRow);
+        removeAllRow(peopleTableId, peopleInChargeUnregisterReplaceRow, peopleInChargeUnregisterReplaceHead);
         if (listPeopleInChargePartnerUnregister.length > 0) {
             var html = peopleInChargeUnregisterReplaceRow;
             for (var i = 0; i < listPeopleInChargePartnerUnregister.length; i++) {
