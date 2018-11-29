@@ -26,7 +26,7 @@ import java.util.concurrent.Future;
 @Service
 public class FetchMailsService {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailsService.class);
-    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     @Autowired
     private EmailAccountSettingService emailAccountSettingService;
 

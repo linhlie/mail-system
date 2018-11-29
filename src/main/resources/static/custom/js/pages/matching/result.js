@@ -507,7 +507,7 @@
 
     }
     
-    function showDestinationDataTable(tableId, data, replaceHeader, replaceBody) {
+    function showDestinationDataTable(tableId, data, replaceHeader, replaceBody, range) {
         setTimeout(function () {
             $('body').loadingModal('destroy');
             $('body').loadingModal({
@@ -529,6 +529,7 @@
                         currentDestinationResult[i].word = word;
                         var messageId = currentDestinationResult[i].messageId;
                         currentDestinationResult[i] = Object.assign(currentDestinationResult[i], mailList[messageId]);
+                        currentDestinationResult[i].range = range;
                         html = html + addRowWithData(tableId, currentDestinationResult[i], i);
                     }
                     $("#"+ tableId + "> thead").html(replaceHeader);
@@ -680,7 +681,7 @@
         })
     }
     
-    function showSourceMail(index) {
+    function showSourceMail(index, rowData, callback) {
         var rowData = matchingResult[index];
         if(rowData && rowData.source && rowData.source.messageId){
             $('#' + sakiPreviewContainerId).hide();
@@ -689,6 +690,11 @@
             showMail(rowData.source.messageId, rowData.word, function (result) {
                 showMailContent(result, [mailSubjectDivId, mailBodyDivId, mailAttachmentDivId]);
                 updatePreviewMailToPrint(result, printElementId);
+                if(typeof callback == "function"){
+                    if(result){
+                        callback(rowData, result.highLightRanges);
+                    }
+                }
             });
         }
     }
@@ -730,11 +736,19 @@
         var index = row[0].getAttribute("data");
         var rowData = matchingResult[index];
         selectedRowData = rowData;
-        showSourceMail(index);
-        showDestinationData(destinationTableId, rowData);
+        showSourceMail(index, rowData, showListMailDestination);
+
+    }
+    
+    function showListMailDestination(rowData, ranges) {
+        var range = "";
+        if(ranges && ranges.length>0){
+            range = ranges[0];
+        }
+        showDestinationData(destinationTableId, rowData, range);
     }
 
-    function showDestinationData(destinationTableId, rowData){
+    function showDestinationData(destinationTableId, rowData, range){
         var replaceBody = replaceDestinationHTML;
         var replaceHeader = headerDestination;
         var isAlertpartner = false;
@@ -760,7 +774,7 @@
         }
         replaceBody = replaceBody + '</tr>';
         replaceHeader = replaceHeader + '</tr>';
-        showDestinationDataTable(destinationTableId, rowData, replaceHeader, replaceBody);
+        showDestinationDataTable(destinationTableId, rowData, replaceHeader, replaceBody, range);
     }
 
     function removeAllRow(tableId, replaceHtml) { //Except header row
