@@ -3,9 +3,11 @@ package io.owslab.mailreceiver.service.settings;
 import io.owslab.mailreceiver.dao.EmailAccountDAO;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
+import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
 import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -40,6 +42,9 @@ public class MailAccountsService {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private EmailAccountSettingService emailAccountSettingService;
+
     public Page<EmailAccount> list(PageRequest pageRequest) {
         Page<EmailAccount> list = emailAccountDAO.findAll(pageRequest);
         return list;
@@ -47,6 +52,19 @@ public class MailAccountsService {
 
     public List<EmailAccount> list() {
         return (List<EmailAccount>) emailAccountDAO.findAll();
+    }
+
+    public List<EmailAccountToSendMailDTO> getListEmailAccountToSendMail() {
+        List<EmailAccount> emailAccounts =  list();
+        List<EmailAccountToSendMailDTO> emailAccountDTOs =  new ArrayList<>();
+        for(EmailAccount account : emailAccounts){
+            EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
+            if(accountSetting!=null){
+                EmailAccountToSendMailDTO acc = new EmailAccountToSendMailDTO(account, accountSetting.getCc());
+                emailAccountDTOs.add(acc);
+            }
+        }
+        return emailAccountDTOs;
     }
 
     @Cacheable(key="\"MailAccountsService:findById:\"+#id")

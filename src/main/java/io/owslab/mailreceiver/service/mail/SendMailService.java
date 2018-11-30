@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.dao.UploadFileDAO;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
+import io.owslab.mailreceiver.service.file.SentMailFileService;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
@@ -54,9 +55,6 @@ public class SendMailService {
     private EmailAccountSettingService emailAccountSettingService;
 
     @Autowired
-    private UploadFileService uploadFileService;
-
-    @Autowired
     private SentMailHistoryDAO sentMailHistoryDAO;
 
     @Autowired
@@ -67,6 +65,9 @@ public class SendMailService {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private SentMailFileService sentMailFileService;
 
     public void sendMail(SendMailForm form){
         Email email = emailService.findOne(form.getMessageId());
@@ -165,10 +166,11 @@ public class SendMailService {
                     hasAttachment = true;
                 }
             }
-
+            List<Long> uploadFileReality = new ArrayList<>();
             if(uploadAttachment != null && uploadAttachment.size() > 0) {
                 List<UploadFile> uploadFiles = uploadFileDAO.findByIdIn(uploadAttachment);
                 for (UploadFile uploadFile : uploadFiles){
+                    uploadFileReality.add(uploadFile.getId());
                     MimeBodyPart attachmentPart = buildUploadAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
                     multipart.addBodyPart(attachmentPart);
                     hasAttachment = true;
@@ -180,9 +182,10 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
-            uploadFileService.delete(uploadAttachment);
-            saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
-
+            SentMailHistory sentMail = saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
+            if(sentMail!=null){
+                sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
+            }
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {
@@ -238,14 +241,14 @@ public class SendMailService {
         return String.join(",", result);
     }
 
-    private void saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+    private SentMailHistory saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
         int sentType = form.getHistoryType();
         clickHistoryService.saveSent(sentType);
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
-        if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return;
+        if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return null;
         long accountSentMailId = accountService.getLoggedInAccountId();
         SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountSentMailId);
-        sentMailHistoryDAO.save(history);
+        return sentMailHistoryDAO.save(history);
     }
 
     public void sendReportMail(ReportErrorService.ReportErrorParams report) {

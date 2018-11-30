@@ -1495,7 +1495,28 @@ div.bulletinboard-icon-wrapper {
     font-size: 14px;
     height: 30px;
 }
+
 .partner-part td{
     font-size: 14px;
     height: 30px;
+}
+
+.modal-body .mail-attachment {
+    padding: 5px 10px;
+    min-height: 30px;
+    margin-top: 10px;
+    border: #a5a5a5 solid 1px;
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.modal-body .remove-mail-attachment {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.modal-body .remove-mail-attachment:hover {
+    cursor: pointer;
+    margin-left: 5px;
+    color: red;
 }

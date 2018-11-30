@@ -1,12 +1,18 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
+import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
+import io.owslab.mailreceiver.dto.FileDTO;
 import io.owslab.mailreceiver.dto.SentMailHistoryDTO;
 import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.SentMailHistoryForm;
+import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.SentMailHistory;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.MailHistoryResponseBody;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.mail.SendMailHistoryService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +42,11 @@ public class SendMailHistoryController {
     @Autowired
     private SendMailHistoryService sendMailHistoryService;
 
+    @Autowired
+    private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private UploadFileService uploadFileService;
 
     @RequestMapping(value = { "/sendMailHistory" }, method = RequestMethod.GET)
     public String getHelp(Model model, HttpServletRequest request) {
@@ -65,4 +76,50 @@ public class SendMailHistoryController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = "/sendMailHistory/detail/{id}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> detail(@PathVariable("id") long id) {
+        MailHistoryResponseBody result = new MailHistoryResponseBody();
+        try {
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
+            SentMailHistory sentMail = sendMailHistoryService.getOne(id);
+            if(sentMail!=null && sentMail.isHasAttachment()){
+                List<FileDTO> listFile = uploadFileService.getFileUpload(sentMail.getId());
+                result.setListFile(listFile);
+            }
+            result.setList(accountList);
+            result.setSentMailHistory(sentMail);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("detail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/sendMailHistory/getFileAttach/{id}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getFileAttach(@PathVariable("id") long id) {
+        MailHistoryResponseBody result = new MailHistoryResponseBody();
+        try {
+            List<FileDTO> listFileAttach = uploadFileService.getFileUpload(id);
+            result.setList(listFileAttach);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("detail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/reSendNewTab", method = RequestMethod.GET)
+    public String getSendTab() {
+        return "user/reSendNewTab";
+    }
+
 }

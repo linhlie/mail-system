@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.dto;
 
 import io.owslab.mailreceiver.model.AttachmentFile;
+import io.owslab.mailreceiver.model.UploadFile;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -19,9 +20,23 @@ public class FileDTO {
     private String digest;
     private long size;
 
+    public FileDTO(){
+
+    }
+
     public FileDTO(AttachmentFile file) {
         this.setId(file.getId());
         this.setMessageId(file.getMessageId());
+        this.setFileName(file.getFileName());
+        this.setStoragePath(file.getStoragePath());
+        this.setSize(file.getSize());
+        String downloadDigest = file.getId() + File.separator + CHECK_SUM;
+        String encodedDownloadDigest = DatatypeConverter.printHexBinary(downloadDigest.getBytes());
+        this.setDigest(encodedDownloadDigest);
+    }
+
+    public FileDTO(UploadFile file) {
+        this.setId(file.getId());
         this.setFileName(file.getFileName());
         this.setStoragePath(file.getStoragePath());
         this.setSize(file.getSize());

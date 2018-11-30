@@ -105,6 +105,62 @@ function showReplyMail(accountId, messageId, callback) {
     });
 }
 
+function showMailReSendHistories(id, callback){
+    var url = "/user/sendMailHistory/getFileAttach/" + id;
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: url,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            var files;
+            if (data.status) {
+                files = data.list;
+            }
+            if (typeof callback === "function") {
+                callback(files);
+            }
+        },
+        error: function (e) {
+            console.error("getDetailMailHistory ERROR : ", e);
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+    });
+}
+
+function getDetailMailHistory(id, callback){
+    var url = "/user/sendMailHistory/detail/" + id;
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: url,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            var email;
+            var accounts;
+            var files;
+            if (data.status) {
+                email = data.sentMailHistory;
+                accounts = data.list;
+                files = data.listFile;
+            }
+            if (typeof callback === "function") {
+                callback(email, accounts, files);
+            }
+        },
+        error: function (e) {
+            console.error("getDetailMailHistory ERROR : ", e);
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+    });
+}
+
 function removeFile(fileId){
     $.ajax({
         type: "GET",
