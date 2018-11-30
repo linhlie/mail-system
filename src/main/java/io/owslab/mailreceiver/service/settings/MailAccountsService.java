@@ -1,7 +1,6 @@
 package io.owslab.mailreceiver.service.settings;
 
 import io.owslab.mailreceiver.dao.EmailAccountDAO;
-import io.owslab.mailreceiver.dao.EmailAccountSettingsDAO;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
 import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
@@ -125,7 +124,7 @@ public class MailAccountsService {
         if(engineer == null ||  engineer.getMailAddress() == null){
             throw new Exception("Email engineer has been remove or doesn't exsit");
         }
-        String username = accountService.getUserNameLogged();
+        String username = accountService.getLastNameUserLogged();
         List<EmailAccountEngineerDTO> accountDTOs =  new ArrayList<>();
         for(EmailAccount account : listAccount){
             EmailAccountEngineerDTO accountDTO = new EmailAccountEngineerDTO();
@@ -145,7 +144,7 @@ public class MailAccountsService {
                     }else{
                         BusinessPartner partnerEngineer = partnerService.findOne(engineer.getPartnerId());
                         if(partnerEngineer != null){
-                            greeting = partnerEngineer.getName() +" " + engineer.getLastName() + "様<br />" + "お世話になっております。　" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
+                            greeting = partnerEngineer.getName() +"　" + engineer.getLastName() + "様<br />" + "お世話になっております。" + partners.get(0).getName() + "の" + username + "です。<br /><br />";
                         }
 
                     }

@@ -496,8 +496,8 @@
                 selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = partners[index];
                 if (rowData && rowData.id) {
-                	selectedRow($('#' + partnerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                     doEditPartner(rowData);
+                    selectedRow($('#' + partnerTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                 }
             });
         }
@@ -721,7 +721,6 @@
         	clearPartnerOnClick();
         } else {
         	var row = $('#' + partnerTableId).find(' tbody tr:eq('+index+')');
-            selectedRow(row);
             var rowData = data[index-1];
            
             var type = $(styleShowTableId + ' option:selected').text();
@@ -732,6 +731,7 @@
     		if(type == '未登録取引先一覧'){
     			doEditDomain(rowData);
     		}
+            selectedRow(row);
         }
     }
     
@@ -827,9 +827,8 @@
                 selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = domains[index];
                 if (rowData && rowData.id) {
-                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                     doEditDomain(rowData);
-                    console.log(rowData);
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                 }
             });
         }

@@ -121,9 +121,9 @@ public class AccountService {
         return user.getUserId();
     }
 
-    public String getUserNameLogged(){
+    public String getLastNameUserLogged(){
         Long userId = getLoggedInAccountId();
         Account account = findById(userId);
-        return  account.getAccountName();
+        return  account.getLastName();
     }
 }

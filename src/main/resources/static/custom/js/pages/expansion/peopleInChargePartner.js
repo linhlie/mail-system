@@ -449,9 +449,9 @@
                     function onSuccess(response) {
                         if(response && response.status) {
                             if(response.list && response.list.length > 0) {
-                                var data = response.list[0];
-                                selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
+                                var data = response.list[0]
                                 doEditPeople(data);
+                                selectedRow($('#' + peopleTableId).find(' tbody tr:eq('+selectedSourceTableRow+')'));
                             } else {
                                 $.alert("担当者が存在しません。");
                             }
@@ -614,14 +614,13 @@
             clearPeopleOnClick();
         } else {
             var row = $('#' + peopleTableId).find(' tbody tr:eq('+index+')');
-            selectedRow(row);
             var rowData = data[index-1];
-
             function onSuccess(response) {
                 if(response && response.status) {
                     if(response.list) {
                         var data = response.list[0];
                         doEditPeople(data);
+                        selectedRow(row);
                     } else {
                         $.alert("担当者が存在しません。");
                     }
@@ -725,8 +724,8 @@
                 selectedSourceTableRow = parseInt(index) + 1;
                 var rowData = listPeopleInChargePartnerUnregister[index];
                 if (rowData && rowData.id) {
-                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                     doEditPeopleInChargeUnregister(rowData);
+                    $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
                 }
             });
         }
