@@ -262,6 +262,7 @@
         $("#" + sendMailHistoryTableId).tablesorter(
             {
                 theme: 'default',
+                headers : { 9 : { sorter: false } },
                 sortList: [[0, 1], [1, 0]]
             });
     }
@@ -531,6 +532,8 @@
                     $('#sendMailModal').modal('hide');
                     if (data && data.status) {
                         //TODO: noti send mail success
+                        var payload = getSearchPayload();
+                        loadHistoryData(payload);
                     } else {
                         //TODO: noti send mail failed
                     }
