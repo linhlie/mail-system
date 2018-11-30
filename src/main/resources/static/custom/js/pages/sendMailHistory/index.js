@@ -28,6 +28,17 @@
     var senderGlobal = "";
     var reSendEmail;
 
+    var extensionCommands = {
+        ".pdf": "ms-word:ofv|u|",
+        ".docx": "ms-word:ofv|u|",
+        ".doc": "ms-word:ofv|u|",
+        ".xls": "ms-excel:ofv|u|",
+        ".xlsx": "ms-excel:ofv|u|",
+        ".xlsm": "ms-excel:ofv|u|",
+        ".ppt": "ms-powerpoint:ofv|u|",
+        ".pptx": "ms-powerpoint:ofv|u|",
+    }
+
     var replaceHistoryHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="sentAt"><span></span></td>' +
         '<td class="clickable" name="historyRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
@@ -323,6 +334,14 @@
     }
 
     function showMailContent(data) {
+        if(data){
+            showMailReSendHistories(data.id, function (files) {
+                showMailContentDetail(data, files);
+            });
+        }
+    }
+
+    function showMailContentDetail(data, files) {
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
@@ -334,7 +353,24 @@
                 '<h6>送信者:&nbsp;' + data.from + '&nbsp;&nbsp;&nbsp;&nbsp;受信者:&nbsp;' + data.to + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
                 '</div>';
             showMailBodyContent(data);
-            mailAttachmentDiv.innerHTML = "添付ファイル";
+            if(files.length > 0){
+                var filesInnerHTML = "";
+                for(var i = 0; i < files.length; i++ ){
+                    var file = files[i];
+                    var fileExtension = getFileExtension(file.fileName);
+                    var command = extensionCommands[fileExtension];
+                    command = (isWindows() && !!command) ? command : "nope";
+                    var url = window.location.origin + "/download/fileUpload/" + encodeURIComponent(file.digest) + "/" + file.fileName;
+                    if(i > 0){
+                        filesInnerHTML += "<br/>";
+                    }
+                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + ") </button>")
+                }
+                mailAttachmentDiv.innerHTML = filesInnerHTML;
+                setDownloadLinkClickListener();
+            } else {
+                mailAttachmentDiv.innerHTML = "添付ファイルなし";
+            }
         }
     }
 
@@ -469,7 +505,7 @@
                 },
                 error: function (e) {
                     btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     $('#sendMailModal').modal('hide');
                     //TODO: noti send mail error
                 }
@@ -554,6 +590,53 @@
             editor.undoManager.clear();
         }
         editor.undoManager.add();
+    }
+
+    function setDownloadLinkClickListener() {
+        $('button.download-link').off("click");
+        $('button.download-link').click(function(event) {
+            var command = $(this).attr("data-command");
+            var href = $(this).attr("data-download");
+            var fileName = $(this).attr('data-filename');
+            if(command.startsWith("nope")) {
+                alert("Not support features");
+            } else {
+                doDownload(command+href, fileName);
+            }
+        });
+
+        $.contextMenu({
+            selector: 'button.download-link',
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                var command = $(this).attr("data-command");
+                var href = $(this).attr("data-download");
+                var fileName = $(this).attr('data-filename');
+                if(key === "open") {
+                    if(command.startsWith("nope")) {
+                        alert("Not support features");
+                    } else {
+                        doDownload(command+href, fileName);
+                    }
+                } else if (key === "save_as") {
+                    doDownload(href, fileName);
+                }
+            },
+            items: {
+                "open": {"name": "Open"},
+                "save_as": {"name": "Save as"},
+            }
+        });
+    }
+
+
+    function doDownload(href, fileName){
+        var a = document.createElement('A');
+        a.href = href;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
 })(jQuery);
