@@ -804,12 +804,16 @@
         }
         var indexArray = row.index();
         selectedSourceTableRow = row;
-        if(indexArray<partners.length-1) {
+        if(indexArray<partners.length) {
             var findRow = row.next().find(".deletePartnerRow");
             var rowtmp = findRow[0].parentNode;
             var index = rowtmp.getAttribute("data");
             var rowData = partners[index];
-            idPartnerNextSelect = rowData.id;
+            if(rowData){
+                idPartnerNextSelect = rowData.id;
+            }else{
+                idPartnerNextSelect = -1;
+            }
         }else{
             idPartnerNextSelect = -1;
         }

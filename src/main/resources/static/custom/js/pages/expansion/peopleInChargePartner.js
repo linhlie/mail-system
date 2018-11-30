@@ -725,12 +725,16 @@
         }
         var indexArray = row.index();
         selectedSourceTableRow = row;
-        if(indexArray<listPeopleInChargePartner.length-1) {
+        if(indexArray<listPeopleInChargePartner.length) {
             var findRow = row.next().find(".deletePeopleRow");
             var rowtmp = findRow[0].parentNode;
             var index = rowtmp.getAttribute("data");
             var rowData = listPeopleInChargePartner[index];
-            idPeopleNextSelect = rowData.id;
+            if(rowData){
+                idPeopleNextSelect = rowData.id;
+            }else{
+                idPeopleNextSelect = -1;
+            }
         }else{
             idPeopleNextSelect = -1;
         }
