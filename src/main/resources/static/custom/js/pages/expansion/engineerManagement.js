@@ -154,6 +154,7 @@
                 .bind('sortEnd', function(event) {
                     currentSortOrder = event.target.config.sortList;
                     setNextRow(selectedSourceTableRow);
+                    console.log("sortEnd");
                 });
         }else{
             $("#" + engineerTableId).tablesorter(
@@ -177,6 +178,7 @@
                 .bind('sortEnd', function(event) {
                     currentSortOrder = event.target.config.sortList;
                     setNextRow(selectedSourceTableRow);
+                    console.log("sortEnd");
                 });
         }
     }
@@ -894,15 +896,16 @@
         }
         var indexArray = row.index();
         selectedSourceTableRow = row;
+        console.log(indexArray+"   "+engineers.length-1)
         if(indexArray<engineers.length-1) {
             var findRow = row.next().find(".deleteEngineerRow");
             var rowtmp = findRow[0].parentNode;
             var index = rowtmp.getAttribute("data");
             var rowData = engineers[index];
             idEngineerSelected = rowData.id;
+            console.log(rowData);
         }else{
             idEngineerSelected = -1;
-            selectedSourceTableRow = null;
         }
     }
     

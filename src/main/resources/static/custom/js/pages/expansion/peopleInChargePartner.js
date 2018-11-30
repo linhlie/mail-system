@@ -733,7 +733,6 @@
             idPeopleNextSelect = rowData.id;
         }else{
             idPeopleNextSelect = -1;
-            selectedSourceTableRow = null;
         }
     }
 

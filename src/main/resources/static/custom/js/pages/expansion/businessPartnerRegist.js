@@ -812,7 +812,6 @@
             idPartnerNextSelect = rowData.id;
         }else{
             idPartnerNextSelect = -1;
-            selectedSourceTableRow = null;
         }
     }
     
