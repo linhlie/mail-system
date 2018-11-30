@@ -30,15 +30,16 @@
                             <table id="sendMailHistory" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                 <tr>
-                                    <th class="fit">送信日時</th>
-                                    <th class="fit">送信者</th>
-                                    <th class="fit">宛先</th>
-                                    <th>件名</th>
-                                    <th class="fit">送信種別</th>
-                                    <th class="fit">受信日時</th>
-                                    <th class="fit">マッチメール受信日時</th>
-                                    <th class="fit">マッチメール 送信アドレス</th>
-                                    <th class="fit">送信ユーザー</th>
+                                    <th class="col-sm-1" >送信日時</th>
+                                    <th class="col-sm-1" >送信者</th>
+                                    <th class="col-sm-1" >宛先</th>
+                                    <th class="col-sm-4" >件名</th>
+                                    <th class="col-sm-1" >送信種別</th>
+                                    <th class="col-sm-1" >受信日時</th>
+                                    <th class="col-sm-1" >マッチメール受信日時</th>
+                                    <th class="col-sm-1" >マッチメール 送信アドレス</th>
+                                    <th class="col-sm-1" >送信ユーザー</th>
+                                    <th class="col-sm-1" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -63,8 +64,60 @@
             </form>
         </div>
     </section>
+    <div id="sendMailModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 95%; margin-top: 5px; margin-bottom: 5px;">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 10px 15px;">
+                    <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">返信</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
+                            <!--<div class="col-md-5">-->
+                            <!--<input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>-->
+                            <!--</div>-->
+                            <div class="col-md-5">
+                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
+                                </select>
+                            </div>
+                            <div id="rdMailReceiver-container">
+                                <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
+                                <div class="col-md-5">
+                                    <input id="rdMailReceiver" class="form-control" placeholder="user@example.com, user2@example.com"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="rdMailCC-container" class="form-group row">
+                            <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailCC" class="tags form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                            </div>
+                        </div>
+                    </form>
+                    <textarea id="rdMailBody"></textarea>
+                    <div id="rdMailAttachment" class="mail-attachment"></div>
+                    <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="reply-dropzone"></div>
+                </div>
+                <div class="modal-footer" style="padding: 10px 15px;">
+                    <button type="button" id="cancelSendSuggestMail" name="sendSuggestMailClose" class="btn btn-default" data-loading-text="終了中...">終了</button>
+                    <button type="button" id="sendSuggestMail" class="btn btn-primary" data-loading-text="送信中...">送信</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/storage/sendTabSetting.js"></script>
     <script src="/custom/js/pages/sendMailHistory/index.js"></script>
 </th:block>
 </body>

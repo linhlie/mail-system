@@ -3,9 +3,9 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
-import io.owslab.mailreceiver.model.AttachmentFile;
-import io.owslab.mailreceiver.model.Email;
-import io.owslab.mailreceiver.model.SentMailHistory;
+import io.owslab.mailreceiver.model.*;
+import io.owslab.mailreceiver.service.file.SentMailFileService;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +35,12 @@ public class DeleteMailsService {
     @Autowired
     private MailBoxService mailBoxService;
 
+    @Autowired
+    UploadFileService uploadFileService;
+
+    @Autowired
+    SentMailFileService sentMailFileService;
+
     public void deleteOldMails(Date beforeDate){
         List<Email> emailList = emailDAO.findBySentAtBeforeOrderBySentAtAsc(beforeDate);
         logger.info("Start delete Old mails - total: " + emailList.size());
@@ -49,7 +56,22 @@ public class DeleteMailsService {
 
     public void deleteSentMailHistory(Date beforeDate) {
         List<SentMailHistory> histories = sentMailHistoryDAO.findBySentAtLessThanEqual(beforeDate);
-        sentMailHistoryDAO.delete(histories);
+        for (SentMailHistory sentMail : histories){
+            if(sentMail.isHasAttachment()){
+                List<SentMailFiles> sentMailFiles = sentMailFileService.getByMailId(sentMail.getId());
+                for(SentMailFiles file : sentMailFiles){
+                    List<SentMailFiles> listFiles = sentMailFileService.getByFileId(file.getId());
+                    if(listFiles.size() == 1){
+                        sentMailHistoryDAO.delete(sentMail);
+                        uploadFileService.delete(file.getId());
+                    }else{
+                        sentMailHistoryDAO.delete(sentMail);
+                    }
+                }
+            }else{
+                sentMailHistoryDAO.delete(sentMail);
+            }
+        }
     }
 
     public void deleteFileBelongToMail(String messageId){

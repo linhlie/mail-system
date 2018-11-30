@@ -15,6 +15,7 @@ import java.util.TimeZone;
 public class SentMailHistoryDTO {
     public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Tokyo");
 
+    private long id;
     private String from;
     private String subject;
     private String to;
@@ -25,8 +26,10 @@ public class SentMailHistoryDTO {
     private String sendType;
     private String matchingMailAddress;
     private String username;
+    private boolean hasAttachment;
 
     public SentMailHistoryDTO(SentMailHistory history, String username) {
+        this.setId(history.getId());
         this.setFrom(history.getFrom());
         this.setSubject(history.getSubject());
         this.setTo(history.getTo());
@@ -40,7 +43,12 @@ public class SentMailHistoryDTO {
         if(history.getMatchingReceivedAt() != null)
             this.setMatchingReceivedAt(DateFormatUtils.format(history.getMatchingReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
         this.username = username;
+        this.hasAttachment = history.isHasAttachment();
     }
+
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
 
     public String getFrom() {
         return from;
@@ -117,4 +125,8 @@ public class SentMailHistoryDTO {
     public String getUsername() { return username; }
 
     public void setUsername(String username) { this.username = username; }
+
+    public boolean isHasAttachment() { return hasAttachment; }
+
+    public void setHasAttachment(boolean hasAttachment) { this.hasAttachment = hasAttachment; }
 }

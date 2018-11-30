@@ -1,6 +1,8 @@
 package io.owslab.mailreceiver.service.file;
 
 import io.owslab.mailreceiver.dao.UploadFileDAO;
+import io.owslab.mailreceiver.dto.FileDTO;
+import io.owslab.mailreceiver.model.SentMailFiles;
 import io.owslab.mailreceiver.model.UploadFile;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class UploadFileService {
     private EnviromentSettingService enviromentSettingService;
     @Autowired
     private UploadFileDAO uploadFileDAO;
+
+    @Autowired
+    private SentMailFileService sentMailFileService;
 
     public File saveToUpload(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
@@ -130,5 +135,17 @@ public class UploadFileService {
 
     public static String getUniqueFileName() {
         return System.currentTimeMillis() + "" + UUID.randomUUID().toString();
+    }
+
+    public List<FileDTO> getFileUpload(long mailId){
+        List<SentMailFiles> listFile = sentMailFileService.getByMailId(mailId);
+        List<FileDTO> listFileUpload = new ArrayList<>();
+        for(SentMailFiles sentFile : listFile){
+            UploadFile uploadFile = uploadFileDAO.findOne(sentFile.getUploadFilesId());
+            if(uploadFile != null){
+                listFileUpload.add(new FileDTO(uploadFile));
+            }
+        }
+        return listFileUpload;
     }
 }
