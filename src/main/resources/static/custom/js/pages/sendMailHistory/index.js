@@ -363,6 +363,14 @@
         }
     }
 
+    function resetMailContentDetail() {
+        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
+        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
+        mailSubjectDiv.innerHTML = "";
+        showMailBodyContent({body: ""});
+        mailAttachmentDiv.innerHTML = "";
+    }
+
     function showFileAttach(divFileAttachId, files, type){
         if(files && files.length > 0){
             var filesInnerHTML = "";
@@ -534,6 +542,7 @@
                         //TODO: noti send mail success
                         var payload = getSearchPayload();
                         loadHistoryData(payload);
+                        resetMailContentDetail();
                     } else {
                         //TODO: noti send mail failed
                     }
