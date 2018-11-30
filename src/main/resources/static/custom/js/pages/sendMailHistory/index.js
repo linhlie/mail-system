@@ -17,6 +17,7 @@
     var rdMailBodyId = 'rdMailBody';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
+    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailCCId = 'rdMailCC';
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
@@ -335,9 +336,13 @@
 
     function showMailContent(data) {
         if(data){
-            showMailReSendHistories(data.id, function (files) {
-                showMailContentDetail(data, files);
-            });
+            if(data.hasAttachment){
+                showMailReSendHistories(data.id, function (files) {
+                    showMailContentDetail(data, files);
+                });
+            }else{
+                showMailContentDetail(data);
+            }
         }
     }
 
@@ -353,25 +358,50 @@
                 '<h6>送信者:&nbsp;' + data.from + '&nbsp;&nbsp;&nbsp;&nbsp;受信者:&nbsp;' + data.to + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
                 '</div>';
             showMailBodyContent(data);
-            if(files.length > 0){
-                var filesInnerHTML = "";
-                for(var i = 0; i < files.length; i++ ){
-                    var file = files[i];
-                    var fileExtension = getFileExtension(file.fileName);
-                    var command = extensionCommands[fileExtension];
-                    command = (isWindows() && !!command) ? command : "nope";
-                    var url = window.location.origin + "/download/fileUpload/" + encodeURIComponent(file.digest) + "/" + file.fileName;
-                    if(i > 0){
-                        filesInnerHTML += "<br/>";
-                    }
-                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + ") </button>")
-                }
-                mailAttachmentDiv.innerHTML = filesInnerHTML;
-                setDownloadLinkClickListener();
-            } else {
-                mailAttachmentDiv.innerHTML = "添付ファイルなし";
-            }
+            showFileAttach(mailAttachmentDiv, files, "show");
         }
+    }
+
+    function showFileAttach(divFileAttachId, files, type){
+        if(files && files.length > 0){
+            var filesInnerHTML = "";
+            for(var i = 0; i < files.length; i++ ){
+                var file = files[i];
+                var fileExtension = getFileExtension(file.fileName);
+                var command = extensionCommands[fileExtension];
+                command = (isWindows() && !!command) ? command : "nope";
+                var url = window.location.origin + "/download/fileUpload/" + encodeURIComponent(file.digest) + "/" + file.fileName;
+                if(i > 0){
+                    filesInnerHTML += "<br/>";
+                }
+                filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-id='"+file.id+"' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + ") </button>");
+                if(type == "reSend"){
+                    filesInnerHTML += "<span class='remove-mail-attachment'>&nbsp;x&nbsp;</span>";
+                }
+            }
+            divFileAttachId.innerHTML = filesInnerHTML;
+            setDownloadLinkClickListener();
+            removeAttachOriginListener()
+        } else {
+            divFileAttachId.innerHTML = "添付ファイルなし";
+        }
+    }
+    
+    function removeAttachOriginListener() {
+        $(".remove-mail-attachment").off('click');
+        $(".remove-mail-attachment").click(function () {
+            var fileAttachmentBtn = $(this).prev();
+            if(fileAttachmentBtn){
+                var brTag = fileAttachmentBtn.prev();
+                if(brTag.is("br")){
+                    brTag.remove();
+                }else{
+                    $(this).next().remove();
+                }
+                fileAttachmentBtn.remove();
+                $(this).remove();
+            }
+        })
     }
 
     function showMailBodyContent(data) {
@@ -417,14 +447,13 @@
     function showMailEditorInTab(id) {
         $('#sendMailModal').modal();
         lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-        getDetailMailHistory(id, function (email, accounts) {
+        getDetailMailHistory(id, function (email, accounts, files) {
             reSendEmail = email;
             updateSenderSelector(email, accounts, function (account) {
-                showMailContentToEditor(email, accounts);
-
+                showMailContentToEditor(email, accounts, files);
                 $('#' + rdMailSenderId).off('change');
                 $('#' + rdMailSenderId).change(function() {
-                    showMailContentToEditor(email, accounts);
+                    showMailContentToEditor(email, accounts, files);
                 });
             });
         });
@@ -473,6 +502,10 @@
             var btn = $(this);
             btn.button('loading');
             var attachmentData = getAttachmentData(attachmentDropzone);
+            var filesAttachOrigin = getFileAtachOrigin();
+            for(var i=0;i<filesAttachOrigin.length;i++){
+                attachmentData.upload.push(filesAttachOrigin[i]);
+            }
             var form = {
                 messageId: reSendEmail.messageId,
                 subject: $("#" + rdMailSubjectId).val(),
@@ -556,7 +589,7 @@
         $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
-    function showMailContentToEditor(data, accounts) {
+    function showMailContentToEditor(data, accounts, files) {
         var receiverListStr = data.to;
         resetValidation();
         lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
@@ -578,6 +611,8 @@
 
             document.getElementById(rdMailSubjectId).value = data.subject;
             updateMailEditorContent(data.body);
+            var rdMailAttachment = document.getElementById(rdMailAttachmentId);
+            showFileAttach(rdMailAttachment, files, "reSend");
         }
         updateDropzoneData(attachmentDropzone);
     }
@@ -637,6 +672,15 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    }
+    
+    function getFileAtachOrigin() {
+        var files = [];
+        $('#rdMailAttachment button').each(function(){
+            var id = $(this).attr('data-id');
+            files.push(id);
+        });
+        return files;
     }
 
 })(jQuery);

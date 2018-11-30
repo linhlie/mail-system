@@ -26,6 +26,7 @@ public class SentMailHistoryDTO {
     private String sendType;
     private String matchingMailAddress;
     private String username;
+    private boolean hasAttachment;
 
     public SentMailHistoryDTO(SentMailHistory history, String username) {
         this.setId(history.getId());
@@ -42,6 +43,7 @@ public class SentMailHistoryDTO {
         if(history.getMatchingReceivedAt() != null)
             this.setMatchingReceivedAt(DateFormatUtils.format(history.getMatchingReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null));
         this.username = username;
+        this.hasAttachment = history.isHasAttachment();
     }
 
     public long getId() { return id; }
@@ -123,4 +125,8 @@ public class SentMailHistoryDTO {
     public String getUsername() { return username; }
 
     public void setUsername(String username) { this.username = username; }
+
+    public boolean isHasAttachment() { return hasAttachment; }
+
+    public void setHasAttachment(boolean hasAttachment) { this.hasAttachment = hasAttachment; }
 }

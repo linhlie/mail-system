@@ -142,12 +142,14 @@ function getDetailMailHistory(id, callback){
         success: function (data) {
             var email;
             var accounts;
+            var files;
             if (data.status) {
                 email = data.sentMailHistory;
                 accounts = data.list;
+                files = data.listFile;
             }
             if (typeof callback === "function") {
-                callback(email, accounts);
+                callback(email, accounts, files);
             }
         },
         error: function (e) {

@@ -84,6 +84,10 @@ public class SendMailHistoryController {
         try {
             List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
             SentMailHistory sentMail = sendMailHistoryService.getOne(id);
+            if(sentMail!=null && sentMail.isHasAttachment()){
+                List<FileDTO> listFile = uploadFileService.getFileUpload(sentMail.getId());
+                result.setListFile(listFile);
+            }
             result.setList(accountList);
             result.setSentMailHistory(sentMail);
             result.setMsg("done");
