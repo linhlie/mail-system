@@ -584,7 +584,12 @@
                                 default: cellData="";
                             }
                         }
-                        cellNode.textContent = cellData;
+                        if(!cellData || cellData.trim()==""){
+                            cellNode.textContent = "null";
+                            cellNode.className = "hidden";
+                        }else{
+                            cellNode.textContent = cellData;
+                        }
                     }
                 }
             }

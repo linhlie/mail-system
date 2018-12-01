@@ -679,7 +679,12 @@
                     cellNode.className = !!cellData ? undefined : cellNode.className;
                 } else if (cellNode.nodeName == "SPAN") {
                     var cellData = data[cellKey];
-                    cellNode.textContent = cellData;
+                    if(!cellData || cellData.trim()==""){
+                        cellNode.textContent = "null";
+                        cellNode.className = "hidden";
+                    }else{
+                        cellNode.textContent = cellData;
+                    }
                 }
             }
         }
