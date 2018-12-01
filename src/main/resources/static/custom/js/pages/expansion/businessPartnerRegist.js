@@ -585,7 +585,7 @@
                             }
                         }
                         if(!cellData || cellData.trim()==""){
-                            cellNode.textContent = "null";
+                            cellNode.textContent = "0";
                             cellNode.className = "hidden";
                         }else{
                             cellNode.textContent = cellData;
