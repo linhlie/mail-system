@@ -1168,7 +1168,7 @@ section.sendTab.content {
 .stickyHeaderTable td {
     border: 1px solid black !important;
     border-left: none !important;
-    padding: 1px 6px !important;
+    padding: 4px 6px !important;
 }
 
 .stickyHeaderTable td {
@@ -1491,6 +1491,16 @@ div.bulletinboard-icon-wrapper {
     vertical-align: middle;
 }
 
+.engineer-part td{
+    font-size: 14px;
+    height: 30px;
+}
+
+.partner-part td{
+    font-size: 14px;
+    height: 30px;
+}
+
 .modal-body .mail-attachment {
     padding: 5px 10px;
     min-height: 30px;
@@ -1504,6 +1514,7 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
     margin-left: 5px;
 }
+
 .modal-body .remove-mail-attachment:hover {
     cursor: pointer;
     margin-left: 5px;
