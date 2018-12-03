@@ -457,14 +457,21 @@
         }));
 
         $.each(options, function (i, item) {
+            var domainValue = "";
+            if(item.domain){
+                var domainsPartner = item.domain.split(",");
+                if(domainsPartner && domainsPartner.length > 0){
+                    domainValue = domainsPartner[0];
+                }
+            }
             $('#' + selectPartnerId).append($('<option>', {
                 value: item.domain,
-                text : item.name,
+                text : item.name + "　" + domainValue,
             }).attr('data-id',item.id));
 
             $('#' + partnerId).append($('<option>', {
                 value: item.domain,
-                text : item.name,
+                text : item.name + "　" + domainValue,
             }).attr('data-id',item.id));
         });
     }
