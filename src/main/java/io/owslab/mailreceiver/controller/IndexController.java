@@ -62,6 +62,9 @@ public class IndexController {
     private EnviromentSettingService enviromentSettingService;
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private MailReceiveRuleService mrrs;
 
     private DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -116,7 +119,9 @@ public class IndexController {
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             List<BulletinBoardDTO> listBulletinBoardDTO = bulletinBoardService.getBulletinBoard();
+            long accountId = accountService.getLoggedInAccountId();
             responseBody.setListBulletinBoardDTO(listBulletinBoardDTO);
+            responseBody.setAccountId(accountId);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);

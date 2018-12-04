@@ -7,6 +7,7 @@ public class BulletinBoardDTO {
     private String username;
     private String tabName;
     private long tabNumber;
+    private long accountId;
 
     public Long getId() { return id; }
 
@@ -43,4 +44,8 @@ public class BulletinBoardDTO {
     public long getTabNumber() { return tabNumber; }
 
     public void setTabNumber(long tabNumber) { this.tabNumber = tabNumber; }
+
+    public long getAccountId() { return accountId; }
+
+    public void setAccountId(long accountId) { this.accountId = accountId; }
 }

@@ -13,9 +13,12 @@
     var showType = "preview";
     var bulletinBoardTabsId = "bulletinBoardTabs";
     var btnAddTagId = "#btn-add-tab";
+    var settingPermissionId = "#setting_permission";
+
     var bulletinArray = [];
     var currentBulletinBoard;
     var currentIndex;
+    var accountloggedId;
 
     $(function () {
         loadMailData();
@@ -27,6 +30,7 @@
         setButtonClickListenter(updateBulletinBoardId, updateBulletinBoardOnclick);
         setButtonClickListenter(clearBulletinBoardId, clearBulletinBoardOnclick);
         setButtonClickListenter(changeShowTypeId, changeShowTypeOnclick);
+        setButtonClickListenter(settingPermissionId, settingPermissionOnclick);
         initPrevew();
         loadBulletinPreview();
         initTab();
@@ -106,6 +110,7 @@
             $('body').loadingModal('hide');
             if (response&& response.status) {
                 bulletinArray = response.listBulletinBoardDTO;
+                accountloggedId = response.accountId;
                 pushBulletenBoardData(response.listBulletinBoardDTO, index);
                 loadBulletinPreview();
             } else {
@@ -180,6 +185,8 @@
     }
 
     function setDataBulletinBoard(data) {
+        var showSettingPermissionType = accountloggedId==data.accountId? "visible" : "hidden";
+        showSettingPermission(showSettingPermissionType);
         currentBulletinBoard = data;
         setBulletinBoardPreview(data.bulletin);
         setBulletinBoard(data.bulletin);
@@ -462,6 +469,14 @@
 
     function addTagOnclick() {
         createNewtab();
+    }
+
+    function settingPermissionOnclick() {
+        console.log("settingPermissionOnclick");
+    }
+
+    function showSettingPermission(type) {
+        $(settingPermissionId).css("visibility", type);
     }
 
 })(jQuery);

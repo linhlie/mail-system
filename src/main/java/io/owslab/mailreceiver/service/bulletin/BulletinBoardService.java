@@ -96,6 +96,7 @@ public class BulletinBoardService {
             bulletinBoardDTO.setUsername(account.getAccountName());
             bulletinBoardDTO.setTabName(bulletin.getTabName());
             bulletinBoardDTO.setTabNumber(bulletin.getTabNumber());
+            bulletinBoardDTO.setAccountId(bulletin.getAccountId());
             bulletinBoardDTOs.add(bulletinBoardDTO);
         }
         return bulletinBoardDTOs;

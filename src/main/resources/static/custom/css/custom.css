@@ -1303,7 +1303,7 @@ section.sendTab.content {
     padding: 5px 10px;
     border: 1px solid #3c8dbc;
     position: relative;
-    height: 1000px;
+    height: 1020px;
 }
 
 .bulletinboard .bulletin-preview {
@@ -1313,7 +1313,7 @@ section.sendTab.content {
     padding: 5px 10px;
     border: 1px solid #3c8dbc;
     position: relative;
-    height: 1000px;
+    height: 1020px;
     overflow: scroll;
 }
 .bulletinboard .change-show-type-bulletinboard{
