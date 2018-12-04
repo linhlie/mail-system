@@ -13,7 +13,7 @@
     var showType = "preview";
     var bulletinBoardTabsId = "bulletinBoardTabs";
     var btnAddTagId = "#btn-add-tab";
-    var settingPermissionId = "#setting_permission";
+    var settingPermissionId = ".settingPermissionBulletinBoard";
 
     var bulletinArray = [];
     var currentBulletinBoard;
@@ -334,7 +334,6 @@
         function onError(response) {
             loadBulletinBoard(0);
             disableUpdateBulletinBoard(true);
-            console.log(response);
         }
         updateBulletinBoardPosition({
             bulletionBoard : bulletinArray[start],
@@ -351,7 +350,7 @@
         }
 
         function onError(response) {
-            console.log(response);
+            console.error(response);
         }
         saveBulletinBoard(newBulletin, onSuccess, onError);
     }
@@ -374,6 +373,7 @@
             isCloseTab = true;
             var idTab = $(this).parents('a').attr('href');
             var liTag = $(this).parents('li');
+            var liOld = $("#"+bulletinBoardTabsId).find(".active");
             $.confirm({
                 title: '<b>【Delete】</b>',
                 titleClass: 'text-center',
@@ -408,6 +408,8 @@
                     cancel: {
                         text: 'いいえ',
                         action: function(){
+                            liTag.removeClass('active');
+                            liOld.addClass('active');
                             isCloseTab = false;
                         }
                     },
@@ -472,11 +474,59 @@
     }
 
     function settingPermissionOnclick() {
-        console.log("settingPermissionOnclick");
+        showSettingModal();
     }
 
     function showSettingPermission(type) {
         $(settingPermissionId).css("visibility", type);
+    }
+
+    function showSettingModal(title, datalist, fuzzyWordInput, type, callback) {
+        $('#dataModal').modal();
+        $( '#dataModalTitle').text(title);
+        $( '#word').val("");
+        $( '#wordExclusion').val("");
+        showError("#hasErrorModal", "");
+        updateKeyList(datalist);
+        if(type == "edit-fuzzy-word"){
+            $( '#word').val(fuzzyWordInput.word);
+            $( '#wordExclusion').val(fuzzyWordInput.wordExclusion);
+        }
+        setInputAutoComplete("dataModalName");
+        $('#dataModalOk').off('click');
+        $("#dataModalOk").click(function () {
+            var word = $( '#word').val();
+            var wordExclusion = $( '#wordExclusion').val();
+            if(typeof callback === "function"){
+                if(word != null && word.trim()!="" && wordExclusion!=null && wordExclusion.trim() != ""){
+                    var isValid = checkValidWord(datalist, word, wordExclusion);
+                    if(!isValid){
+                        showError("#hasErrorModal", "除外単語");
+                    }
+
+                    if(isValid){
+                        var fuzzyWord = {
+                            word: word,
+                            wordExclusion: wordExclusion
+                        }
+                        if(type == "edit-fuzzy-word"){
+                            fuzzyWord.id = fuzzyWordInput.id;
+                        }
+                        callback(fuzzyWord);
+                        $('#dataModal').modal('hide');
+                    }
+                }else{
+                    showError("#hasErrorModal", "除外単語");
+                }
+            }
+        });
+        $('#dataModalCancel').off('click');
+        $("#dataModalCancel").click(function () {
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
     }
 
 })(jQuery);

@@ -49,7 +49,10 @@
         </div>
         <div class="row" id="blockEditor" style="transform: translateY(-5px);">
             <div class="bulletin">
-                <span id="setting_permission" class="glyphicon glyphicon-eye-open pull-right" title="edit permission" style="margin-right: 10px; visibility: hidden"></span>
+                <div class="pull-right settingPermission">
+                    <i class="fa fa-eye settingPermissionBulletinBoard"></i>
+                    <span class="settingPermissionBulletinBoard" title="edit permission">Setting Permission</span>
+                </div>
                 <div style="height: 930px; margin-top: 20px;">
                     <textarea id="bulletinBoardEditor" style="height: 100%; width: 100%;"></textarea>
                 </div>
@@ -72,9 +75,45 @@
                 <span id="bulletinBoardPreview" style="height: 100%; width: 100%;"></span>
             </div>
         </div>
-
         <!-- /.row -->
     </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title" style="text-align: center">Title</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModal" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">主ワード</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="word" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">除外単語</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>

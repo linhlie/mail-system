@@ -1520,3 +1520,13 @@ div.bulletinboard-icon-wrapper {
     margin-left: 5px;
     color: red;
 }
+
+.settingPermission{
+    cursor: pointer;
+    visibility: hidden;
+}
+
+.settingPermission:hover{
+    cursor: pointer;
+    color: blue;
+}
