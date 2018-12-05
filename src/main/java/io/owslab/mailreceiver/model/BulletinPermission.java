@@ -10,15 +10,23 @@ public class BulletinPermission {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
-    private Account account;
+    private long accountId;
+    private long bulletinBoardId;
+    private boolean canView;
+    private boolean canEdit;
+    private boolean canDelete;
 
-    @ManyToOne
-    @JoinColumn(name = "bulletin_board_id", referencedColumnName = "id", nullable = false)
-    private BulletinBoard bulletinBoard;
+    public BulletinPermission(){
 
-    private int permission;
+    }
+
+    public BulletinPermission(long accountId, long bulletinBoardId){
+        this.accountId = accountId;
+        this.bulletinBoardId = bulletinBoardId;
+        this.canView = true;
+        this.canEdit = true;
+        this.canDelete = true;
+    }
 
     public long getId() {
         return id;
@@ -28,33 +36,43 @@ public class BulletinPermission {
         this.id = id;
     }
 
-    public Account getAccount() {
-        return account;
+    public long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
     }
 
-    public BulletinBoard getBulletinBoard() {
-        return bulletinBoard;
+    public long getBulletinBoardId() {
+        return bulletinBoardId;
     }
 
-    public void setBulletinBoard(BulletinBoard bulletinBoard) {
-        this.bulletinBoard = bulletinBoard;
+    public void setBulletinBoardId(long bulletinBoardId) {
+        this.bulletinBoardId = bulletinBoardId;
     }
 
-    public int getPermission() {
-        return permission;
+    public boolean isCanView() {
+        return canView;
     }
 
-    public void setPermission(int permission) {
-        this.permission = permission;
+    public void setCanView(boolean canView) {
+        this.canView = canView;
     }
 
-    public static class Permission {
-        public static final int BLOCK = 1;
-        public static final int CAN_VIEW = 2;
-        public static final int CAN_EDIT = 3;
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
     }
 }
