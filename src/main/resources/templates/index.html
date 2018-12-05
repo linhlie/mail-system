@@ -82,29 +82,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="dataModalTitle" class="modal-title" style="text-align: center">Title</h4>
+                    <h4 id="dataModalTitle" class="modal-title">Setting Permission</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group row" style="text-align: center">
-                        <span id="hasErrorModal" class="form-error"></span>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label style="transform: translateY(10px);">主ワード</label>
-                        </div>
-                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
-                            <input id="word" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
-                            <datalist id="keylist">
-                            </datalist>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label style="transform: translateY(10px);">除外単語</label>
-                        </div>
-                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
-                            <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
-                        </div>
+                    <div style="overflow-y: scroll; height: 450px;" class="permission-table table-container-wrapper">
+                        <table id="permissionTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                            <thead class="sticky-header">
+                            <tr>
+                                <th class="dark">ユーザー名</th>
+                                <th class="fit dark" style="text-align: center">閲覧&nbsp;<input type="checkbox" id="selectViewAll"/></th>
+                                <th class="fit dark" style="text-align: center">修正&nbsp;<input type="checkbox" id="selectEditAll"/></th>
+                                <th class="fit dark" style="text-align: center">削除&nbsp;<input type="checkbox" id="selectDeleteAll"/></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="modal-footer">

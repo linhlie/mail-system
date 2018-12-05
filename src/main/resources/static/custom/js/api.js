@@ -355,6 +355,11 @@ function getBulletinBoardAPI(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getBulletinPermission(bulletinBoardId, onSuccess, onError) {
+    var url = "/user/dashboard/getBulletinPermission/"+ bulletinBoardId;
+    _get(url, onSuccess, onError);
+}
+
 function getMailDataAPI(accountId, onSuccess, onError) {
     var url = "/user/dashboard/mailStatistics";
     if(accountId && accountId.length > 0) {

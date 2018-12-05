@@ -2,13 +2,16 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.dto.BulletinBoardDTO;
+import io.owslab.mailreceiver.dto.BulletinPermissionDTO;
 import io.owslab.mailreceiver.form.BulletinBoardForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.BulletinBoard;
+import io.owslab.mailreceiver.model.BulletinPermission;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.bulletin.BulletinBoardService;
+import io.owslab.mailreceiver.service.bulletin.BulletinPermissionService;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -63,6 +66,9 @@ public class IndexController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private BulletinPermissionService bulletinPermissionService;
 
     @Autowired
     private MailReceiveRuleService mrrs;
@@ -207,6 +213,23 @@ public class IndexController {
             responseBody.setStatus(false);
             return ResponseEntity.ok(responseBody);
         }
+    }
+
+    @RequestMapping(value = "/user/dashboard/getBulletinPermission/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getEngineer(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BulletinPermissionDTO> permissionDTOs = bulletinPermissionService.getBulletinPermissions(bulletinBoardId);
+            result.setList(permissionDTOs);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getEngineer: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/admin")

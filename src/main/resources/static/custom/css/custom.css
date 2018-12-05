@@ -1530,3 +1530,8 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
     color: blue;
 }
+
+.permission-table{
+    border-style: solid;
+    border-width: 1px;
+}

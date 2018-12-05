@@ -21,8 +21,12 @@ public class BulletinBoardService {
     BulletinBoardDAO bulletinBoardDAO;
 
     @Autowired
+    BulletinPermissionService bulletinPermissionService;
+
+    @Autowired
     private AccountService accountService;
 
+    // need transaction
     public void saveBulletinBoard(BulletinBoardDTO bulletin){
         long accountId = accountService.getLoggedInAccountId();
         if(accountId == 0){
@@ -46,7 +50,10 @@ public class BulletinBoardService {
         }else{
             bulletinBoard.setTabNumber(bulletin.getTabNumber());
         }
-        bulletinBoardDAO.save(bulletinBoard);
+        BulletinBoard bulletinBoardSaved = bulletinBoardDAO.save(bulletinBoard);
+        if(bulletin.getId() == null &&  bulletinBoardSaved != null){
+            bulletinPermissionService.createBulletinPermissions(bulletinBoardSaved);
+        }
     }
 
     //need one query

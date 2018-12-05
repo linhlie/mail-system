@@ -14,11 +14,28 @@
     var bulletinBoardTabsId = "bulletinBoardTabs";
     var btnAddTagId = "#btn-add-tab";
     var settingPermissionId = ".settingPermissionBulletinBoard";
+    var permissionTableId = "permissionTable";
+    var selectViewAllId = "#selectViewAll";
+    var selectEditAllId = "#selectEditAll";
+    var selectDeleteAllId = "#selectDeleteAll";
 
     var bulletinArray = [];
     var currentBulletinBoard;
     var currentIndex;
     var accountloggedId;
+
+    var replaceRow = '<tr role="row" class="hidden">' +
+        '<td rowspan="1" colspan="1" data="accountName" name="accountName"><span></span></td>' +
+        '<td align="center" rowspan="1" colspan="1" data="canView">' +
+        '<input type="checkbox" class="selectViewAll"/>' +
+        '</td>' +
+        '<td align="center" rowspan="1" colspan="1" data="canEdit">' +
+        '<input type="checkbox" class="selectEditAll"/>' +
+        '</td>' +
+        '<td align="center" rowspan="1" colspan="1" data="canDelete">' +
+        '<input type="checkbox" class="selectDeleteAll"/>' +
+        '</td>' +
+        '</tr>';
 
     $(function () {
         loadMailData();
@@ -474,25 +491,33 @@
     }
 
     function settingPermissionOnclick() {
-        showSettingModal();
+        function onSuccess(response) {
+            if(response && response.status){
+                if (response.list && response.list.length > 0){
+                    showSettingModal(response.list, saveBulletinPermission);
+                }
+            }
+        }
+
+        function onError(error) {
+        }
+
+        getBulletinPermission(currentBulletinBoard.id, onSuccess, onError);
     }
 
     function showSettingPermission(type) {
         $(settingPermissionId).css("visibility", type);
     }
 
-    function showSettingModal(title, datalist, fuzzyWordInput, type, callback) {
+    function saveBulletinPermission() {
+        console.log("saveBulletinPermission");
+    }
+
+    function showSettingModal(permissionlist, callback) {
         $('#dataModal').modal();
-        $( '#dataModalTitle').text(title);
-        $( '#word').val("");
-        $( '#wordExclusion').val("");
-        showError("#hasErrorModal", "");
-        updateKeyList(datalist);
-        if(type == "edit-fuzzy-word"){
-            $( '#word').val(fuzzyWordInput.word);
-            $( '#wordExclusion').val(fuzzyWordInput.wordExclusion);
-        }
-        setInputAutoComplete("dataModalName");
+
+        setBulletinPermissionTable(permissionlist);
+
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var word = $( '#word').val();
@@ -525,6 +550,111 @@
             $('#dataModal').modal('hide');
             if(typeof callback === "function"){
                 callback();
+            }
+        });
+    }
+
+    function removeAllRow(tableId, replaceHtml) { //Except header row
+        $("#" + tableId + "> tbody").html(replaceHtml);
+    }
+
+    function setBulletinPermissionTable(permissions) {
+        removeAllRow(permissionTableId, replaceRow);
+        if (permissions.length > 0) {
+            var html = replaceRow;
+            for (var i = 0; i < permissions.length; i++) {
+                html = html + addRowWithData(permissionTableId, permissions[i], i);
+            }
+            $("#" + permissionTableId + "> tbody").html(html);
+            setupSelectBoxes();
+        }
+    }
+
+    function addRowWithData(tableId, data, index) {
+        var table = document.getElementById(tableId);
+        if (!table) return "";
+        var rowToClone = table.rows[1];
+        var row = rowToClone.cloneNode(true);
+        row.setAttribute("data-id", data.id);
+        row.setAttribute("data", index);
+        row.className = undefined;
+        var cells = row.cells;
+        for (var i = 0; i < cells.length; i++) {
+            var cell = cells.item(i);
+            var cellKey = cell.getAttribute("data");
+            if (!cellKey) continue;
+            var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
+            if (cellNode) {
+                if(cellNode.nodeName == "INPUT") {
+                    var cellData = data[cellKey];
+                    cellNode.defaultChecked = cellData;
+                    switch (cellKey) {
+                        case "canView":
+                            cellNode.name = "permissionView";
+                            break;
+                        case "canEdit":
+                            cellNode.name = "permissionEdit";
+                            break;
+                        case "canDelete":
+                            cellNode.name = "permissionDelete";
+                            break;
+                    }
+                } else{
+                    var cellData = data[cellKey];
+                    cellNode.textContent = cellData;
+                }
+            }
+        }
+        return row.outerHTML;
+    }
+
+    function setupSelectBoxes() {
+        var permissionViewAll = $("input[name=permissionView]").length == $("input[name=permissionView]:checked").length? true: false;
+        var permissionEditAll = $("input[name=permissionEdit]").length == $("input[name=permissionEdit]:checked").length? true: false;
+        var permissionDeleteAll = $("input[name=permissionDelete]").length == $("input[name=permissionDelete]:checked").length? true: false;
+        $(selectViewAllId).prop("checked", permissionViewAll);
+        $(selectEditAllId).prop("checked", permissionEditAll);
+        $(selectDeleteAllId).prop("checked", permissionDeleteAll);
+
+        $(selectViewAllId).off('click');
+        $(selectViewAllId).click(function () {
+            $('input[name="permissionView"]').prop('checked', this.checked);
+        });
+
+        $(selectEditAllId).off('click');
+        $(selectEditAllId).click(function () {
+            $('input[name="permissionEdit"]').prop('checked', this.checked);
+        });
+
+        $(selectDeleteAllId).off('click');
+        $(selectDeleteAllId).click(function () {
+            $('input[name="permissionDelete"]').prop('checked', this.checked);
+        });
+
+        $('input[name=permissionView]').off('click');
+        $('input[name=permissionView]').click(function(){
+            if($("input[name=permissionView]").length == $("input[name=permissionView]:checked").length) {
+                $(selectViewAllId).prop("checked", true);
+            } else {
+                $(selectViewAllId).prop("checked", false);
+            }
+        });
+
+        $('input[name=permissionEdit]').off('click');
+        $('input[name=permissionEdit]').click(function(){
+            if($("input[name=permissionEdit]").length == $("input[name=permissionEdit]:checked").length) {
+                $(selectEditAllId).prop("checked", true);
+            } else {
+                $(selectEditAllId).prop("checked", false);
+            }
+        });
+
+        $('input[name=permissionDelete]').off('click');
+        $('input[name=permissionDelete]').click(function(){
+            if($("input[name=permissionDelete]").length == $("input[name=permissionDelete]:checked").length) {
+                $(selectDeleteAllId).prop("checked", true);
+            } else {
+                $(selectDeleteAllId).prop("checked", false);
             }
         });
     }
