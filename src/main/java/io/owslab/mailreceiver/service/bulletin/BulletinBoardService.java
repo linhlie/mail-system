@@ -89,7 +89,7 @@ public class BulletinBoardService {
 
     public List<BulletinBoardDTO> getBulletinBoard(){
         long accountLoggedId = accountService.getLoggedInAccountId();
-        List<BulletinPermission> listPermission = bulletinPermissionService.getBulletinPermissionsByAccountId(accountLoggedId);
+        List<BulletinPermission> listPermission = bulletinPermissionService.getBulletinPermissionsByAccountIdAndCanView(accountLoggedId);
         List<Long> listId = new ArrayList<>();
         for(BulletinPermission permission :listPermission){
             listId.add(permission.getBulletinBoardId());

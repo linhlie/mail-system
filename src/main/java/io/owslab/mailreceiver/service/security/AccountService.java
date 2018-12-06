@@ -6,6 +6,7 @@ import io.owslab.mailreceiver.form.RegisterAccountForm;
 import io.owslab.mailreceiver.form.UserAccountForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.MyUser;
+import io.owslab.mailreceiver.service.bulletin.BulletinPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -26,6 +27,9 @@ public class AccountService {
 
     @Autowired
     private AccountDAO accountDAO;
+
+    @Autowired
+    private BulletinPermissionService bulletinPermissionService;
 
     public Account createNewAccount(RegisterAccountForm form) {
         String encrytedPassword = this.passwordEncoder.encode(form.getPassword());
@@ -113,7 +117,10 @@ public class AccountService {
         } else {
             user.setUserRole(Account.Role.MEMBER);
         }
-        accountDAO.save(user);
+        Account userSaved = accountDAO.save(user);
+        if(form.getId() == null && userSaved != null) {
+            bulletinPermissionService.createPermissionForNewAccount(userSaved);
+        }
     }
 
     public long getLoggedInAccountId() {

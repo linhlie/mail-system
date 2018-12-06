@@ -30,8 +30,12 @@ public class BulletinPermissionService {
         bulletinPermissionDAO.save(bulletinPermissions);
     }
 
-    public List<BulletinPermission> getBulletinPermissionsByAccountId(long accountId){
+    public List<BulletinPermission> getBulletinPermissionsByAccountIdAndCanView(long accountId){
         return bulletinPermissionDAO.findByAccountIdAndCanView(accountId, true);
+    }
+
+    public List<BulletinPermission> getBulletinPermissionsByBulletinBoardId(long bulletinId){
+        return bulletinPermissionDAO.findByBulletinBoardId(bulletinId);
     }
 
     public void createBulletinPermissions(BulletinBoard bulletinBoard){
@@ -60,6 +64,33 @@ public class BulletinPermissionService {
         for(BulletinPermissionDTO permissionDTO : bulletinPermissionDTOs){
             BulletinPermission permission = new BulletinPermission(permissionDTO);
             saveBulletinPermission(permission);
+        }
+    }
+
+    public void createPermissionForNewAccount(Account userSaved) {
+        List<Long> listId = bulletinPermissionDAO.getBulletinBoardId();
+        for(int i=0; i<listId.size(); i++){
+            String idBulletin = listId.get(i)+"";
+            long id = Long.parseLong(idBulletin);
+            List<BulletinPermission> listPermission = new ArrayList<>();
+            try {
+                listPermission = getBulletinPermissionsByBulletinBoardId(id);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if(listPermission.size() > 0){
+                boolean isSave = true;
+                for(BulletinPermission permission : listPermission){
+                    if(!permission.isCanView() || !permission.isCanEdit() || !permission.isCanDelete()){
+                        isSave = false;
+                        break;
+                    }
+                }
+                if(isSave){
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id);
+                    saveBulletinPermission(newPermission);
+                }
+            }
         }
     }
 }
