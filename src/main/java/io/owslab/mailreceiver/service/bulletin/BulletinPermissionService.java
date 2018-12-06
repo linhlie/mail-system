@@ -89,6 +89,9 @@ public class BulletinPermissionService {
                 if(isSave){
                     BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id);
                     saveBulletinPermission(newPermission);
+                }else{
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, false);
+                    saveBulletinPermission(newPermission);
                 }
             }
         }

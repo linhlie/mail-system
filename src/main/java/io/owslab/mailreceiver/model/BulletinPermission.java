@@ -30,6 +30,14 @@ public class BulletinPermission {
         this.canDelete = true;
     }
 
+    public BulletinPermission(long accountId, long bulletinBoardId,boolean permission){
+        this.accountId = accountId;
+        this.bulletinBoardId = bulletinBoardId;
+        this.canView = permission;
+        this.canEdit = permission;
+        this.canDelete = permission;
+    }
+
     public BulletinPermission(BulletinPermissionDTO permissionDTO) {
         this.id = permissionDTO.getId();
         this.accountId = permissionDTO.getAccountId();
