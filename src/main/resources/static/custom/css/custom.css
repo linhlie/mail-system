@@ -1303,7 +1303,7 @@ section.sendTab.content {
     padding: 5px 10px;
     border: 1px solid #3c8dbc;
     position: relative;
-    height: 1000px;
+    height: 1020px;
 }
 
 .bulletinboard .bulletin-preview {
@@ -1313,7 +1313,7 @@ section.sendTab.content {
     padding: 5px 10px;
     border: 1px solid #3c8dbc;
     position: relative;
-    height: 1000px;
+    height: 1020px;
     overflow: scroll;
 }
 .bulletinboard .change-show-type-bulletinboard{
@@ -1519,4 +1519,19 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
     margin-left: 5px;
     color: red;
+}
+
+.settingPermission{
+    cursor: pointer;
+    visibility: hidden;
+}
+
+.settingPermission:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.permission-table{
+    border-style: solid;
+    border-width: 1px;
 }

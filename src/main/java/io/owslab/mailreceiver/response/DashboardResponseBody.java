@@ -23,6 +23,7 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private List<AccountDTO> users;
     private int checkMailInterval;
     private List<BulletinBoardDTO> listBulletinBoardDTO;
+    private long accountId;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -111,4 +112,8 @@ public class DashboardResponseBody extends AjaxResponseBody {
     public List<BulletinBoardDTO> getListBulletinBoardDTO() { return listBulletinBoardDTO; }
 
     public void setListBulletinBoardDTO(List<BulletinBoardDTO> listBulletinBoardDTO) { this.listBulletinBoardDTO = listBulletinBoardDTO; }
+
+    public long getAccountId() { return accountId; }
+
+    public void setAccountId(long accountId) { this.accountId = accountId; }
 }

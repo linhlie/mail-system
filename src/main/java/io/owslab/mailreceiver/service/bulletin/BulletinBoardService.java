@@ -2,9 +2,11 @@ package io.owslab.mailreceiver.service.bulletin;
 
 import io.owslab.mailreceiver.dao.BulletinBoardDAO;
 import io.owslab.mailreceiver.dto.BulletinBoardDTO;
+import io.owslab.mailreceiver.dto.BulletinPermissionDTO;
 import io.owslab.mailreceiver.form.BulletinBoardForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.BulletinBoard;
+import io.owslab.mailreceiver.model.BulletinPermission;
 import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,12 @@ public class BulletinBoardService {
     BulletinBoardDAO bulletinBoardDAO;
 
     @Autowired
+    BulletinPermissionService bulletinPermissionService;
+
+    @Autowired
     private AccountService accountService;
 
+    // need transaction
     public void saveBulletinBoard(BulletinBoardDTO bulletin){
         long accountId = accountService.getLoggedInAccountId();
         if(accountId == 0){
@@ -46,7 +52,10 @@ public class BulletinBoardService {
         }else{
             bulletinBoard.setTabNumber(bulletin.getTabNumber());
         }
-        bulletinBoardDAO.save(bulletinBoard);
+        BulletinBoard bulletinBoardSaved = bulletinBoardDAO.save(bulletinBoard);
+        if(bulletin.getId() == null &&  bulletinBoardSaved != null){
+            bulletinPermissionService.createBulletinPermissions(bulletinBoardSaved);
+        }
     }
 
     //need one query
@@ -79,7 +88,13 @@ public class BulletinBoardService {
     }
 
     public List<BulletinBoardDTO> getBulletinBoard(){
-        List<BulletinBoard> bulletinBoards = findTabsBulletin(0);
+        long accountLoggedId = accountService.getLoggedInAccountId();
+        List<BulletinPermission> listPermission = bulletinPermissionService.getBulletinPermissionsByAccountIdAndCanView(accountLoggedId);
+        List<Long> listId = new ArrayList<>();
+        for(BulletinPermission permission :listPermission){
+            listId.add(permission.getBulletinBoardId());
+        }
+        List<BulletinBoard> bulletinBoards = bulletinBoardDAO.findByIdIn(listId);
         sortBulletinBoard(bulletinBoards);
         List<BulletinBoardDTO> bulletinBoardDTOs = new ArrayList<>();
         if(bulletinBoards == null){
@@ -96,6 +111,7 @@ public class BulletinBoardService {
             bulletinBoardDTO.setUsername(account.getAccountName());
             bulletinBoardDTO.setTabName(bulletin.getTabName());
             bulletinBoardDTO.setTabNumber(bulletin.getTabNumber());
+            bulletinBoardDTO.setAccountId(bulletin.getAccountId());
             bulletinBoardDTOs.add(bulletinBoardDTO);
         }
         return bulletinBoardDTOs;
@@ -121,4 +137,5 @@ public class BulletinBoardService {
             }
         });
     }
+
 }

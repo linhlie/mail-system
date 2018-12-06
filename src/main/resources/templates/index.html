@@ -49,7 +49,11 @@
         </div>
         <div class="row" id="blockEditor" style="transform: translateY(-5px);">
             <div class="bulletin">
-                <div style="height: 930px;">
+                <div class="pull-right settingPermission">
+                    <i class="fa fa-eye settingPermissionBulletinBoard"></i>
+                    <span class="settingPermissionBulletinBoard" title="edit permission">Setting Permission</span>
+                </div>
+                <div style="height: 930px; margin-top: 20px;">
                     <textarea id="bulletinBoardEditor" style="height: 100%; width: 100%;"></textarea>
                 </div>
                 <div class="row" style="margin-top: 10px;">
@@ -71,9 +75,38 @@
                 <span id="bulletinBoardPreview" style="height: 100%; width: 100%;"></span>
             </div>
         </div>
-
         <!-- /.row -->
     </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">Setting Permission</h4>
+                </div>
+                <div class="modal-body">
+                    <div style="overflow-y: scroll; height: 450px;" class="permission-table table-container-wrapper">
+                        <table id="permissionTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
+                            <thead class="sticky-header">
+                            <tr>
+                                <th class="dark">ユーザー名</th>
+                                <th class="fit dark" style="text-align: center">閲覧&nbsp;<input type="checkbox" id="selectViewAll"/></th>
+                                <th class="fit dark" style="text-align: center">修正&nbsp;<input type="checkbox" id="selectEditAll"/></th>
+                                <th class="fit dark" style="text-align: center">削除&nbsp;<input type="checkbox" id="selectDeleteAll"/></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>

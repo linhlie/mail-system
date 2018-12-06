@@ -2,13 +2,16 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.dto.BulletinBoardDTO;
+import io.owslab.mailreceiver.dto.BulletinPermissionDTO;
 import io.owslab.mailreceiver.form.BulletinBoardForm;
 import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.BulletinBoard;
+import io.owslab.mailreceiver.model.BulletinPermission;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.DashboardResponseBody;
 import io.owslab.mailreceiver.service.bulletin.BulletinBoardService;
+import io.owslab.mailreceiver.service.bulletin.BulletinPermissionService;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.FetchMailsService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
@@ -60,6 +63,12 @@ public class IndexController {
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private BulletinPermissionService bulletinPermissionService;
 
     @Autowired
     private MailReceiveRuleService mrrs;
@@ -116,7 +125,9 @@ public class IndexController {
         DashboardResponseBody responseBody = new DashboardResponseBody();
         try {
             List<BulletinBoardDTO> listBulletinBoardDTO = bulletinBoardService.getBulletinBoard();
+            long accountId = accountService.getLoggedInAccountId();
             responseBody.setListBulletinBoardDTO(listBulletinBoardDTO);
+            responseBody.setAccountId(accountId);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);
@@ -202,6 +213,65 @@ public class IndexController {
             responseBody.setStatus(false);
             return ResponseEntity.ok(responseBody);
         }
+    }
+
+    @RequestMapping(value = "/user/dashboard/changeBulletinPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> changeBulletinPermission(@Valid @RequestBody List<BulletinPermissionDTO> bulletinPermissionDTOs, BindingResult bindingResult) {
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        if (bindingResult.hasErrors()) {
+            responseBody.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+        try {
+            bulletinPermissionService.changeBulletinPermission(bulletinPermissionDTOs);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+        } catch (Exception e) {
+            logger.error("changeBulletinPermission: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+        }
+        return ResponseEntity.ok(responseBody);
+    }
+
+    @RequestMapping(value = "/user/dashboard/getBulletinPermission/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getBulletinPermission(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<BulletinPermissionDTO> permissionDTOs = bulletinPermissionService.getBulletinPermissions(bulletinBoardId);
+            result.setList(permissionDTOs);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getEngineer: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/user/dashboard/checkPermissionEdit/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> checkPermissionEdit(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        boolean permission = bulletinPermissionService.checkPermissionEdit(bulletinBoardId);
+        result.setMsg("done");
+        result.setStatus(permission);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/user/dashboard/checkPermissionDelete/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> checkPermissionDelete(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        boolean permission = bulletinPermissionService.checkPermissionDelete(bulletinBoardId);
+        result.setMsg("done");
+        result.setStatus(permission);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/admin")
