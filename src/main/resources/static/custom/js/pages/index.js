@@ -315,20 +315,25 @@
     }
 
     function updateBulletinBoardOnclick(){
-        if(!bulletinArray[currentIndex] || !bulletinArray[currentIndex].canEdit){
-            $.alert("You don't have edit permission");
-            return;
-        }
-        if (typeof(tinyMCE) != "undefined") {
-            var contentBulletin = getBulletinBoard();
-            if(contentBulletin==null){
-                contentBulletin = "";
+        function onSuccess(response) {
+            if(response && response.status){
+                if (typeof(tinyMCE) != "undefined") {
+                    var contentBulletin = getBulletinBoard();
+                    if(contentBulletin==null){
+                        contentBulletin = "";
+                    }
+                    currentBulletinBoard.bulletin = contentBulletin;
+                    saveBulletin(currentBulletinBoard, currentIndex);
+                }
+            }else{
+                $.alert("編集権限がありません");
             }
-            currentBulletinBoard.bulletin = contentBulletin;
-            // currentBulletinBoard.tabName = "tagName";
-            saveBulletin(currentBulletinBoard, currentIndex);
         }
 
+        function onError(error) {
+        }
+
+        checkPermissionEdit(currentBulletinBoard.id, onSuccess, onError);
     }
 
     function updateBulletinBoardTagname(tagName){
@@ -390,16 +395,12 @@
     function initTab() {
         var isCloseTab = false;
         $('#'+bulletinBoardTabsId).on('click','.close',function(){
-            if(!bulletinArray[currentIndex] || !bulletinArray[currentIndex].canDelete){
-                $.alert("You don't have delete permission");
-                return;
-            }
             isCloseTab = true;
             var idTab = $(this).parents('a').attr('href');
             var liTag = $(this).parents('li');
             var liOld = $("#"+bulletinBoardTabsId).find(".active");
             $.confirm({
-                title: '<b>【Delete】</b>',
+                title: '<b>【掲示板タブ消除】</b>',
                 titleClass: 'text-center',
                 content: '<div class="text-center" style="font-size: 16px;">'+ $(this).siblings('span').text() + 'を削除しますか<br/></div>',
                 buttons: {
@@ -410,20 +411,29 @@
                             var bulletin = bulletinArray[index];
 
                             if(bulletin != null && bulletin.timeEdit != ""){
-                                function onSuccess() {
-                                    if(currentIndex == index && currentIndex>0){
-                                        loadBulletinBoard(currentIndex-1);
-                                    }else{
-                                        loadBulletinBoard(currentIndex);
-                                    }
-                                    liTag.remove();
-                                    $(idTab).remove();
-                                }
-                                function onError() {
-                                    $.alert("don't remove");
-                                }
+                                function onSuccess(response) {
+                                    if(response && response.status){
+                                        function onSuccess() {
+                                            if(currentIndex == index && currentIndex>0){
+                                                loadBulletinBoard(currentIndex-1);
+                                            }else{
+                                                loadBulletinBoard(currentIndex);
+                                            }
+                                            liTag.remove();
+                                            $(idTab).remove();
+                                        }
+                                        function onError() {
+                                            $.alert("don't remove");
+                                        }
 
-                                deleteBulletinBoard(bulletin.id, onSuccess, onError);
+                                        deleteBulletinBoard(bulletin.id, onSuccess, onError);
+                                    }else{
+                                        $.alert("消除権限がありません");
+                                    }
+                                }
+                                function onError(error) {}
+
+                                checkPermissionDelete(currentBulletinBoard.id, onSuccess, onError);
                             }
 
                             isCloseTab = false;
@@ -734,5 +744,4 @@
             }
         });
     }
-
 })(jQuery);

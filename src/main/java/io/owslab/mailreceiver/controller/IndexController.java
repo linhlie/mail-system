@@ -239,7 +239,7 @@ public class IndexController {
 
     @RequestMapping(value = "/user/dashboard/getBulletinPermission/{bulletinBoardId}" , method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> getEngineer(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+    public ResponseEntity<?> getBulletinPermission(@PathVariable("bulletinBoardId") long bulletinBoardId) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
             List<BulletinPermissionDTO> permissionDTOs = bulletinPermissionService.getBulletinPermissions(bulletinBoardId);
@@ -251,6 +251,26 @@ public class IndexController {
             result.setMsg(e.getMessage());
             result.setStatus(false);
         }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/user/dashboard/checkPermissionEdit/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> checkPermissionEdit(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        boolean permission = bulletinPermissionService.checkPermissionEdit(bulletinBoardId);
+        result.setMsg("done");
+        result.setStatus(permission);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/user/dashboard/checkPermissionDelete/{bulletinBoardId}" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> checkPermissionDelete(@PathVariable("bulletinBoardId") long bulletinBoardId) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        boolean permission = bulletinPermissionService.checkPermissionDelete(bulletinBoardId);
+        result.setMsg("done");
+        result.setStatus(permission);
         return ResponseEntity.ok(result);
     }
 

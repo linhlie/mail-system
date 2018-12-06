@@ -93,4 +93,28 @@ public class BulletinPermissionService {
             }
         }
     }
+
+    public boolean checkPermissionEdit(long bulletinBoardId) {
+        long accountId = accountService.getLoggedInAccountId();
+        if(accountId<=0){
+            return false;
+        }
+        BulletinPermission bulletinPermission = bulletinPermissionDAO.findByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
+        if(bulletinPermission == null){
+            return false;
+        }
+        return bulletinPermission.isCanEdit();
+    }
+
+    public boolean checkPermissionDelete(long bulletinBoardId) {
+        long accountId = accountService.getLoggedInAccountId();
+        if(accountId<=0){
+            return false;
+        }
+        BulletinPermission bulletinPermission = bulletinPermissionDAO.findByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
+        if(bulletinPermission == null){
+            return false;
+        }
+        return bulletinPermission.isCanDelete();
+    }
 }
