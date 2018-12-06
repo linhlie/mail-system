@@ -9,6 +9,7 @@ import io.owslab.mailreceiver.service.security.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class BulletinPermissionService {
         bulletinPermissionDAO.save(bulletinPermissions);
     }
 
+    public List<BulletinPermission> getBulletinPermissionsByAccountId(long accountId){
+        return bulletinPermissionDAO.findByAccountIdAndCanView(accountId, true);
+    }
+
     public void createBulletinPermissions(BulletinBoard bulletinBoard){
         List<Account> accounts = accountService.getAllUserRoleAccounts();
         List<BulletinPermission> bulletinPermissions = new ArrayList<>();
@@ -41,10 +46,20 @@ public class BulletinPermissionService {
     public List<BulletinPermissionDTO> getBulletinPermissions(long bulletinBoardId){
         List<BulletinPermission> bulletinPermissionList =  bulletinPermissionDAO.findByBulletinBoardId(bulletinBoardId);
         List<BulletinPermissionDTO> result = new ArrayList<>();
+        Long accountLoggedId = accountService.getLoggedInAccountId();
         for(BulletinPermission permission : bulletinPermissionList){
-            Account account = accountService.findById(permission.getAccountId());
-            result.add(new BulletinPermissionDTO(permission, account.getAccountName()));
+            if(accountLoggedId != permission.getAccountId()){
+                Account account = accountService.findById(permission.getAccountId());
+                result.add(new BulletinPermissionDTO(permission, account.getAccountName()));
+            }
         }
         return result;
+    }
+
+    public void changeBulletinPermission(List<BulletinPermissionDTO> bulletinPermissionDTOs) {
+        for(BulletinPermissionDTO permissionDTO : bulletinPermissionDTOs){
+            BulletinPermission permission = new BulletinPermission(permissionDTO);
+            saveBulletinPermission(permission);
+        }
     }
 }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface BulletinPermissionDAO extends PagingAndSortingRepository<BulletinPermission, Long>  {
     List<BulletinPermission> findByBulletinBoardId(long bulletinBoardId);
+    List<BulletinPermission> findByAccountIdAndCanView(long accountId, boolean canView);
 }

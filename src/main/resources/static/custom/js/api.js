@@ -360,6 +360,11 @@ function getBulletinPermission(bulletinBoardId, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function  changeBulletinPermision(data, onSuccess, onError) {
+    var url = "/user/dashboard/changeBulletinPermission";
+    _post(url, data, onSuccess, onError);
+}
+
 function getMailDataAPI(accountId, onSuccess, onError) {
     var url = "/user/dashboard/mailStatistics";
     if(accountId && accountId.length > 0) {

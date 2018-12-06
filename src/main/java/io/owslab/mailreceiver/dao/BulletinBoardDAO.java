@@ -13,6 +13,7 @@ import java.util.List;
 public interface BulletinBoardDAO extends PagingAndSortingRepository<BulletinBoard, Long> {
 
     List<BulletinBoard> findByTabNumberGreaterThan(long tabNumber);
+    List<BulletinBoard> findByIdIn(List<Long> Ids);
     BulletinBoard findTopByTabNumber(Long TagNumber);
 
     @Query(

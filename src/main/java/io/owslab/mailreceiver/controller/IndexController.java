@@ -215,6 +215,28 @@ public class IndexController {
         }
     }
 
+    @RequestMapping(value = "/user/dashboard/changeBulletinPermission", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> changeBulletinPermission(@Valid @RequestBody List<BulletinPermissionDTO> bulletinPermissionDTOs, BindingResult bindingResult) {
+        DashboardResponseBody responseBody = new DashboardResponseBody();
+        if (bindingResult.hasErrors()) {
+            responseBody.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(responseBody);
+        }
+        try {
+            bulletinPermissionService.changeBulletinPermission(bulletinPermissionDTOs);
+            responseBody.setMsg("done");
+            responseBody.setStatus(true);
+        } catch (Exception e) {
+            logger.error("changeBulletinPermission: " + e.getMessage());
+            responseBody.setMsg(e.getMessage());
+            responseBody.setStatus(false);
+        }
+        return ResponseEntity.ok(responseBody);
+    }
+
     @RequestMapping(value = "/user/dashboard/getBulletinPermission/{bulletinBoardId}" , method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getEngineer(@PathVariable("bulletinBoardId") long bulletinBoardId) {
