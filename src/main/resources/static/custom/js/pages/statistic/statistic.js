@@ -76,7 +76,6 @@
             success: function (data) {
                 $('body').loadingModal('hide');
                 if (data && data.status) {
-                    console.log("[LOG] dashboard load data  success: ", data);
                     pushUserData(data);
                 } else {
                     console.error("[ERROR] dashboard load data failed: ");
@@ -214,9 +213,15 @@
             text : "全てのユーザー",
         }));
         $.each(users, function (i, item) {
+            var name = "";
+            if(item.lastName || item.firstName){
+                name = item.lastName + " " + item.firstName;
+            }else{
+                name = item.userName;
+            }
             $(userSelectorId).append($('<option>', {
                 value: item.id,
-                text : item.name ? item.name : item.userName,
+                text : name,
                 selected: (item.id.toString() === lastSelectedUserAccountId)
             }));
         });
