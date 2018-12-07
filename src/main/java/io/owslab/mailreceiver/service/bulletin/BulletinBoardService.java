@@ -31,27 +31,21 @@ public class BulletinBoardService {
     // need transaction
     public void saveBulletinBoard(BulletinBoardDTO bulletin){
         long accountId = accountService.getLoggedInAccountId();
-        if(accountId == 0){
+        if(accountId <= 0){
             return;
         }
-        BulletinBoard bulletinBoard = new BulletinBoard();
-        if(bulletin.getId() != null && bulletin.getId()>0){
-            bulletinBoard.setId(bulletin.getId());
-        }
-        if(bulletin.getBulletin()!=null){
-            bulletinBoard.setBulletin(bulletin.getBulletin());
-        }else{
-            bulletinBoard.setBulletin("");
-        }
-        bulletinBoard.setAccountId(accountId);
-        bulletinBoard.setTimeEdit(new Date());
-        bulletinBoard.setTabName(bulletin.getTabName());
-        if(bulletin.getTabNumber() == 0){
+        BulletinBoard bulletinBoard = null;
+        if(bulletin.getId() == null){
             List<BulletinBoard> bulletinBoards = findTabsBulletin(0);
-            bulletinBoard.setTabNumber(bulletinBoards.size() + 1);
+            bulletinBoard = new BulletinBoard(bulletin, accountId, bulletinBoards);
         }else{
-            bulletinBoard.setTabNumber(bulletin.getTabNumber());
+            bulletinBoard = bulletinBoardDAO.findOne(bulletin.getId());
+            bulletinBoard.setBulletin(bulletin.getBulletin());
+            bulletinBoard.setTimeEdit(new Date());
+            bulletinBoard.setAccountId(accountId);
+
         }
+        if(bulletinBoard == null) return;
         BulletinBoard bulletinBoardSaved = bulletinBoardDAO.save(bulletinBoard);
         if(bulletin.getId() == null &&  bulletinBoardSaved != null){
             bulletinPermissionService.createBulletinPermissions(bulletinBoardSaved);
@@ -100,18 +94,10 @@ public class BulletinBoardService {
         if(bulletinBoards == null){
             return bulletinBoardDTOs;
         }
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         for(BulletinBoard bulletin : bulletinBoards){
-            BulletinBoardDTO bulletinBoardDTO = new BulletinBoardDTO();
-            bulletinBoardDTO.setId(bulletin.getId());
-            bulletinBoardDTO.setBulletin(bulletin.getBulletin());
-            String date = df.format(bulletin.getTimeEdit());
-            bulletinBoardDTO.setTimeEdit(date);
-            Account account = accountService.findById(bulletin.getAccountId());
-            bulletinBoardDTO.setUsername(account.getAccountName());
-            bulletinBoardDTO.setTabName(bulletin.getTabName());
-            bulletinBoardDTO.setTabNumber(bulletin.getTabNumber());
-            bulletinBoardDTO.setAccountId(bulletin.getAccountId());
+            Account accountEdit = accountService.findById(bulletin.getAccountId());
+            Account accountCreate = accountService.findById(bulletin.getAccountCreateId());
+            BulletinBoardDTO bulletinBoardDTO = new BulletinBoardDTO(bulletin, accountEdit, accountCreate);
             bulletinBoardDTOs.add(bulletinBoardDTO);
         }
         return bulletinBoardDTOs;
