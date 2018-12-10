@@ -1098,10 +1098,8 @@ button[name=builder-ec] {
 }
 
 .builder-wrapper-header div.edit-history {
-    position: absolute;
-    top: 25px;
-    bottom: 0;
-    left: 450px;
+    margin-left: 15px;
+    display: inline-block;
 }
 
 .builder-wrapper-header div.builder-condition-name label {

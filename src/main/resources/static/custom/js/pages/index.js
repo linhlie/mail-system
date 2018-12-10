@@ -7,6 +7,7 @@
     var updateBulletinBoardId = "#updateBulletinBoard";
     var clearBulletinBoardId = "#clearBulletinBoard";
     var historyEditId = "#historyEdit";
+    var historyCreateId = "#historyCreate";
     var blockEdittorId = "blockEditor";
     var blockPreviewId = "blockPreview";
     var changeShowTypeId = "#changeShowType";
@@ -202,7 +203,7 @@
     }
 
     function setDataBulletinBoard(data) {
-        var showSettingPermissionType = accountloggedId==data.accountId? "visible" : "hidden";
+        var showSettingPermissionType = accountloggedId==data.accountCreateId? "visible" : "hidden";
         showSettingPermission(showSettingPermissionType);
         currentBulletinBoard = data;
         setBulletinBoardPreview(data.bulletin);
@@ -301,7 +302,9 @@
 
     function setHistoryEditBulletin(data){
         var history = data.timeEdit+" "+data.username+"により更新"
+        var create = data.timeCreate+" "+data.usernameCreate+"により作成";
         $(historyEditId).text(history);
+        $(historyCreateId).text(create);
     }
 
     function getBulletinBoard() {
