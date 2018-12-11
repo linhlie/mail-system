@@ -42,7 +42,8 @@ public class BulletinPermissionService {
         List<Account> accounts = accountService.getAllUserRoleAccounts();
         List<BulletinPermission> bulletinPermissions = new ArrayList<>();
         for(Account acc : accounts){
-            bulletinPermissions.add(new BulletinPermission(acc.getId(), bulletinBoard.getId()));
+            boolean canChangePermission = acc.getId() == bulletinBoard.getAccountCreateId() ? true : false;
+            bulletinPermissions.add(new BulletinPermission(acc.getId(), bulletinBoard.getId(), true, true, true, canChangePermission));
         }
         saveListBulletinPermission(bulletinPermissions);
     }
@@ -87,10 +88,10 @@ public class BulletinPermissionService {
                     }
                 }
                 if(isSave){
-                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id);
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, true, true, true, false);
                     saveBulletinPermission(newPermission);
                 }else{
-                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, false);
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, false, false, false, false);
                     saveBulletinPermission(newPermission);
                 }
             }
