@@ -40,6 +40,7 @@ public class BulletinBoardService {
             bulletinBoard = new BulletinBoard(bulletin, accountId, bulletinBoards);
         }else{
             bulletinBoard = bulletinBoardDAO.findOne(bulletin.getId());
+            bulletinBoard.setTabName(bulletin.getTabName());
             bulletinBoard.setBulletin(bulletin.getBulletin());
             bulletinBoard.setTimeEdit(new Date());
             bulletinBoard.setAccountId(accountId);
