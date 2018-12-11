@@ -40,6 +40,7 @@ public class BulletinPermission {
         this.canEdit = permissionDTO.isCanEdit();
         this.canDelete = permissionDTO.isCanDelete();
         this.canChangePermission = permissionDTO.isCanChangePermission();
+
     }
 
     public long getId() {
