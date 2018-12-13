@@ -1,8 +1,5 @@
 package io.owslab.mailreceiver.service.mail;
 
-import com.sun.mail.imap.IMAPFolder;
-import com.vdurmont.emoji.EmojiParser;
-
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
@@ -39,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +44,6 @@ import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import javax.mail.search.MessageNumberTerm;
-import javax.mail.search.SearchTerm;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -142,27 +138,34 @@ public class MailBoxService {
         if(search == null || search.length() == 0){
             return list(pageRequest);
         }
-        String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.DONE, pageRequest);
-        return list;
+        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.DONE, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
+        int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.DONE, optimizeSearchText);
+        Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
+        return result;
     }
 
     public Page<Email> searchTrash(String search, PageRequest pageRequest) {
         if(search == null || search.length() == 0){
             return listTrash(pageRequest);
         }
-        String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findByOptimizedBodyIgnoreCaseContainingAndStatus(optimizeSearchText, Email.Status.SKIPPED, pageRequest);
-        return list;
+        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.SKIPPED, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
+        int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.SKIPPED, optimizeSearchText);
+        Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
+        return result;
     }
 
     public Page<Email> searchError(String search, PageRequest pageRequest) {
         if(search == null || search.length() == 0){
             return listError(pageRequest);
         }
-        String optimizeSearchText = optimizeText(search);
-        Page<Email> list = emailDAO.findBySubjectIgnoreCaseContainingAndErrorLogNotNull(optimizeSearchText, pageRequest);
-        return list;
+        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        List<Email> list = emailDAO.findByErrorLogAndFromOrToOrCcOrSubjectOrBody(optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
+        int start = pageRequest.getOffset();
+        int end = (start + pageRequest.getPageSize()) > list.size() ? list.size() : (start + pageRequest.getPageSize());
+        Page<Email> result = new PageImpl<Email>(list.subList(start, end), pageRequest, list.size());
+        return result;
     }
 
     public List<Email> filterDuplicate(List<Email> allMails, boolean filterSender, boolean filterSubject){
