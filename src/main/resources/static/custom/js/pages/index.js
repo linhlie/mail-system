@@ -19,6 +19,7 @@
     var selectViewAllId = "#selectViewAll";
     var selectEditAllId = "#selectEditAll";
     var selectDeleteAllId = "#selectDeleteAll";
+    var selectChangePermissionAllId = "#selectChangePermissionAll";
 
     var bulletinArray = [];
     var currentBulletinBoard;
@@ -35,6 +36,9 @@
         '</td>' +
         '<td align="center" rowspan="1" colspan="1" data="canDelete">' +
         '<input type="checkbox" class="selectDeleteAll"/>' +
+        '</td>' +
+        '<td align="center" rowspan="1" colspan="1" data="canChangePermission">' +
+        '<input type="checkbox" class="selectCanChangePermissionAll changePermissionCell"/>' +
         '</td>' +
         '</tr>';
 
@@ -203,7 +207,7 @@
     }
 
     function setDataBulletinBoard(data) {
-        var showSettingPermissionType = accountloggedId==data.accountCreateId? "visible" : "hidden";
+        var showSettingPermissionType = data.changePermission==true? "visible" : "hidden";
         showSettingPermission(showSettingPermissionType);
         currentBulletinBoard = data;
         setBulletinBoardPreview(data.bulletin);
@@ -436,7 +440,7 @@
                                 }
                                 function onError(error) {}
 
-                                checkPermissionDelete(currentBulletinBoard.id, onSuccess, onError);
+                                checkPermissionDelete(bulletin.id, onSuccess, onError);
                             }
 
                             isCloseTab = false;
@@ -548,7 +552,8 @@
     function showSettingModal(permissionlist, callback) {
         $('#dataModal').modal();
 
-        setBulletinPermissionTable(permissionlist);
+        var showChangePermissionTable = accountloggedId==currentBulletinBoard.accountCreateId? false : true;
+        setBulletinPermissionTable(permissionlist, showChangePermissionTable);
 
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
@@ -573,7 +578,7 @@
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
-    function setBulletinPermissionTable(permissions) {
+    function setBulletinPermissionTable(permissions, showChangePermissionTable) {
         removeAllRow(permissionTableId, replaceRow);
         if (permissions.length > 0) {
             var html = replaceRow;
@@ -582,6 +587,7 @@
             }
             $("#" + permissionTableId + "> tbody").html(html);
             setupSelectBoxes();
+            $(".changePermissionCell").prop('disabled', showChangePermissionTable);
         }
     }
 
@@ -604,6 +610,9 @@
                     var cellData = data[cellKey];
                     cellNode.defaultChecked = cellData;
                     cellNode.value = data['id'];
+                    if(data['canChangePermission']){
+                        cellNode.className = cellNode.className + " changePermissionCell";
+                    }
                     switch (cellKey) {
                         case "canView":
                             cellNode.name = "permissionView";
@@ -613,6 +622,9 @@
                             break;
                         case "canDelete":
                             cellNode.name = "permissionDelete";
+                            break;
+                        case "canChangePermission":
+                            cellNode.name = "permissionChange";
                             break;
                     }
                 } else{
@@ -631,25 +643,44 @@
             var trTag = permissionView.parents('tr');
             var permissionEdit = trTag.find('input[name=permissionEdit]');
             var permissionDelete = trTag.find('input[name=permissionDelete]');
+            var permissionChangeCB = trTag.find('input[name=permissionChange]');
 
             var id = permissionView.val()
             var canView = permissionView.is(":checked");
             var canEdit = permissionEdit.is(":checked");
             var canDelete = permissionDelete.is(":checked")
+            var canChangePermission = permissionChangeCB.is(":checked")
 
             for(var i=0;i<permissionlist.length;i++){
                 if(permissionlist[i].id == id){
-                    if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit || permissionlist[i].canDelete !=canDelete){
-                        var permission = {};
-                        permission.id = permissionlist[i].id;
-                        permission.accountId = permissionlist[i].accountId;
-                        permission.accountName = permissionlist[i].accountName;
-                        permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
-                        permission.canView = canView;
-                        permission.canEdit = canEdit;
-                        permission.canDelete = canDelete;
+                    if(accountloggedId == currentBulletinBoard.accountId){
+                        if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit
+                            || permissionlist[i].canDelete !=canDelete  || permissionlist[i].canChangePermission != canChangePermission){
+                            var permission = {};
+                            permission.id = permissionlist[i].id;
+                            permission.accountId = permissionlist[i].accountId;
+                            permission.accountName = permissionlist[i].accountName;
+                            permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
+                            permission.canView = canView;
+                            permission.canEdit = canEdit;
+                            permission.canDelete = canDelete;
+                            permission.canChangePermission = canChangePermission;
 
-                        permissionChange.push(permission);
+                            permissionChange.push(permission);
+                        }
+                    }else{
+                        if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit || permissionlist[i].canDelete !=canDelete){
+                            var permission = {};
+                            permission.id = permissionlist[i].id;
+                            permission.accountId = permissionlist[i].accountId;
+                            permission.accountName = permissionlist[i].accountName;
+                            permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
+                            permission.canView = canView;
+                            permission.canEdit = canEdit;
+                            permission.canDelete = canDelete;
+
+                            permissionChange.push(permission);
+                        }
                     }
                 }
             }
@@ -661,37 +692,64 @@
         var permissionViewAll = $("input[name=permissionView]").length == $("input[name=permissionView]:checked").length? true: false;
         var permissionEditAll = $("input[name=permissionEdit]").length == $("input[name=permissionEdit]:checked").length? true: false;
         var permissionDeleteAll = $("input[name=permissionDelete]").length == $("input[name=permissionDelete]:checked").length? true: false;
+        var permissionChangeAll = $("input[name=permissionChange]").length == $("input[name=permissionChange]:checked").length? true: false;
+
         $(selectViewAllId).prop("checked", permissionViewAll);
         $(selectEditAllId).prop("checked", permissionEditAll);
         $(selectDeleteAllId).prop("checked", permissionDeleteAll);
+        $(selectChangePermissionAllId).prop("checked", permissionChangeAll);
 
         $(selectViewAllId).off('click');
         $(selectViewAllId).click(function () {
-            $('input[name="permissionView"]').prop('checked', this.checked);
+            setAllCheckBoxPermissionView(this.checked);
             if(! $(this).is(':checked')){
                 $(selectEditAllId).prop('checked', false);
-                $('input[name="permissionEdit"]').prop('checked', false);
+                setAllCheckBoxPermissionEdit(false);
 
                 $(selectDeleteAllId).prop('checked', false);
-                $('input[name="permissionDelete"]').prop('checked', false);
+                setAllCheckBoxPermissionDelete(false);
+
+                $(selectChangePermissionAllId).prop('checked', false);
+                setAllCheckBoxPermissionChange(false);
             }
         });
 
         $(selectEditAllId).off('click');
         $(selectEditAllId).click(function () {
-            $('input[name="permissionEdit"]').prop('checked', this.checked);
+            setAllCheckBoxPermissionEdit(this.checked)
             if($(this).is(':checked')){
-                $(selectViewAllId).prop('checked', this.checked);
-                $('input[name="permissionView"]').prop('checked', this.checked);
+                $(selectViewAllId).prop('checked', true);
+                setAllCheckBoxPermissionView(true);
+            }else{
+                $(selectChangePermissionAllId).prop('checked', false);
+                setAllCheckBoxPermissionChange(false);
             }
         });
 
         $(selectDeleteAllId).off('click');
         $(selectDeleteAllId).click(function () {
-            $('input[name="permissionDelete"]').prop('checked', this.checked);
+            setAllCheckBoxPermissionDelete(this.checked)
+            if($(this).is(':checked')){
+                $(selectViewAllId).prop('checked', true);
+                setAllCheckBoxPermissionView(true);
+            }else{
+                $(selectChangePermissionAllId).prop('checked', false);
+                setAllCheckBoxPermissionChange(false);
+            }
+        });
+
+        $(selectChangePermissionAllId).off('click');
+        $(selectChangePermissionAllId).click(function () {
+            setAllCheckBoxPermissionChange(this.checked)
             if($(this).is(':checked')){
                 $(selectViewAllId).prop('checked', this.checked);
-                $('input[name="permissionView"]').prop('checked', this.checked);
+                setAllCheckBoxPermissionView(true);
+
+                $(selectEditAllId).prop('checked', this.checked);
+                setAllCheckBoxPermissionEdit(true);
+
+                $(selectDeleteAllId).prop('checked', this.checked);
+                setAllCheckBoxPermissionDelete(true);
             }
         });
 
@@ -707,11 +765,14 @@
                 var trTag = $(this).parents('tr');
                 var permissionEdit = trTag.find('input[name=permissionEdit]');
                 var permissionDelete = trTag.find('input[name=permissionDelete]');
+                var permissionChange = trTag.find('input[name=permissionChange]');
 
                 permissionEdit.prop("checked", false);
                 $(selectEditAllId).prop("checked", false);
                 permissionDelete.prop("checked", false);
                 $(selectDeleteAllId).prop("checked", false);
+                permissionChange.prop("checked", false);
+                $(selectChangePermissionAllId).prop("checked", false);
             }
         });
 
@@ -719,7 +780,6 @@
         $('input[name=permissionEdit]').click(function(){
             if($("input[name=permissionEdit]").length == $("input[name=permissionEdit]:checked").length) {
                 $(selectEditAllId).prop("checked", true);
-                $(selectViewAllId).prop("checked", true);
             } else {
                 $(selectEditAllId).prop("checked", false);
             }
@@ -728,6 +788,18 @@
                 var trTag = $(this).parents('tr');
                 var permissionView = trTag.find('input[name=permissionView]');
                 permissionView.prop("checked", true);
+
+                if($("input[name=permissionView]").length == $("input[name=permissionView]:checked").length) {
+                    $(selectViewAllId).prop("checked", true);
+                } else {
+                    $(selectViewAllId).prop("checked", false);
+                }
+            }else{
+                var trTag = $(this).parents('tr');
+                var permissionChange = trTag.find('input[name=permissionChange]');
+
+                permissionChange.prop("checked", false);
+                $(selectChangePermissionAllId).prop("checked", false);
             }
         });
 
@@ -735,7 +807,6 @@
         $('input[name=permissionDelete]').click(function(){
             if($("input[name=permissionDelete]").length == $("input[name=permissionDelete]:checked").length) {
                 $(selectDeleteAllId).prop("checked", true);
-                $(selectViewAllId).prop("checked", true);
             } else {
                 $(selectDeleteAllId).prop("checked", false);
             }
@@ -744,7 +815,89 @@
                 var trTag = $(this).parents('tr');
                 var permissionView = trTag.find('input[name=permissionView]');
                 permissionView.prop("checked", true);
+
+                if($("input[name=permissionView]").length == $("input[name=permissionView]:checked").length) {
+                    $(selectViewAllId).prop("checked", true);
+                } else {
+                    $(selectViewAllId).prop("checked", false);
+                }
+            }else{
+                var trTag = $(this).parents('tr');
+                var permissionChange = trTag.find('input[name=permissionChange]');
+
+                permissionChange.prop("checked", false);
+                $(selectChangePermissionAllId).prop("checked", false);
+            }
+        });
+
+        $('input[name=permissionChange]').off('click');
+        $('input[name=permissionChange]').click(function(){
+            if($("input[name=permissionChange]").length == $("input[name=permissionChange]:checked").length) {
+                $(selectChangePermissionAllId).prop("checked", true);
+            } else {
+                $(selectChangePermissionAllId).prop("checked", false);
+            }
+
+            if($(this).is(':checked')){
+                var trTag = $(this).parents('tr');
+                var permissionView = trTag.find('input[name=permissionView]');
+                var permissionEdit = trTag.find('input[name=permissionEdit]');
+                var permissionDelete = trTag.find('input[name=permissionDelete]');
+                permissionView.prop("checked", true);
+                permissionEdit.prop("checked", true);
+                permissionDelete.prop("checked", true);
+
+                if($("input[name=permissionView]").length == $("input[name=permissionView]:checked").length) {
+                    $(selectViewAllId).prop("checked", true);
+                } else {
+                    $(selectViewAllId).prop("checked", false);
+                }
+
+                if($("input[name=permissionEdit]").length == $("input[name=permissionEdit]:checked").length) {
+                    $(selectEditAllId).prop("checked", true);
+                } else {
+                    $(selectEditAllId).prop("checked", false);
+                }
+
+                if($("input[name=permissionDelete]").length == $("input[name=permissionDelete]:checked").length) {
+                    $(selectDeleteAllId).prop("checked", true);
+                } else {
+                    $(selectDeleteAllId).prop("checked", false);
+                }
             }
         });
     }
+
+    function setAllCheckBoxPermissionView(checked){
+        $("input[name=permissionView]").each(function( index ) {
+            if($(this).attr('disabled') != 'disabled'){
+                $(this).prop('checked', checked);
+            }
+        });
+    }
+
+    function setAllCheckBoxPermissionEdit(checked){
+        $("input[name=permissionEdit]").each(function( index ) {
+            if($(this).attr('disabled') != 'disabled'){
+                $(this).prop('checked', checked);
+            }
+        });
+    }
+
+    function setAllCheckBoxPermissionDelete(checked){
+        $("input[name=permissionDelete]").each(function( index ) {
+            if($(this).attr('disabled') != 'disabled'){
+                $(this).prop('checked', checked);
+            }
+        });
+    }
+
+    function setAllCheckBoxPermissionChange(checked){
+        $("input[name=permissionChange]").each(function( index ) {
+            if($(this).attr('disabled') != 'disabled'){
+                $(this).prop('checked', checked);
+            }
+        });
+    }
+
 })(jQuery);

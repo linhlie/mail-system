@@ -20,6 +20,9 @@ public class BulletinPermissionService {
     BulletinPermissionDAO bulletinPermissionDAO;
 
     @Autowired
+    BulletinBoardService bulletinBoardService;
+
+    @Autowired
     AccountService accountService;
 
     public void saveBulletinPermission(BulletinPermission bulletinPermission){
@@ -38,18 +41,25 @@ public class BulletinPermissionService {
         return bulletinPermissionDAO.findByBulletinBoardId(bulletinId);
     }
 
+    public BulletinPermission getBulletinPermissionsByAccountIdAndBulletinBoardId(long accountId, long bulletinId){
+        return bulletinPermissionDAO.findByAccountIdAndBulletinBoardId(accountId, bulletinId);
+    }
+
     public void createBulletinPermissions(BulletinBoard bulletinBoard){
         List<Account> accounts = accountService.getAllUserRoleAccounts();
         List<BulletinPermission> bulletinPermissions = new ArrayList<>();
         for(Account acc : accounts){
-            bulletinPermissions.add(new BulletinPermission(acc.getId(), bulletinBoard.getId()));
+            boolean canChangePermission = acc.getId() == bulletinBoard.getAccountCreateId() ? true : false;
+            bulletinPermissions.add(new BulletinPermission(acc.getId(), bulletinBoard.getId(), true, true, true, canChangePermission));
         }
         saveListBulletinPermission(bulletinPermissions);
     }
 
     public List<BulletinPermissionDTO> getBulletinPermissions(long bulletinBoardId){
         List<BulletinPermission> bulletinPermissionList =  bulletinPermissionDAO.findByBulletinBoardId(bulletinBoardId);
+        BulletinBoard bulletinBoard = bulletinBoardService.getBulletinBoardById(bulletinBoardId);
         List<BulletinPermissionDTO> result = new ArrayList<>();
+        if(bulletinBoard == null) return result;
         Long accountLoggedId = accountService.getLoggedInAccountId();
         for(BulletinPermission permission : bulletinPermissionList){
             if(accountLoggedId != permission.getAccountId()){
@@ -87,10 +97,10 @@ public class BulletinPermissionService {
                     }
                 }
                 if(isSave){
-                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id);
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, true, true, true, false);
                     saveBulletinPermission(newPermission);
                 }else{
-                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, false);
+                    BulletinPermission newPermission = new BulletinPermission(userSaved.getId(), id, false, false, false, false);
                     saveBulletinPermission(newPermission);
                 }
             }
@@ -102,7 +112,7 @@ public class BulletinPermissionService {
         if(accountId<=0){
             return false;
         }
-        BulletinPermission bulletinPermission = bulletinPermissionDAO.findByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
+        BulletinPermission bulletinPermission = getBulletinPermissionsByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
         if(bulletinPermission == null){
             return false;
         }
@@ -114,7 +124,7 @@ public class BulletinPermissionService {
         if(accountId<=0){
             return false;
         }
-        BulletinPermission bulletinPermission = bulletinPermissionDAO.findByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
+        BulletinPermission bulletinPermission = getBulletinPermissionsByAccountIdAndBulletinBoardId(accountId, bulletinBoardId);
         if(bulletinPermission == null){
             return false;
         }
