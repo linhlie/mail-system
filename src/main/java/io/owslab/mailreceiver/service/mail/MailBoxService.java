@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.mail;
 
+import com.mariten.kanatools.KanaConverter;
 import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
@@ -138,7 +139,7 @@ public class MailBoxService {
         if(search == null || search.length() == 0){
             return list(pageRequest);
         }
-        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        String optimizeSearchText = "%"+optimizeTextForSearch(search)+"%";
         List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.DONE, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
         int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.DONE, optimizeSearchText);
         Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
@@ -149,7 +150,7 @@ public class MailBoxService {
         if(search == null || search.length() == 0){
             return listTrash(pageRequest);
         }
-        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        String optimizeSearchText = "%"+optimizeTextForSearch(search)+"%";
         List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.SKIPPED, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
         int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.SKIPPED, optimizeSearchText);
         Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
@@ -160,7 +161,7 @@ public class MailBoxService {
         if(search == null || search.length() == 0){
             return listError(pageRequest);
         }
-        String optimizeSearchText = "%"+optimizeText(search)+"%";
+        String optimizeSearchText = "%"+optimizeTextForSearch(search)+"%";
         List<Email> list = emailDAO.findByErrorLogAndFromOrToOrCcOrSubjectOrBody(optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
         int start = pageRequest.getOffset();
         int end = (start + pageRequest.getPageSize()) > list.size() ? list.size() : (start + pageRequest.getPageSize());
@@ -269,6 +270,22 @@ public class MailBoxService {
         String str = jsoupDoc.html().replaceAll("\\\\n", "\n");
         String optimizedText = Jsoup.clean(str, "", Whitelist.none(), new OutputSettings().prettyPrint(false));
         //TODO: maybe need remove url and change optimizeText usages
+        return optimizedText.toLowerCase();
+    }
+
+    public static String optimizeTextForSearch(String original){
+        Document jsoupDoc = Jsoup.parse(original);
+        jsoupDoc.outputSettings(new OutputSettings().prettyPrint(false));
+        jsoupDoc.select("br").after("\\n");
+        jsoupDoc.select("div").before("\\n");
+        jsoupDoc.select("p").before("\\n");
+        String str = jsoupDoc.html().replaceAll("\\\\n", "\n");
+        String optimizedText = Jsoup.clean(str, "", Whitelist.none(), new OutputSettings().prettyPrint(false));
+        //TODO: maybe need remove url and change optimizeText usages
+        int conv_op_flags = 0;
+        conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
+        conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
+        optimizedText = KanaConverter.convertKana(optimizedText, conv_op_flags);
         return optimizedText.toLowerCase();
     }
 
