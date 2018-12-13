@@ -440,7 +440,7 @@
                                 }
                                 function onError(error) {}
 
-                                checkPermissionDelete(currentBulletinBoard.id, onSuccess, onError);
+                                checkPermissionDelete(bulletin.id, onSuccess, onError);
                             }
 
                             isCloseTab = false;
