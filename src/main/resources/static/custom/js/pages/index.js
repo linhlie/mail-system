@@ -653,7 +653,7 @@
 
             for(var i=0;i<permissionlist.length;i++){
                 if(permissionlist[i].id == id){
-                    if(accountloggedId == currentBulletinBoard.accountId){
+                    if(accountloggedId == currentBulletinBoard.accountCreateId){
                         if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit
                             || permissionlist[i].canDelete !=canDelete  || permissionlist[i].canChangePermission != canChangePermission){
                             var permission = {};
