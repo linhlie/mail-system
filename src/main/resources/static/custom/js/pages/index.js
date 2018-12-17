@@ -639,17 +639,34 @@
 
             for(var i=0;i<permissionlist.length;i++){
                 if(permissionlist[i].id == id){
-                    if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit || permissionlist[i].canDelete !=canDelete){
-                        var permission = {};
-                        permission.id = permissionlist[i].id;
-                        permission.accountId = permissionlist[i].accountId;
-                        permission.accountName = permissionlist[i].accountName;
-                        permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
-                        permission.canView = canView;
-                        permission.canEdit = canEdit;
-                        permission.canDelete = canDelete;
+                    if(accountloggedId == currentBulletinBoard.accountCreateId){
+                        if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit
+                            || permissionlist[i].canDelete !=canDelete  || permissionlist[i].canChangePermission != canChangePermission){
+                            var permission = {};
+                            permission.id = permissionlist[i].id;
+                            permission.accountId = permissionlist[i].accountId;
+                            permission.accountName = permissionlist[i].accountName;
+                            permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
+                            permission.canView = canView;
+                            permission.canEdit = canEdit;
+                            permission.canDelete = canDelete;
+                            permission.canChangePermission = canChangePermission;
 
-                        permissionChange.push(permission);
+                            permissionChange.push(permission);
+                        }
+                    }else{
+                        if(permissionlist[i].canView != canView || permissionlist[i].canEdit != canEdit || permissionlist[i].canDelete !=canDelete){
+                            var permission = {};
+                            permission.id = permissionlist[i].id;
+                            permission.accountId = permissionlist[i].accountId;
+                            permission.accountName = permissionlist[i].accountName;
+                            permission.bulletinBoardId = permissionlist[i].bulletinBoardId;
+                            permission.canView = canView;
+                            permission.canEdit = canEdit;
+                            permission.canDelete = canDelete;
+
+                            permissionChange.push(permission);
+                        }
                     }
                 }
             }
