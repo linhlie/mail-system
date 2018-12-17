@@ -61,7 +61,7 @@ public class MonitoringScheduler extends AbstractScheduler{
                 Date now = new Date();
                 if(nextTimeToFetchMail.compareTo(now) < 0){
                     logger.info("Send mail report");
-                    ReportErrorService.sendReportError("Auto fetch mail is not working (local)",false);
+                    ReportErrorService.sendReportError("Auto fetch mail is not working",false);
                 }
             }
         } catch (ParseException e) {
