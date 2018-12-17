@@ -17,25 +17,19 @@ public class BulletinPermission {
     private boolean canView;
     private boolean canEdit;
     private boolean canDelete;
+    private boolean canChangePermission;
 
     public BulletinPermission(){
 
     }
 
-    public BulletinPermission(long accountId, long bulletinBoardId){
+    public BulletinPermission(long accountId, long bulletinBoardId, boolean canView, boolean canEdit, boolean canDelete, boolean canChangePermission){
         this.accountId = accountId;
         this.bulletinBoardId = bulletinBoardId;
-        this.canView = true;
-        this.canEdit = true;
-        this.canDelete = true;
-    }
-
-    public BulletinPermission(long accountId, long bulletinBoardId,boolean permission){
-        this.accountId = accountId;
-        this.bulletinBoardId = bulletinBoardId;
-        this.canView = permission;
-        this.canEdit = permission;
-        this.canDelete = permission;
+        this.canView = canView;
+        this.canEdit = canEdit;
+        this.canDelete = canDelete;
+        this.canChangePermission = canChangePermission;
     }
 
     public BulletinPermission(BulletinPermissionDTO permissionDTO) {
@@ -45,6 +39,8 @@ public class BulletinPermission {
         this.canView = permissionDTO.isCanView();
         this.canEdit = permissionDTO.isCanEdit();
         this.canDelete = permissionDTO.isCanDelete();
+        this.canChangePermission = permissionDTO.isCanChangePermission();
+
     }
 
     public long getId() {
@@ -94,4 +90,8 @@ public class BulletinPermission {
     public void setCanDelete(boolean canDelete) {
         this.canDelete = canDelete;
     }
+
+    public boolean isCanChangePermission() { return canChangePermission; }
+
+    public void setCanChangePermission(boolean canChangePermission) { this.canChangePermission = canChangePermission; }
 }

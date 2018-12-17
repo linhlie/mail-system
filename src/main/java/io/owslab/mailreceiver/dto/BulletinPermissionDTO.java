@@ -10,6 +10,7 @@ public class BulletinPermissionDTO {
     private boolean canView;
     private boolean canEdit;
     private boolean canDelete;
+    private boolean canChangePermission;
 
     public BulletinPermissionDTO(){
 
@@ -23,7 +24,7 @@ public class BulletinPermissionDTO {
         this.canView = bulletinPermission.isCanView();
         this.canEdit = bulletinPermission.isCanEdit();
         this.canDelete = bulletinPermission.isCanDelete();
-
+        this.canChangePermission = bulletinPermission.isCanChangePermission();
     }
 
     public long getId() {
@@ -81,4 +82,8 @@ public class BulletinPermissionDTO {
     public void setCanDelete(boolean canDelete) {
         this.canDelete = canDelete;
     }
+
+    public boolean isCanChangePermission() { return canChangePermission; }
+
+    public void setCanChangePermission(boolean canChangePermission) { this.canChangePermission = canChangePermission; }
 }

@@ -17,12 +17,13 @@ public class BulletinBoardDTO {
     private String usernameCreate;
     private long accountCreateId;
     private String timeCreate;
+    private boolean changePermission;
 
     public BulletinBoardDTO(){
 
     }
 
-    public BulletinBoardDTO(BulletinBoard bulletin, Account accountEdit, Account accountCreate){
+    public BulletinBoardDTO(BulletinBoard bulletin, Account accountEdit, Account accountCreate, boolean changePermission){
         DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         this.id = bulletin.getId();
         this.bulletin = bulletin.getBulletin();
@@ -36,6 +37,7 @@ public class BulletinBoardDTO {
         String dateCreate = df.format(bulletin.getTimeCreate());
         this.timeCreate = dateCreate;
         this.usernameCreate = accountCreate.getAccountName();
+        this.changePermission = changePermission;
     }
 
     public Long getId() { return id; }
@@ -101,4 +103,8 @@ public class BulletinBoardDTO {
     public void setTimeCreate(String timeCreate) {
         this.timeCreate = timeCreate;
     }
+
+    public boolean isChangePermission() { return changePermission; }
+
+    public void setChangePermission(boolean changePermission) { this.changePermission = changePermission; }
 }

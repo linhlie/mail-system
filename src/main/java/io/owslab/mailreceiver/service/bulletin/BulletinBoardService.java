@@ -28,6 +28,10 @@ public class BulletinBoardService {
     @Autowired
     private AccountService accountService;
 
+    public BulletinBoard getBulletinBoardById(long id){
+        return bulletinBoardDAO.findOne(id);
+    }
+
     // need transaction
     public void saveBulletinBoard(BulletinBoardDTO bulletin){
         long accountId = accountService.getLoggedInAccountId();
@@ -98,7 +102,8 @@ public class BulletinBoardService {
         for(BulletinBoard bulletin : bulletinBoards){
             Account accountEdit = accountService.findById(bulletin.getAccountId());
             Account accountCreate = accountService.findById(bulletin.getAccountCreateId());
-            BulletinBoardDTO bulletinBoardDTO = new BulletinBoardDTO(bulletin, accountEdit, accountCreate);
+            BulletinPermission bulletinPermission = bulletinPermissionService.getBulletinPermissionsByAccountIdAndBulletinBoardId(accountLoggedId, bulletin.getId());
+            BulletinBoardDTO bulletinBoardDTO = new BulletinBoardDTO(bulletin, accountEdit, accountCreate, bulletinPermission.isCanChangePermission());
             bulletinBoardDTOs.add(bulletinBoardDTO);
         }
         return bulletinBoardDTOs;
