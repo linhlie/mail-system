@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.*;
 
 /**
  * Created by khanhlvb on 2/9/18.
@@ -20,19 +21,40 @@ public abstract class AbstractScheduler {
 
     private int delay;
     private long interval;
-    private TimerTask timerTask;
+    private int timeout_s;
     private Timer timer;
+    private TimerTask timerTask;
+    private ExecutorService THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+    private <T> T timedCall(Callable<T> c, long timeout, TimeUnit timeUnit)
+            throws InterruptedException, ExecutionException, TimeoutException
+    {
+        FutureTask<T> task = new FutureTask<T>(c);
+        THREAD_POOL.execute(task);
+        return task.get(timeout, timeUnit);
+    }
+
+
+    public AbstractScheduler(int delay, long interval, int timeout_s) {
+        this.delay = delay;
+        this.interval = interval;
+        this.timeout_s = timeout_s;
+    }
 
     public AbstractScheduler(int delay, long interval) {
         this.delay = delay;
         this.interval = interval;
+        this.timeout_s = -1;
     }
 
     public void start(){
         this.setTimerTask(new TimerTask() {
             public void run() {
                 try {
-                    doStuff();
+                    if(timeout_s > 0) {
+                        privateDoStuffTimeout(timeout_s);
+                    }else {
+                        doStuff();
+                    }
                 } catch (RuntimeException e){
                     String error = ExceptionUtils.getStackTrace(e);
                     logger.error("[AbstractScheduler] RuntimeException: ", error);
@@ -49,6 +71,29 @@ public abstract class AbstractScheduler {
         this.timer.scheduleAtFixedRate(this.getTimerTask(), this.getDelay(), this.getInterval() * 1000);
     }
 
+    private void privateDoStuffTimeout(int timeout_s) throws Exception {
+        try {
+            logger.info("Will start job with timeout " + timeout_s + " " + this);
+            int returnCode = timedCall(new Callable<Integer>() {
+                public Integer call() throws Exception {
+                    doStuff();
+                    return 1;
+                }
+            }, timeout_s, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            try {
+                // Handle timeout here
+                logger.warn("Time limit for job " + this);
+                THREAD_POOL.shutdownNow();
+                THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+                ReportErrorService.sendReportError("Warning: [service auto restarted] Time limit " + timeout_s + " seconds  for job " + this,false);
+            } catch (Error e2){
+                ReportErrorService.sendReportError("Critical: [service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this,false);
+            }
+
+        }
+    }
+
     public abstract void doStuff() throws Exception;
 
     public int getDelay() {
@@ -61,6 +106,10 @@ public abstract class AbstractScheduler {
 
     public long getInterval() {
         return interval;
+    }
+
+    protected void setDoStuffTimeout(int timeout_s) {
+        this.timeout_s = timeout_s;
     }
 
     public void setInterval(long interval) {

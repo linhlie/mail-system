@@ -12,7 +12,8 @@ import java.util.*;
 @Component
 public class FetchMailScheduler extends AbstractScheduler {
     private static final Logger logger = LoggerFactory.getLogger(FetchMailScheduler.class);
-    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND = 10L;
+    private static final long CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECONDS = 60L;
+    private static final int TIMEOUT_TO_FETCH_MAIL_INTERVAL_IN_SECONDS = 300;
     private static final int FETCH_MAIL_INTERVAL_IN_MINUTE = 10;
 
     @Autowired
@@ -23,7 +24,7 @@ public class FetchMailScheduler extends AbstractScheduler {
     private Date lastTimeFetchedMail;
 
     public FetchMailScheduler() {
-        super(0, CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECEOND);
+        super(0, CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECONDS, TIMEOUT_TO_FETCH_MAIL_INTERVAL_IN_SECONDS);
     }
 
     @Override
