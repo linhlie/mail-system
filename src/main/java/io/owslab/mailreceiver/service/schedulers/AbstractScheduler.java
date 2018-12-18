@@ -33,7 +33,6 @@ public abstract class AbstractScheduler {
         return task.get(timeout, timeUnit);
     }
 
-
     public AbstractScheduler(int delay, long interval, int timeout_s) {
         this.delay = delay;
         this.interval = interval;
@@ -86,9 +85,9 @@ public abstract class AbstractScheduler {
                 logger.warn("Time limit for job " + this);
                 THREAD_POOL.shutdownNow();
                 THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-                ReportErrorService.sendReportError("Warning: [service auto restarted] Time limit " + timeout_s + " seconds  for job " + this,false);
+                ReportErrorService.sendReportError("Warning : [Service auto restarted] Time limit " + timeout_s + " seconds  for job " + this,false);
             } catch (Error e2){
-                ReportErrorService.sendReportError("Critical: [service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this,false);
+                ReportErrorService.sendReportError("Critical: [Service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this,false);
             }
 
         }
@@ -121,6 +120,9 @@ public abstract class AbstractScheduler {
     }
 
     public void setTimerTask(TimerTask timerTask) {
+        if(this.timerTask != null){
+            this.timerTask.cancel();
+        }
         this.timerTask = timerTask;
     }
 
@@ -129,6 +131,34 @@ public abstract class AbstractScheduler {
     }
 
     public void setTimer(Timer timer) {
+        if(this.timer !=null){
+            this.timer.cancel();
+            this.timer.purge();
+        }
         this.timer = timer;
+    }
+
+    protected void restartSchedule(){
+        if(this.THREAD_POOL !=null){
+            try {
+                // Handle timeout here
+                logger.warn("RestartSchedule for job " + this);
+                THREAD_POOL.shutdownNow();
+                THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+                if(this.timerTask != null){
+                    this.timerTask.cancel();
+                }
+                if(this.timer !=null){
+                    this.timer.cancel();
+                    this.timer.purge();
+                }
+                logger.warn("Warning : [Service auto restart schedule] for job " + this);
+            } catch (Error e2){
+                logger.error("Critical: [Service auto restart schedule failed] for job " + this);
+            }
+        }
+        this.timer = null;
+        this.timerTask = null;
+        this.start();
     }
 }

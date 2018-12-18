@@ -25,6 +25,7 @@ public class FetchMailScheduler extends AbstractScheduler {
 
     public FetchMailScheduler() {
         super(0, CHECK_TIME_TO_FETCH_MAIL_INTERVAL_IN_SECONDS, TIMEOUT_TO_FETCH_MAIL_INTERVAL_IN_SECONDS);
+
     }
 
     @Override
@@ -47,6 +48,12 @@ public class FetchMailScheduler extends AbstractScheduler {
     }
 
     private void startFetchMail(){
+        int checkMailInMinute = enviromentSettingService.getCheckMailTimeInterval();
+        if(checkMailInMinute<=2){
+            this.setDoStuffTimeout(50);
+        }else{
+            this.setDoStuffTimeout((checkMailInMinute-2)*60);
+        }
         lastTimeFetchedMail = new Date();
         fetchMailsService.start();
     }

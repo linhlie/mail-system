@@ -26,6 +26,7 @@ public class ReportErrorService {
     private static SendMailService sms;
 
     private static String administratorMailAddress;
+    private static String ccAdministratorMailAddress;
     private static String sendFrom;
     private static String sendUserName;
     private static String sendPassword;
@@ -73,6 +74,7 @@ public class ReportErrorService {
     public static void updateAdministratorMailAddress() {
         try {
             administratorMailAddress = ess.getAdministratorMailAddress();
+            ccAdministratorMailAddress = ess.getCcAdministratorMailAddress();
         } catch (Exception e) {
 
         }
@@ -110,6 +112,7 @@ public class ReportErrorService {
                 ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
                         .setFrom(sendFrom)
                         .setTo(administratorMailAddress)
+                        .setCc(ccAdministratorMailAddress)
                         .setContent(error)
                         .setUserName(sendUserName)
                         .setPassword(sendPassword)
@@ -131,6 +134,7 @@ public class ReportErrorService {
     public static class ReportErrorParams {
         private String from;
         private String to;
+        private String cc;
         private String userName;
         private String password;
         private String host;
@@ -143,6 +147,10 @@ public class ReportErrorService {
 
         public String getTo() {
             return to;
+        }
+
+        public String getCc() {
+            return cc;
         }
 
         public String getUserName() {
@@ -169,6 +177,7 @@ public class ReportErrorService {
         public static class Builder{
             private String from;
             private String to;
+            private String cc;
             private String userName;
             private String password;
             private String host;
@@ -182,6 +191,11 @@ public class ReportErrorService {
 
             public Builder setTo(String to) {
                 this.to = to;
+                return this;
+            }
+
+            public Builder setCc(String cc) {
+                this.cc = cc;
                 return this;
             }
 
@@ -215,6 +229,7 @@ public class ReportErrorService {
                 ReportErrorParams reportErrorParams = new ReportErrorParams();  //Since the builder is in the BankAccount class, we can invoke its private constructor.
                 reportErrorParams.from = this.from;
                 reportErrorParams.to = this.to;
+                reportErrorParams.cc = this.cc;
                 reportErrorParams.userName = this.userName;
                 reportErrorParams.password = this.password;
                 reportErrorParams.host = this.host;
