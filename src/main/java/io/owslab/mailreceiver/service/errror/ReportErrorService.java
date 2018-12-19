@@ -26,6 +26,7 @@ public class ReportErrorService {
     private static SendMailService sms;
 
     private static String administratorMailAddress;
+    private static String ccAdministratorMailAddress;
     private static String sendFrom;
     private static String sendUserName;
     private static String sendPassword;
@@ -73,6 +74,7 @@ public class ReportErrorService {
     public static void updateAdministratorMailAddress() {
         try {
             administratorMailAddress = ess.getAdministratorMailAddress();
+            ccAdministratorMailAddress = ess.getCcAdministratorMailAddress();
         } catch (Exception e) {
 
         }
@@ -123,6 +125,27 @@ public class ReportErrorService {
         }
     }
 
+    public static void reportAutoFetchMail(String error) {
+        if(sendUserName!=null){
+            lastReportSentAt = new Date();
+            try {
+                ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
+                        .setFrom(sendFrom)
+                        .setTo(administratorMailAddress)
+                        .setCc(ccAdministratorMailAddress)
+                        .setContent(error)
+                        .setUserName(sendUserName)
+                        .setPassword(sendPassword)
+                        .setHost(sendHost)
+                        .setPort(sendPort)
+                        .build();
+                sms.sendReportMail(reportErrorParams);
+            } catch (Exception e) {
+                System.err.println("Can't send report auto fetchMail");
+            }
+        }
+    }
+
     private static boolean shouldSendReportToAdmin(){
         if(lastReportSentAt == null) return true;
         return (System.currentTimeMillis() - lastReportSentAt.getTime()) >= LEAST_TIME_BETWEEN_TO_REPORT_IN_MINUTE  * 60 * 1000;
@@ -131,6 +154,7 @@ public class ReportErrorService {
     public static class ReportErrorParams {
         private String from;
         private String to;
+        private String cc;
         private String userName;
         private String password;
         private String host;
@@ -143,6 +167,10 @@ public class ReportErrorService {
 
         public String getTo() {
             return to;
+        }
+
+        public String getCc() {
+            return cc;
         }
 
         public String getUserName() {
@@ -169,6 +197,7 @@ public class ReportErrorService {
         public static class Builder{
             private String from;
             private String to;
+            private String cc;
             private String userName;
             private String password;
             private String host;
@@ -182,6 +211,11 @@ public class ReportErrorService {
 
             public Builder setTo(String to) {
                 this.to = to;
+                return this;
+            }
+
+            public Builder setCc(String cc) {
+                this.cc = cc;
                 return this;
             }
 
@@ -215,6 +249,7 @@ public class ReportErrorService {
                 ReportErrorParams reportErrorParams = new ReportErrorParams();  //Since the builder is in the BankAccount class, we can invoke its private constructor.
                 reportErrorParams.from = this.from;
                 reportErrorParams.to = this.to;
+                reportErrorParams.cc = this.cc;
                 reportErrorParams.userName = this.userName;
                 reportErrorParams.password = this.password;
                 reportErrorParams.host = this.host;

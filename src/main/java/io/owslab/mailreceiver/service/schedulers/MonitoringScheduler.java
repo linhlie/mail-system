@@ -17,12 +17,16 @@ import java.util.Optional;
 @Component
 public class MonitoringScheduler extends AbstractScheduler{
     private static final Logger logger = LoggerFactory.getLogger(MonitoringScheduler.class);
-    private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 2L;
+    private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 60L;
+    private static final int CHECK_TIME_TO_SEND_EMAIL_WARNING_IN_MINUTE = 5;
     private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     private boolean isReadyReport = false;
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
+
+    @Autowired
+    private FetchMailScheduler fetchMailScheduler;
 
     private Date lastTimeUpdate;
 
@@ -50,6 +54,10 @@ public class MonitoringScheduler extends AbstractScheduler{
     }
 
     private void startUpdate(){
+        if(!isReadyReport){
+            isReadyReport = true;
+            return;
+        }
         lastTimeUpdate = new Date();
         String timeFetchMailBefore = enviromentSettingService.getCheckTimeFetchMail();
         int checkMailInMinute = enviromentSettingService.getCheckMailTimeInterval();
@@ -57,11 +65,12 @@ public class MonitoringScheduler extends AbstractScheduler{
         try {
             if(timeFetchMailBefore!=null){
                 Date TimeFetchMailLastest = df.parse(timeFetchMailBefore);
-                Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute+5);
+                Date nextTimeToFetchMail = addMinutesToADate(TimeFetchMailLastest, checkMailInMinute + CHECK_TIME_TO_SEND_EMAIL_WARNING_IN_MINUTE);
                 Date now = new Date();
                 if(nextTimeToFetchMail.compareTo(now) < 0){
                     logger.info("Send mail report");
-                    ReportErrorService.sendReportError("Auto fetch mail is not working",false);
+                    ReportErrorService.reportAutoFetchMail("Warning : [Auto fetch mail stopped working at "+timeFetchMailBefore+"]");
+                    fetchMailScheduler.restartSchedule();
                 }
             }
         } catch (ParseException e) {

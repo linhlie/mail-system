@@ -7,7 +7,6 @@ import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.file.SentMailFileService;
-import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
@@ -15,29 +14,32 @@ import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.MailUtils;
 import io.owslab.mailreceiver.utils.Utils;
 import org.apache.commons.lang.ArrayUtils;
-import org.codehaus.groovy.runtime.ArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.util.ByteArrayDataSource;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.*;
 /**
  * Created by khanhlvb on 4/4/18.
  */
 @Service
 public class SendMailService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SendMailService.class);
 
     @Autowired
     private FileDAO fileDAO;
@@ -182,6 +184,7 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
+            logger.info("Send email from "+from+" to "+to);
             SentMailHistory sentMail = saveSentMailHistory(email, matchingEmail, account, to, cc, null, replyTo, form, hasAttachment);
             if(sentMail!=null){
                 sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
@@ -266,6 +269,9 @@ public class SendMailService {
         String to = report.getTo();
         String subject = "[e!Helper] - SYSTEM ERROR REPORT @ " + Utils.formatGMT2(new Date());
         String content = report.getContent();
+        String cc = report.getCc();
+        cc = selfEliminateDuplicates(cc);
+        cc = eliminateDuplicates(cc, to);
         try {
             String encodingOptions = "text/html; charset=UTF-8";
             MimeMessage message = new MimeMessage(session);
@@ -273,6 +279,8 @@ public class SendMailService {
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
+            message.setRecipients(Message.RecipientType.CC,
+                    InternetAddress.parse(cc));
             message.setSubject(subject, "UTF-8");
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setContent(content, encodingOptions);
@@ -280,6 +288,7 @@ public class SendMailService {
             multipart.addBodyPart(messageBodyPart);
             message.setContent(multipart);
             Transport.send(message);
+            logger.info("Send email warning from "+from+" to "+to);
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

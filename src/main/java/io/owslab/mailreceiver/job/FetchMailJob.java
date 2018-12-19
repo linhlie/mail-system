@@ -120,7 +120,10 @@ public class FetchMailJob implements Runnable {
             //close the store and folder objects
             logger.info("start close mail folder");
             emailFolder.close(true);
+            logger.info("closed mail folder");
             store.close();
+            logger.info("closed store");
+            logger.info("closed all");
         } catch (Exception e) {
             String errorDetail = account.getAccount() + ": " + ExceptionUtils.getStackTrace(e);
             logger.error(errorDetail);
