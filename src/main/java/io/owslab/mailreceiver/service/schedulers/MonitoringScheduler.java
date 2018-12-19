@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 public class MonitoringScheduler extends AbstractScheduler{
     private static final Logger logger = LoggerFactory.getLogger(MonitoringScheduler.class);
-    private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 30L;
+    private static final long CHECK_TIME_TO_MOTORING_FETCH_MAIL_INTERVAL_IN_SECEOND = 60L;
     private static final int CHECK_TIME_TO_SEND_EMAIL_WARNING_IN_MINUTE = 5;
     private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     private boolean isReadyReport = false;
@@ -69,7 +69,7 @@ public class MonitoringScheduler extends AbstractScheduler{
                 Date now = new Date();
                 if(nextTimeToFetchMail.compareTo(now) < 0){
                     logger.info("Send mail report");
-                    ReportErrorService.sendReportError("Warning : [Auto fetch mail stopped working at "+timeFetchMailBefore+"]",false);
+                    ReportErrorService.reportAutoFetchMail("Warning : [Auto fetch mail stopped working at "+timeFetchMailBefore+"]");
                     fetchMailScheduler.restartSchedule();
                 }
             }

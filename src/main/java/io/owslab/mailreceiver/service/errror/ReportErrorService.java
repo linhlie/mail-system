@@ -112,7 +112,6 @@ public class ReportErrorService {
                 ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
                         .setFrom(sendFrom)
                         .setTo(administratorMailAddress)
-                        .setCc(ccAdministratorMailAddress)
                         .setContent(error)
                         .setUserName(sendUserName)
                         .setPassword(sendPassword)
@@ -122,6 +121,27 @@ public class ReportErrorService {
                 sms.sendReportMail(reportErrorParams);
             } catch (Exception e) {
                 System.err.println("Can't send report");
+            }
+        }
+    }
+
+    public static void reportAutoFetchMail(String error) {
+        if(sendUserName!=null){
+            lastReportSentAt = new Date();
+            try {
+                ReportErrorParams reportErrorParams = new ReportErrorParams.Builder()
+                        .setFrom(sendFrom)
+                        .setTo(administratorMailAddress)
+                        .setCc(ccAdministratorMailAddress)
+                        .setContent(error)
+                        .setUserName(sendUserName)
+                        .setPassword(sendPassword)
+                        .setHost(sendHost)
+                        .setPort(sendPort)
+                        .build();
+                sms.sendReportMail(reportErrorParams);
+            } catch (Exception e) {
+                System.err.println("Can't send report auto fetchMail");
             }
         }
     }
