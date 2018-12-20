@@ -214,8 +214,12 @@
         }));
         $.each(users, function (i, item) {
             var name = "";
-            if(item.lastName || item.firstName){
+            if(item.lastName && item.firstName){
                 name = item.lastName + " " + item.firstName;
+            }else if(item.lastName){
+                name = item.lastName;
+            }else if(item.firstName){
+                name = item.firstName;
             }else{
                 name = item.userName;
             }
