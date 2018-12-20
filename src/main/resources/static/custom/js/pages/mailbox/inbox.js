@@ -12,6 +12,7 @@
     var end = null;
     var totalPages = null;
     var currentPage = null;
+    var flagCheckReload = true;
 
     var filterConditionKey = 'filterConditionInboxEmail';
     var filterCondition = null;
@@ -174,30 +175,31 @@
             if (response && response.status) {
                 var data  = response.list[0];
                 console.log(data);
-                listEmailInbox = data.listEmail;
-                totalEmail = data.totalEmail;
-                start = data.start;
-                end = data.end;
-                totalPages = data.totalPages;
-                console.log(listEmailInbox.length);
+                if(data){
+                    listEmailInbox = data.listEmail? data.listEmail : [];
+                    totalEmail = data.totalEmail;
+                    start = data.start;
+                    end = data.end;
+                    totalPages = data.totalPages;
+                }else{
+                    listEmailInbox = [];
+                    totalEmail = 0;
+                    start = -1;
+                    end = 0;
+                    totalPages = 0;
+                }
             } else {
                 console.error("[ERROR] submit failed: ");
             }
-            currentPage = page;
             updateData();
+            currentPage = page;
         }
 
         function onError(error) {
             console.error("[ERROR] submit error: ", error);
             $('body').loadingModal('hide');
-            currentPage = page;
-            updateData();
         }
-
-        filterInbox({
-                filterRule: filterCondition,
-                page: page,
-            }, onSuccess, onError);
+        filterInbox({filterRule: filterCondition, page: page,}, onSuccess, onError);
     }
 
     function updateData() {
@@ -228,17 +230,26 @@
     }
 
     function updatePageActive(){
-        $('#'+paginationInboxId).twbsPagination({
-            totalPages: totalPages,
-            visiblePages: 5,
-            startPage: currentPage+1,
-            next: 'Next',
-            prev: 'Prev',
-            onPageClick: function (event, page) {
-                //fetch content and render here
-                loadEmailData(page-1)
-            }
-        });
+        if(listEmailInbox && listEmailInbox.length>0){
+            $('#'+paginationInboxId).css('visibility', 'visible');
+            $('#'+paginationInboxId).twbsPagination({
+                totalPages: totalPages,
+                visiblePages: 5,
+                startPage: currentPage+1,
+                next: 'Next',
+                prev: 'Prev',
+                onPageClick: function (event, page) {
+                    //fetch content and render here
+                    if(flagCheckReload){
+                        flagCheckReload = false;
+                    }else{
+                        loadEmailData(page-1)
+                    }
+                }
+            });
+        }else{
+            $('#'+paginationInboxId).css('visibility', 'hidden');
+        }
     }
 
     function addRowWithData(data, index) {
@@ -310,7 +321,8 @@
 
     function showModal(callback) {
         $('#dataModal').modal();
-
+        var conditionBefore = getBeforeFilterCondition();
+        $('#'+inboxBuilderId).queryBuilder('setRules', conditionBefore);
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var word = $( '#word').val();
@@ -319,7 +331,8 @@
                 var condition = $('#'+inboxBuilderId).queryBuilder('getRules');
                 console.log(condition);
                 if(condition != null){
-                    //do to
+                    saveFilterCondition(condition);
+                    loadEmailData(0);
                     $('#dataModal').modal('hide');
                 }
             }
@@ -336,13 +349,13 @@
     function getBeforeFilterCondition() {
         var condition = sessionStorage.getItem(filterConditionKey);
         if(condition){
-            return condition;
+            return JSON.parse(condition);
         }
         return default_filter_condition;
     }
 
     function saveFilterCondition(condition) {
-        sessionStorage.setItem(filterConditionKey, condition);
+        sessionStorage.setItem(filterConditionKey, JSON.stringify(condition));
     }
 
 })(jQuery);
