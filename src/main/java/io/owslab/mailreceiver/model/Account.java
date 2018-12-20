@@ -121,6 +121,10 @@ public class Account {
     public String getAccountName(){
         if(this.lastName != null && this.firstName != null){
             return this.lastName + "　" + this.firstName;
+        }else if(this.lastName != null){
+            return this.lastName;
+        }else if(this.firstName != null){
+            return this.firstName;
         }
         return this.userName;
     }
