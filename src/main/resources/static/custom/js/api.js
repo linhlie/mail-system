@@ -231,6 +231,11 @@ function deleteFromInBox(msgIds, onSuccess, onError){
     _post(url, data, onSuccess, onError);
 }
 
+function filterInbox(data, onSuccess, onError){
+    var url = "/user/inbox/filter";
+    _post(url, data, onSuccess, onError);
+}
+
 function addPartner(data, onSuccess, onError) {
     var url = "/expansion/businessPartner/add";
     _post(url, data, onSuccess, onError);

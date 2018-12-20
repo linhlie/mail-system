@@ -260,6 +260,10 @@ public class MailBoxService {
         return cachedEmailList;
     }
 
+    public List<Email> getAllInBox(){
+        return emailDAO.findByStatusOrStatusOrderByReceivedAtDesc(Email.Status.DONE, Email.Status.SKIPPED);
+    }
+
     @Cacheable(key="\"EmailWordJobService:find:\"+#original")
     public static String optimizeText(String original){
         Document jsoupDoc = Jsoup.parse(original);
