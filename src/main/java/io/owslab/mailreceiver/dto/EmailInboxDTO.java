@@ -8,12 +8,14 @@ public class EmailInboxDTO {
     private String messageId;
     private String from;
     private String subject;
+    private String body;
     private String to;
     private String relativeDate;
     private String sentAt;
     private PrettyTime p = new PrettyTime();
     private boolean hasAttachment;
     private int status;
+    private String mark;
 
     public EmailInboxDTO(){
 
@@ -23,11 +25,13 @@ public class EmailInboxDTO {
         this.messageId = email.getMessageId();
         this.from = email.getFrom();
         this.subject = email.getSubject();
+        this.body = email.getOriginalBody();
         this.to = email.getTo();
         this.relativeDate = p.format(email.getSentAt());
         this.sentAt = DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null);
         this.hasAttachment = email.isHasAttachment();
         this.status = email.getStatus();
+        this.mark = email.getMark();
     }
 
     public String getMessageId() {
@@ -89,4 +93,12 @@ public class EmailInboxDTO {
     public int getStatus() { return status; }
 
     public void setStatus(int status) { this.status = status; }
+
+    public String getMark() { return mark; }
+
+    public void setMark(String mark) { this.mark = mark; }
+
+    public String getBody() { return body; }
+
+    public void setBody(String body) { this.body = body; }
 }

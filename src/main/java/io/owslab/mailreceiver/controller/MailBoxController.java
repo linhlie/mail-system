@@ -2,13 +2,17 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.dto.EmailInboxDTO;
+import io.owslab.mailreceiver.dto.FileDTO;
 import io.owslab.mailreceiver.dto.InboxDTO;
 import io.owslab.mailreceiver.form.InboxForm;
 import io.owslab.mailreceiver.form.TrashBoxForm;
+import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.MailHistoryResponseBody;
+import io.owslab.mailreceiver.service.file.AttachmentFileService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
@@ -47,6 +51,9 @@ public class MailBoxController {
 
     @Autowired
     private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private AttachmentFileService fileService;
 
     @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
@@ -262,5 +269,22 @@ public class MailBoxController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value = "/user/mailbox/getFileAttach" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getFileAttach(@RequestParam(value = "messageId") String messageId) {
+        MailHistoryResponseBody result = new MailHistoryResponseBody();
+        try {
+            List<FileDTO> listFileAttach = fileService.getFileByMessageId(messageId);
+            result.setList(listFileAttach);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("detail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }
