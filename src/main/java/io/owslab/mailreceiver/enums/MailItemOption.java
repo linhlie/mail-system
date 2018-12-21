@@ -20,7 +20,8 @@ public enum MailItemOption {
     OR_RECEIVER_CC_BCC(12, "いずれか(受信者・CC・BCC)"),
     AND_SUBJECT_BODY(13, "全て(件名・本文)"),
     OR_SUBJECT_BODY(14, "いずれか(件名・本文)"),
-    MARK(15, "マーク");
+    MARK(15, "マーク"),
+    PASS_RECEIVE_RULE (16, "受信ルール合致");
 
     private final int value;
     private final String text;
@@ -74,6 +75,8 @@ public enum MailItemOption {
                 return OR_SUBJECT_BODY;
             case 15:
                 return MARK;
+            case 16:
+                return PASS_RECEIVE_RULE;
         }
         return null;
     }

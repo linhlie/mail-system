@@ -183,6 +183,20 @@
             label: 'マーク',
             type: 'string',
             operators: ['equal', 'not_equal']
+        }, {
+            id: '16',
+            label: '受信ルール合致',
+            type: 'integer',
+            input: 'radio',
+            values: {
+                1: '有り',
+                0: '無し'
+            },
+            colors: {
+                1: 'success',
+                0: 'danger'
+            },
+            operators: ['equal']
         }];
 
         var default_configs = {
@@ -271,7 +285,6 @@
             $('body').loadingModal('hide');
             if (response && response.status) {
                 var data  = response.list[0];
-                console.log(data);
                 if(data){
                     listEmailInbox = data.listEmail? data.listEmail : [];
                     totalEmail = data.totalEmail;
@@ -498,7 +511,6 @@
         if (listEmailInbox && listEmailInbox.length > 0) {
             var firstTr = $('#' + inboxTableId).find(' tbody tr:eq('+1+')');
             firstTr.addClass('highlight-selected').siblings().removeClass('highlight-selected');
-            console.log(firstTr);
             var rowData = listEmailInbox[0];
             showMailContent(rowData);
         }
@@ -513,7 +525,6 @@
         if(data){
             if(data.hasAttachment){
                 showFileAttachEmailInbox(data.messageId, function (files) {
-                    console.log(files);
                     showMailContentDetail(data, files);
                 });
             }else{
@@ -523,7 +534,6 @@
     }
 
     function showMailContentDetail(data, files) {
-        console.log(data);
         var mailSubjectDiv = document.getElementById(mailSubjectDivId);
         var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
         mailSubjectDiv.innerHTML = "";
@@ -548,7 +558,6 @@
     }
 
     function showFileAttach(divFileAttachId, files, type){
-        console.log(files);
         if(files && files.length > 0){
             var filesInnerHTML = "";
             for(var i = 0; i < files.length; i++ ){

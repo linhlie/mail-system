@@ -604,6 +604,13 @@ public class MatchingConditionService {
             case RECEIVED_DATE:
                 match = isMatchPart(email.getSentAt(), condition, distinguish);
                 break;
+            case PASS_RECEIVE_RULE:
+                if(condition.getValue().equalsIgnoreCase("0")){
+                    match = email.getStatus() == 2? true : false;
+                } else {
+                    match = email.getStatus() == 1? true : false;
+                }
+                break;
             case NONE:
             default:
                 break;
