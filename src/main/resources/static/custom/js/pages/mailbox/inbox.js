@@ -5,6 +5,7 @@
     var paginationInboxId = 'paginationInbox';
     var inboxBuilderId = 'inbox-builder';
     var btnFilterId = "#btnFilter";
+    var cbReplyAllEmailId = '#cbReplyAllEmail';
 
     var listEmailInbox = null;
     var totalEmail = null;
@@ -57,7 +58,7 @@
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="relativeDate"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="mark"><span></span></td>' +
-        '<td class="text-center" rowspan="1" colspan="1">' +
+        '<td class="text-center" rowspan="1" colspan="1" data="messageId">' +
         '<input type="checkbox" class="selectEmailInbox"/>' +
         '</td>' +
         '</tr>';
@@ -346,11 +347,12 @@
         selectFirstRow();
         updateHistoryDataTrigger();
         enableResizeColums();
+        setupSelectBoxes();
     }
 
     function updateTotalEmail(start, end) {
-        var total = "Showing " + (start+1) + " to " + end + " of " + totalEmail + " entries";
-        $('#'+totalEmailId).text(total);
+        var total = '<span style="color:blue">' + totalEmail+ '</span>' + ' エントリーの ' + '<span style="color:blue">' + (start+1)+ '</span>' +' から' +'<span style="color:blue">' + end+ '</span>'+ ' を表示しています';
+        $('#'+totalEmailId).html(total);
     }
 
     function updatePageActive(){
@@ -360,8 +362,10 @@
                 totalPages: totalPages,
                 visiblePages: 5,
                 startPage: currentPage+1,
-                next: 'Next',
-                prev: 'Prev',
+                next: '前へ',
+                prev: '次へ',
+                first: '最初',
+                last: '最終',
                 onPageClick: function (event, page) {
                     //fetch content and render here
                     if(flagCheckReload){
@@ -374,6 +378,29 @@
         }else{
             $('#'+paginationInboxId).css('visibility', 'hidden');
         }
+    }
+
+    function setupSelectBoxes() {
+        var replyAllEmail = $("input[name=replyEmail]").length == $("input[name=replyEmail]:checked").length? true: false;
+        $(cbReplyAllEmailId).prop("checked", replyAllEmail);
+
+        $(cbReplyAllEmailId).off('click');
+        $(cbReplyAllEmailId).click(function () {
+            if($(this).is(':checked')){
+                $("input[name=replyEmail]").prop("checked", true);
+            }else{
+                $("input[name=replyEmail]").prop("checked", false);
+            }
+        });
+
+        $('input[name=replyEmail]').off('click');
+        $('input[name=replyEmail]').click(function(){
+            if($("input[name=replyEmail]").length == $("input[name=replyEmail]:checked").length) {
+                $(cbReplyAllEmailId).prop("checked", true);
+            } else {
+                $(cbReplyAllEmailId).prop("checked", false);
+            }
+        });
     }
 
     function addRowWithData(data, index) {
@@ -416,7 +443,7 @@
                 }
 
                 if (cellNode.nodeName == "INPUT") {
-                    cellNode.className = 'replyEmail';
+                    cellNode.name = 'replyEmail';
                 }
             }
         }
