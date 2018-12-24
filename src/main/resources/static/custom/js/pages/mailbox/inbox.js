@@ -362,8 +362,8 @@
                 totalPages: totalPages,
                 visiblePages: 5,
                 startPage: currentPage+1,
-                next: '前へ',
-                prev: '次へ',
+                next: '次へ',
+                prev: '前へ',
                 first: '最初',
                 last: '最終',
                 onPageClick: function (event, page) {
