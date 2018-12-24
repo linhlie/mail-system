@@ -180,7 +180,7 @@
             setButtonClickListenter(btnAddTagId, addTagOnclick);
 
             $( ".bulletinTab" ).each(function() {
-                $(this).width($(this).width()+1);
+                $(this).width($(this).width()+5);
             });
 
             if(showIndex){
