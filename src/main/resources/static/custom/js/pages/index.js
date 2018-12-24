@@ -159,7 +159,7 @@
                     showIndex = true;
                     $("#"+bulletinBoardTabsId).append(
                         '<li class="active" ><a href="#tab'+i+'" class="bulletinTab" role="tab" data-toggle="tab">' +
-                        '<span>' +data[i].tabName + '</span>'+
+                        '<span style="display: inline-block">' +data[i].tabName + '</span>'+
                         '<button class="close" type="button" title="Remove this page">×</button>' +
                         '<input id="'+ "tagName"+i +'" class="textTagname">' +
                         '</a></li>'
@@ -167,7 +167,7 @@
                 }else{
                     $("#"+bulletinBoardTabsId).append(
                         '<li><a href="#tab'+i+'" class="bulletinTab" role="tab" data-toggle="tab">' +
-                        '<span>' +data[i].tabName + '</span>'+
+                        '<span style="display: inline-block">' +data[i].tabName + '</span>'+
                         '<button class="close" type="button" title="Remove this page">×</button>' +
                         '<input class="textTagname">' +
                         '</a></li>'
