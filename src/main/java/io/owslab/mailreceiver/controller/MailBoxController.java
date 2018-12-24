@@ -1,14 +1,24 @@
 package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.DetailMailDTO;
+import io.owslab.mailreceiver.dto.EmailInboxDTO;
+import io.owslab.mailreceiver.dto.FileDTO;
+import io.owslab.mailreceiver.dto.InboxDTO;
+import io.owslab.mailreceiver.form.InboxForm;
 import io.owslab.mailreceiver.form.TrashBoxForm;
+import io.owslab.mailreceiver.model.AttachmentFile;
 import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.model.RelativeSentAtEmail;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.MailHistoryResponseBody;
+import io.owslab.mailreceiver.service.file.AttachmentFileService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
+import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.PageWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,16 +26,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by khanhlvb on 1/26/18.
  */
 @Controller
 public class MailBoxController {
+    private static final Logger logger = LoggerFactory.getLogger(MailBoxController.class);
     public static final int PAGE_SIZE = 15;
     public static final int ERROR_PAGE_SIZE = 10;
 
@@ -33,7 +47,13 @@ public class MailBoxController {
     private MailBoxService mailBoxService;
 
     @Autowired
+    private MatchingConditionService conditionService;
+
+    @Autowired
     private MailAccountsService mailAccountsService;
+
+    @Autowired
+    private AttachmentFileService fileService;
 
     @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
@@ -217,6 +237,54 @@ public class MailBoxController {
         result.setMsg("done");
         result.setStatus(true);
         result.setList(mailDetail);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/user/inbox", method = RequestMethod.GET)
+    public String showAllEmail(Model model) {
+        return "user/inbox/inbox";
+    }
+
+    @PostMapping("/user/inbox/filter")
+    @ResponseBody
+    public ResponseEntity<?> filterInbox(
+            Model model,
+            @Valid @RequestBody InboxForm form, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<InboxDTO> listInboxDTO = conditionService.filterInbox(form, PAGE_SIZE);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(listInboxDTO);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/user/mailbox/getFileAttach" , method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getFileAttach(@RequestParam(value = "messageId") String messageId) {
+        MailHistoryResponseBody result = new MailHistoryResponseBody();
+        try {
+            List<FileDTO> listFileAttach = fileService.getFileByMessageId(messageId);
+            result.setList(listFileAttach);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("detail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
         return ResponseEntity.ok(result);
     }
 }

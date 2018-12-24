@@ -3,10 +3,13 @@ package io.owslab.mailreceiver.service.matching;
 import com.mariten.kanatools.KanaConverter;
 
 import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.dto.EmailInboxDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
+import io.owslab.mailreceiver.dto.InboxDTO;
 import io.owslab.mailreceiver.dto.PreviewMailDTO;
 import io.owslab.mailreceiver.enums.*;
 import io.owslab.mailreceiver.form.ExtractForm;
+import io.owslab.mailreceiver.form.InboxForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
@@ -601,6 +604,13 @@ public class MatchingConditionService {
             case RECEIVED_DATE:
                 match = isMatchPart(email.getSentAt(), condition, distinguish);
                 break;
+            case PASS_RECEIVE_RULE:
+                if(condition.getValue().equalsIgnoreCase("0")){
+                    match = email.getStatus() == 2? true : false;
+                } else {
+                    match = email.getStatus() == 1? true : false;
+                }
+                break;
             case NONE:
             default:
                 break;
@@ -1176,6 +1186,35 @@ public class MatchingConditionService {
 
     public int getMatchingCount() {
         return this.getMatchingCounter();
+    }
+
+    public List<InboxDTO> filterInbox(InboxForm form, int pageSize){
+        List<InboxDTO> result = new ArrayList<>();
+        List<EmailInboxDTO> filterEmail = new ArrayList<>();
+        List<Email> emailList = mailBoxService.getAllInBox();
+        List<Email> matchList;
+        FilterRule rootRule = form.getFilterRule();
+        int page = form.getPage();
+        if(rootRule==null || rootRule.getRules().size() > 0) {
+            matchList = findMailMatching(emailList, rootRule, false, false);
+        } else {
+            matchList = emailList;
+        }
+        int totalPages = matchList.size()%pageSize == 0?  matchList.size()/pageSize : matchList.size()/pageSize + 1;
+        // page start at 0
+        if(page>=totalPages){
+            return result;
+        }
+
+        int start = page*pageSize < matchList.size()? page*pageSize : matchList.size();
+        int end = page*pageSize + pageSize < matchList.size()? page*pageSize + pageSize : matchList.size();
+
+        for(int i=start;i<end;i++){
+            filterEmail.add(new EmailInboxDTO(matchList.get(i)));
+        }
+        InboxDTO inboxDTO = new InboxDTO(filterEmail, matchList.size(), start, end, totalPages);
+        result.add(inboxDTO);
+        return result;
     }
 
 }

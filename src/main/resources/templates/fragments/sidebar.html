@@ -205,6 +205,11 @@
                 <i class="fa fa-line-chart"></i> <span>週次報告</span>
             </a>
         </li>
+        <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'inbox'})?'active':''">
+            <a href="#" th:href="@{/user/inbox}" style="border-left-color: #222d32;">
+                <i class="fa fa-inbox"></i> <span>全メールリスト</span>
+            </a>
+        </li>
     </ul>
 </section>
 <!-- /.sidebar -->
