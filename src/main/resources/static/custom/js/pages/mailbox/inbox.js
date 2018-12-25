@@ -28,7 +28,7 @@
         "valid": true
     };
 
-    var default_page_size = 10;
+    var default_page_size = 15;
 
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
