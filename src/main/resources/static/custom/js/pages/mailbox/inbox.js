@@ -5,6 +5,7 @@
     var paginationInboxId = 'paginationInbox';
     var inboxBuilderId = 'inbox-builder';
     var btnFilterId = "#btnFilter";
+    var selectPageSizeId = "#selectPageSize"
     var cbReplyAllEmailId = '#cbReplyAllEmail';
 
     var listEmailInbox = null;
@@ -16,7 +17,9 @@
     var flagCheckReload = true;
 
     var filterConditionKey = 'filterConditionInboxEmail';
+    var pageSizeKey = 'pageSizeInboxEmail';
     var filterCondition = null;
+    var pageSize = null;
 
     var default_filter_condition = {
         "condition": "AND",
@@ -24,6 +27,8 @@
         ],
         "valid": true
     };
+
+    var default_page_size = 15;
 
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
@@ -216,6 +221,8 @@
         initTagsInput();
         initDropzone();
         initStickyHeader();
+        previewDraggingSetup();
+        settingPageSize();
     });
 
     function initTagsInput() {
@@ -272,8 +279,51 @@
         })
     }
 
+    function previewDraggingSetup() {
+        var dragging = false;
+        $('#dragbar2').mousedown(function(e){
+            e.preventDefault();
+
+            dragging = true;
+            var dragbar = $('#dragbar2');
+            var ghostbar = $('<div>',
+                {id:'ghostbar2',
+                    css: {
+                        width: dragbar.outerWidth(),
+                        top: dragbar.offset().top,
+                        left: dragbar.offset().left
+                    }
+                }).appendTo('body');
+
+            $(document).mousemove(function(e){
+                ghostbar.css("top",e.pageY);
+            });
+
+        });
+
+        $(document).mouseup(function(e){
+            if (dragging)
+            {
+                var container = $('#table-section');
+                var topHeight = (e.pageY - container.offset().top);
+                var tableHeight = Math.floor(topHeight - 55);
+                tableHeight = tableHeight > 60 ? tableHeight : 60;
+                tableHeight = tableHeight < 800 ? tableHeight : 800;
+                var previewHeightChange = 450 - tableHeight;
+                var previewHeight = 444 + previewHeightChange;
+                $('.matching-result .table-container').css("height", tableHeight + "px");
+                $('.matching-result .mail-body-container').css("height", previewHeight + "px");
+                $('.matching-result .mail-body').css("height", previewHeight + "px");
+                $('#ghostbar2').remove();
+                $(document).unbind('mousemove');
+                dragging = false;
+            }
+        });
+    }
+
     function loadEmailData(page) {
         filterCondition = getBeforeFilterCondition();
+        pageSize = getPageSize();
         $('body').loadingModal({
             position: 'auto',
             text: '抽出中...',
@@ -310,7 +360,11 @@
             console.error("[ERROR] submit error: ", error);
             $('body').loadingModal('hide');
         }
-        filterInbox({filterRule: filterCondition, page: page,}, onSuccess, onError);
+        filterInbox({
+            filterRule: filterCondition,
+            page: page,
+            pageSize: pageSize
+        }, onSuccess, onError);
     }
 
     function enableResizeColums() {
@@ -511,7 +565,7 @@
 
     function getBeforeFilterCondition() {
         var condition = sessionStorage.getItem(filterConditionKey);
-        if(condition){
+        if(condition && condition!=null ){
             return JSON.parse(condition);
         }
         return default_filter_condition;
@@ -519,6 +573,29 @@
 
     function saveFilterCondition(condition) {
         sessionStorage.setItem(filterConditionKey, JSON.stringify(condition));
+    }
+
+    function settingPageSize(){
+        pageSize = getPageSize();
+        $(selectPageSizeId).val(pageSize);
+
+        $(selectPageSizeId).off('change');
+        $(selectPageSizeId).change(function() {
+            savePageSize($(selectPageSizeId).val());
+            location.reload();
+        });
+    }
+
+    function getPageSize() {
+        var pageSize = sessionStorage.getItem(pageSizeKey);
+        if(pageSize && pageSize!=null){
+            return pageSize;
+        }
+        return default_page_size;
+    }
+
+    function savePageSize(pageSize) {
+        sessionStorage.setItem(pageSizeKey, pageSize);
     }
 
     function updateHistoryDataTrigger() {

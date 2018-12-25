@@ -1188,12 +1188,13 @@ public class MatchingConditionService {
         return this.getMatchingCounter();
     }
 
-    public List<InboxDTO> filterInbox(InboxForm form, int pageSize){
+    public List<InboxDTO> filterInbox(InboxForm form){
         List<InboxDTO> result = new ArrayList<>();
         List<EmailInboxDTO> filterEmail = new ArrayList<>();
         List<Email> emailList = mailBoxService.getAllInBox();
         List<Email> matchList;
         FilterRule rootRule = form.getFilterRule();
+        int pageSize = form.getPageSize();
         int page = form.getPage();
         if(rootRule==null || rootRule.getRules().size() > 0) {
             matchList = findMailMatching(emailList, rootRule, false, false);

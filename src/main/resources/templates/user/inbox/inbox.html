@@ -18,14 +18,27 @@
                         <h3 class="box-title">Inbox (全メールリスト)</h3>
 
                         <div class="box-tools pull-right">
-                            <div class="has-feedback">
-                                <button id="btnFilter" type="button" class="btn btn-primary glyphicon glyphicon-search" style="padding-bottom: 6px;">&nbsp;メール検索</button>
+                            <div>
+                                <label>1ページに表示する最大件数: &nbsp;</label>
+                                <select id="selectPageSize" style="width: 60px; height: 32px;">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                    <option value="30">30</option>
+                                    <option value="35">35</option>
+                                    <option value="40">40</option>
+                                    <option value="45">45</option>
+                                    <option value="50">50</option>
+                                </select>
+                                <label style="margin-right: 10px">件</label>
+                                <button id="btnFilter" type="button" class="btn btn-primary glyphicon glyphicon-search" style="padding-bottom: 6px; margin-bottom: 8px;">&nbsp;メール検索</button>
                             </div>
                         </div>
                         <!-- /.box-tools -->
                     </div>
-                    <div class="main-left">
-                        <div class="table-container table-container-wrapper" style="height: 530px;">
+                    <div class="main-left" id="table-section">
+                        <div class="table-container table-container-wrapper" style="height: 450px;">
                             <table id="inboxTable" class="table table-bordered table-hover tablesorter sticky-header-table">
                                 <thead class="sticky-header">
                                     <tr style="background: white">
@@ -60,6 +73,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="dragbar2" style="margin-top: 5px; background-color:black; height: 3px; cursor: row-resize; width: 100%;"></div>
                     </div>
                 </div>
                 <div class="col-sm-12">
