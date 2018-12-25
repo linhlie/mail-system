@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.utils.FilterRule;
 public class InboxForm {
     private FilterRule filterRule;
     private int page;
+    private int pageSize;
 
     public FilterRule getFilterRule() {
         return filterRule;
@@ -20,5 +21,13 @@ public class InboxForm {
 
     public void setPage(int page) {
         this.page = page;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 }

@@ -258,7 +258,7 @@ public class MailBoxController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            List<InboxDTO> listInboxDTO = conditionService.filterInbox(form, PAGE_SIZE);
+            List<InboxDTO> listInboxDTO = conditionService.filterInbox(form);
             result.setMsg("done");
             result.setStatus(true);
             result.setList(listInboxDTO);
