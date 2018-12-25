@@ -565,7 +565,7 @@
 
     function getBeforeFilterCondition() {
         var condition = sessionStorage.getItem(filterConditionKey);
-        if(condition){
+        if(condition && condition!=null ){
             return JSON.parse(condition);
         }
         return default_filter_condition;
@@ -588,7 +588,7 @@
 
     function getPageSize() {
         var pageSize = sessionStorage.getItem(pageSizeKey);
-        if(pageSize){
+        if(pageSize && pageSize!=null){
             return pageSize;
         }
         return default_page_size;
