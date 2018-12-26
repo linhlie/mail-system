@@ -56,8 +56,8 @@
     var reSendEmail;
 
     var replaceBody = '<tr role="row" class="hidden">' +
-        '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="hasAttachment"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
