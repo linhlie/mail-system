@@ -80,7 +80,7 @@ public class FetchMailJob implements Runnable {
     public void check(EmailAccount account, EmailAccountSetting accountSetting, int msgnum)
     {
         try {
-
+            logger.info("Connect to mail store");
             Store store = MailUtils.createStore(accountSetting);
             if(accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0){
                 store.connect(accountSetting.getMailServerAddress(), accountSetting.getUserName(), accountSetting.getPassword());

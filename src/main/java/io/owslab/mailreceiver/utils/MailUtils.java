@@ -19,7 +19,7 @@ public class MailUtils {
         MailProtocol mailProtocol = MailProtocol.fromValue(accountSettings.getMailProtocol());
         String protocol = mailProtocol.getText();
         properties.put("mail.debug", isDebug);
-        Session emailSession = Session.getDefaultInstance(properties);
+        Session emailSession = Session.getInstance(properties);
         emailSession.setDebug(isDebug);
         Store store = emailSession.getStore(protocol);
         return store;
