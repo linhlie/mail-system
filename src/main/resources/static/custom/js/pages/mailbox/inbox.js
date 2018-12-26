@@ -7,6 +7,7 @@
     var btnFilterId = "#btnFilter";
     var selectPageSizeId = "#selectPageSize"
     var cbReplyAllEmailId = '#cbReplyAllEmail';
+    var btnSendMailInboxId = '#btnSendMailInbox';
 
     var listEmailInbox = null;
     var totalEmail = null;
@@ -56,8 +57,8 @@
     var reSendEmail;
 
     var replaceBody = '<tr role="row" class="hidden">' +
-        '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="to"><span></span></td>' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="hasAttachment"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
@@ -217,6 +218,7 @@
         $('#'+inboxBuilderId).queryBuilder(default_configs);
         loadEmailData(0);
         setButtonClickListenter(btnFilterId, showSettingCondition);
+        setButtonClickListenter(btnSendMailInboxId, sendMailOnclick);
 
         initTagsInput();
         initDropzone();
@@ -338,6 +340,7 @@
                 var data  = response.list[0];
                 if(data){
                     listEmailInbox = data.listEmail? data.listEmail : [];
+                    console.log(listEmailInbox);
                     totalEmail = data.totalEmail;
                     start = data.start;
                     end = data.end;
@@ -457,6 +460,17 @@
         });
     }
 
+    function getEmailSelected() {
+        var listMailIdSelected=[];
+        $("input[name=replyEmail]").each(function( index ) {
+            if($(this).is(':checked')){
+                var msgId = $(this).attr("value");
+                listMailIdSelected.push(msgId);
+            }
+        });
+        return listMailIdSelected;
+    }
+
     function addRowWithData(data, index) {
         var table = document.getElementById(inboxTableId);
         if (!table) return "";
@@ -497,7 +511,9 @@
                 }
 
                 if (cellNode.nodeName == "INPUT") {
+                    var cellData = cellKeys.length == 2 ? (data[cellKeys[0]] ? data[cellKeys[0]][cellKeys[1]] : undefined) : data[cellKeys[0]];
                     cellNode.name = 'replyEmail';
+                    cellNode.value = cellData;
                 }
             }
         }
@@ -680,27 +696,16 @@
             }
             divFileAttachId.innerHTML = filesInnerHTML;
             setDownloadLinkClickListener();
-            removeAttachOriginListener()
         } else {
             divFileAttachId.innerHTML = "添付ファイルなし";
         }
     }
 
-    function removeAttachOriginListener() {
-        $(".remove-mail-attachment").off('click');
-        $(".remove-mail-attachment").click(function () {
-            var fileAttachmentBtn = $(this).prev();
-            if(fileAttachmentBtn){
-                var brTag = fileAttachmentBtn.prev();
-                if(brTag.is("br")){
-                    brTag.remove();
-                }else{
-                    $(this).next().remove();
-                }
-                fileAttachmentBtn.remove();
-                $(this).remove();
-            }
-        })
+    function sendMailOnclick() {
+        var listMailIdSelected = getEmailSelected();
+        if(listMailIdSelected.length<=0) return;
+
+
     }
 
     function showMailBodyContent(data) {

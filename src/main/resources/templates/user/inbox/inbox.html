@@ -60,15 +60,18 @@
                     <div class="box-footer no-padding">
                         <div class="mailbox-controls dataTables_wrapper form-inline dt-bootstrap">
                             <div class="row">
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
                                         <span id="totalEmail"></span>
                                     </div>
                                 </div>
-                                <div class="col-sm-7">
-                                    <div class="dataTables_paginate paging_simple_numbers" id="paginationInboxDiv">
+                                <div class="col-sm-8">
+                                    <div class="dataTables_paginate paging_simple_numbers pull-right" id="paginationInboxDiv" style="display: inline-block">
                                         <ul class="pagination" id="paginationInbox">
                                         </ul>
+                                    </div>
+                                    <div class="pull-right" style="display: inline-block; vertical-align: top; margin-top: 2px; margin-right: 5px;">
+                                        <button id="btnSendMailInbox" style="height: 32px;">選択したメールへ返信</button>
                                     </div>
                                 </div>
                             </div>
