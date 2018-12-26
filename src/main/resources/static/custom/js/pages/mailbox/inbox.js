@@ -704,8 +704,16 @@
     function sendMailOnclick() {
         var listMailIdSelected = getEmailSelected();
         if(listMailIdSelected.length<=0) return;
-
-
+        console.log(listEmailInbox);
+        var listMailIdSelected = getEmailSelected();
+        if (listMailIdSelected.length <= 0) return;
+        for (var i = 0; i < listEmailInbox.length; i++) {
+            for (var j = 0; j < listMailIdSelected.length; j++) {
+                if (listEmailInbox[i].messageId == listMailIdSelected[j]) {
+                    console.log(listEmailInbox[i].from + "   " + listEmailInbox[i].to);
+                }
+            }
+        }
     }
 
     function showMailBodyContent(data) {
