@@ -87,8 +87,7 @@ public class FetchMailJob implements Runnable {
             } else {
                 store.connect(accountSetting.getMailServerAddress(), account.getAccount(), accountSetting.getPassword());
             }
-
-            //create the folder object and open it
+            logger.info("Create the INBOX folder");
             emailFolder = store.getFolder("INBOX");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
