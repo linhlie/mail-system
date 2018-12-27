@@ -55,13 +55,11 @@ public abstract class AbstractScheduler {
                         doStuff();
                     }
                 } catch (RuntimeException e){
-                    String error = ExceptionUtils.getStackTrace(e);
-                    logger.error("[AbstractScheduler] RuntimeException: ", error);
+                    logger.error("[AbstractScheduler] RuntimeException: "+ e.toString());
                     return; // Keep working
                 }catch (Throwable e){
-                    String error = ExceptionUtils.getStackTrace(e);
-                    logger.error("[AbstractScheduler] Throwable: ", error);
-                    ReportErrorService.sendReportError(error);
+                    logger.error("[AbstractScheduler] Throwable: "+ e.toString());
+                    ReportErrorService.sendReportError(e.toString());
                     return;
                 }
             }
