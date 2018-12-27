@@ -142,13 +142,13 @@ public class ApplicationStartup {
         logger.info("AUTO_FETCH_MAIL "+MailReceiverApplication.AUTO_FETCH_MAIL);
         if(MailReceiverApplication.AUTO_FETCH_MAIL){
             fetchMailScheduler.start();
-            motoringScheduler.start();
         }else{
             deleteOldMailsScheduler.start();
             deleteSentMailHistoryScheduler.start();
             receiveMailScheduler.start();
             autoExtendScheduler.start();
             updateDomainUnregisterScheduler.start();
+            motoringScheduler.start();
         }
         getDomain();
         configWordDatabase();

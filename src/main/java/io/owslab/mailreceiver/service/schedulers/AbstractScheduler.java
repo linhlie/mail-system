@@ -1,13 +1,9 @@
 package io.owslab.mailreceiver.service.schedulers;
 
-import io.owslab.mailreceiver.service.BeanUtil;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
-import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
@@ -84,8 +80,10 @@ public abstract class AbstractScheduler {
                 THREAD_POOL.shutdownNow();
                 THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
                 ReportErrorService.reportAutoFetchMail("Warning : [Service auto restarted] Time limit " + timeout_s + " seconds  for job " + this);
+                restartService();
             } catch (Error e2){
                 ReportErrorService.reportAutoFetchMail("Critical: [Service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this);
+                restartService();
             }
 
         }
@@ -136,27 +134,15 @@ public abstract class AbstractScheduler {
         this.timer = timer;
     }
 
-    protected void restartSchedule(){
-        if(this.THREAD_POOL !=null){
+    protected void restartService(){
+        Thread restartThread = new Thread(() -> {
             try {
-                // Handle timeout here
-                logger.warn("RestartSchedule for job " + this);
-                THREAD_POOL.shutdownNow();
-                THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-                if(this.timerTask != null){
-                    this.timerTask.cancel();
-                }
-                if(this.timer !=null){
-                    this.timer.cancel();
-                    this.timer.purge();
-                }
-                logger.warn("Warning : [Service auto restart schedule] for job " + this);
-            } catch (Error e2){
-                logger.error("Critical: [Service auto restart schedule failed] for job " + this);
+                Runtime.getRuntime().exec("sudo sh /opt/mail-service/ServiceFetchMail.sh restart");
+            } catch (Exception ignored) {
+
             }
-        }
-        this.timer = null;
-        this.timerTask = null;
-        this.start();
+        });
+        restartThread.setDaemon(false);
+        restartThread.start();
     }
 }
