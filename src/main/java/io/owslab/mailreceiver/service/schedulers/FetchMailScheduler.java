@@ -30,7 +30,9 @@ public class FetchMailScheduler extends AbstractScheduler {
 
     @Override
     public void doStuff() {
-        if(isNeedToFetchNewMail()){
+        boolean check = isNeedToFetchNewMail();
+        logger.info("Need fetch mail : "+ check);
+        if(check){
             startFetchMail();
         }
     }
