@@ -5,10 +5,7 @@ import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
 import io.owslab.mailreceiver.enums.ClickType;
-import io.owslab.mailreceiver.form.ExtractForm;
-import io.owslab.mailreceiver.form.MatchingConditionForm;
-import io.owslab.mailreceiver.form.MoreInformationMailContentForm;
-import io.owslab.mailreceiver.form.SendMailForm;
+import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -248,6 +245,37 @@ public class MatchingSettingsController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("sendRecommendationMail: " + e.getMessage());
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @PostMapping("/sendReplyRecommendationMail")
+    @ResponseBody
+    public ResponseEntity<?> sendReplyRecommendationMail(
+            Model model,
+            @Valid @RequestBody SendMultilMailForm sendMailForm, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            System.out.println(sendMailForm.getListId().size());
+            for(int i=0;i<sendMailForm.getListId().size();i++){
+                System.out.println(sendMailForm.getListId().get(i));
+            }
+            System.out.println(sendMailForm.getContent());
+            sendMailService.sendMultiMail(sendMailForm);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("sendReplyRecommendationMail: " + e.getMessage());
             e.printStackTrace();
             result.setMsg(e.getMessage());
             result.setStatus(false);

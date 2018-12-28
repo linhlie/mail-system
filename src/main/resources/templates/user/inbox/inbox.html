@@ -113,7 +113,7 @@
     </div><!-- /.modal -->
 
     <div id="sendMailModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 95%; margin-top: 5px; margin-bottom: 5px;">
+        <div class="modal-dialog" role="document" style="width: 80%; margin-top: 5px; margin-bottom: 5px;">
             <div class="modal-content">
                 <div class="modal-header" style="padding: 10px 15px;">
                     <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -122,31 +122,11 @@
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group row">
-                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
-                            <!--<div class="col-md-5">-->
-                            <!--<input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>-->
-                            <!--</div>-->
-                            <div class="col-md-5">
-                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
-                                </select>
-                            </div>
                             <div id="rdMailReceiver-container">
                                 <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
-                                <div class="col-md-5">
+                                <div class="col-md-11">
                                     <input id="rdMailReceiver" class="form-control" placeholder="user@example.com, user2@example.com"/>
                                 </div>
-                            </div>
-                        </div>
-                        <div id="rdMailCC-container" class="form-group row">
-                            <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
-                            <div class="col-md-11">
-                                <input id="rdMailCC" class="tags form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
-                            <div class="col-md-11">
-                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
                             </div>
                         </div>
                     </form>

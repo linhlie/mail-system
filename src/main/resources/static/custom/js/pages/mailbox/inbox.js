@@ -39,22 +39,14 @@
     var toDateId = 'historyToDate';
     var historySearchBtnId = 'historySearchBtn';
 
-    var lastSelectedSendMailAccountId;
-    var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailAttachmentId = 'rdMailAttachment';
-    var rdMailCCId = 'rdMailCC';
+
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
 
     var receiverValidate = true;
-    var ccValidate = true;
-
-    var externalCCGlobal = [];
-    var senderGlobal = "";
-    var reSendEmail;
 
     var replaceBody = '<tr role="row" class="hidden">' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
@@ -228,26 +220,13 @@
     });
 
     function initTagsInput() {
-        $('#' + rdMailCCId).tagsInput({
+        $('#' + rdMailReceiverId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
             maxInputWidth: 600,
             width: 'auto',
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             validationMsg: 'メールアドレスを入力してください',
-            onChange: function (elem, elem_tags) {
-                $('.tag').each(function () {
-                    var tag = $(this).text();
-                    var email = tag.substring(0, tag.length - 3);
-                    var globalMailDoman = getEmailDomain(senderGlobal);
-                    var emailDomain = getEmailDomain(email);
-                    if (globalMailDoman == emailDomain) {
-                        $(this).css('background-color', 'yellow');
-                    } else if(externalCCGlobal.indexOf(email) >= 0) {
-                        $(this).css('background-color', 'yellow');
-                    }
-                });
-            }
         });
     }
 
@@ -704,16 +683,17 @@
     function sendMailOnclick() {
         var listMailIdSelected = getEmailSelected();
         if(listMailIdSelected.length<=0) return;
-        console.log(listEmailInbox);
-        var listMailIdSelected = getEmailSelected();
-        if (listMailIdSelected.length <= 0) return;
+        var listEmailSelected = [];
         for (var i = 0; i < listEmailInbox.length; i++) {
             for (var j = 0; j < listMailIdSelected.length; j++) {
                 if (listEmailInbox[i].messageId == listMailIdSelected[j]) {
-                    console.log(listEmailInbox[i].from + "   " + listEmailInbox[i].to);
+                    listEmailSelected.push(listEmailInbox[i]);
                 }
             }
         }
+
+        console.log(listEmailSelected);
+        showPopupTyping(listEmailSelected);
     }
 
     function showMailBodyContent(data) {
@@ -734,41 +714,13 @@
         });
     }
 
-    function showMailEditor(id) {
-        var cachedSeparateTab = getCachedSeparateTabSetting();
-        if(cachedSeparateTab) {
-            showMailEditorInNewTab(id);
-        } else {
-            showMailEditorInTab(id);
-        }
-    }
-
-    function showMailEditorInNewTab(id) {
-        var data = {
-            "id" : id
-        };
-        sessionStorage.setItem("separateReSendMailData", JSON.stringify(data));
-        var win = window.open('/user/reSendNewTab', '_blank');
-        if (win) {
-            win.focus();
-        } else {
-            alert('Please allow popups for this website');
-        }
-    }
-
-    function showMailEditorInTab(id) {
+    function showPopupTyping(listEmailSelected) {
         $('#sendMailModal').modal();
-        lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-        getDetailMailHistory(id, function (email, accounts, files) {
-            reSendEmail = email;
-            updateSenderSelector(email, accounts, function (account) {
-                showMailContentToEditor(email, accounts, files);
-                $('#' + rdMailSenderId).off('change');
-                $('#' + rdMailSenderId).change(function() {
-                    showMailContentToEditor(email, accounts, files);
-                });
-            });
-        });
+        var toEmailAddress = [];
+        for(var i=0;i<listEmailSelected.length;i++){
+            toEmailAddress.push(listEmailSelected[i].from)
+        }
+        $('#' + rdMailReceiverId).importTags(toEmailAddress.join(","));
 
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -807,55 +759,75 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
+            resetValidation();
             receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
-            ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
-            if(!(receiverValidate && ccValidate)) return;
-            if(!reSendEmail) return;
+            if(!(receiverValidate)) return;
             var btn = $(this);
-            btn.button('loading');
-            var attachmentData = getAttachmentData(attachmentDropzone);
-            var filesAttachOrigin = getFileAtachOrigin();
-            for(var i=0;i<filesAttachOrigin.length;i++){
-                attachmentData.upload.push(filesAttachOrigin[i]);
+            var content = getMailEditorContent();
+            if(!content || content==null || content.trim()==""){
+                return;
             }
-            var form = {
-                messageId: reSendEmail.messageId,
-                subject: $("#" + rdMailSubjectId).val(),
-                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
-                cc: $("#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
-                content: getMailEditorContent(),
-                originAttachment: attachmentData.origin,
-                uploadAttachment: attachmentData.upload,
-                accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
-                sendType: reSendEmail.sendType,
-                historyType: 11,
-            };
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    $('#sendMailModal').modal('hide');
-                    if (data && data.status) {
-                        //TODO: noti send mail success
-                        var payload = getSearchPayload();
-                        loadHistoryData(payload);
-                        resetMailContentDetail();
-                    } else {
-                        //TODO: noti send mail failed
-                    }
+            $.confirm({
+                title: '<b>【Send Mail】</b>',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">Are you sure？<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            btn.button('loading');
+                            var listId = [];
+                            for(var i=0;i<listEmailSelected.length;i++){
+                                listId.push(listEmailSelected[i].messageId);
+                            }
+                            var attachmentData = getAttachmentData(attachmentDropzone);
+                            var form = {
+                                listId: listId,
+                                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
+                                content: content,
+                                originAttachment: attachmentData.origin,
+                                uploadAttachment: attachmentData.upload,
+                                sendType: 7,
+                                historyType: 7,
+                            };
+                            $.ajax({
+                                type: "POST",
+                                contentType: "application/json",
+                                url: "/user/sendReplyRecommendationMail",
+                                data: JSON.stringify(form),
+                                dataType: 'json',
+                                cache: false,
+                                timeout: 600000,
+                                success: function (data) {
+                                    btn.button('reset');
+                                    if (data && data.status) {
+                                        $.alert({
+                                            title: "",
+                                            content: "Send mail complete",
+                                            onClose: function () {
+                                                $('#sendMailModal').modal('hide');
+                                                location.reload();
+                                            }
+                                        });
+                                    } else {
+                                        $.alert("Send mail fail。");
+                                    }
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.error("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
+                                },
+                                error: function (e) {
+                                    btn.button('reset');
+                                    console.error("ERROR : sendSuggestMail: ", e);
+                                    $.alert("Send mail fail。");
+                                    $('#sendMailModal').modal('hide');
+                                    //TODO: noti send mail error
+                                }
+                            });
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){}
+                    },
                 }
             });
         })
@@ -866,81 +838,12 @@
         return editor.getContent();
     }
 
-    function updateSenderSelector(email, accounts, callback) {
-        accounts = accounts || [];
-        var flagAccount = false;
-        $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            if(item.account == email.from){
-                flagAccount = true;
-                lastSelectedSendMailAccountId = item.id;
-            }
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.account.toString() === email.from)
-            }));
-        });
-
-        if(!flagAccount){
-            $('#' + rdMailSenderId).empty();
-            $.each(accounts, function (i, item) {
-                $('#' + rdMailSenderId).append($('<option>', {
-                    value: item.id,
-                    text : item.account,
-                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
-                }));
-            });
-        }
-        if (typeof callback === "function") {
-            callback();
-        }
-    }
 
     function resetValidation() {
         receiverValidate = true;
-        ccValidate = true;
-        $('#' + rdMailCCId + '-container').removeClass('has-error')
         $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
-    function showMailContentToEditor(data, accounts, files) {
-        var receiverListStr = data.to;
-        resetValidation();
-        lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
-        var account;
-        for(var i=0;i<accounts.length;i++){
-            if(accounts[i].id == lastSelectedSendMailAccountId){
-                account = accounts[i];
-            }
-        }
-        document.getElementById(rdMailReceiverId).value = receiverListStr;
-        updateMailEditorContent("");
-        if (data && account) {
-            senderGlobal = account.account;
-            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            var externalCC = account.cc ? account.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            externalCCGlobal = externalCC;
-            cc = updateCCList(cc,externalCC);
-            $('#' + rdMailCCId).importTags(cc.join(","));
-
-            document.getElementById(rdMailSubjectId).value = data.subject;
-            updateMailEditorContent(data.body);
-            var rdMailAttachment = document.getElementById(rdMailAttachmentId);
-            showFileAttach(rdMailAttachment, files, "reSend");
-        }
-        updateDropzoneData(attachmentDropzone);
-    }
-
-
-    function updateMailEditorContent(content, preventClear) {
-        var editor = tinymce.get(rdMailBodyId);
-        editor.setContent(content);
-        if (!preventClear) {
-            editor.undoManager.clear();
-        }
-        editor.undoManager.add();
-    }
 
     function setDownloadLinkClickListener() {
         $('button.download-link').off("click");
@@ -987,15 +890,6 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-    }
-
-    function getFileAtachOrigin() {
-        var files = [];
-        $('#rdMailAttachment button').each(function(){
-            var id = $(this).attr('data-id');
-            files.push(id);
-        });
-        return files;
     }
 
 })(jQuery);

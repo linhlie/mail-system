@@ -7,7 +7,8 @@ public enum SentMailType {
     REPLY_DESTINATION(4, "「返信」"),
     REPLY_EMAIL_MATCHING_ENGINEER(5, "DB「返信」"),
     SEND_TO_ENGINEER(6, "DB「技術者へ」"),
-    OTHER(7, "Other");
+    SEND_VIA_INBOX(7, "Send via inbox"),
+    OTHER(8, "Other");
 
     private final int value;
     private final String text;
@@ -39,6 +40,8 @@ public enum SentMailType {
                 return REPLY_EMAIL_MATCHING_ENGINEER;
             case 6:
                 return SEND_TO_ENGINEER;
+            case 7:
+                return SEND_VIA_INBOX;
         }
         return OTHER;
     }
