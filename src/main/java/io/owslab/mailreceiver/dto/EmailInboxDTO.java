@@ -16,6 +16,7 @@ public class EmailInboxDTO {
     private boolean hasAttachment;
     private int status;
     private String mark;
+    private int replyTimes;
 
     public EmailInboxDTO(){
 
@@ -32,6 +33,7 @@ public class EmailInboxDTO {
         this.hasAttachment = email.isHasAttachment();
         this.status = email.getStatus();
         this.mark = email.getMark();
+        this.replyTimes = email.getReplyTimes();
     }
 
     public String getMessageId() {
@@ -101,4 +103,12 @@ public class EmailInboxDTO {
     public String getBody() { return body; }
 
     public void setBody(String body) { this.body = body; }
+
+    public int getReplyTimes() {
+        return replyTimes;
+    }
+
+    public void setReplyTimes(int replyTimes) {
+        this.replyTimes = replyTimes;
+    }
 }

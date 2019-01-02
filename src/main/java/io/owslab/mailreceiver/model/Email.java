@@ -71,6 +71,8 @@ public class Email {
 
     private int status;
 
+    private int replyTimes;
+
     @Transient
     private String optimizedText;
 
@@ -397,6 +399,14 @@ public class Email {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getReplyTimes() {
+        return replyTimes;
+    }
+
+    public void setReplyTimes(int replyTimes) {
+        this.replyTimes = replyTimes;
     }
 
     public static class Status {

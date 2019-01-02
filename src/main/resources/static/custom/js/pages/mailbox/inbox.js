@@ -56,6 +56,7 @@
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="relativeDate"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="mark"><span></span></td>' +
+        '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="replyTimes"><span></span></td>' +
         '<td class="text-center" rowspan="1" colspan="1" data="messageId">' +
         '<input type="checkbox" class="selectEmailInbox"/>' +
         '</td>' +
@@ -227,6 +228,7 @@
             width: 'auto',
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             validationMsg: 'メールアドレスを入力してください',
+            interactive:false
         });
     }
 
@@ -307,19 +309,18 @@
         pageSize = getPageSize();
         $('body').loadingModal({
             position: 'auto',
-            text: '抽出中...',
+            text: 'ロード中...',
             color: '#fff',
             opacity: '0.7',
             backgroundColor: 'rgb(0,0,0)',
             animation: 'doubleBounce',
         });
         function onSuccess(response) {
-            $('body').loadingModal('hide');
+            hideloading();
             if (response && response.status) {
                 var data  = response.list[0];
                 if(data){
                     listEmailInbox = data.listEmail? data.listEmail : [];
-                    console.log(listEmailInbox);
                     totalEmail = data.totalEmail;
                     start = data.start;
                     end = data.end;
@@ -340,7 +341,7 @@
 
         function onError(error) {
             console.error("[ERROR] submit error: ", error);
-            $('body').loadingModal('hide');
+            hideloading();
         }
         filterInbox({
             filterRule: filterCondition,
@@ -541,7 +542,6 @@
             var wordExclusion = $( '#wordExclusion').val();
             if(typeof callback === "function"){
                 var condition = $('#'+inboxBuilderId).queryBuilder('getRules');
-                console.log(condition);
                 if(condition != null){
                     saveFilterCondition(condition);
                     location.reload();
@@ -648,14 +648,6 @@
         }
     }
 
-    function resetMailContentDetail() {
-        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
-        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
-        mailSubjectDiv.innerHTML = "";
-        showMailBodyContent({body: ""});
-        mailAttachmentDiv.innerHTML = "";
-    }
-
     function showFileAttach(divFileAttachId, files, type){
         if(files && files.length > 0){
             var filesInnerHTML = "";
@@ -692,7 +684,6 @@
             }
         }
 
-        console.log(listEmailSelected);
         showPopupTyping(listEmailSelected);
     }
 
@@ -716,11 +707,13 @@
 
     function showPopupTyping(listEmailSelected) {
         $('#sendMailModal').modal();
+        clearPopupTyping();
         var toEmailAddress = [];
         for(var i=0;i<listEmailSelected.length;i++){
             toEmailAddress.push(listEmailSelected[i].from)
         }
         $('#' + rdMailReceiverId).importTags(toEmailAddress.join(","));
+        $('.tagsinput').find('a').remove();
 
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -765,17 +758,17 @@
             var btn = $(this);
             var content = getMailEditorContent();
             if(!content || content==null || content.trim()==""){
+                $.alert("内容を入力してください。");
                 return;
             }
             $.confirm({
-                title: '<b>【Send Mail】</b>',
+                title: '<b>【メールを送信する】</b>',
                 titleClass: 'text-center',
-                content: '<div class="text-center" style="font-size: 16px;">Are you sure？<br/></div>',
+                content: '<div class="text-center" style="font-size: 16px;">メールを本当に送信しますか？<br/></div>',
                 buttons: {
                     confirm: {
                         text: 'はい',
                         action: function(){
-                            btn.button('loading');
                             var listId = [];
                             for(var i=0;i<listEmailSelected.length;i++){
                                 listId.push(listEmailSelected[i].messageId);
@@ -783,13 +776,21 @@
                             var attachmentData = getAttachmentData(attachmentDropzone);
                             var form = {
                                 listId: listId,
-                                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
                                 content: content,
                                 originAttachment: attachmentData.origin,
                                 uploadAttachment: attachmentData.upload,
                                 sendType: 7,
                                 historyType: 7,
                             };
+
+                            $('body').loadingModal({
+                                position: 'auto',
+                                text: '送信中...',
+                                color: '#fff',
+                                opacity: '0.7',
+                                backgroundColor: 'rgb(0,0,0)',
+                                animation: 'doubleBounce',
+                            });
                             $.ajax({
                                 type: "POST",
                                 contentType: "application/json",
@@ -799,25 +800,26 @@
                                 cache: false,
                                 timeout: 600000,
                                 success: function (data) {
-                                    btn.button('reset');
+                                    hideloading();
                                     if (data && data.status) {
                                         $.alert({
                                             title: "",
-                                            content: "Send mail complete",
+                                            content: "メールの送信に成功しました。",
                                             onClose: function () {
                                                 $('#sendMailModal').modal('hide');
-                                                location.reload();
+                                                loadEmailData(currentPage);
                                             }
                                         });
                                     } else {
-                                        $.alert("Send mail fail。");
+                                        hideloading();
+                                        $.alert("メールの送信に失敗しました。");
                                     }
 
                                 },
                                 error: function (e) {
-                                    btn.button('reset');
+                                    hideloading();
                                     console.error("ERROR : sendSuggestMail: ", e);
-                                    $.alert("Send mail fail。");
+                                    $.alert("メールの送信に失敗しました。");
                                     $('#sendMailModal').modal('hide');
                                     //TODO: noti send mail error
                                 }
@@ -890,6 +892,19 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+    }
+
+    function clearPopupTyping() {
+        $("#"+rdMailReceiverId).val("");
+        var editor = tinymce.get(rdMailBodyId);
+        editor.setContent("");
+        editor.undoManager.clear();
+        updateDropzoneData(attachmentDropzone);
+    }
+
+    function hideloading() {
+        $('body').loadingModal('hide');
+        $('body').loadingModal('destroy');
     }
 
 })(jQuery);

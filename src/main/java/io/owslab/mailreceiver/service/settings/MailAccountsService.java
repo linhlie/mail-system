@@ -45,6 +45,10 @@ public class MailAccountsService {
     @Autowired
     private EmailAccountSettingService emailAccountSettingService;
 
+    public EmailAccount getEmailAccountById(long id){
+        return emailAccountDAO.findOne(id);
+    }
+
     public Page<EmailAccount> list(PageRequest pageRequest) {
         Page<EmailAccount> list = emailAccountDAO.findAll(pageRequest);
         return list;

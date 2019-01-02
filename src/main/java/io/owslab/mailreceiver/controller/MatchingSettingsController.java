@@ -265,12 +265,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            System.out.println(sendMailForm.getListId().size());
-            for(int i=0;i<sendMailForm.getListId().size();i++){
-                System.out.println(sendMailForm.getListId().get(i));
-            }
-            System.out.println(sendMailForm.getContent());
-            sendMailService.sendMultiMail(sendMailForm);
+            mailBoxService.sendMultiMail(sendMailForm);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

@@ -8,15 +8,15 @@ import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.form.MoreInformationMailContentForm;
 import io.owslab.mailreceiver.form.SendAccountForm;
+import io.owslab.mailreceiver.form.SendMailForm;
+import io.owslab.mailreceiver.form.SendMultilMailForm;
 import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
-import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
-import io.owslab.mailreceiver.service.expansion.DomainService;
-import io.owslab.mailreceiver.service.expansion.EngineerService;
-import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerUnregisterService;
+import io.owslab.mailreceiver.service.expansion.*;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.word.FuzzyWordService;
@@ -106,6 +106,15 @@ public class MailBoxService {
 
     @Autowired
     private PeopleInChargePartnerUnregisterService peopleInChargeUnregisterService;
+
+    @Autowired
+    private PeopleInChargePartnerService peopleInChargePartnerService;
+
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    SendMailService sendMailService;
     
     private List<Email> cachedEmailList = null;
 
@@ -546,23 +555,6 @@ public class MailBoxService {
         return exceprtLine;
     }
 
-    private String getReplyContentFromEmail(Email replyEmail) {
-        String replyText = "<div class=\"gmail_extra\"><br>";
-        replyText += "<div class=\"gmail_quote\">"
-                + Utils.formatGMT(replyEmail.getSentAt())
-                + " <span dir=\"ltr\">&lt;<a href=\"mailto:"
-                + replyEmail.getFrom()
-                + "\" target=\"_blank\" rel=\"noopener\">"
-                + replyEmail.getFrom()
-                + "</a>&gt;</span>:<br />";
-        replyText += "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">\n" +
-                "<div dir=\"ltr\">"+ replyEmail.getOriginalBody() +"</div>\n" +
-                "</blockquote>";
-        replyText += "</div>\n" +
-                "</div>";
-        return replyText;
-    }
-
     private String replaceAllContent(String source, String regex, String replacement){
         String styleReplacement = "<span style=\"color: " + HIGHLIGHT_RANGE_COLOR + ";\">" + replacement + "</span>";
 
@@ -786,5 +778,95 @@ public class MailBoxService {
 
     public void deleteFromInBox(Collection<String> msgIds) {
         emailDAO.updateStatusByMessageIdIn(Email.Status.DONE, Email.Status.DELETED, msgIds);
+    }
+
+    public void sendMultiMail(SendMultilMailForm form){
+        List<String> listMailId = form.getListId();
+        if(listMailId.size()<=0) return;
+        if(form.getContent()==null) return;
+
+        for(int i=0;i<listMailId.size();i++){
+            SendMailForm sendMailForm = new SendMailForm();
+            Email email = emailDAO.findOne(listMailId.get(i));
+            if(email == null) continue;
+
+            String emailBody = email.getOriginalBody();
+            emailBody = wrapText(emailBody);
+            emailBody = getReplyWrapper(Utils.formatGMT(email.getSentAt()), email.getFrom(), emailBody);
+            emailBody = form.getContent() + "<br /><br /><br />" + emailBody;
+            emailBody = getGreeting(email.getFrom(), email.getAccountId()) + "<br />" + emailBody;
+            emailBody = emailBody + "<br />" + getSignature(email.getAccountId());
+
+            sendMailForm.setMessageId(email.getMessageId());
+            sendMailForm.setSubject("Re: " + email.getSubject());
+            sendMailForm.setReceiver(email.getFrom());
+            sendMailForm.setCc(email.getCc());
+            sendMailForm.setContent(emailBody);
+            sendMailForm.setOriginAttachment(form.getOriginAttachment());
+            sendMailForm.setUploadAttachment(form.getUploadAttachment());
+            sendMailForm.setAccountId(email.getAccountId()+"");
+            sendMailForm.setSendType(form.getSendType());
+            sendMailForm.setHistoryType(form.getHistoryType());
+
+            email.setReplyTimes(email.getReplyTimes()+1);
+            emailDAO.save(email);
+            sendMailService.sendMail(sendMailForm);
+        }
+    }
+
+    public String wrapText(String text){
+        text = text.replaceAll("\\r\\n", "<br />");
+        text = text.replaceAll("\\r", "<br />");
+        text = text.replaceAll("\\n", "<br />");
+        return text;
+    }
+
+    public String getReplyWrapper(String replySentAt, String replyFrom, String replyOrigin){
+        String wrapperText = "<div class=\"gmail_extra\"><br>" +
+                "<div class=\"gmail_quote\">" +
+                replySentAt +
+                "<span dir=\"ltr\">&lt;<a href=\"mailto:" +
+                replyFrom +
+                "\" target=\"_blank\" rel=\"noopener\">" +
+                replyFrom +
+                "</a>&gt;</span>:<br />" +
+                "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">" +
+                "<div dir=\"ltr\">" +
+                replyOrigin + "</div></blockquote></div></div>";
+        return wrapperText;
+    }
+
+    public String getGreeting(String fromAddress, long accountId){
+        String greeting = "";
+        int index = fromAddress.indexOf("@");
+        String domainEmail =  fromAddress.substring(index+1).toLowerCase();
+
+        List<BusinessPartner> partners = partnerService.getPartnersByDomain(domainEmail);
+        if(partners==null || partners.size()<=0){
+            greeting = greeting + "お取引先";
+        }else{
+            greeting = greeting + partners.get(0).getName();
+        }
+
+        PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerService.getByEmailAddress(fromAddress);
+        if(peopleInChargePartner != null){
+            greeting = greeting + "　" + peopleInChargePartner.getLastName()+"様";
+        }else{
+            greeting = greeting + "　" + "ご担当者様";
+        }
+
+        EmailAccount emailAccount = mailAccountsService.getEmailAccountById(accountId);
+
+        greeting = greeting + "<br />" + "お世話になっております。" + emailAccount.getInChargeCompany() + accountService.getLastNameUserLogged() + "です。";
+        return greeting;
+    }
+
+    public String getSignature(long accountId){
+        EmailAccount emailAccount = mailAccountsService.getEmailAccountById(accountId);
+        if(emailAccount == null){
+            return "";
+        }else{
+            return  emailAccount.getSignature();
+        }
     }
 }

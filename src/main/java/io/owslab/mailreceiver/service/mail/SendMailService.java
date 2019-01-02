@@ -73,6 +73,7 @@ public class SendMailService {
     private SentMailFileService sentMailFileService;
 
     public void sendMail(SendMailForm form){
+        System.out.println(form.getReceiver());
         Email email = emailService.findOne(form.getMessageId());
         if(email == null) return;
         String formAccountId = form.getAccountId();
@@ -296,38 +297,4 @@ public class SendMailService {
         }
     }
 
-    public void sendMultiMail(SendMultilMailForm form){
-        List<String> listMailId = form.getListId();
-        if(listMailId.size()<=0) return;
-        if(form.getContent()==null) return;
-
-        for(int i=0;i<listMailId.size();i++){
-            Email email = emailService.findOne(listMailId.get(i));
-            String emailBody = email.getOriginalBody();
-            emailBody = wrapText(emailBody);
-            emailBody = getReplyWrapper(Utils.formatGMT(email.getSentAt()), email.getFrom(), emailBody);
-        }
-    }
-
-    public String wrapText(String text){
-        text = text.replaceAll("\\r\\n", "<br />");
-        text = text.replaceAll("\\r", "<br />");
-        text = text.replaceAll("\\n", "<br />");
-        return text;
-    }
-
-    public String getReplyWrapper(String replySentAt, String replyFrom, String replyOrigin){
-        String wrapperText = "<div class=\"gmail_extra\"><br>" +
-                "<div class=\"gmail_quote\">" +
-                replySentAt +
-                "<span dir=\"ltr\">&lt;<a href=\"mailto:" +
-                replyFrom +
-                "\" target=\"_blank\" rel=\"noopener\">" +
-                replyFrom +
-                "</a>&gt;</span>:<br />" +
-                "<blockquote class=\"gmail_quote\" style=\"margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;\">" +
-                "<div dir=\"ltr\">" +
-                replyOrigin + "</div></blockquote></div></div>";
-        return wrapperText;
-    }
 }

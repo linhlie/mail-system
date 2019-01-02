@@ -25,17 +25,20 @@ public class EmailAccount implements Serializable {
 
     private String signature;
 
+    private String inChargeCompany;
+
     public EmailAccount() {}
 
     public EmailAccount(long id) {
         this.id = id;
     }
 
-    public EmailAccount(String account, boolean disabled, boolean alertSend, String signature) {
+    public EmailAccount(String account, boolean disabled, boolean alertSend, String signature, String inChargeCompany) {
         this.account = account;
         this.disabled = disabled;
         this.alertSend = alertSend;
         this.signature = signature;
+        this.inChargeCompany = inChargeCompany;
     }
 
     public EmailAccount(MailAccountForm mailAccountForm) {
@@ -43,6 +46,7 @@ public class EmailAccount implements Serializable {
         this.disabled = mailAccountForm.isDisabled();
         this.signature = mailAccountForm.getSignature();
         this.alertSend = mailAccountForm.isAlertSend();
+        this.inChargeCompany = mailAccountForm.getInChargeCompany();
     }
 
     public long getId() {
@@ -83,5 +87,13 @@ public class EmailAccount implements Serializable {
 
     public void setAlertSend(boolean alertSend) {
         this.alertSend = alertSend;
+    }
+
+    public String getInChargeCompany() {
+        return inChargeCompany;
+    }
+
+    public void setInChargeCompany(String inChargeCompany) {
+        this.inChargeCompany = inChargeCompany;
     }
 }

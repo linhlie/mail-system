@@ -10,12 +10,14 @@ public class MailAccountForm {
     private boolean disabled;
     private String signature;
     private boolean alertSend;
+    private String inChargeCompany;
 
-    public MailAccountForm(String account, boolean disabled, String signature, boolean alertSend) {
+    public MailAccountForm(String account, boolean disabled, String signature, boolean alertSend, String inChargeCompany) {
         this.account = account;
         this.disabled = disabled;
         this.signature = signature;
         this.alertSend = alertSend;
+        this.inChargeCompany = inChargeCompany;
     }
 
     public MailAccountForm() {
@@ -26,6 +28,7 @@ public class MailAccountForm {
         this.disabled = emailAccount.isDisabled();
         this.signature = emailAccount.getSignature();
         this.alertSend = emailAccount.isAlertSend();
+        this.inChargeCompany = emailAccount.getInChargeCompany();
     }
 
     public String getAccount() {
@@ -58,5 +61,13 @@ public class MailAccountForm {
 
     public void setAlertSend(boolean alertSend) {
         this.alertSend = alertSend;
+    }
+
+    public String getInChargeCompany() {
+        return inChargeCompany;
+    }
+
+    public void setInChargeCompany(String inChargeCompany) {
+        this.inChargeCompany = inChargeCompany;
     }
 }
