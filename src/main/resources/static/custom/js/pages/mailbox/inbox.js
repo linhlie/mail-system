@@ -762,7 +762,7 @@
                 return;
             }
             $.confirm({
-                title: '<b>【メールを送信する】</b>',
+                title: '',
                 titleClass: 'text-center',
                 content: '<div class="text-center" style="font-size: 16px;">メールを本当に送信しますか？<br/></div>',
                 buttons: {
