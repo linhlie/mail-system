@@ -73,7 +73,6 @@ public class SendMailService {
     private SentMailFileService sentMailFileService;
 
     public void sendMail(SendMailForm form){
-        System.out.println(form.getReceiver());
         Email email = emailService.findOne(form.getMessageId());
         if(email == null) return;
         String formAccountId = form.getAccountId();

@@ -856,8 +856,11 @@ public class MailBoxService {
         }
 
         EmailAccount emailAccount = mailAccountsService.getEmailAccountById(accountId);
-
-        greeting = greeting + "<br />" + "お世話になっております。" + emailAccount.getInChargeCompany() + accountService.getLastNameUserLogged() + "です。";
+        String inChargeCompany = emailAccount.getInChargeCompany();
+        if(inChargeCompany == null){
+            inChargeCompany = "";
+        }
+        greeting = greeting + "<br />" + "お世話になっております。" + inChargeCompany + accountService.getLastNameUserLogged() + "です。";
         return greeting;
     }
 
