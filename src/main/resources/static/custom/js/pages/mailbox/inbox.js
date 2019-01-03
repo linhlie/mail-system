@@ -674,7 +674,10 @@
 
     function sendMailOnclick() {
         var listMailIdSelected = getEmailSelected();
-        if(listMailIdSelected.length<=0) return;
+        if(listMailIdSelected.length<=0){
+            $.alert("最初にメールを選択してください");
+            return;
+        }
         var listEmailSelected = [];
         for (var i = 0; i < listEmailInbox.length; i++) {
             for (var j = 0; j < listMailIdSelected.length; j++) {

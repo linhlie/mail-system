@@ -81,6 +81,10 @@ public class SendMailService {
         EmailAccount account = emailAccounts.size() > 0 ? emailAccounts.get(0) : null;
         if(account == null) return;
         EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
+        boolean debugOn = enviromentSettingService.getDebugOn();
+        if(debugOn){
+            accountSetting = emailAccountSettingService.findOneSendByEmail("ows-test@world-link-system.com");
+        }
         if(accountSetting == null) return;
 
         Email matchingEmail = null;
@@ -92,10 +96,10 @@ public class SendMailService {
         String from = account.getAccount();
         String to = form.getReceiver();
         String cc = form.getCc();
-        boolean debugOn = enviromentSettingService.getDebugOn();
         if(debugOn){
             to = enviromentSettingService.getDebugReceiveMailAddress();
             cc = "";
+            from = "ows-test@world-link-system.com";
         }
         String replyTo = email.getReplyTo();
 
