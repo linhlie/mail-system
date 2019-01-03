@@ -860,7 +860,7 @@ public class MailBoxService {
         if(inChargeCompany == null){
             inChargeCompany = "";
         }
-        greeting = greeting + "<br />" + "お世話になっております。" + inChargeCompany + accountService.getLastNameUserLogged() + "です。";
+        greeting = greeting + "<br />" + "お世話になっております。" + inChargeCompany + "の" + accountService.getLastNameUserLogged() + "です。";
         return greeting;
     }
 
