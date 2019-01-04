@@ -796,11 +796,12 @@ public class MailBoxService {
             emailBody = form.getContent() + "<br /><br /><br />" + emailBody;
             emailBody = getGreeting(email.getFrom(), email.getAccountId()) + "<br />" + emailBody;
             emailBody = emailBody + "<br />" + getSignature(email.getAccountId());
+            String cc = getEmailCc(email);
 
             sendMailForm.setMessageId(email.getMessageId());
             sendMailForm.setSubject("Re: " + email.getSubject());
             sendMailForm.setReceiver(email.getFrom());
-            sendMailForm.setCc(email.getCc());
+            sendMailForm.setCc(cc);
             sendMailForm.setContent(emailBody);
             sendMailForm.setOriginAttachment(form.getOriginAttachment());
             sendMailForm.setUploadAttachment(form.getUploadAttachment());
@@ -871,5 +872,34 @@ public class MailBoxService {
         }else{
             return  emailAccount.getSignature();
         }
+    }
+
+    public String getEmailCc(Email email){
+        String cc = email.getCc();
+        EmailAccountSetting emailAccountSetting = emailAccountSettingService.findOneSend(email.getAccountId());
+        String ccByAccount = emailAccountSetting.getCc();
+        if(cc != null && !cc.trim().equalsIgnoreCase("")){
+            if(ccByAccount != null && !ccByAccount.trim().equalsIgnoreCase("")){
+                cc = cc + ", " + ccByAccount;
+            }
+        }else{
+            cc = ccByAccount;
+        }
+
+        cc = selfEliminateDuplicates(cc, emailAccountSetting.getUserName().trim());
+        return cc;
+    }
+
+    public String selfEliminateDuplicates(String raw, String accSend) {
+        String[] emails = raw.split(",");
+        List<String> result = new ArrayList<>();
+        for(int i=emails.length-1; i>=0; i--){
+            emails[i] = emails[i].trim();
+            emails[i] = emails[i].toLowerCase();
+            if(!emails[i].equalsIgnoreCase(accSend)){
+                result.add(emails[i]);
+            }
+        }
+        return String.join(",", new HashSet<String>(result));
     }
 }
