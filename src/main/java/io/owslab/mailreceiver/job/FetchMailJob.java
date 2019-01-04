@@ -89,6 +89,7 @@ public class FetchMailJob implements Runnable {
             }
             logger.info("Create the INBOX folder");
             emailFolder = store.getFolder("INBOX");
+            logger.info("Create the INBOX folder done");
             boolean keepMailOnMailServer = enviromentSettingService.getKeepMailOnMailServer();
             boolean isDeleteOldMail = enviromentSettingService.getDeleteOldMail();
             Date beforeDate = null;
@@ -100,6 +101,7 @@ public class FetchMailJob implements Runnable {
             openFolderFlag = keepMailOnMailServer ? Folder.READ_ONLY : Folder.READ_WRITE;
             emailFolder.open(openFolderFlag);
 
+            logger.info("Get message from INBOX folder");
             OwsMimeMessage messages[] = getMessages(emailFolder, msgnum, beforeDate);
             logger.info("Must start fetch mail: " + messages.length + " mails");
             logger.info("start fetchEmail");
