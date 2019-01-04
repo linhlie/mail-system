@@ -223,6 +223,7 @@ public class SettingsController {
             emailAccount.setDisabled(mailAccountForm.isDisabled());
             emailAccount.setAlertSend(mailAccountForm.isAlertSend());
             emailAccount.setSignature(mailAccountForm.getSignature());
+            emailAccount.setInChargeCompany(mailAccountForm.getInChargeCompany());
             mailAccountsService.save(emailAccount);
             EmailAccountSetting existReceiveAccountSetting = emailAccountSettingService.findOneReceive(id);
             EmailAccountSetting newReceiveAccountSetting = new EmailAccountSetting(receiveAccountForm, true);

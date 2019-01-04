@@ -44,11 +44,12 @@
                                     <tr style="background: white">
                                         <th class="col-sm-1 ">送信者</th>
                                         <th class="col-sm-1">宛先</th>
-                                        <th class="col-sm-5">件名</th>
+                                        <th class="col-sm-4">件名</th>
                                         <th class="col-sm-1 text-center">添付</th>
                                         <th class="col-sm-1 text-center">受信ルール合致</th>
                                         <th class="col-sm-1 text-center">受信時刻</th>
                                         <th class="col-sm-1 text-center">マーク</th>
+                                        <th class="col-sm-1 text-center">返信数</th>
                                         <th class="col-sm-1 text-center"><input type="checkbox" id="cbReplyAllEmail"/></th>
                                     </tr>
                                 </thead>
@@ -60,15 +61,18 @@
                     <div class="box-footer no-padding">
                         <div class="mailbox-controls dataTables_wrapper form-inline dt-bootstrap">
                             <div class="row">
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
                                         <span id="totalEmail"></span>
                                     </div>
                                 </div>
-                                <div class="col-sm-7">
-                                    <div class="dataTables_paginate paging_simple_numbers" id="paginationInboxDiv">
+                                <div class="col-sm-8">
+                                    <div class="dataTables_paginate paging_simple_numbers pull-right" id="paginationInboxDiv" style="display: inline-block">
                                         <ul class="pagination" id="paginationInbox">
                                         </ul>
+                                    </div>
+                                    <div class="pull-right" style="display: inline-block; vertical-align: top; margin-top: 2px; margin-right: 5px;">
+                                        <button id="btnSendMailInbox" style="height: 32px;">選択したメールへ返信</button>
                                     </div>
                                 </div>
                             </div>
@@ -110,7 +114,7 @@
     </div><!-- /.modal -->
 
     <div id="sendMailModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 95%; margin-top: 5px; margin-bottom: 5px;">
+        <div class="modal-dialog" role="document" style="width: 80%; margin-top: 5px; margin-bottom: 5px;">
             <div class="modal-content">
                 <div class="modal-header" style="padding: 10px 15px;">
                     <button type="button" name="sendSuggestMailClose" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -119,31 +123,11 @@
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group row">
-                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
-                            <!--<div class="col-md-5">-->
-                            <!--<input id="rdMailSender" class="form-control" placeholder="送信者:" th:readonly="true"/>-->
-                            <!--</div>-->
-                            <div class="col-md-5">
-                                <select style="padding-left: 12px;" id="rdMailSender" class="form-control">
-                                </select>
-                            </div>
                             <div id="rdMailReceiver-container">
                                 <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
-                                <div class="col-md-5">
+                                <div class="col-md-11">
                                     <input id="rdMailReceiver" class="form-control" placeholder="user@example.com, user2@example.com"/>
                                 </div>
-                            </div>
-                        </div>
-                        <div id="rdMailCC-container" class="form-group row">
-                            <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
-                            <div class="col-md-11">
-                                <input id="rdMailCC" class="tags form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
-                            <div class="col-md-11">
-                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
                             </div>
                         </div>
                     </form>

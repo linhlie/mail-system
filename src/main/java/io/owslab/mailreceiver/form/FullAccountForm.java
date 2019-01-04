@@ -51,6 +51,7 @@ public class FullAccountForm {
 
     private String signature;
 
+    private String inChargeCompany;
 
     public FullAccountForm() {
     }
@@ -60,6 +61,7 @@ public class FullAccountForm {
         this.disabled = mailAccountForm.isDisabled();
         this.alertSend = mailAccountForm.isAlertSend();
         this.signature = mailAccountForm.getSignature();
+        this.inChargeCompany = mailAccountForm.getInChargeCompany();
         this.rUserName = receiveAccountForm.getUserName();
         this.rPassword = receiveAccountForm.getPassword();
         this.rMailServerAddress = receiveAccountForm.getMailServerAddress();
@@ -255,8 +257,16 @@ public class FullAccountForm {
         this.sCC = sCC;
     }
 
+    public String getInChargeCompany() {
+        return inChargeCompany;
+    }
+
+    public void setInChargeCompany(String inChargeCompany) {
+        this.inChargeCompany = inChargeCompany;
+    }
+
     public MailAccountForm getMailAccountForm(){
-        return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature(), this.isAlertSend());
+        return new MailAccountForm(this.getAccount(), this.isDisabled(), this.getSignature(), this.isAlertSend(), this.getInChargeCompany());
     }
 
     public ReceiveAccountForm getReceiveAccountForm(){

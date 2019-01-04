@@ -62,6 +62,10 @@ public class PeopleInChargePartnerService {
         return peopleInChargePartnerDAO.findAll();
     }
 
+    public PeopleInChargePartner getByEmailAddress(String email){
+        return peopleInChargePartnerDAO.findByEmailAddress(email);
+    }
+
     public List<PeopleInChargePartnerDTO> getByPartnerId(long partnerId){
         List<PeopleInChargePartner> listPeople =  peopleInChargePartnerDAO.findByPartnerId(partnerId);
         Collections.sort(listPeople, new PeopleInChargePartnerComparator());

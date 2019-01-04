@@ -7,6 +7,7 @@
     var btnFilterId = "#btnFilter";
     var selectPageSizeId = "#selectPageSize"
     var cbReplyAllEmailId = '#cbReplyAllEmail';
+    var btnSendMailInboxId = '#btnSendMailInbox';
 
     var listEmailInbox = null;
     var totalEmail = null;
@@ -38,22 +39,14 @@
     var toDateId = 'historyToDate';
     var historySearchBtnId = 'historySearchBtn';
 
-    var lastSelectedSendMailAccountId;
-    var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailAttachmentId = 'rdMailAttachment';
-    var rdMailCCId = 'rdMailCC';
+
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
 
     var receiverValidate = true;
-    var ccValidate = true;
-
-    var externalCCGlobal = [];
-    var senderGlobal = "";
-    var reSendEmail;
 
     var replaceBody = '<tr role="row" class="hidden">' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
@@ -63,6 +56,7 @@
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="relativeDate"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="mark"><span></span></td>' +
+        '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="replyTimes"><span></span></td>' +
         '<td class="text-center" rowspan="1" colspan="1" data="messageId">' +
         '<input type="checkbox" class="selectEmailInbox"/>' +
         '</td>' +
@@ -217,6 +211,7 @@
         $('#'+inboxBuilderId).queryBuilder(default_configs);
         loadEmailData(0);
         setButtonClickListenter(btnFilterId, showSettingCondition);
+        setButtonClickListenter(btnSendMailInboxId, sendMailOnclick);
 
         initTagsInput();
         initDropzone();
@@ -226,26 +221,14 @@
     });
 
     function initTagsInput() {
-        $('#' + rdMailCCId).tagsInput({
+        $('#' + rdMailReceiverId).tagsInput({
             defaultText: '',
             minInputWidth: 150,
             maxInputWidth: 600,
             width: 'auto',
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             validationMsg: 'メールアドレスを入力してください',
-            onChange: function (elem, elem_tags) {
-                $('.tag').each(function () {
-                    var tag = $(this).text();
-                    var email = tag.substring(0, tag.length - 3);
-                    var globalMailDoman = getEmailDomain(senderGlobal);
-                    var emailDomain = getEmailDomain(email);
-                    if (globalMailDoman == emailDomain) {
-                        $(this).css('background-color', 'yellow');
-                    } else if(externalCCGlobal.indexOf(email) >= 0) {
-                        $(this).css('background-color', 'yellow');
-                    }
-                });
-            }
+            interactive:false
         });
     }
 
@@ -326,14 +309,14 @@
         pageSize = getPageSize();
         $('body').loadingModal({
             position: 'auto',
-            text: '抽出中...',
+            text: 'ロード中...',
             color: '#fff',
             opacity: '0.7',
             backgroundColor: 'rgb(0,0,0)',
             animation: 'doubleBounce',
         });
         function onSuccess(response) {
-            $('body').loadingModal('hide');
+            hideloading();
             if (response && response.status) {
                 var data  = response.list[0];
                 if(data){
@@ -358,7 +341,7 @@
 
         function onError(error) {
             console.error("[ERROR] submit error: ", error);
-            $('body').loadingModal('hide');
+            hideloading();
         }
         filterInbox({
             filterRule: filterCondition,
@@ -457,6 +440,17 @@
         });
     }
 
+    function getEmailSelected() {
+        var listMailIdSelected=[];
+        $("input[name=replyEmail]").each(function( index ) {
+            if($(this).is(':checked')){
+                var msgId = $(this).attr("value");
+                listMailIdSelected.push(msgId);
+            }
+        });
+        return listMailIdSelected;
+    }
+
     function addRowWithData(data, index) {
         var table = document.getElementById(inboxTableId);
         if (!table) return "";
@@ -497,7 +491,9 @@
                 }
 
                 if (cellNode.nodeName == "INPUT") {
+                    var cellData = cellKeys.length == 2 ? (data[cellKeys[0]] ? data[cellKeys[0]][cellKeys[1]] : undefined) : data[cellKeys[0]];
                     cellNode.name = 'replyEmail';
+                    cellNode.value = cellData;
                 }
             }
         }
@@ -546,7 +542,6 @@
             var wordExclusion = $( '#wordExclusion').val();
             if(typeof callback === "function"){
                 var condition = $('#'+inboxBuilderId).queryBuilder('getRules');
-                console.log(condition);
                 if(condition != null){
                     saveFilterCondition(condition);
                     location.reload();
@@ -653,14 +648,6 @@
         }
     }
 
-    function resetMailContentDetail() {
-        var mailSubjectDiv = document.getElementById(mailSubjectDivId);
-        var mailAttachmentDiv = document.getElementById(mailAttachmentDivId);
-        mailSubjectDiv.innerHTML = "";
-        showMailBodyContent({body: ""});
-        mailAttachmentDiv.innerHTML = "";
-    }
-
     function showFileAttach(divFileAttachId, files, type){
         if(files && files.length > 0){
             var filesInnerHTML = "";
@@ -680,27 +667,27 @@
             }
             divFileAttachId.innerHTML = filesInnerHTML;
             setDownloadLinkClickListener();
-            removeAttachOriginListener()
         } else {
             divFileAttachId.innerHTML = "添付ファイルなし";
         }
     }
 
-    function removeAttachOriginListener() {
-        $(".remove-mail-attachment").off('click');
-        $(".remove-mail-attachment").click(function () {
-            var fileAttachmentBtn = $(this).prev();
-            if(fileAttachmentBtn){
-                var brTag = fileAttachmentBtn.prev();
-                if(brTag.is("br")){
-                    brTag.remove();
-                }else{
-                    $(this).next().remove();
+    function sendMailOnclick() {
+        var listMailIdSelected = getEmailSelected();
+        if(listMailIdSelected.length<=0){
+            $.alert("最初にメールを選択してください");
+            return;
+        }
+        var listEmailSelected = [];
+        for (var i = 0; i < listEmailInbox.length; i++) {
+            for (var j = 0; j < listMailIdSelected.length; j++) {
+                if (listEmailInbox[i].messageId == listMailIdSelected[j]) {
+                    listEmailSelected.push(listEmailInbox[i]);
                 }
-                fileAttachmentBtn.remove();
-                $(this).remove();
             }
-        })
+        }
+
+        showPopupTyping(listEmailSelected);
     }
 
     function showMailBodyContent(data) {
@@ -721,41 +708,15 @@
         });
     }
 
-    function showMailEditor(id) {
-        var cachedSeparateTab = getCachedSeparateTabSetting();
-        if(cachedSeparateTab) {
-            showMailEditorInNewTab(id);
-        } else {
-            showMailEditorInTab(id);
-        }
-    }
-
-    function showMailEditorInNewTab(id) {
-        var data = {
-            "id" : id
-        };
-        sessionStorage.setItem("separateReSendMailData", JSON.stringify(data));
-        var win = window.open('/user/reSendNewTab', '_blank');
-        if (win) {
-            win.focus();
-        } else {
-            alert('Please allow popups for this website');
-        }
-    }
-
-    function showMailEditorInTab(id) {
+    function showPopupTyping(listEmailSelected) {
         $('#sendMailModal').modal();
-        lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-        getDetailMailHistory(id, function (email, accounts, files) {
-            reSendEmail = email;
-            updateSenderSelector(email, accounts, function (account) {
-                showMailContentToEditor(email, accounts, files);
-                $('#' + rdMailSenderId).off('change');
-                $('#' + rdMailSenderId).change(function() {
-                    showMailContentToEditor(email, accounts, files);
-                });
-            });
-        });
+        clearPopupTyping();
+        var toEmailAddress = [];
+        for(var i=0;i<listEmailSelected.length;i++){
+            toEmailAddress.push(listEmailSelected[i].from)
+        }
+        $('#' + rdMailReceiverId).importTags(toEmailAddress.join(","));
+        $('.tagsinput').find('a').remove();
 
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -794,55 +755,84 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
+            resetValidation();
             receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
-            ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
-            if(!(receiverValidate && ccValidate)) return;
-            if(!reSendEmail) return;
+            if(!(receiverValidate)) return;
             var btn = $(this);
-            btn.button('loading');
-            var attachmentData = getAttachmentData(attachmentDropzone);
-            var filesAttachOrigin = getFileAtachOrigin();
-            for(var i=0;i<filesAttachOrigin.length;i++){
-                attachmentData.upload.push(filesAttachOrigin[i]);
+            var content = getMailEditorContent();
+            if(!content || content==null || content.trim()==""){
+                $.alert("内容を入力してください。");
+                return;
             }
-            var form = {
-                messageId: reSendEmail.messageId,
-                subject: $("#" + rdMailSubjectId).val(),
-                receiver: $("#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
-                cc: $("#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
-                content: getMailEditorContent(),
-                originAttachment: attachmentData.origin,
-                uploadAttachment: attachmentData.upload,
-                accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
-                sendType: reSendEmail.sendType,
-                historyType: 11,
-            };
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/sendRecommendationMail",
-                data: JSON.stringify(form),
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    btn.button('reset');
-                    $('#sendMailModal').modal('hide');
-                    if (data && data.status) {
-                        //TODO: noti send mail success
-                        var payload = getSearchPayload();
-                        loadHistoryData(payload);
-                        resetMailContentDetail();
-                    } else {
-                        //TODO: noti send mail failed
-                    }
+            $.confirm({
+                title: '',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">メールを本当に送信しますか？<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            var listId = [];
+                            for(var i=0;i<listEmailSelected.length;i++){
+                                listId.push(listEmailSelected[i].messageId);
+                            }
+                            var attachmentData = getAttachmentData(attachmentDropzone);
+                            var form = {
+                                listId: listId,
+                                content: content,
+                                originAttachment: attachmentData.origin,
+                                uploadAttachment: attachmentData.upload,
+                                sendType: 7,
+                                historyType: 7,
+                            };
 
-                },
-                error: function (e) {
-                    btn.button('reset');
-                    console.error("ERROR : sendSuggestMail: ", e);
-                    $('#sendMailModal').modal('hide');
-                    //TODO: noti send mail error
+                            $('body').loadingModal({
+                                position: 'auto',
+                                text: '送信中...',
+                                color: '#fff',
+                                opacity: '0.7',
+                                backgroundColor: 'rgb(0,0,0)',
+                                animation: 'doubleBounce',
+                            });
+                            $.ajax({
+                                type: "POST",
+                                contentType: "application/json",
+                                url: "/user/sendReplyRecommendationMail",
+                                data: JSON.stringify(form),
+                                dataType: 'json',
+                                cache: false,
+                                timeout: 600000,
+                                success: function (data) {
+                                    hideloading();
+                                    if (data && data.status) {
+                                        $.alert({
+                                            title: "",
+                                            content: "メールの送信に成功しました。",
+                                            onClose: function () {
+                                                $('#sendMailModal').modal('hide');
+                                                loadEmailData(currentPage);
+                                            }
+                                        });
+                                    } else {
+                                        hideloading();
+                                        $.alert("メールの送信に失敗しました。");
+                                    }
+
+                                },
+                                error: function (e) {
+                                    hideloading();
+                                    console.error("ERROR : sendSuggestMail: ", e);
+                                    $.alert("メールの送信に失敗しました。");
+                                    $('#sendMailModal').modal('hide');
+                                    //TODO: noti send mail error
+                                }
+                            });
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){}
+                    },
                 }
             });
         })
@@ -853,81 +843,12 @@
         return editor.getContent();
     }
 
-    function updateSenderSelector(email, accounts, callback) {
-        accounts = accounts || [];
-        var flagAccount = false;
-        $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            if(item.account == email.from){
-                flagAccount = true;
-                lastSelectedSendMailAccountId = item.id;
-            }
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.account.toString() === email.from)
-            }));
-        });
-
-        if(!flagAccount){
-            $('#' + rdMailSenderId).empty();
-            $.each(accounts, function (i, item) {
-                $('#' + rdMailSenderId).append($('<option>', {
-                    value: item.id,
-                    text : item.account,
-                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
-                }));
-            });
-        }
-        if (typeof callback === "function") {
-            callback();
-        }
-    }
 
     function resetValidation() {
         receiverValidate = true;
-        ccValidate = true;
-        $('#' + rdMailCCId + '-container').removeClass('has-error')
         $('#' + rdMailReceiverId + '-container').removeClass('has-error')
     }
 
-    function showMailContentToEditor(data, accounts, files) {
-        var receiverListStr = data.to;
-        resetValidation();
-        lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
-        var account;
-        for(var i=0;i<accounts.length;i++){
-            if(accounts[i].id == lastSelectedSendMailAccountId){
-                account = accounts[i];
-            }
-        }
-        document.getElementById(rdMailReceiverId).value = receiverListStr;
-        updateMailEditorContent("");
-        if (data && account) {
-            senderGlobal = account.account;
-            var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            var externalCC = account.cc ? account.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            externalCCGlobal = externalCC;
-            cc = updateCCList(cc,externalCC);
-            $('#' + rdMailCCId).importTags(cc.join(","));
-
-            document.getElementById(rdMailSubjectId).value = data.subject;
-            updateMailEditorContent(data.body);
-            var rdMailAttachment = document.getElementById(rdMailAttachmentId);
-            showFileAttach(rdMailAttachment, files, "reSend");
-        }
-        updateDropzoneData(attachmentDropzone);
-    }
-
-
-    function updateMailEditorContent(content, preventClear) {
-        var editor = tinymce.get(rdMailBodyId);
-        editor.setContent(content);
-        if (!preventClear) {
-            editor.undoManager.clear();
-        }
-        editor.undoManager.add();
-    }
 
     function setDownloadLinkClickListener() {
         $('button.download-link').off("click");
@@ -976,13 +897,17 @@
         document.body.removeChild(a);
     }
 
-    function getFileAtachOrigin() {
-        var files = [];
-        $('#rdMailAttachment button').each(function(){
-            var id = $(this).attr('data-id');
-            files.push(id);
-        });
-        return files;
+    function clearPopupTyping() {
+        $("#"+rdMailReceiverId).val("");
+        var editor = tinymce.get(rdMailBodyId);
+        editor.setContent("");
+        editor.undoManager.clear();
+        updateDropzoneData(attachmentDropzone);
+    }
+
+    function hideloading() {
+        $('body').loadingModal('hide');
+        $('body').loadingModal('destroy');
     }
 
 })(jQuery);
