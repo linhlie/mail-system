@@ -39,7 +39,7 @@
     var toDateId = 'historyToDate';
     var historySearchBtnId = 'historySearchBtn';
 
-    var rdMailBodyId = 'rdMailBody';
+    var rdMailBodyId = 'rdMailBodyInbox';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailAttachmentId = 'rdMailAttachment';
 
@@ -214,6 +214,7 @@
         setButtonClickListenter(btnSendMailInboxId, sendMailOnclick);
 
         initTagsInput();
+        initTinyMCE();
         initDropzone();
         initStickyHeader();
         previewDraggingSetup();
@@ -229,6 +230,27 @@
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             validationMsg: 'メールアドレスを入力してください',
             interactive:false
+        });
+    }
+    
+    function initTinyMCE() {
+        tinymce.init({
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block : '',
+            selector: '#' + rdMailBodyId,
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 350,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor',
+                'placeholder',
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
         });
     }
 
