@@ -123,11 +123,22 @@
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group row">
-                            <div id="rdMailReceiver-container">
-                                <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
-                                <div class="col-md-11">
-                                    <input id="rdMailReceiver" class="form-control" placeholder="user@example.com, user2@example.com"/>
-                                </div>
+                            <label class="control-label col-md-1 text-left">送信者:</label>
+                            <div class="col-md-1 text-right">
+                                <input type="radio" name="chooseUser" value="1" style="margin-top: 10px;"/>
+                            </div>
+                            <div class="col-md-5">
+                                <select id="rdMailSender" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-1 text-left"></label>
+                            <div class="col-md-1 text-right">
+                                <input type="radio" name="chooseUser" value="2"/>
+                            </div>
+                            <div class="col-md-10">
+                                <span>受信したメールアドレスから送信</span>
                             </div>
                         </div>
                     </form>

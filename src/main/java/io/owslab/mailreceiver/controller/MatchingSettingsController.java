@@ -1,11 +1,9 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dto.DetailMailDTO;
-import io.owslab.mailreceiver.dto.EmailAccountEngineerDTO;
-import io.owslab.mailreceiver.dto.ExtractMailDTO;
-import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
+import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.*;
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.ClickHistory;
 import io.owslab.mailreceiver.model.EmailAccount;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -18,6 +16,7 @@ import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
+import io.owslab.mailreceiver.utils.PageWrapper;
 import io.owslab.mailreceiver.utils.SelectOption;
 
 import org.json.JSONException;
@@ -25,6 +24,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -250,6 +252,23 @@ public class MatchingSettingsController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value = { "/sendReplyRecommendationMail/getMailAccounts" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getMailAccounts() {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<EmailAccount> accounts = mailAccountsService.list();
+            result.setList(accounts);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getMailAccounts: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/sendReplyRecommendationMail")

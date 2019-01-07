@@ -9,6 +9,7 @@ public class SendMultilMailForm {
     private String content;
     private List<Long> originAttachment;
     private List<Long> uploadAttachment;
+    private long accountId;
 
     private int sendType;
     private int historyType;
@@ -75,5 +76,13 @@ public class SendMultilMailForm {
 
     public void setHistoryType(int historyType) {
         this.historyType = historyType;
+    }
+
+    public long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
     }
 }
