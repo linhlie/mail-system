@@ -12,6 +12,7 @@ public class EmailInboxDTO {
     private String to;
     private String relativeDate;
     private String sentAt;
+    private String receiveAt;
     private PrettyTime p = new PrettyTime();
     private boolean hasAttachment;
     private int status;
@@ -31,6 +32,7 @@ public class EmailInboxDTO {
         this.to = email.getTo();
         this.relativeDate = p.format(email.getSentAt());
         this.sentAt = DateFormatUtils.format(email.getSentAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null);
+        this.receiveAt = DateFormatUtils.format(email.getReceivedAt(), "yyyy-MM-dd HH:mm:ss", DetailMailDTO.TIME_ZONE, null);
         this.hasAttachment = email.isHasAttachment();
         this.status = email.getStatus();
         this.mark = email.getMark();
@@ -120,5 +122,13 @@ public class EmailInboxDTO {
 
     public void setAccountId(long accountId) {
         this.accountId = accountId;
+    }
+
+    public String getReceiveAt() {
+        return receiveAt;
+    }
+
+    public void setReceiveAt(String receiveAt) {
+        this.receiveAt = receiveAt;
     }
 }

@@ -48,7 +48,7 @@
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="subject"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="hasAttachment"><i></i></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="status"><i></i></td>' +
-        '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="relativeDate"><span></span></td>' +
+        '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="receiveAt"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="mark"><span></span></td>' +
         '<td class="clickable text-center tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="replyTimes"><span></span></td>' +
         '<td class="text-center" rowspan="1" colspan="1" data="messageId">' +
@@ -921,7 +921,6 @@
         function onSuccess(response) {
             if(response && response.status) {
                 if(typeof callback == 'function'){
-                    console.log(response.list)
                     callback(response.list);
                 }
             }
