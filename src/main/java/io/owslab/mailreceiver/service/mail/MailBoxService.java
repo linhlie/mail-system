@@ -794,7 +794,7 @@ public class MailBoxService {
             emailBody = wrapText(emailBody);
             emailBody = getReplyWrapper(Utils.formatGMT(email.getSentAt()), email.getFrom(), emailBody);
             emailBody = form.getContent() + "<br /><br /><br />" + emailBody;
-            emailBody = getGreeting(email.getFrom(), email.getAccountId()) + "<br />" + emailBody;
+            emailBody = getGreeting(email.getFrom(), email.getAccountId()) + "<br /><br />" + emailBody;
             emailBody = emailBody + "<br />" + getSignature(email.getAccountId());
             String cc = getEmailCc(email);
 
