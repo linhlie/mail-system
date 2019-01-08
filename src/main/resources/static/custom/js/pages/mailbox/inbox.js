@@ -368,7 +368,6 @@
 
     function updateData() {
         if(listEmailInbox){
-            console.log(listEmailInbox);
             showInboxTable(listEmailInbox)
             updateTotalEmail(start, end);
             updatePageActive();
@@ -922,7 +921,6 @@
         function onSuccess(response) {
             if(response && response.status) {
                 if(typeof callback == 'function'){
-                    console.log(response.list)
                     callback(response.list);
                 }
             }
