@@ -35,7 +35,7 @@
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
 
-    var rdMailBodyId = 'rdMailBody';
+    var rdMailBodyId = 'rdMailBodyInbox';
     var rdMailSenderId = 'rdMailSender';
     var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
 
@@ -207,11 +207,33 @@
         setButtonClickListenter(btnFilterId, showSettingCondition);
         setButtonClickListenter(btnSendMailInboxId, sendMailOnclick);
 
+        initTinyMCE();
         initDropzone();
         initStickyHeader();
         previewDraggingSetup();
         settingPageSize();
     });
+    
+    function initTinyMCE() {
+        tinymce.init({
+            force_br_newlines : true,
+            force_p_newlines : false,
+            forced_root_block : '',
+            selector: '#' + rdMailBodyId,
+            language: 'ja',
+            theme: 'modern',
+            statusbar: false,
+            height: 350,
+            plugins: [
+                'advlist autolink link image lists charmap preview hr anchor pagebreak',
+                'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
+                'table contextmenu directionality template paste textcolor',
+                'placeholder',
+            ],
+            menubar: 'edit view insert format table',
+            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+        });
+    }
 
     function initDropzone() {
         Dropzone.autoDiscover = false;
