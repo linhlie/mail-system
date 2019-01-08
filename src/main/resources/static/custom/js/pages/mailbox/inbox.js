@@ -34,19 +34,13 @@
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
     var mailAttachmentDivId = 'mailAttachment';
-    var historyQuickFilterId = 'historyQuickFilter';
-    var fromDateId = 'historyFromDate';
-    var toDateId = 'historyToDate';
-    var historySearchBtnId = 'historySearchBtn';
 
     var rdMailBodyId = 'rdMailBodyInbox';
-    var rdMailReceiverId = 'rdMailReceiver';
-    var rdMailAttachmentId = 'rdMailAttachment';
+    var rdMailSenderId = 'rdMailSender';
+    var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
 
     var attachmentDropzoneId = "#reply-dropzone";
     var attachmentDropzone;
-
-    var receiverValidate = true;
 
     var replaceBody = '<tr role="row" class="hidden">' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
@@ -213,25 +207,12 @@
         setButtonClickListenter(btnFilterId, showSettingCondition);
         setButtonClickListenter(btnSendMailInboxId, sendMailOnclick);
 
-        initTagsInput();
         initTinyMCE();
         initDropzone();
         initStickyHeader();
         previewDraggingSetup();
         settingPageSize();
     });
-
-    function initTagsInput() {
-        $('#' + rdMailReceiverId).tagsInput({
-            defaultText: '',
-            minInputWidth: 150,
-            maxInputWidth: 600,
-            width: 'auto',
-            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            validationMsg: 'メールアドレスを入力してください',
-            interactive:false
-        });
-    }
     
     function initTinyMCE() {
         tinymce.init({
@@ -733,12 +714,22 @@
     function showPopupTyping(listEmailSelected) {
         $('#sendMailModal').modal();
         clearPopupTyping();
-        var toEmailAddress = [];
-        for(var i=0;i<listEmailSelected.length;i++){
-            toEmailAddress.push(listEmailSelected[i].from)
+        var accountId = listEmailSelected[0].accountId;
+        for(var i=0;i<listEmailSelected.length-1;i++){
+            if(listEmailSelected[i].accountId != listEmailSelected[i+1].accountId){
+                accountId = -1;
+            }
         }
-        $('#' + rdMailReceiverId).importTags(toEmailAddress.join(","));
-        $('.tagsinput').find('a').remove();
+        initChooseAccount();
+        getMailAccounts(function (accounts) {
+            if(accountId == -1){
+                showDefaultAccount();
+                updateSenderSelector(lastSelectedSendMailAccountId, accounts);
+            }else{
+                showSelectAccount();
+                updateSenderSelector(accountId, accounts);
+            }
+        });
 
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
@@ -777,9 +768,6 @@
         $('#sendSuggestMail').off('click');
         $('#sendSuggestMail').button('reset');
         $("#sendSuggestMail").click(function () {
-            resetValidation();
-            receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
-            if(!(receiverValidate)) return;
             var btn = $(this);
             var content = getMailEditorContent();
             if(!content || content==null || content.trim()==""){
@@ -799,8 +787,13 @@
                                 listId.push(listEmailSelected[i].messageId);
                             }
                             var attachmentData = getAttachmentData(attachmentDropzone);
+                            var accountIdSend = -1;
+                            if($('input[name=chooseUser]:checked').val()==1){
+                                accountIdSend = $('#' + rdMailSenderId).val();
+                            }
                             var form = {
                                 listId: listId,
+                                accountId: accountIdSend,
                                 content: content,
                                 originAttachment: attachmentData.origin,
                                 uploadAttachment: attachmentData.upload,
@@ -865,13 +858,6 @@
         return editor.getContent();
     }
 
-
-    function resetValidation() {
-        receiverValidate = true;
-        $('#' + rdMailReceiverId + '-container').removeClass('has-error')
-    }
-
-
     function setDownloadLinkClickListener() {
         $('button.download-link').off("click");
         $('button.download-link').click(function(event) {
@@ -920,7 +906,6 @@
     }
 
     function clearPopupTyping() {
-        $("#"+rdMailReceiverId).val("");
         var editor = tinymce.get(rdMailBodyId);
         editor.setContent("");
         editor.undoManager.clear();
@@ -930,6 +915,54 @@
     function hideloading() {
         $('body').loadingModal('hide');
         $('body').loadingModal('destroy');
+    }
+
+    function getMailAccounts(callback){
+        function onSuccess(response) {
+            if(response && response.status) {
+                if(typeof callback == 'function'){
+                    console.log(response.list)
+                    callback(response.list);
+                }
+            }
+        }
+        function onError() {
+            alert('メール送信アカウント情報取得が失敗しました');
+        }
+
+        getMailAccountsAPI(onSuccess, onError);
+    }
+
+    function updateSenderSelector(accountId, accounts) {
+        accounts = accounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id.toString() == accountId)
+            }));
+        });
+    }
+    
+    function initChooseAccount() {
+        $('input[name=chooseUser]').change(function() {
+            if (this.value == '1') {
+                $('#'+rdMailSenderId).prop('disabled', false);
+            }else{
+                $('#'+rdMailSenderId).prop('disabled', true);
+            }
+        });
+    }
+
+    function showSelectAccount() {
+        $("input[name=chooseUser][value='1']").prop("checked",true);
+        $('#'+rdMailSenderId).prop('disabled', false);
+    }
+
+    function showDefaultAccount() {
+        $("input[name=chooseUser][value='2']").prop("checked",true);
+        $('#'+rdMailSenderId).prop('disabled', true);
     }
 
 })(jQuery);

@@ -790,13 +790,18 @@ public class MailBoxService {
             Email email = emailDAO.findOne(listMailId.get(i));
             if(email == null) continue;
 
+            long emailAccountId = email.getAccountId();
+            if(form.getAccountId() > -1){
+                emailAccountId = form.getAccountId();
+            }
             String emailBody = email.getOriginalBody();
             emailBody = wrapText(emailBody);
             emailBody = getReplyWrapper(Utils.formatGMT(email.getSentAt()), email.getFrom(), emailBody);
             emailBody = form.getContent() + "<br /><br /><br />" + emailBody;
-            emailBody = getGreeting(email.getFrom(), email.getAccountId()) + "<br /><br />" + emailBody;
-            emailBody = emailBody + "<br />" + getSignature(email.getAccountId());
-            String cc = getEmailCc(email);
+
+            emailBody = getGreeting(email.getFrom(), emailAccountId) + "<br /><br />" + emailBody;
+            emailBody = emailBody + "<br />" + getSignature(emailAccountId);
+            String cc = getEmailCc(email, emailAccountId);
 
             sendMailForm.setMessageId(email.getMessageId());
             sendMailForm.setSubject("Re: " + email.getSubject());
@@ -805,7 +810,7 @@ public class MailBoxService {
             sendMailForm.setContent(emailBody);
             sendMailForm.setOriginAttachment(form.getOriginAttachment());
             sendMailForm.setUploadAttachment(form.getUploadAttachment());
-            sendMailForm.setAccountId(email.getAccountId()+"");
+            sendMailForm.setAccountId(emailAccountId+"");
             sendMailForm.setSendType(form.getSendType());
             sendMailForm.setHistoryType(form.getHistoryType());
 
@@ -874,9 +879,9 @@ public class MailBoxService {
         }
     }
 
-    public String getEmailCc(Email email){
+    public String getEmailCc(Email email, long emailAccountId){
         String cc = email.getCc();
-        EmailAccountSetting emailAccountSetting = emailAccountSettingService.findOneSend(email.getAccountId());
+        EmailAccountSetting emailAccountSetting = emailAccountSettingService.findOneSend(emailAccountId);
         String ccByAccount = emailAccountSetting.getCc();
         if(cc != null && !cc.trim().equalsIgnoreCase("")){
             if(ccByAccount != null && !ccByAccount.trim().equalsIgnoreCase("")){

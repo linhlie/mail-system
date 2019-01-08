@@ -17,6 +17,7 @@ public class EmailInboxDTO {
     private int status;
     private String mark;
     private int replyTimes;
+    private long accountId;
 
     public EmailInboxDTO(){
 
@@ -34,6 +35,7 @@ public class EmailInboxDTO {
         this.status = email.getStatus();
         this.mark = email.getMark();
         this.replyTimes = email.getReplyTimes();
+        this.accountId = email.getAccountId();
     }
 
     public String getMessageId() {
@@ -110,5 +112,13 @@ public class EmailInboxDTO {
 
     public void setReplyTimes(int replyTimes) {
         this.replyTimes = replyTimes;
+    }
+
+    public long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
     }
 }
