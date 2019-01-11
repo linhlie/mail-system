@@ -38,6 +38,16 @@
     var destinationConditionNameId = "#destination-condition-name";
     var matchingConditionNameId = "#matching-condition-name";
 
+    var ruleInvalidateIds = [];
+
+    var RULE_NUMBER_ID = 4;
+    var RULE_NUMBER_UP_RATE_ID = 5;
+    var RULE_NUMBER_DOWN_RATE_ID = 6;
+
+    var ruleNumberId = "ruleNumber";
+    var ruleNumberUpRateId = "ruleNumberUpRate";
+    var ruleNumberDownRateId = "ruleNumberDownRate";
+
     var default_source_rules = {
         condition: "AND",
         rules: [
@@ -197,30 +207,6 @@
             type: 'string',
             operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
-            id: '4',
-            label: '数値',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '5',
-            label: '数値(上代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '6',
-            label: '数値(下代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
             id: '7',
             label: '添付ファイル',
             type: 'integer',
@@ -245,6 +231,56 @@
             type: 'string',
             operators: ['equal', 'not_equal']
         }];
+
+        var ruleNumberDownRate = $('#'+ruleNumberDownRateId).text();
+        console.log(ruleNumberDownRate);
+        if(!ruleNumberDownRate || ruleNumberDownRate==null){
+            ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRate,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        var ruleNumberUpRate = $('#'+ruleNumberUpRateId).text();
+        console.log(ruleNumberUpRate);
+        if(!ruleNumberUpRate || ruleNumberUpRate==null){
+            ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRate,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        var ruleNumber = $('#'+ruleNumberId).text();
+        console.log(ruleNumber);
+        if(!ruleNumber || ruleNumber==null){
+            ruleInvalidateIds.push(RULE_NUMBER_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumber,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+        console.log(ruleInvalidateIds);
+        console.log(default_filters);
 
         var default_source_configs = {
             plugins: default_plugins,
@@ -406,7 +442,9 @@
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
         if ($.isEmptyObject(sourceConditions)) return;
         if ($.isEmptyObject(destinationConditions)) return;
+        replaceCondition(destinationConditions);
         $(sourceBuilderId).queryBuilder('setRules', destinationConditions);
+        replaceCondition(sourceConditions);
         $(destinationBuilderId).queryBuilder('setRules', sourceConditions);
         var sourceConditionName = getInputValue(sourceConditionNameId);
         var destinationConditionName = getInputValue(destinationConditionNameId);
@@ -465,14 +503,17 @@
         loadExpandCollapseSetting(matchingBuilderId);
         var sourceConditionsStr = localStorage.getItem("sourceConditions");
         var sourceConditions = sourceConditionsStr == null || JSON.parse(sourceConditionsStr) == null ? default_source_rules : JSON.parse(sourceConditionsStr);
+        replaceCondition(sourceConditions);
         $(sourceBuilderId).queryBuilder('setRules', sourceConditions);
         var destinationConditionsStr = localStorage.getItem("destinationConditions");
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
+        replaceCondition(destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
         console.log("sourceConditions: ", sourceConditions);
         console.log("destinationConditions: ", destinationConditions);
         var matchingConditionsStr = localStorage.getItem("matchingConditions");
         var matchingConditions = matchingConditionsStr == null || JSON.parse(matchingConditionsStr) == null ? {condition: "AND", rules: []} : JSON.parse(matchingConditionsStr);
+        replaceCondition(matchingConditions);
         $(matchingBuilderId).queryBuilder('setRules', matchingConditions);
         // var spaceEffective = localStorage.getItem("spaceEffective");
         // spaceEffective = spaceEffective == "true" ? true : false;
@@ -726,6 +767,7 @@
             // }
             var inputId = getInputIdFromUrl(url);
             setInputValue(inputId, name);
+            replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
@@ -973,6 +1015,24 @@
     
     function getInputValue(inputId) {
         return $(inputId).val();
+    }
+
+    function replaceCondition(rule) {
+        var rules = rule.rules;
+        if(rules){
+            for(var i=rules.length-1;i>=0;i--){
+                if(rules[i].id){
+                    for(var j=0;j<ruleInvalidateIds.length;j++){
+                        if(rules[i].id == ruleInvalidateIds[j]){
+                            rules.splice(i, 1);
+                            break;
+                        }
+                    }
+                }else{
+                    replaceCondition(rules[i]);
+                }
+            }
+        }
     }
 
 })(jQuery);

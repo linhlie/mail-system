@@ -24,8 +24,9 @@
                             <div class="form-group">
                                 <label class="col-md-2 col-xs-3 control-label text-left">数値の項目名</label>
 
-                                <div class="col-md-3 col-xs-8">
-                                    <input name="name" th:field="*{name}" type="text" class="form-control" placeholder="入力してください" required="required"/>
+                                <div class="col-md-3 col-xs-8 number-treatment-form-group">
+                                    <input name="name" th:field="*{name}" type="text" class="form-control" placeholder="入力してください"/>
+                                    <span class="form-error"></span>
                                 </div>
                                 <label class="col-md-offset-0 col-md-7 col-xs-offset-3 col-xs-8 control-label text-left note">※検索時、この項目名で検索できます</label>
                             </div>
