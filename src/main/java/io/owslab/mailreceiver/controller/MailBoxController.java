@@ -15,6 +15,7 @@ import io.owslab.mailreceiver.response.MailHistoryResponseBody;
 import io.owslab.mailreceiver.service.file.AttachmentFileService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.slf4j.Logger;
@@ -54,6 +55,9 @@ public class MailBoxController {
 
     @Autowired
     private AttachmentFileService fileService;
+
+    @Autowired
+    NumberTreatmentService numberTreatmentService;
 
     @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
@@ -242,6 +246,10 @@ public class MailBoxController {
 
     @RequestMapping(value = "/user/inbox", method = RequestMethod.GET)
     public String showAllEmail(Model model) {
+        List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        model.addAttribute("ruleNumber",numberConditionSetting.get(0));
+        model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
+        model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
         return "user/inbox/inbox";
     }
 
