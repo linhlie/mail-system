@@ -316,12 +316,59 @@
     function initReplaceSelector() {
         var motoSelectedValue = localStorage.getItem("motoSelectedValue");
         var sakiSelectedValue = localStorage.getItem("sakiSelectedValue");
+
+        $(motoReplaceSelectorId).empty();
+        $(motoReplaceSelectorId).append('<option value="3">元の数値</option>');
+        if(ruleNumberUpRateName){
+            $(motoReplaceSelectorId).append('<option value="5">元の上代</option>');
+        }
+        if(ruleNumberDownRateName){
+            $(motoReplaceSelectorId).append('<option value="4">元の下代</option>');
+        }
+        $(motoReplaceSelectorId).append('<option value="0">先の数値</option>');
+        if(ruleNumberUpRateName){
+            $(motoReplaceSelectorId).append('<option value="2">先の上代</option>');
+        }
+        if(ruleNumberDownRateName){
+            $(motoReplaceSelectorId).append('<option value="1">先の下代</option>');
+        }
+
+        $(sakiReplaceSelectorId).empty();
+        $(sakiReplaceSelectorId).append('<option value="0">元の数値</option>');
+        if(ruleNumberUpRateName){
+            $(sakiReplaceSelectorId).append('<option value="2">元の上代</option>');
+        }
+        if(ruleNumberDownRateName){
+            $(sakiReplaceSelectorId).append('<option value="1">元の下代</option>');
+        }
+        $(sakiReplaceSelectorId).append('<option value="3">先の数値</option>');
+        if(ruleNumberUpRateName){
+            $(sakiReplaceSelectorId).append('<option value="5">先の上代</option>');
+        }
+        if(ruleNumberDownRateName){
+            $(sakiReplaceSelectorId).append('<option value="4">先の下代</option>');
+        }
+
+        $(motoReplaceSelectorId).val(3);
+        $(sakiReplaceSelectorId).val(0);
+
         if(!!motoSelectedValue) {
-            $(motoReplaceSelectorId).val(motoSelectedValue);
+            if(motoSelectedValue%3==2 &&  ruleNumberUpRateName){
+                $(motoReplaceSelectorId).val(motoSelectedValue);
+            }
+            if(motoSelectedValue%3==1 &&  ruleNumberDownRateName){
+                $(motoReplaceSelectorId).val(motoSelectedValue);
+            }
         }
         if(!!sakiSelectedValue) {
-            $(sakiReplaceSelectorId).val(sakiSelectedValue);
+            if(sakiSelectedValue%3==2 &&  ruleNumberUpRateName){
+                $(sakiReplaceSelectorId).val(sakiSelectedValue);
+            }
+            if(sakiSelectedValue%3==1 &&  ruleNumberDownRateName){
+                $(sakiReplaceSelectorId).val(sakiSelectedValue);
+            }
         }
+
         $(motoReplaceSelectorId).change(function() {
             localStorage.setItem("motoSelectedValue", $(motoReplaceSelectorId).val());
         });

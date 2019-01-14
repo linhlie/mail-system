@@ -106,7 +106,11 @@ public class NumberTreatment {
     }
 
     public Double getUpperLimitRate() {
-        return upperLimitRate;
+        if(this.upperLimitName != null && !this.upperLimitName.equalsIgnoreCase("")){
+            return upperLimitRate;
+        }else{
+            return 1.0;
+        }
     }
 
     public void setUpperLimitRate(Double upperLimitRate) {
@@ -130,7 +134,11 @@ public class NumberTreatment {
     }
 
     public Double getLowerLimitRate() {
-        return lowerLimitRate;
+        if(this.lowerLimitName != null && !this.lowerLimitName.equalsIgnoreCase("")){
+            return lowerLimitRate;
+        }else{
+            return 1.0;
+        }
     }
 
     public void setLowerLimitRate(Double lowerLimitRate) {
