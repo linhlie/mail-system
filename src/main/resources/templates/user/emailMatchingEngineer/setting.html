@@ -12,6 +12,9 @@
                     <div class="box-body ">
                         <div  class="matching-section-wrapper"  style="padding: 10px;">
                             <h4>対象技術者の選択</h4>
+                            <span class="col-xs-12 hidden" id="ruleNumber" th:utext="${ruleNumber}"></span>
+                            <span class="col-xs-12 hidden" id="ruleNumberUpRate" th:utext="${ruleNumberUpRate}"></span>
+                            <span class="col-xs-12 hidden" id="ruleNumberDownRate" th:utext="${ruleNumberDownRate}"></span>
                             <div class="form-group row " >
                             	<div class="pull-left filterEngineer" style="padding-top:10px;">
                                 	<label class="radio-inline">
@@ -89,7 +92,7 @@
                                     </div>
                                     
                                 </form>
-                                <div class="col-xs-12" style="margin-top: 10px; padding-bottom: 10px;">
+                                <div class="col-xs-12 engineer-condition-filter" style="margin-top: 10px; padding-bottom: 10px;">
                                     <div class="builder-wrapper-header">
                                         <span>比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#hourlyMoney-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
