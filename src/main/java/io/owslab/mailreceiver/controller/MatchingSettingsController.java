@@ -162,6 +162,10 @@ public class MatchingSettingsController {
 
     @RequestMapping(value = "/matchingResult", method = RequestMethod.GET)
     public String getMatchingResult(Model model) {
+        List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        model.addAttribute("ruleNumber",numberConditionSetting.get(0));
+        model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
+        model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
         return "user/matching/result";
     }
 

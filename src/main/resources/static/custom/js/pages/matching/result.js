@@ -73,6 +73,18 @@
     var spaceEffective = false;
     var distinguish = false;
 
+    var RULE_NUMBER_ID = 4;
+    var RULE_NUMBER_UP_RATE_ID = 5;
+    var RULE_NUMBER_DOWN_RATE_ID = 6;
+
+    var ruleNumberId = "ruleNumber";
+    var ruleNumberUpRateId = "ruleNumberUpRate";
+    var ruleNumberDownRateId = "ruleNumberDownRate";
+
+    var ruleNumberDownRateName = "";
+    var ruleNumberUpRateName = "";
+    var ruleNumberName = "";
+
     var markOptions = {
         "element": "mark",
         "separateWordSearch": false,
@@ -167,6 +179,10 @@
         '<span style="display: inline-block;"></span></td>';
 
     $(function () {
+        ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        ruleNumberName = $('#'+ruleNumberId).text();
+
         previewDraggingSetup();
         previewDraggingSetup2();
         initSearch(mailBodyDivId, "moto");
@@ -193,6 +209,13 @@
         fixingForTinyMCEOnModal();
         var matchingConditionStr;
         matchingConditionStr = sessionStorage.getItem("matchingConditionData");
+        if(matchingConditionStr){
+            var matchingConditionJson = JSON.parse(matchingConditionStr);
+            if(matchingConditionJson && matchingConditionJson.matchingConditionData){
+                replaceCondition(matchingConditionJson.matchingConditionData);
+            }
+            matchingConditionStr = JSON.stringify(matchingConditionJson);
+        }
         var spaceEffectiveStr = sessionStorage.getItem("spaceEffective");
         var distinguishStr = sessionStorage.getItem("distinguish");
         spaceEffective = spaceEffectiveStr ? !!JSON.parse(spaceEffectiveStr) : false;
@@ -1043,7 +1066,7 @@
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
                 }
@@ -1085,7 +1108,6 @@
                         timeout: 600000,
                         success: function (data) {
                             btn.button('reset');
-                            console.log("sendSuggestMail: ", data);
                             $('#sendMailModal').modal('hide');
                             if(data && data.status){
                                 //TODO: noti send mail success
@@ -1096,7 +1118,7 @@
                         },
                         error: function (e) {
                             btn.button('reset');
-                            console.log("ERROR : sendSuggestMail: ", e);
+                            console.error("ERROR : sendSuggestMail: ", e);
                             $('#sendMailModal').modal('hide');
                             //TODO: noti send mail error
                         }
@@ -1635,5 +1657,28 @@
         }
 
         getInforPartnerAPI(sentTo, onSuccess, onError);
+    }
+
+    function replaceCondition(rule) {
+        if(rule && rule.condition != null){
+            var rules = rule.rules;
+            for(var i=0;i<rules.length;i++){
+                replaceCondition(rules[i]);
+            }
+        }else{
+            if((rule.id == RULE_NUMBER_ID || rule.id == RULE_NUMBER_DOWN_RATE_ID || rule.id == RULE_NUMBER_UP_RATE_ID)){
+                switch (rule.value) {
+                    case ruleNumberName:
+                        rule.value = "数値";
+                        break;
+                    case ruleNumberDownRateName:
+                        rule.value = "数値(下代)";
+                        break;
+                    case ruleNumberUpRateName:
+                        rule.value = "数値(上代)";
+                        break;
+                }
+            }
+        }
     }
 })(jQuery);

@@ -48,6 +48,10 @@
     var ruleNumberUpRateId = "ruleNumberUpRate";
     var ruleNumberDownRateId = "ruleNumberDownRate";
 
+    var ruleNumberDownRateName = "";
+    var ruleNumberUpRateName = "";
+    var ruleNumberName = "";
+
     var default_source_rules = {
         condition: "AND",
         rules: [
@@ -133,7 +137,9 @@
         if (!value || value.trim().length === 0) {
             return "Value can not be empty!";
         } else if (rule.operator.type !== 'in') {
-            if(value === "数値" || value === "数値(上代)" || value === "数値(下代)") return true;
+            if(value === ruleNumberName || value === ruleNumberUpRateName || value === ruleNumberDownRateName){
+                return true;
+            }
             value = fullWidthNumConvert(value);
             value = value.replace(/，/g, ",");
             var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
@@ -232,55 +238,129 @@
             operators: ['equal', 'not_equal']
         }];
 
-        var ruleNumberDownRate = $('#'+ruleNumberDownRateId).text();
-        console.log(ruleNumberDownRate);
-        if(!ruleNumberDownRate || ruleNumberDownRate==null){
+        var default_filters_matching = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }];
+
+        ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
             ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
         }else{
             default_filters.splice(10,0,{
                 id: RULE_NUMBER_DOWN_RATE_ID,
-                label: ruleNumberDownRate,
+                label: ruleNumberDownRateName,
                 type: 'string',
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
                 validation: {
                     callback: numberValidator
                 },
             })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRateName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            })
         }
 
-        var ruleNumberUpRate = $('#'+ruleNumberUpRateId).text();
-        console.log(ruleNumberUpRate);
-        if(!ruleNumberUpRate || ruleNumberUpRate==null){
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        if(!ruleNumberUpRateName || ruleNumberUpRateName==null){
             ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
         }else{
             default_filters.splice(10,0,{
                 id: RULE_NUMBER_UP_RATE_ID,
-                label: ruleNumberUpRate,
+                label: ruleNumberUpRateName,
                 type: 'string',
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
                 validation: {
                     callback: numberValidator
+                },
+            })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRateName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
                 },
             })
         }
 
-        var ruleNumber = $('#'+ruleNumberId).text();
-        console.log(ruleNumber);
-        if(!ruleNumber || ruleNumber==null){
+        ruleNumberName = $('#'+ruleNumberId).text();
+        if(!ruleNumberName || ruleNumberName==null){
             ruleInvalidateIds.push(RULE_NUMBER_ID);
         }else{
             default_filters.splice(10,0,{
                 id: RULE_NUMBER_ID,
-                label: ruleNumber,
+                label: ruleNumberName,
                 type: 'string',
                 operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
                 validation: {
                     callback: numberValidator
                 },
             })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            })
         }
-        console.log(ruleInvalidateIds);
-        console.log(default_filters);
 
         var default_source_configs = {
             plugins: default_plugins,
@@ -299,88 +379,9 @@
         };
 
         var default_matching_configs = {
-            plugins: [
-                'sortable',
-                'filter-description',
-                'unique-filter',
-                'bt-tooltip-errors',
-                'bt-selectpicker',
-                'bt-checkbox',
-                'invert',
-            ],
+            plugins: default_plugins,
             allow_empty: true,
-            filters: [{
-                id: '0',
-                label: '送信者',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '1',
-                label: '受信者',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '2',
-                label: '件名',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '3',
-                label: '本文',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '4',
-                label: '数値',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }, {
-                id: '5',
-                label: '数値(上代)',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }, {
-                id: '6',
-                label: '数値(下代)',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }],
+            filters: default_filters_matching,
             rules: null,
             lang: globalConfig.default_lang,
         };
@@ -509,8 +510,6 @@
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
         replaceCondition(destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
-        console.log("sourceConditions: ", sourceConditions);
-        console.log("destinationConditions: ", destinationConditions);
         var matchingConditionsStr = localStorage.getItem("matchingConditions");
         var matchingConditions = matchingConditionsStr == null || JSON.parse(matchingConditionsStr) == null ? {condition: "AND", rules: []} : JSON.parse(matchingConditionsStr);
         replaceCondition(matchingConditions);
@@ -678,7 +677,6 @@
 
     function saveMatchingListData(){
         var result = $(matchingBuilderId).queryBuilder('getRules');
-        console.log("saveMatchingListData: ", result);
         if ($.isEmptyObject(result)) return;
         var datalistStr = localStorage.getItem(matchingListKey);
         var datalist = JSON.parse(datalistStr);
@@ -834,7 +832,6 @@
     function extractSource() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
         if(!sourceConditionData) return;
-        console.log("extractSource: ",sourceConditionData);
         const duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : sourceConditionData,
