@@ -832,7 +832,7 @@
     function extractSource() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
         if(!sourceConditionData) return;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : sourceConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
@@ -858,7 +858,7 @@
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : destinationConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
@@ -895,7 +895,7 @@
         // var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
         var spaceEffective = false;
         var distinguish = false;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
@@ -925,7 +925,7 @@
     
     
     function initDuplicateHandle() {
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
         duplicateSettingData.enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
         $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
@@ -948,12 +948,12 @@
     }
 
     function getCachedDuplicationSettingData() {
-        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
-        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
-        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
-        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
-        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
-        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
+        var enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
+        var enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
+        var handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
+        var handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
+        var handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
+        var handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
         return {
             enable: enableDuplicateHandle,
             sender: handleDuplicateSender,
@@ -964,7 +964,7 @@
     }
     
     function initSameDomainHandle() {
-        let enableSameDomainHandle = getCachedSameDomainSettingData();
+        var enableSameDomainHandle = getCachedSameDomainSettingData();
         $('#enable-same-domain-handle').prop('checked', enableSameDomainHandle);
         $('#enable-same-domain-handle').change(function() {
             var enable = $(this).is(":checked");
@@ -973,13 +973,13 @@
     }
     
     function getCachedSameDomainSettingData() {
-        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
-        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        var enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
+        var enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
     }
     
     function initcheckDomainInPartnerGroup() {
-        let checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
+        var checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
         $(checkDomainInPartnerGroupId).prop('checked', checkDomainInPartnerGroup);
         $(checkDomainInPartnerGroupId).change(function() {
             var enable = $(this).is(":checked");
@@ -988,8 +988,8 @@
     }
     
     function getCachedCheckDomainInPartnerGroupSettingData() {
-        let checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
-        let enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
+        var checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
+        var enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
         return enablecheckDomainInPartnerGroup;
     }
     
