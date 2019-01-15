@@ -69,4 +69,9 @@ public class NumberTreatmentService {
         }
         return result;
     }
+
+    @CacheEvict(allEntries = true)
+    public void deleteAll(){
+        numberTreatmentDAO.deleteAll();
+    }
 }

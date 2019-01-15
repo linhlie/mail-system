@@ -63,6 +63,9 @@ public class NumberTreatment {
         this.upperLimitRate = (form.getUpperLimitRate()+"").equalsIgnoreCase("null")? 1.0 : form.getUpperLimitRate();
         this.lowerLimitRate = (form.getLowerLimitRate()+"").equalsIgnoreCase("null")? 1.0 : form.getLowerLimitRate();
 
+        this.upperLimitRate = (form.getUpperLimitName()+"").equalsIgnoreCase("null")? 1.0 : form.getUpperLimitRate();
+        this.lowerLimitRate = (form.getLowerLimitName()+"").equalsIgnoreCase("null")? 1.0 : form.getLowerLimitRate();
+
         this.leftBoundaryValue = form.getLeftBoundaryValue();
         this.leftBoundaryOperator = form.getLeftBoundaryOperator();
         this.combineOperator = form.getCombineOperator();

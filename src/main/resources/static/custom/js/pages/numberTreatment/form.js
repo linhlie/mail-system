@@ -3,6 +3,7 @@
     "use strict";
     var formId = '#numberTreatmentForm';
     var submitButtonId = '#btn-submit-number-treatment';
+    var deleteButtonId = '#deleteBtn';
 
     var formFields = [
         {type: "input", name: "name"},
@@ -24,7 +25,6 @@
 
     $(formId).submit(function(e){
         e.preventDefault();
-
         clearFormValidate();
         var validated = numberTreatmentFormValidate();
         if(!validated) return;
@@ -166,6 +166,7 @@
         followSettingName();
         followUpperLimitName();
         followLowerLimitName();
+        setButtonClickListenter(deleteButtonId, callDeleteNumbertreatment);
     });
 
     function setAddRowListener(name, tableId, data) {
@@ -402,6 +403,32 @@
         var container = $(this).closest(selector);
         container.addClass("has-error");
         container.find("span.form-error").text(error);
+    }
+    
+    function callDeleteNumbertreatment() {
+        function onSuccess() {
+            location.reload();
+        }
+        function onError() {
+            $.alert("数値扱い設定クリアが失敗しました。");
+        }
+        $.confirm({
+            title: '<b>【数値扱い設定クリア】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">数値扱い設定を本当にクリアしたいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deletenumberTreatment(onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
     }
 
 })(jQuery);

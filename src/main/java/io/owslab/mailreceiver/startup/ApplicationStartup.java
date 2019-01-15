@@ -140,16 +140,16 @@ public class ApplicationStartup {
         addMemberAccount();
         mailBoxService.getAll(true);
         logger.info("AUTO_FETCH_MAIL "+MailReceiverApplication.AUTO_FETCH_MAIL);
-        if(MailReceiverApplication.AUTO_FETCH_MAIL){
+//        if(MailReceiverApplication.AUTO_FETCH_MAIL){
             fetchMailScheduler.start();
-        }else{
+//        }else{
             deleteOldMailsScheduler.start();
             deleteSentMailHistoryScheduler.start();
             receiveMailScheduler.start();
             autoExtendScheduler.start();
             updateDomainUnregisterScheduler.start();
             motoringScheduler.start();
-        }
+//        }
         getDomain();
         configWordDatabase();
 //        String testData = "120万YENkt 100万YEN numbers here 121万YEN kt 101万YEN 123万YEN kt102万YEN 125万YENkt105万YEN" ;

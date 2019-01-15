@@ -60,4 +60,9 @@ public class ReplaceLetterService {
         List<ReplaceLetter> replaceLetters = replaceLetterDAO.findByLetterAndPosition(letter, position);
         return replaceLetters.size() > 0 ? replaceLetters.get(0) : null;
     }
+
+    @CacheEvict(allEntries = true)
+    public void deleteAll(){
+        replaceLetterDAO.deleteAll();
+    }
 }
