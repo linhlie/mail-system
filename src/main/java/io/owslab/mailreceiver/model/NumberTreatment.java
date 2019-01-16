@@ -57,6 +57,10 @@ public class NumberTreatment {
         this.name = form.getName();
         this.upperLimitName = form.getUpperLimitName();
         this.lowerLimitName = form.getLowerLimitName();
+        this.upperLimitSign = form.getUpperLimitSign();
+        this.lowerLimitSign = form.getLowerLimitSign();
+        this.upperLimitRate = form.getUpperLimitRate();
+        this.lowerLimitRate = form.getLowerLimitRate();
         this.leftBoundaryValue = form.getLeftBoundaryValue();
         this.leftBoundaryOperator = form.getLeftBoundaryOperator();
         this.combineOperator = form.getCombineOperator();
