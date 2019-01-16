@@ -39,6 +39,16 @@
             }
         }
 
+        var upperLimitNameValue = $("input[name='upperLimitName']").val()
+        if(!upperLimitNameValue || upperLimitNameValue.trim()==""){
+            form["upperLimitRate"] = 1.0;
+        }
+
+        var lowerLimitNameValue = $("input[name='lowerLimitName']").val()
+        if(!lowerLimitNameValue || lowerLimitNameValue.trim() == ""){
+            form["lowerLimitRate"] = 1.0;
+        }
+
         form["replaceNumberList"] = [];
         form["replaceUnitList"] = [];
         form["replaceLetterList"] = [];
@@ -232,7 +242,12 @@
     function handleError(data) {
         if(data) {
             var errorCode = data.errorCode;
-            var errorMessage = data.msg;
+            var errorMessage;
+            if(data.msg){
+                errorMessage = data.msg;
+            }else{
+                errorMessage = "不具合が発生した。";
+            }
             switch (errorCode){
                 case 600:
                     errorMessage = "データには 「.」「,」「，」を含めることはできません。";
@@ -386,13 +401,35 @@
 
     function numberTreatmentFormValidate() {
         var validate1 = settingNameValidate();
-        return validate1;
+        var validate2 = settingUpRateNumberValidate();
+        var validate3 = settingLowRateNumberValidate();
+        return validate1 && validate2 && validate3;
     }
 
     function settingNameValidate() {
         var input = $("input[name='name']");
         if(!input.val()) {
             showError.apply(input, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function settingUpRateNumberValidate() {
+        var inputUpName = $("input[name='upperLimitName']");
+        var inputUpRateNumber = $("input[name='upperLimitRate']");
+        if(inputUpName.val() && !inputUpRateNumber.val()) {
+            showError.apply(inputUpRateNumber, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function settingLowRateNumberValidate() {
+        var inputLowName = $("input[name='lowerLimitName']");
+        var inputLowRateNumber = $("input[name='lowerLimitRate']");
+        if(inputLowName.val() && !inputLowRateNumber.val()) {
+            showError.apply(inputLowRateNumber, ["必須"]);
             return false;
         }
         return true;
