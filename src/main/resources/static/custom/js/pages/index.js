@@ -75,7 +75,7 @@
             ],
             menubar: 'edit view insert format table',
             toolbar: 'undo redo | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
-            fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
+            fontsize_formats: '6pt 8pt 10pt 11pt 12pt 13pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 40pt 45pt 50pt',
             init_instance_callback: function (editor) {
                 loadBulletinBoard(0)
                 editor.on('keyup', function (e) {

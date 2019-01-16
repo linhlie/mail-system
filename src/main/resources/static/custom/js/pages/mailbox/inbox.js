@@ -261,11 +261,12 @@
             plugins: [
                 'advlist autolink link image lists charmap preview hr anchor pagebreak',
                 'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
-                'table contextmenu directionality template paste textcolor',
+                'table contextmenu directionality template paste textcolor colorpicker',
                 'placeholder',
             ],
             menubar: 'edit view insert format table',
-            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+            toolbar: 'undo redo | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image'
+            fontsize_formats: '6pt 8pt 10pt 11pt 12pt 13pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 40pt 45pt 50pt',
         });
     }
 
