@@ -38,6 +38,20 @@
     var destinationConditionNameId = "#destination-condition-name";
     var matchingConditionNameId = "#matching-condition-name";
 
+    var ruleInvalidateIds = [];
+
+    var RULE_NUMBER_ID = 4;
+    var RULE_NUMBER_UP_RATE_ID = 5;
+    var RULE_NUMBER_DOWN_RATE_ID = 6;
+
+    var ruleNumberId = "ruleNumber";
+    var ruleNumberUpRateId = "ruleNumberUpRate";
+    var ruleNumberDownRateId = "ruleNumberDownRate";
+
+    var ruleNumberDownRateName = "";
+    var ruleNumberUpRateName = "";
+    var ruleNumberName = "";
+
     var default_source_rules = {
         condition: "AND",
         rules: [
@@ -123,7 +137,9 @@
         if (!value || value.trim().length === 0) {
             return "Value can not be empty!";
         } else if (rule.operator.type !== 'in') {
-            if(value === "数値" || value === "数値(上代)" || value === "数値(下代)") return true;
+            if(value === ruleNumberName || value === ruleNumberUpRateName || value === ruleNumberDownRateName){
+                return true;
+            }
             value = fullWidthNumConvert(value);
             value = value.replace(/，/g, ",");
             var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
@@ -197,30 +213,6 @@
             type: 'string',
             operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
-            id: '4',
-            label: '数値',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '5',
-            label: '数値(上代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '6',
-            label: '数値(下代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
             id: '7',
             label: '添付ファイル',
             type: 'integer',
@@ -246,6 +238,130 @@
             operators: ['equal', 'not_equal']
         }];
 
+        var default_filters_matching = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            input: function(rule, inputName) {
+                return '<label>比較先項目または値:&nbsp;</label>' +
+                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
+            },
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }];
+
+        ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRateName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            })
+        }
+
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        if(!ruleNumberUpRateName || ruleNumberUpRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRateName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            })
+        }
+
+        ruleNumberName = $('#'+ruleNumberId).text();
+        if(!ruleNumberName || ruleNumberName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+
+            default_filters_matching.splice(4,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                input: function(rule, inputName) {
+                    return '<label>比較先項目または値:&nbsp;</label>' +
+                        '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
+                },
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: matchingMumberValidator
+                },
+            })
+        }
+
         var default_source_configs = {
             plugins: default_plugins,
             allow_empty: true,
@@ -263,88 +379,9 @@
         };
 
         var default_matching_configs = {
-            plugins: [
-                'sortable',
-                'filter-description',
-                'unique-filter',
-                'bt-tooltip-errors',
-                'bt-selectpicker',
-                'bt-checkbox',
-                'invert',
-            ],
+            plugins: default_plugins,
             allow_empty: true,
-            filters: [{
-                id: '0',
-                label: '送信者',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '1',
-                label: '受信者',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '2',
-                label: '件名',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '3',
-                label: '本文',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist" placeholder=""/>';
-                },
-                operators: ['contains', 'not_contains', 'equal', 'not_equal']
-            }, {
-                id: '4',
-                label: '数値',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }, {
-                id: '5',
-                label: '数値(上代)',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }, {
-                id: '6',
-                label: '数値(下代)',
-                type: 'string',
-                input: function(rule, inputName) {
-                    return '<label>比較先項目または値:&nbsp;</label>' +
-                    '<input class="matchingValue black-down-triangle" type="text" name="' + inputName + '" list="itemlist2" placeholder=""/>';
-                },
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: matchingMumberValidator
-                },
-            }],
+            filters: default_filters_matching,
             rules: null,
             lang: globalConfig.default_lang,
         };
@@ -406,7 +443,9 @@
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
         if ($.isEmptyObject(sourceConditions)) return;
         if ($.isEmptyObject(destinationConditions)) return;
+        replaceCondition(destinationConditions);
         $(sourceBuilderId).queryBuilder('setRules', destinationConditions);
+        replaceCondition(sourceConditions);
         $(destinationBuilderId).queryBuilder('setRules', sourceConditions);
         var sourceConditionName = getInputValue(sourceConditionNameId);
         var destinationConditionName = getInputValue(destinationConditionNameId);
@@ -465,14 +504,15 @@
         loadExpandCollapseSetting(matchingBuilderId);
         var sourceConditionsStr = localStorage.getItem("sourceConditions");
         var sourceConditions = sourceConditionsStr == null || JSON.parse(sourceConditionsStr) == null ? default_source_rules : JSON.parse(sourceConditionsStr);
+        replaceCondition(sourceConditions);
         $(sourceBuilderId).queryBuilder('setRules', sourceConditions);
         var destinationConditionsStr = localStorage.getItem("destinationConditions");
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
+        replaceCondition(destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
-        console.log("sourceConditions: ", sourceConditions);
-        console.log("destinationConditions: ", destinationConditions);
         var matchingConditionsStr = localStorage.getItem("matchingConditions");
         var matchingConditions = matchingConditionsStr == null || JSON.parse(matchingConditionsStr) == null ? {condition: "AND", rules: []} : JSON.parse(matchingConditionsStr);
+        replaceCondition(matchingConditions);
         $(matchingBuilderId).queryBuilder('setRules', matchingConditions);
         // var spaceEffective = localStorage.getItem("spaceEffective");
         // spaceEffective = spaceEffective == "true" ? true : false;
@@ -637,7 +677,6 @@
 
     function saveMatchingListData(){
         var result = $(matchingBuilderId).queryBuilder('getRules');
-        console.log("saveMatchingListData: ", result);
         if ($.isEmptyObject(result)) return;
         var datalistStr = localStorage.getItem(matchingListKey);
         var datalist = JSON.parse(datalistStr);
@@ -726,6 +765,7 @@
             // }
             var inputId = getInputIdFromUrl(url);
             setInputValue(inputId, name);
+            replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
@@ -792,8 +832,7 @@
     function extractSource() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
         if(!sourceConditionData) return;
-        console.log("extractSource: ",sourceConditionData);
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : sourceConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
@@ -819,7 +858,7 @@
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : destinationConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
@@ -856,7 +895,7 @@
         // var distinguish = $('input[name=distinguish]:checked', formId).val() === "true";
         var spaceEffective = false;
         var distinguish = false;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var form = {
             "sourceConditionData" : sourceConditionData,
             "destinationConditionData" : destinationConditionData,
@@ -886,7 +925,7 @@
     
     
     function initDuplicateHandle() {
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
         duplicateSettingData.enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
         $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
@@ -909,12 +948,12 @@
     }
 
     function getCachedDuplicationSettingData() {
-        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
-        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
-        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
-        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
-        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
-        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
+        var enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle");
+        var enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
+        var handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender");
+        var handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
+        var handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject");
+        var handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
         return {
             enable: enableDuplicateHandle,
             sender: handleDuplicateSender,
@@ -925,7 +964,7 @@
     }
     
     function initSameDomainHandle() {
-        let enableSameDomainHandle = getCachedSameDomainSettingData();
+        var enableSameDomainHandle = getCachedSameDomainSettingData();
         $('#enable-same-domain-handle').prop('checked', enableSameDomainHandle);
         $('#enable-same-domain-handle').change(function() {
             var enable = $(this).is(":checked");
@@ -934,13 +973,13 @@
     }
     
     function getCachedSameDomainSettingData() {
-        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
-        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        var enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
+        var enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
     }
     
     function initcheckDomainInPartnerGroup() {
-        let checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
+        var checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
         $(checkDomainInPartnerGroupId).prop('checked', checkDomainInPartnerGroup);
         $(checkDomainInPartnerGroupId).change(function() {
             var enable = $(this).is(":checked");
@@ -949,8 +988,8 @@
     }
     
     function getCachedCheckDomainInPartnerGroupSettingData() {
-        let checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
-        let enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
+        var checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
+        var enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
         return enablecheckDomainInPartnerGroup;
     }
     
@@ -973,6 +1012,24 @@
     
     function getInputValue(inputId) {
         return $(inputId).val();
+    }
+
+    function replaceCondition(rule) {
+        var rules = rule.rules;
+        if(rules){
+            for(var i=rules.length-1;i>=0;i--){
+                if(rules[i].id){
+                    for(var j=0;j<ruleInvalidateIds.length;j++){
+                        if(rules[i].id == ruleInvalidateIds[j]){
+                            rules.splice(i, 1);
+                            break;
+                        }
+                    }
+                }else{
+                    replaceCondition(rules[i]);
+                }
+            }
+        }
     }
 
 })(jQuery);

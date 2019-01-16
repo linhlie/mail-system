@@ -53,38 +53,13 @@ public class NumberTreatment {
 
     public NumberTreatment() {}
 
-    public NumberTreatment(long id) {
-        this.id = id;
-    }
-
-    public NumberTreatment(String name, String upperLimitName, int upperLimitSign, Double upperLimitRate,
-                           String lowerLimitName, int lowerLimitSign, Double lowerLimitRate, Double leftBoundaryValue,
-                           int leftBoundaryOperator, int combineOperator, Double rightBoundaryValue,
-                           int rightBoundaryOperator, boolean enableReplaceLetter, boolean enablePrettyNumber, int prettyNumberStep) {
-        this.name = name;
-        this.upperLimitName = upperLimitName;
-        this.upperLimitSign = upperLimitSign;
-        this.upperLimitRate = upperLimitRate;
-        this.lowerLimitName = lowerLimitName;
-        this.lowerLimitSign = lowerLimitSign;
-        this.lowerLimitRate = lowerLimitRate;
-        this.leftBoundaryValue = leftBoundaryValue;
-        this.leftBoundaryOperator = leftBoundaryOperator;
-        this.combineOperator = combineOperator;
-        this.rightBoundaryValue = rightBoundaryValue;
-        this.rightBoundaryOperator = rightBoundaryOperator;
-        this.enableReplaceLetter = enableReplaceLetter;
-        this.enablePrettyNumber = enablePrettyNumber;
-        this.prettyNumberStep = prettyNumberStep;
-    }
-
     public NumberTreatment(NumberTreatmentForm form) {
         this.name = form.getName();
         this.upperLimitName = form.getUpperLimitName();
-        this.upperLimitSign = form.getUpperLimitSign();
-        this.upperLimitRate = form.getUpperLimitRate();
         this.lowerLimitName = form.getLowerLimitName();
+        this.upperLimitSign = form.getUpperLimitSign();
         this.lowerLimitSign = form.getLowerLimitSign();
+        this.upperLimitRate = form.getUpperLimitRate();
         this.lowerLimitRate = form.getLowerLimitRate();
         this.leftBoundaryValue = form.getLeftBoundaryValue();
         this.leftBoundaryOperator = form.getLeftBoundaryOperator();
@@ -129,7 +104,11 @@ public class NumberTreatment {
     }
 
     public Double getUpperLimitRate() {
-        return upperLimitRate;
+        if(this.upperLimitName != null && !this.upperLimitName.equalsIgnoreCase("")){
+            return upperLimitRate;
+        }else{
+            return 1.0;
+        }
     }
 
     public void setUpperLimitRate(Double upperLimitRate) {
@@ -153,7 +132,11 @@ public class NumberTreatment {
     }
 
     public Double getLowerLimitRate() {
-        return lowerLimitRate;
+        if(this.lowerLimitName != null && !this.lowerLimitName.equalsIgnoreCase("")){
+            return lowerLimitRate;
+        }else{
+            return 1.0;
+        }
     }
 
     public void setLowerLimitRate(Double lowerLimitRate) {

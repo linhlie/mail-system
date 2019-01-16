@@ -12,5 +12,4 @@ import java.util.List;
  */
 @Transactional
 public interface NumberTreatmentDAO extends CrudRepository<NumberTreatment, Long> {
-
 }

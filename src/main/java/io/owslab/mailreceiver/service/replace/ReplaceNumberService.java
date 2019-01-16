@@ -49,6 +49,11 @@ public class ReplaceNumberService {
         List<ReplaceNumber> replaceNumbers = replaceNumberDAO.findByCharacter(character);
         return replaceNumbers.size() > 0 ? replaceNumbers.get(0) : null;
     }
+
+    @CacheEvict(allEntries = true)
+    public void deleteAll(){
+        replaceNumberDAO.deleteAll();
+    }
 }
 
 

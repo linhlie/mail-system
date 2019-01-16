@@ -33,6 +33,20 @@
         "2" : [],
     }
 
+    var ruleInvalidateIds = [];
+
+    var RULE_NUMBER_ID = 4;
+    var RULE_NUMBER_UP_RATE_ID = 5;
+    var RULE_NUMBER_DOWN_RATE_ID = 6;
+
+    var ruleNumberId = "ruleNumber";
+    var ruleNumberUpRateId = "ruleNumberUpRate";
+    var ruleNumberDownRateId = "ruleNumberDownRate";
+
+    var ruleNumberDownRateName = "";
+    var ruleNumberUpRateName = "";
+    var ruleNumberName = "";
+
     function fullWidthNumConvert(fullWidthNum){
         return fullWidthNum.replace(/[\uFF10-\uFF19]/g, function(m) {
             return String.fromCharCode(m.charCodeAt(0) - 0xfee0);
@@ -116,30 +130,6 @@
             type: 'string',
             operators: ['contains', 'not_contains', 'equal', 'not_equal']
         }, {
-            id: '4',
-            label: '数値',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '5',
-            label: '数値(上代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
-            id: '6',
-            label: '数値(下代)',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-            validation: {
-                callback: numberValidator
-            },
-        }, {
             id: '7',
             label: '添付ファイル',
             type: 'integer',
@@ -159,6 +149,51 @@
             type: 'string',
             operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
         }];
+
+        ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        if(!ruleNumberUpRateName || ruleNumberUpRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        ruleNumberName = $('#'+ruleNumberId).text();
+        if(!ruleNumberName || ruleNumberName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
 
         var default_configs = {
             plugins: default_plugins,
@@ -448,6 +483,7 @@
 
     function setBuilderRules(builderId, rules) {
         if(!rules) return;
+        replaceCondition(rules);
         $(builderId).queryBuilder('setRules', rules);
     }
 
@@ -593,6 +629,24 @@
                 $(this).val($(this).attr('placeholder'));
             }
         });
+    }
+
+    function replaceCondition(rule) {
+        var rules = rule.rules;
+        if(rules){
+            for(var i=rules.length-1;i>=0;i--){
+                if(rules[i].id){
+                    for(var j=0;j<ruleInvalidateIds.length;j++){
+                        if(rules[i].id == ruleInvalidateIds[j]){
+                            rules.splice(i, 1);
+                            break;
+                        }
+                    }
+                }else{
+                    replaceCondition(rules[i]);
+                }
+            }
+        }
     }
 
 })(jQuery);

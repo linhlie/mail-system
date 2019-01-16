@@ -1,32 +1,35 @@
 
 (function () {
-
+    "use strict";
     var formId = '#numberTreatmentForm';
     var submitButtonId = '#btn-submit-number-treatment';
+    var deleteButtonId = '#deleteBtn';
 
-    "use strict";
+    var formFields = [
+        {type: "input", name: "name"},
+        {type: "input", name: "upperLimitName"},
+        {type: "select", name: "upperLimitSign"},
+        {type: "input", name: "upperLimitRate"},
+        {type: "input", name: "lowerLimitName"},
+        {type: "select", name: "lowerLimitSign"},
+        {type: "input", name: "lowerLimitRate"},
+        {type: "input", name: "leftBoundaryValue"},
+        {type: "select", name: "leftBoundaryOperator"},
+        {type: "select", name: "combineOperator"},
+        {type: "input", name: "rightBoundaryValue"},
+        {type: "select", name: "rightBoundaryOperator"},
+        {type: "checkbox", name: "enableReplaceLetter"},
+        {type: "checkbox", name: "enablePrettyNumber"},
+        {type: "input", name: "prettyNumberStep"},
+    ];
 
     $(formId).submit(function(e){
         e.preventDefault();
+        clearFormValidate();
+        var validated = numberTreatmentFormValidate();
+        if(!validated) return;
 
         var form = {};
-        var formFields = [
-            {type: "input", name: "name"},
-            {type: "input", name: "upperLimitName"},
-            {type: "select", name: "upperLimitSign"},
-            {type: "input", name: "upperLimitRate"},
-            {type: "input", name: "lowerLimitName"},
-            {type: "select", name: "lowerLimitSign"},
-            {type: "input", name: "lowerLimitRate"},
-            {type: "input", name: "leftBoundaryValue"},
-            {type: "select", name: "leftBoundaryOperator"},
-            {type: "select", name: "combineOperator"},
-            {type: "input", name: "rightBoundaryValue"},
-            {type: "select", name: "rightBoundaryOperator"},
-            {type: "checkbox", name: "enableReplaceLetter"},
-            {type: "checkbox", name: "enablePrettyNumber"},
-            {type: "input", name: "prettyNumberStep"},
-        ];
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
             if(field.type == "checkbox"){
@@ -34,6 +37,16 @@
             } else {
                 form[field.name] = $("" + field.type + "[name='" + field.name + "']").val();
             }
+        }
+
+        var upperLimitNameValue = $("input[name='upperLimitName']").val()
+        if(!upperLimitNameValue || upperLimitNameValue.trim()==""){
+            form["upperLimitRate"] = 1.0;
+        }
+
+        var lowerLimitNameValue = $("input[name='lowerLimitName']").val()
+        if(!lowerLimitNameValue || lowerLimitNameValue.trim() == ""){
+            form["lowerLimitRate"] = 1.0;
         }
 
         form["replaceNumberList"] = [];
@@ -106,7 +119,7 @@
     function buildReplaceNumberOrUnitDataTable(tableId) {
         var data = [];
         var table = document.getElementById(tableId);
-        for (i = 1; i < table.rows.length; i++) {
+        for (var i = 1; i < table.rows.length; i++) {
             var objRow = table.rows.item(i);
             var objCells = objRow.cells;
             var rowData = {};
@@ -160,6 +173,10 @@
         setAddReplaceLetterRowListener('addReplaceLetter', 'replaceLetter', ["position", "letter", "replace"]);
         setRemoveRowListener('removeReplaceLetter');
         setGoBackListener('backBtn');
+        followSettingName();
+        followUpperLimitName();
+        followLowerLimitName();
+        setButtonClickListenter(deleteButtonId, callDeleteNumbertreatment);
     });
 
     function setAddRowListener(name, tableId, data) {
@@ -225,7 +242,12 @@
     function handleError(data) {
         if(data) {
             var errorCode = data.errorCode;
-            var errorMessage = data.msg;
+            var errorMessage;
+            if(data.msg){
+                errorMessage = data.msg;
+            }else{
+                errorMessage = "不具合が発生した。";
+            }
             switch (errorCode){
                 case 600:
                     errorMessage = "データには 「.」「,」「，」を含めることはできません。";
@@ -269,6 +291,181 @@
         $("#replaceNumber").parent().removeClass( 'error' );
         $("#replaceUnit").parent().removeClass( 'error' );
         $("#replaceUnitError").hide();
+    }
+
+    function followSettingName() {
+        var name = $("input[name='name']").val();
+        if(!name || name == null){
+            disableForm(true);
+        }else{
+            disableForm(false)
+        }
+
+        $("input[name='name']").change(function(){
+            var value = $(this).val();
+            if(!value || value == null){
+                disableForm(true);
+            }else{
+                disableForm(false)
+
+                var upperLimitName = $("input[name='upperLimitName']").val();
+                if(!upperLimitName || upperLimitName == null){
+                    disableFormUpperLimit(true);
+                }else{
+                    disableFormUpperLimit(false)
+                }
+
+                var lowerLimitName = $("input[name='lowerLimitName']").val();
+                if(!lowerLimitName || lowerLimitName == null){
+                    disableFormLowerLimit(true);
+                }else{
+                    disableFormLowerLimit(false)
+                }
+            }
+        })
+    }
+
+    function disableForm(disable) {
+        for (var i = 0; i < formFields.length; i++) {
+            var field = formFields[i];
+            $("" + field.type + "[name='" + field.name + "']").prop('disabled', disable);
+        }
+
+        if(disable){
+            $("div .treatment-container").css("background-color", "#eee");
+            $("table").css("background-color", "#eee");
+            $("span").css("pointer-events", "none");
+
+        }else{
+            $("div .treatment-container").css("background-color", "#fff");
+            $("table").css("background-color", "white");
+            $("span").css("pointer-events", "auto");
+        }
+
+        $("input[name='enablePrettyNumber']").prop('disabled', disable);
+        $("input[name='enableReplaceLetter']").prop('disabled', disable);
+        $("table").find("input,button,span,select,td").prop('disabled', disable);
+        $("input[name='name']").prop('disabled', false);
+    }
+
+    function followUpperLimitName() {
+        var upperLimitName = $("input[name='upperLimitName']").val();
+        if(!upperLimitName || upperLimitName == null){
+            disableFormUpperLimit(true);
+        }else{
+            disableFormUpperLimit(false)
+        }
+
+        $("input[name='upperLimitName']").change(function(){
+            var value = $(this).val();
+            if(!value || value == null){
+                disableFormUpperLimit(true);
+            }else{
+                disableFormUpperLimit(false)
+            }
+        })
+    }
+
+    function disableFormUpperLimit(disable) {
+            $("select[name='upperLimitSign']").prop('disabled', disable);
+            $("input[name='upperLimitRate']").prop('disabled', disable);
+    }
+
+    function followLowerLimitName() {
+        var lowerLimitName = $("input[name='lowerLimitName']").val();
+        if(!lowerLimitName || lowerLimitName == null){
+            disableFormLowerLimit(true);
+        }else{
+            disableFormLowerLimit(false)
+        }
+
+        $("input[name='lowerLimitName']").change(function(){
+            var value = $(this).val();
+            if(!value || value == null){
+                disableFormLowerLimit(true);
+            }else{
+                disableFormLowerLimit(false)
+            }
+        })
+    }
+
+    function disableFormLowerLimit(disable) {
+        $("select[name='lowerLimitSign']").prop('disabled', disable);
+        $("input[name='lowerLimitRate']").prop('disabled', disable);
+    }
+
+    function clearFormValidate() {
+        $(formId).find(".has-error").removeClass('has-error');
+        $("span.form-error").text("");
+    }
+
+    function numberTreatmentFormValidate() {
+        var validate1 = settingNameValidate();
+        var validate2 = settingUpRateNumberValidate();
+        var validate3 = settingLowRateNumberValidate();
+        return validate1 && validate2 && validate3;
+    }
+
+    function settingNameValidate() {
+        var input = $("input[name='name']");
+        if(!input.val()) {
+            showError.apply(input, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function settingUpRateNumberValidate() {
+        var inputUpName = $("input[name='upperLimitName']");
+        var inputUpRateNumber = $("input[name='upperLimitRate']");
+        if(inputUpName.val() && !inputUpRateNumber.val()) {
+            showError.apply(inputUpRateNumber, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function settingLowRateNumberValidate() {
+        var inputLowName = $("input[name='lowerLimitName']");
+        var inputLowRateNumber = $("input[name='lowerLimitRate']");
+        if(inputLowName.val() && !inputLowRateNumber.val()) {
+            showError.apply(inputLowRateNumber, ["必須"]);
+            return false;
+        }
+        return true;
+    }
+
+    function showError(error, selector) {
+        selector = selector || "div.number-treatment-form-group";
+        var container = $(this).closest(selector);
+        container.addClass("has-error");
+        container.find("span.form-error").text(error);
+    }
+    
+    function callDeleteNumbertreatment() {
+        function onSuccess() {
+            location.reload();
+        }
+        function onError() {
+            $.alert("数値扱い設定クリアが失敗しました。");
+        }
+        $.confirm({
+            title: '<b>【数値扱い設定クリア】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">数値扱い設定を本当にクリアしたいですか？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deletenumberTreatment(onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
     }
 
 })(jQuery);

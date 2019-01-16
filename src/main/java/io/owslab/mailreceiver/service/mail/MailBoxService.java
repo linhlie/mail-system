@@ -507,7 +507,7 @@ public class MailBoxService {
         DetailMailDTO result = emailAccount == null ? new DetailMailDTO(originEmail) : new DetailMailDTO(originEmail, emailAccount);
         String signature = emailAccount != null && emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
         result.setExternalCC(sendAccountForm.getCc());
-        if(rangeStr != null && firstRangeStr != null){
+        if(rangeStr != null && firstRangeStr != null && !rangeStr.equalsIgnoreCase("") && !firstRangeStr.equalsIgnoreCase("")){
             String rawBody = result.getOriginalBody();
             String replacedBody = replaceAllContent(rawBody, rangeStr, firstRangeStr);
             result.setReplacedBody(replacedBody);

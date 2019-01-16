@@ -11,6 +11,7 @@ import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.JsonStringResponseBody;
 import io.owslab.mailreceiver.service.errror.ReportErrorService;
 import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.settings.MailReceiveRuleService;
@@ -63,6 +64,9 @@ public class SettingsController {
 
     @Autowired
     private EmailAccountTransaction emailAccountTransaction;
+
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
 
     @InitBinder
     protected void initBinder(WebDataBinder dataBinder) {
@@ -260,7 +264,11 @@ public class SettingsController {
     }
 
     @RequestMapping("/receiveRuleSettings")
-    public String receiveRuleSettings() {
+    public String receiveRuleSettings(Model model) {
+        List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        model.addAttribute("ruleNumber",numberConditionSetting.get(0));
+        model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
+        model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
         return "admin/settings/receive_mail_rule_settings";
     }
 

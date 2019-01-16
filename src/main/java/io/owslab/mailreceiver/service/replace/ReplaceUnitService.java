@@ -47,4 +47,9 @@ public class ReplaceUnitService {
         List<ReplaceUnit> replaceUnits = replaceUnitDAO.findByUnit(unit);
         return replaceUnits.size() > 0 ? replaceUnits.get(0) : null;
     }
+
+    @CacheEvict(allEntries = true)
+    public void deleteAll(){
+        replaceUnitDAO.deleteAll();
+    }
 }

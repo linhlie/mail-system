@@ -47,6 +47,20 @@
         NEW: "add",
     }
 
+    var ruleInvalidateIds = [];
+
+    var RULE_NUMBER_ID = 4;
+    var RULE_NUMBER_UP_RATE_ID = 5;
+    var RULE_NUMBER_DOWN_RATE_ID = 6;
+
+    var ruleNumberId = "ruleNumber";
+    var ruleNumberUpRateId = "ruleNumberUpRate";
+    var ruleNumberDownRateId = "ruleNumberDownRate";
+
+    var ruleNumberDownRateName = "";
+    var ruleNumberUpRateName = "";
+    var ruleNumberName = "";
+
     var replaceRow = '<tr role="row" class="hidden">' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="name" name="engineerRow"><span></span></td>' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="partnerName" name="engineerRow"><span></span></td>' +
@@ -165,30 +179,6 @@
     	    type: 'string',
     	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
     	}, {
-    	    id: '4',
-    	    label: '数値',
-    	    type: 'string',
-    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-    	    validation: {
-    	        callback: numberValidator
-    	    },
-    	}, {
-    	    id: '5',
-    	    label: '数値(上代)',
-    	    type: 'string',
-    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-    	    validation: {
-    	        callback: numberValidator
-    	    },
-    	 }, {
-    	    id: '6',
-    	    label: '数値(下代)',
-    	    type: 'string',
-    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-    	    validation: {
-    	        callback: numberValidator
-    	    },
-    	 }, {
     	    id: '7',
     	    label: '添付ファイル',
     	    type: 'integer',
@@ -215,20 +205,68 @@
     	 }];
     	
 
-    	 var default_filters_houtlyMoney = [{
-    	    id: '4',
-    	    label: '数値',
-    	    type: 'string',
-    	    operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less'],
-    	       validation: {
-    	          callback: numberValidator
-    	       },  	 
-    	 }];
+    	 var default_filters_houtlyMoney = [];
     	 
  		var default_rules_houtlyMoney = {
     			"condition":"AND",
     			"rules":[],
     			"valid":true};
+
+        ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_DOWN_RATE_ID,
+                label: ruleNumberDownRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        if(!ruleNumberUpRateName || ruleNumberUpRateName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_UP_RATE_ID,
+                label: ruleNumberUpRateName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
+        ruleNumberName = $('#'+ruleNumberId).text();
+        if(!ruleNumberName || ruleNumberName==null){
+            ruleInvalidateIds.push(RULE_NUMBER_ID);
+        }else{
+            default_filters.splice(10,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+
+            default_filters_houtlyMoney.splice(0,0,{
+                id: RULE_NUMBER_ID,
+                label: ruleNumberName,
+                type: 'string',
+                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
+                validation: {
+                    callback: numberValidator
+                },
+            })
+        }
+
 
     	 var default_destination_configs = {
     	    plugins: default_plugins,
@@ -247,7 +285,11 @@
     	 };
 
     	$(destinationBuilderId).queryBuilder(default_destination_configs);
-    	$(hourlyMoneyBuilderId).queryBuilder(default_hourlyMoney_configs);
+    	if(ruleNumberName != null && ruleNumberName != ""){
+            $(hourlyMoneyBuilderId).queryBuilder(default_hourlyMoney_configs);
+        }else{
+            $(".engineer-condition-filter").addClass('hidden');
+        }
     	    
         initLastMonthActive();
         initDuplicateHandle();
@@ -269,7 +311,7 @@
     });
     
     function initDuplicateHandle() {
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
         duplicateSettingData.enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
         $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
@@ -292,7 +334,7 @@
     }
     
     function initDomainHandle() {
-        const domainSettingData = getCachedDomainSettingData();
+        var domainSettingData = getCachedDomainSettingData();
         $('#domain-partner-current').prop('checked', domainSettingData.handleDomainPartnerCurrent);
         domainSettingData.handleDomainPartnerCurrent ? $('.domain-control.domain-control-option').show() : $('.domain-control.domain-control-option').hide();
         $('#domain-partner-group').prop('checked', domainSettingData.handleDomainPartnerGroup);
@@ -419,31 +461,33 @@
     }
     
     function setHourlyMoneyBuilder(data){
-    	if(data.moneyCondition == null){
-        	var money = data.monetaryMoney;
-    		if(money==null || money.trim()==""){
-        		var rules = {
-        			"condition":"AND",
-        			"rules":[],
-        			"valid":true};
-             	$(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
-        	}else{
-           		var rules = {
-           			"condition":"AND",
-           			"rules":[{
-           				"id":"4",
-           				"field":"1",
-           				"type":"string",
-           				"input":"text",
-           				"operator":"greater_or_equal",
-           				"value":money
-           					}],
-           			"valid":true};
-           		$(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
-        	}
-    	}else{
-    		$(hourlyMoneyBuilderId).queryBuilder('setRules', data.moneyCondition);
-    	}
+        if(ruleNumberName != null && ruleNumberName != ""){
+            if(data.moneyCondition == null){
+                var money = data.monetaryMoney;
+                if(money==null || money.trim()==""){
+                    var rules = {
+                        "condition":"AND",
+                        "rules":[],
+                        "valid":true};
+                    $(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
+                }else{
+                    var rules = {
+                        "condition":"AND",
+                        "rules":[{
+                            "id":"4",
+                            "field":"1",
+                            "type":"string",
+                            "input":"text",
+                            "operator":"greater_or_equal",
+                            "value":money
+                        }],
+                        "valid":true};
+                    $(hourlyMoneyBuilderId).queryBuilder('setRules', rules);
+                }
+            }else{
+                $(hourlyMoneyBuilderId).queryBuilder('setRules', data.moneyCondition);
+            }
+        }
     }
     
     function setMoneyCondition(listData){
@@ -487,8 +531,8 @@
         var spaceEffective = false;
         var distinguish = false;
         var listEngineerCondition = getListEngineerMatching();
-        const duplicateSettingData = getCachedDuplicationSettingData();
-        const domainSettingData = getCachedDomainSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
+        var domainSettingData = getCachedDomainSettingData();
         var form = {
             "destinationConditionData" : destinationConditionData,
             "listEngineerMatchingDTO": listEngineerCondition,
@@ -516,8 +560,8 @@
     }
     
     function getCachedSameDomainSettingData() {
-        let enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle-email-matching-engineer");
-        let enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
+        var enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle-email-matching-engineer");
+        var enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
     }
     
@@ -528,8 +572,10 @@
     			if(engineerCondition.id == engineers[i].id){
     				engineers[i].matchingWord = engineerCondition.matchingWord;
     				engineers[i].notGoodWord = engineerCondition.notGoodWord;
-    		        var monneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
-    				engineers[i].moneyCondition = monneyCondition;
+    				if(ruleNumberName != null && ruleNumberName != ""){
+                        var monneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
+                        engineers[i].moneyCondition = monneyCondition;
+                    }
     			}
     		}
     	}
@@ -539,8 +585,10 @@
         clearFormValidate();
         var validated = engineerFormValidate();
         if(!validated) return;
-        var validatedRule = $(hourlyMoneyBuilderId).queryBuilder('getRules');
-        if(!validatedRule) return;
+        if(ruleNumberName != null && ruleNumberName != ""){
+            var validatedRule = $(hourlyMoneyBuilderId).queryBuilder('getRules');
+            if(!validatedRule) return;
+        }
         engineerCondition = getFormData();
         updateListEngineer(engineerCondition);
         clearEngineerOnClick();
@@ -586,7 +634,9 @@
 
     function resetForm() {
         $(formId).trigger("reset");
-        $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
+        if(ruleNumberName != null && ruleNumberName != ""){
+            $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
+        }
     }
 
     function clearFormValidate() {
@@ -790,13 +840,18 @@
     
     function loadDefaultSettings() {
         loadExpandCollapseSetting(destinationBuilderId);
-        loadExpandCollapseSetting(hourlyMoneyBuilderId);
+        if(ruleNumberName != null && ruleNumberName != ""){
+            loadExpandCollapseSetting(hourlyMoneyBuilderId);
+        }
         
         var destinationConditionsStr = localStorage.getItem(destinationConditionKey);
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
+        replaceCondition(destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
-        $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
-        
+        if(ruleNumberName != null && ruleNumberName != ""){
+            $(hourlyMoneyBuilderId).queryBuilder('setRules', default_hourlyMoney_rules);
+        }
+
         var destinationConditionName = localStorage.getItem(destinationConditionNameKey) || "未登録の条件";
         setInputValue(destinationConditionNameId, destinationConditionName);
     }
@@ -969,6 +1024,7 @@
         if(data != null){
             var inputId = getInputIdFromUrl(url);
             setInputValue(inputId, name);
+            replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
         } else {
             alert("見つけませんでした。");
@@ -978,7 +1034,7 @@
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
-        const duplicateSettingData = getCachedDuplicationSettingData();
+        var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
             "conditionData" : destinationConditionData,
             "distinguish": false,
@@ -1000,12 +1056,12 @@
     }
     
     function getCachedDuplicationSettingData() {
-        let enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle-email-matching-engineer");
-        let enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
-        let handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender-email-matching-engineer");
-        let handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
-        let handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject-email-matching-engineer");
-        let handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
+        var enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle-email-matching-engineer");
+        var enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
+        var handleDuplicateSenderData = localStorage.getItem("handleDuplicateSender-email-matching-engineer");
+        var handleDuplicateSender = typeof handleDuplicateSenderData !== "string" ? false : !!JSON.parse(handleDuplicateSenderData);
+        var handleDuplicateSubjectData = localStorage.getItem("handleDuplicateSubject-email-matching-engineer");
+        var handleDuplicateSubject = typeof handleDuplicateSubjectData !== "string" ? false : !!JSON.parse(handleDuplicateSubjectData);
         return {
             enable: enableDuplicateHandle,
             sender: handleDuplicateSender,
@@ -1016,10 +1072,10 @@
     }
     
     function getCachedDomainSettingData() {
-        let handleDomainPartnerCurrentData = localStorage.getItem("handleDomainPartnerCurrent-email-matching-engineer");
-        let handleDomainPartnerCurrent = typeof handleDomainPartnerCurrentData !== "string" ? false : !!JSON.parse(handleDomainPartnerCurrentData);
-        let handleDomainPartnerGroupData = localStorage.getItem("handleDomainPartnerGroup-email-matching-engineer");
-        let handleDomainPartnerGroup = typeof handleDomainPartnerGroupData !== "string" ? false : !!JSON.parse(handleDomainPartnerGroupData);
+        var handleDomainPartnerCurrentData = localStorage.getItem("handleDomainPartnerCurrent-email-matching-engineer");
+        var handleDomainPartnerCurrent = typeof handleDomainPartnerCurrentData !== "string" ? false : !!JSON.parse(handleDomainPartnerCurrentData);
+        var handleDomainPartnerGroupData = localStorage.getItem("handleDomainPartnerGroup-email-matching-engineer");
+        var handleDomainPartnerGroup = typeof handleDomainPartnerGroupData !== "string" ? false : !!JSON.parse(handleDomainPartnerGroupData);
         return {
             enable: handleDomainPartnerCurrent,
             handleDomainPartnerCurrent: handleDomainPartnerCurrent,
@@ -1095,6 +1151,24 @@
             }
         }
         return true;
+    }
+
+    function replaceCondition(rule) {
+        var rules = rule.rules;
+        if(rules){
+            for(var i=rules.length-1;i>=0;i--){
+                if(rules[i].id){
+                    for(var j=0;j<ruleInvalidateIds.length;j++){
+                        if(rules[i].id == ruleInvalidateIds[j]){
+                            rules.splice(i, 1);
+                            break;
+                        }
+                    }
+                }else{
+                    replaceCondition(rules[i]);
+                }
+            }
+        }
     }
     
 })(jQuery);

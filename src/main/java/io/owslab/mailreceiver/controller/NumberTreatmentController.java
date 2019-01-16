@@ -129,4 +129,20 @@ public class NumberTreatmentController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = "/numberTreatment/delete", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> delete() {
+        try {
+            numberTreatmentService.deleteAll();
+            replaceNumberService.deleteAll();
+            replaceUnitService.deleteAll();
+            replaceLetterService.deleteAll();
+            //Clear cache number range
+            numberRangeService.clearFullRangeCache();
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

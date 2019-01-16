@@ -17,16 +17,12 @@ public class NumberTreatmentForm {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String upperLimitName;
     private int upperLimitSign;
-    @NotNull
     private Double upperLimitRate;
 
-    @NotBlank
     private String lowerLimitName;
     private int lowerLimitSign;
-    @NotNull
     private Double lowerLimitRate;
 
     private Double leftBoundaryValue;

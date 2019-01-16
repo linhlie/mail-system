@@ -20,6 +20,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.EmailMatchingEngineerService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
+import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
@@ -91,12 +92,20 @@ public class EmailMatchingEngineerController {
     @Autowired
     private EngineerService engineerService;
 
+    @Autowired
+    private NumberTreatmentService numberTreatmentService;
+
     @RequestMapping(value = "/emailMatchingEngineerSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
         model.addAttribute("conditionOptions", conditionOptions);
         model.addAttribute("mailItemOptions", mailItemOptions);
         model.addAttribute("matchingItemOptions", matchingItemOptions);
+
+        List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        model.addAttribute("ruleNumber",numberConditionSetting.get(0));
+        model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
+        model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
         return "user/emailMatchingEngineer/setting";
     }
     

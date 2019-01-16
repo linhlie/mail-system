@@ -32,13 +32,16 @@
                                 <option data-value="本文" value="本文"></option>
                             </datalist>
                             <datalist id="itemlist2">
-                                <option data-value="数値" value="数値"></option>
-                                <option data-value="数値(上代)" value="数値(上代)"></option>
-                                <option data-value="数値(下代)" value="数値(下代)"></option>
+                                <option data-value="数値" th:value="${ruleNumber}"></option>
+                                <option data-value="数値(上代)" th:value="${ruleNumberUpRate}"></option>
+                                <option data-value="数値(下代)" th:value="${ruleNumberDownRate}"></option>
                             </datalist>
                             <div class="msw-header">
                                 <div class="msw-header-label">
                                     <h4><b>マッチング 元メール・先メール 抽出条件</b></h4>
+                                    <span class="col-xs-12 hidden" id="ruleNumber" th:utext="${ruleNumber}"></span>
+                                    <span class="col-xs-12 hidden" id="ruleNumberUpRate" th:utext="${ruleNumberUpRate}"></span>
+                                    <span class="col-xs-12 hidden" id="ruleNumberDownRate" th:utext="${ruleNumberDownRate}"></span>
                                 </div>
                             </div>
                             <div class="matching-section-wrapper">

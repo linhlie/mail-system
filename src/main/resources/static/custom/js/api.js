@@ -581,6 +581,11 @@ function getMailAccountsAPI(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function deletenumberTreatment(onSuccess, onError) {
+    var url = "/user/numberTreatment/delete";
+    _delete(url, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
