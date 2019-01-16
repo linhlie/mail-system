@@ -71,10 +71,11 @@
             plugins: [
                 'advlist autolink link image lists charmap preview hr anchor pagebreak',
                 'searchreplace visualblocks visualchars code insertdatetime nonbreaking',
-                'table contextmenu directionality template paste textcolor'
+                'table contextmenu directionality template paste textcolor colorpicker'
             ],
             menubar: 'edit view insert format table',
-            toolbar: 'undo redo | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            toolbar: 'undo redo | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
+            fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
             init_instance_callback: function (editor) {
                 loadBulletinBoard(0)
                 editor.on('keyup', function (e) {
