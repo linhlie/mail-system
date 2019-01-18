@@ -323,7 +323,7 @@
     }
 
     function updateBulletinBoardOnclick(){
-        function onSuccess(response) {
+        function onSuccess(response) {153
             if(response && response.status){
                 if (typeof(tinyMCE) != "undefined") {
                     var contentBulletin = getBulletinBoard();
