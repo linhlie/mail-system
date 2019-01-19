@@ -81,6 +81,10 @@
                 editor.on('keyup', function (e) {
                     disableUpdateBulletinBoard(false);
                 });
+
+                editor.on('change', function (e) {
+                    disableUpdateBulletinBoard(false);
+                })
             },
         });
         disableUpdateBulletinBoard(true);
