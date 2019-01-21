@@ -258,6 +258,14 @@ function deleteFromInBox(msgIds, onSuccess, onError){
     _post(url, data, onSuccess, onError);
 }
 
+function deleteFromErrorBox(msgIds, onSuccess, onError){
+    var data = {
+        msgIds: msgIds
+    };
+    var url = "/admin/mailbox/deleteFromErrorbox";
+    _post(url, data, onSuccess, onError);
+}
+
 function filterInbox(data, onSuccess, onError){
     var url = "/user/inbox/filter";
     _post(url, data, onSuccess, onError);
