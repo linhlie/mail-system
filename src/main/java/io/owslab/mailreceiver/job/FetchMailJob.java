@@ -157,8 +157,8 @@ public class FetchMailJob implements Runnable {
                         String error = ExceptionUtils.getStackTrace(e);
                         int indexError = error.indexOf("Duplicate entry");
                         if(indexError<0){
-                            errorEmail.setErrorLog(error);
                             errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
+                            errorEmail.setErrorLog(error);
                             emailDAO.save(errorEmail);
                         }
                     }

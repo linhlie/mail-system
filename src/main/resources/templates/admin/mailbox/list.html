@@ -57,8 +57,13 @@
                             <div class="mailbox-controls dataTables_wrapper form-inline dt-bootstrap">
                                 <div class="row">
                                     <div class="col-sm-5">
-                                        <div class="dataTables_info" id="example2_info" role="status"
-                                             aria-live="polite" th:text="'Showing ' + (${toEntry} eq 0 ? ${fromEntry} : ${fromEntry} + ' to ' + ${toEntry}) + ' of ' + ${page.totalElements} + ' ' + (${page.totalElements} le 1 ? 'entry' : 'entries')">
+                                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
+                                            <span style="color:blue" th:utext="${page.totalElements}"></span>
+                                            <span>エントリーの</span>
+                                            <span style="color:blue" th:utext="${fromEntry}"></span>
+                                            <span>から</span>
+                                            <span style="color:blue" th:utext="${toEntry}"></span>
+                                            <span>を表示しています</span>
                                         </div>
                                     </div>
                                     <div class="col-sm-7">

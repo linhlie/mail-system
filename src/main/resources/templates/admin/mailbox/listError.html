@@ -14,29 +14,33 @@
                             <h3 class="box-title">メールエラーボックス</h3>
 
                             <div class="box-tools pull-right">
-                                <div class="has-feedback">
+                                <div class="has-feedback" style="display: inline-block">
                                     <input type="text" name="search" id="search" th:value="${search}" class="form-control input-sm" placeholder="Filter by subject"/>
                                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                </div>
+                                <div style="display: inline-block">
+                                    <button id="deleteMails" type="button" class="btn btn-default btn-sm">削除</button>
                                 </div>
                             </div>
                             <!-- /.box-tools -->
                         </div>
                         <!-- /.box-header -->
-                        <div class="box-body no-padding">
+                        <div class="box-body" style="padding-left: 10px; padding-right: 10px;">
                             <div class="table-responsive mailbox-messages">
                                 <table class="table table-hover table-striped">
                                     <thead>
                                     <tr>
-                                        <th>From</th>
-                                        <th>Subject</th>
-                                        <th>Error log</th>
-                                        <th>Attactment</th>
-                                        <th>Since</th>
-                                        <th>Action</th>
+                                        <th class="col-xs-2">送信者</th>
+                                        <th class="col-xs-3">件名</th>
+                                        <th class="col-xs-3">エラーログ</th>
+                                        <th class="col-xs-1">添付</th>
+                                        <th class="col-xs-1">送信時刻</th>
+                                        <th class="col-xs-2" style="text-align: center;">アクション</th>
+                                        <th class="col-xs-2" colspan="2" style="text-align: center;"><input type="checkbox" id="selectall"/></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr role="row" class="odd" th:each="item:${list}">
+                                    <tr role="row" class="odd" th:each="item:${list}" style="background: #fff">
                                         <td class="mailbox-name" th:text="${item.original.from}"></td>
                                         <td class="mailbox-subject"><b th:text="${item.original.subject}"></b>
                                         </td>
@@ -44,10 +48,11 @@
                                         <td class="mailbox-attachment">
                                             <i th:class="${item.original.hasAttachment} ? 'fa fa-paperclip' : ''"></i>
                                         </td>
-                                        <td class="mailbox-date" th:text="${item.relativeDate}"></td>
-                                        <td>
+                                        <td class="mailbox-date" th:text="${item.sentAt}"></td>
+                                        <td align="center">
                                             <button th:data="${item.original.messageId}" name="retry" type="button" class="btn btn-xs btn-default">Retry</button>
                                         </td>
+                                        <td align="center"><input type="checkbox" class="case" name="case" th:value="${item.original.messageId}"/></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -60,8 +65,13 @@
                             <div class="mailbox-controls dataTables_wrapper form-inline dt-bootstrap">
                                 <div class="row">
                                     <div class="col-sm-5">
-                                        <div class="dataTables_info" id="example2_info" role="status"
-                                             aria-live="polite" th:text="'Showing ' + (${toEntry} eq 0 ? ${fromEntry} : ${fromEntry} + ' to ' + ${toEntry}) + ' of ' + ${page.totalElements} + ' ' + (${page.totalElements} le 1 ? 'entry' : 'entries')">
+                                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
+                                            <span style="color:blue" th:utext="${page.totalElements}"></span>
+                                            <span>エントリーの</span>
+                                            <span style="color:blue" th:utext="${fromEntry}"></span>
+                                            <span>から</span>
+                                            <span style="color:blue" th:utext="${toEntry}"></span>
+                                            <span>を表示しています</span>
                                         </div>
                                     </div>
                                     <div class="col-sm-7">
@@ -109,6 +119,8 @@
     </section>
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/mailbox/listError.js"></script>
 </th:block>
 </body>

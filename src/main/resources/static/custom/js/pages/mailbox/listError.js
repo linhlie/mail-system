@@ -2,12 +2,33 @@
 (function () {
 
     "use strict";
-
+    var selectAllCheckBoxId = "#selectall";
+    var deleteMailsButtonId = "#deleteMails";
 
 
     $(function () {
         retryListener('retry');
+        setButtonClickListenter(deleteMailsButtonId, doDeleteMails);
+        setupSelectBoxes();
     });
+
+    function setupSelectBoxes() {
+        // add multiple select / deselect functionality
+        $(selectAllCheckBoxId).click(function () {
+            $('.case').prop('checked', this.checked);
+        });
+
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function(){
+
+            if($(".case").length == $(".case:checked").length) {
+                $(selectAllCheckBoxId).prop("checked", true);
+            } else {
+                $(selectAllCheckBoxId).prop("checked", false);
+            }
+        });
+    }
 
     function retryListener(name, type) {
         $("button[name='"+name+"']").click(function () {
@@ -38,6 +59,40 @@
                 }
             });
         })
+    }
+
+    function doDeleteMails() {
+        var msgIds = [];
+        $(".case:checked").each(function () {
+            var msgId = $(this).attr("value");
+            if(msgId) msgIds.push(msgId);
+        });
+        function onSuccess() {
+            locationReload();
+        }
+
+        function onError(e) {
+            $.alert("delete mails failed");
+        }
+        if(msgIds.length > 0) {
+            $.confirm({
+                title: '<b>【リストから「削除」】</b>',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            deleteFromErrorBox(msgIds, onSuccess, onError);
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){}
+                    },
+                }
+            });
+        }
     }
 
 })(jQuery);

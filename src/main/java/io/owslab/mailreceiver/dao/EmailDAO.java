@@ -76,17 +76,4 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
             nativeQuery = true
     )
     int countFindByStatusAndFromOrToOrCcOrSubjectOrBody(@Param("status") int status, @Param("content") String content);
-
-    @Query(
-            value = "SELECT * FROM emails e " +
-                    "WHERE e.error_log IS NOT NULL " +
-                    "AND (lower(e.from) like :content " +
-                    "OR lower(e.to) like :content " +
-                    "OR lower(e.cc) like :content " +
-                    "OR lower(e.subject) like :content " +
-                    "OR lower(e.optimized_body) like :content ) " +
-                    "ORDER BY e.sent_at DESC LIMIT :pageSize OFFSET :pageOffset",
-            nativeQuery = true
-    )
-    List<Email> findByErrorLogAndFromOrToOrCcOrSubjectOrBody(@Param("content") String content, @Param("pageOffset") int pageOffset, @Param("pageSize") int pageSize);
 }
