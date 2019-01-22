@@ -15,7 +15,7 @@
 
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-                                    <input type="text" name="search" id="search" th:value="${search}" class="form-control input-sm" placeholder="Search Mail"/>
+                                    <input type="text" name="search" id="search" th:value="${search}" class="form-control input-sm" placeholder="メール検索"/>
                                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
                                 </div>
                             </div>
@@ -27,12 +27,12 @@
                                 <table id="trashBoxTable" class="table table-hover table-striped">
                                     <thead>
                                     <tr>
-                                        <th>To</th>
-                                        <th>From</th>
-                                        <th>Subject</th>
-                                        <th>Attachment</th>
-                                        <th>Time</th>
-                                        <th style="text-align: center"><input type="checkbox" id="selectall"/></th>
+                                        <th class="col-xs-2">宛先</th>
+                                        <th class="col-xs-2">送信者</th>
+                                        <th class="col-xs-5">件名</th>
+                                        <th class="col-xs-1" style="text-align: center">添付</th>
+                                        <th class="col-xs-1">送信時刻</th>
+                                        <th class="col-xs-1" style="text-align: center"><input type="checkbox" id="selectall"/></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -58,17 +58,22 @@
                             <div class="mailbox-controls dataTables_wrapper form-inline dt-bootstrap">
                                 <div class="row">
                                     <div class="col-sm-5">
-                                        <div class="dataTables_info" id="example2_info" role="status"
-                                             aria-live="polite" th:text="'Showing ' + (${toEntry} eq 0 ? ${fromEntry} : ${fromEntry} + ' to ' + ${toEntry}) + ' of ' + ${page.totalElements} + ' ' + (${page.totalElements} le 1 ? 'entry' : 'entries')">
+                                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
+                                            <span style="color:blue" th:utext="${page.totalElements}"></span>
+                                            <span>エントリーの</span>
+                                            <span style="color:blue" th:utext="${fromEntry}"></span>
+                                            <span>から</span>
+                                            <span style="color:blue" th:utext="${toEntry}"></span>
+                                            <span>を表示しています</span>
                                         </div>
                                     </div>
                                     <div class="col-sm-7">
                                         <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
                                             <ul class="pagination">
                                                 <li th:class="${page.firstPage}?'disabled':''">
-                                                    <span th:if='${page.firstPage}'>← First</span>
-                                                    <a th:if='${not page.firstPage}' th:href='@{${page.url}(page=1,search=${search})}'>←
-                                                        First</a>
+                                                    <span th:if='${page.firstPage}'>← 最初</span>
+                                                    <a th:if='${not page.firstPage}'
+                                                       th:href='@{${page.url}(page=1,search=${search})}'>← 最初</a>
                                                 </li>
                                                 <li th:class="${page.hasPreviousPage}? '' : 'disabled'">
                                                     <span th:if='${not page.hasPreviousPage}'>«</span>
@@ -89,9 +94,9 @@
                                                        title='Go to next page'>»</a>
                                                 </li>
                                                 <li th:class="${page.lastPage}? 'disabled' : ''">
-                                                    <span th:if='${page.lastPage}'>Last →</span>
+                                                    <span th:if='${page.lastPage}'>最終 →</span>
                                                     <a th:if='${not page.lastPage}'
-                                                       th:href='@{${page.url}(page=${page.totalPages},search=${search})}'>Last →</a>
+                                                       th:href='@{${page.url}(page=${page.totalPages},search=${search})}'>最終 →</a>
                                                 </li>
                                             </ul>
                                         </div>

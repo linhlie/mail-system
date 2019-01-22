@@ -79,14 +79,28 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
 
     @Query(
             value = "SELECT * FROM emails e " +
-                    "WHERE e.error_log IS NOT NULL " +
+                    "WHERE e.status = :status " +
                     "AND (lower(e.from) like :content " +
                     "OR lower(e.to) like :content " +
                     "OR lower(e.cc) like :content " +
                     "OR lower(e.subject) like :content " +
-                    "OR lower(e.optimized_body) like :content ) " +
+                    "OR lower(e.optimized_body) like :content " +
+                    "OR lower(e.error_log) like :content ) " +
                     "ORDER BY e.sent_at DESC LIMIT :pageSize OFFSET :pageOffset",
             nativeQuery = true
     )
-    List<Email> findByErrorLogAndFromOrToOrCcOrSubjectOrBody(@Param("content") String content, @Param("pageOffset") int pageOffset, @Param("pageSize") int pageSize);
+    List<Email> findByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(@Param("status") int status, @Param("content") String content, @Param("pageOffset") int pageOffset, @Param("pageSize") int pageSize);
+
+    @Query(
+            value = "SELECT COUNT(e.status) FROM emails e " +
+                    "WHERE e.status = :status " +
+                    "AND (lower(e.from) like :content " +
+                    "OR lower(e.to) like :content " +
+                    "OR lower(e.cc) like :content " +
+                    "OR lower(e.subject) like :content " +
+                    "OR lower(e.optimized_body) like :content " +
+                    "OR lower(e.error_log) like :content ) ",
+            nativeQuery = true
+    )
+    int countFindByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(@Param("status") int status, @Param("content") String content);
 }

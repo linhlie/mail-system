@@ -140,7 +140,7 @@ public class MailBoxService {
     }
 
     public Page<Email> listError(PageRequest pageRequest) {
-        Page<Email> list = emailDAO.findByErrorLogNotNull(pageRequest);
+        Page<Email> list = listByStatus(pageRequest, Email.Status.ERROR_OCCURRED);
         return list;
     }
 
@@ -171,10 +171,9 @@ public class MailBoxService {
             return listError(pageRequest);
         }
         String optimizeSearchText = "%"+optimizeTextForSearch(search)+"%";
-        List<Email> list = emailDAO.findByErrorLogAndFromOrToOrCcOrSubjectOrBody(optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
-        int start = pageRequest.getOffset();
-        int end = (start + pageRequest.getPageSize()) > list.size() ? list.size() : (start + pageRequest.getPageSize());
-        Page<Email> result = new PageImpl<Email>(list.subList(start, end), pageRequest, list.size());
+        List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(Email.Status.ERROR_OCCURRED, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
+        int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(Email.Status.ERROR_OCCURRED, optimizeSearchText);
+        Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
         return result;
     }
 
@@ -592,16 +591,16 @@ public class MailBoxService {
                 boolean hasAttachments = saveFiles(message, email);
                 email.setHasAttachment(hasAttachments);
                 email = FetchMailJob.setMailContent(message, email);
-                email.setErrorLog(null);
                 email.setStatus(Email.Status.NEW);
+                email.setErrorLog(null);
                 emailDAO.save(email);
             } catch (Exception e) {
                 e.printStackTrace();
                 Email errorEmail = findOne(email.getMessageId());
                 if(errorEmail != null) {
                     String error = ExceptionUtils.getStackTrace(e);
-                    errorEmail.setErrorLog(error);
                     errorEmail.setStatus(Email.Status.ERROR_OCCURRED);
+                    errorEmail.setErrorLog(error);
                     emailDAO.save(errorEmail);
                 }
             }
@@ -778,6 +777,10 @@ public class MailBoxService {
 
     public void deleteFromInBox(Collection<String> msgIds) {
         emailDAO.updateStatusByMessageIdIn(Email.Status.DONE, Email.Status.DELETED, msgIds);
+    }
+
+    public void deleteFromErrorBox(Collection<String> msgIds) {
+        emailDAO.updateStatusByMessageIdIn(Email.Status.ERROR_OCCURRED, Email.Status.DELETED, msgIds);
     }
 
     public void sendMultiMail(SendMultilMailForm form){

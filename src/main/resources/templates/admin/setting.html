@@ -20,22 +20,22 @@
                         </div>
                         <form th:action="@{/admin/administratorSetting}" th:object="${administratorSettingForm}" method="post">
                             <div class="form-group has-feedback">
-                                <input th:class="${#fields.hasErrors('userName')} ? 'form-error form-control' : 'form-control'" type="text" th:field="*{userName}" name="username" placeholder="Username"/>
+                                <input th:class="${#fields.hasErrors('userName')} ? 'form-error form-control' : 'form-control'" type="text" th:field="*{userName}" name="username" placeholder="ユーザー名"/>
                                 <span th:class="${#fields.hasErrors('userName')} ? 'form-error glyphicon glyphicon-user form-control-feedback' : 'glyphicon glyphicon-user form-control-feedback'"></span>
                                 <span class="form-error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">..</span>
                             </div>
                             <div class="form-group has-feedback">
-                                <input th:class="${#fields.hasErrors('currentPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{currentPassword}" name="currentPassword" placeholder="Current password"/>
+                                <input th:class="${#fields.hasErrors('currentPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{currentPassword}" name="currentPassword" placeholder="現在のパスワード"/>
                                 <span th:class="${#fields.hasErrors('currentPassword')} ? 'form-error glyphicon glyphicon-lock form-control-feedback' : 'glyphicon glyphicon-lock form-control-feedback'"></span>
                                 <span class="form-error" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}">..</span>
                             </div>
                             <div class="form-group has-feedback">
-                                <input th:class="${#fields.hasErrors('newPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{newPassword}" name="newPassword" placeholder="New password"/>
+                                <input th:class="${#fields.hasErrors('newPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{newPassword}" name="newPassword" placeholder="新しいパスワード"/>
                                 <span th:class="${#fields.hasErrors('newPassword')} ? 'form-error glyphicon glyphicon-lock form-control-feedback' : 'glyphicon glyphicon-lock form-control-feedback'"></span>
                                 <span class="form-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">..</span>
                             </div>
                             <div class="form-group has-feedback">
-                                <input th:class="${#fields.hasErrors('confirmNewPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{confirmNewPassword}" name="confirmNewPassword" placeholder="Confirm new password"/>
+                                <input th:class="${#fields.hasErrors('confirmNewPassword')} ? 'form-error form-control' : 'form-control'" type="password" th:field="*{confirmNewPassword}" name="confirmNewPassword" placeholder="新しいパスワード確認"/>
                                 <span th:class="${#fields.hasErrors('confirmNewPassword')} ? 'form-error glyphicon glyphicon-lock form-control-feedback' : 'glyphicon glyphicon-lock form-control-feedback'"></span>
                                 <span class="form-error" th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}">..</span>
                             </div>

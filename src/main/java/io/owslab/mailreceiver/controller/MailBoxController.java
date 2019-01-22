@@ -231,6 +231,23 @@ public class MailBoxController {
         }
     }
 
+    @PostMapping(value="/admin/mailbox/deleteFromErrorbox")
+    @ResponseBody
+    ResponseEntity<?> deleteFromErrorbox(Model model, @Valid @RequestBody TrashBoxForm trashBoxForm){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            mailBoxService.deleteFromErrorBox(trashBoxForm.getMsgIds());
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
     @RequestMapping(value="/admin/mailbox/email", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getEmailJsonAdmin (
