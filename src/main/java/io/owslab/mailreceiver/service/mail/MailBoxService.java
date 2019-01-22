@@ -171,8 +171,8 @@ public class MailBoxService {
             return listError(pageRequest);
         }
         String optimizeSearchText = "%"+optimizeTextForSearch(search)+"%";
-        List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.ERROR_OCCURRED, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
-        int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBody(Email.Status.ERROR_OCCURRED, optimizeSearchText);
+        List<Email> list = emailDAO.findByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(Email.Status.ERROR_OCCURRED, optimizeSearchText, pageRequest.getOffset(), pageRequest.getPageSize());
+        int size = emailDAO.countFindByStatusAndFromOrToOrCcOrSubjectOrBodyOrLog(Email.Status.ERROR_OCCURRED, optimizeSearchText);
         Page<Email> result = new PageImpl<Email>(list, pageRequest, size);
         return result;
     }

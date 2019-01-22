@@ -15,7 +15,7 @@
 
                             <div class="box-tools pull-right">
                                 <div class="has-feedback" style="display: inline-block">
-                                    <input type="text" name="search" id="search" th:value="${search}" class="form-control input-sm" placeholder="Filter by subject"/>
+                                    <input type="text" name="search" id="search" th:value="${search}" class="form-control input-sm" placeholder="メール検索"/>
                                     <span class="glyphicon glyphicon-search form-control-feedback"></span>
                                 </div>
                                 <div style="display: inline-block">
@@ -78,9 +78,9 @@
                                         <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
                                             <ul class="pagination">
                                                 <li th:class="${page.firstPage}?'disabled':''">
-                                                    <span th:if='${page.firstPage}'>← First</span>
-                                                    <a th:if='${not page.firstPage}' th:href='@{${page.url}(page=1,search=${search})}'>←
-                                                        First</a>
+                                                    <span th:if='${page.firstPage}'>← 最初</span>
+                                                    <a th:if='${not page.firstPage}'
+                                                       th:href='@{${page.url}(page=1,search=${search})}'>← 最初</a>
                                                 </li>
                                                 <li th:class="${page.hasPreviousPage}? '' : 'disabled'">
                                                     <span th:if='${not page.hasPreviousPage}'>«</span>
@@ -101,9 +101,9 @@
                                                        title='Go to next page'>»</a>
                                                 </li>
                                                 <li th:class="${page.lastPage}? 'disabled' : ''">
-                                                    <span th:if='${page.lastPage}'>Last →</span>
+                                                    <span th:if='${page.lastPage}'>最終 →</span>
                                                     <a th:if='${not page.lastPage}'
-                                                       th:href='@{${page.url}(page=${page.totalPages},search=${search})}'>Last →</a>
+                                                       th:href='@{${page.url}(page=${page.totalPages},search=${search})}'>最終 →</a>
                                                 </li>
                                             </ul>
                                         </div>
