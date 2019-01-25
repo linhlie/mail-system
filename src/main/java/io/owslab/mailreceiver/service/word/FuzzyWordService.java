@@ -75,6 +75,14 @@ public class FuzzyWordService {
         return null;
     }
 
+    public List<Word> findAllInGroup(Word word){
+        if(word!=null && word.getGroupWord()!=null){
+            List<Word> words = wordService.getListWordinGroup(word.getGroupWord());
+            return words;
+        }
+        return null;
+    }
+
     public List<FuzzyWordDTO> getExclusion(List<Word> listWordSame){
         List<FuzzyWord> fuzzyWordList = (List<FuzzyWord>) fuzzyWordDAO.findAll();
         List<FuzzyWordDTO> listResult = new ArrayList<>();
