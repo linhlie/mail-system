@@ -191,11 +191,7 @@ public class DetailMailDTO {
     }
 
     public void setOriginalBody(String originalBody) {
-        int conv_op_flags = 0;
-        conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
-        conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
-        String japaneseOptimizedText = KanaConverter.convertKana(originalBody, conv_op_flags);
-        this.originalBody = japaneseOptimizedText;
+        this.originalBody = originalBody;
     }
 
     public String getReplacedBody() {

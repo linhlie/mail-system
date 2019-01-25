@@ -334,50 +334,51 @@ public class MailBoxService {
         if(emailList.size() == 0) return results;
         Email email = emailList.get(0);
         DetailMailDTO result = new DetailMailDTO(email);
+        String originalConvertBody = matchingConditionService.getOptimizedText(result.getOriginalBody(), false);
+        if(originalConvertBody == null){
+            originalConvertBody = "";
+        }
         if(highlightWordsStr != null) {
             highlightWordsStr = highlightWordsStr.replace("!!", ",");
             List<String> hlWords = Arrays.asList(highlightWordsStr.split(","));
             List<String> hlWordsFinal = new ArrayList<>();
             for(String highlightWord : hlWords) {
                 if(highlightWord!=null){
-                    hlWordsFinal.add(highlightWord);
-                    String optimizeWord = matchingConditionService.getOptimizedText(highlightWord, false);
-                    if(!highlightWord.equals(optimizeWord)){
-                        hlWordsFinal.add(optimizeWord);
-                    }
+                    hlWordsFinal.add(highlightWord.trim());
                 }
             }
+            List<String> highLightWords = result.getHighLightWords();
+            List<String> excludeWords = result.getExcludeWords();
             for(String highlightWord : hlWordsFinal) {
                 if(highlightWord != null) {
-                    List<String> highLightWords = result.getHighLightWords();
-                    List<String> excludeWords = result.getExcludeWords();
-                    highLightWords.add(highlightWord);
                     Word word = wordService.findOne(highlightWord);
                     if(word != null) {
                         List<Word> exclusionWords = fuzzyWordService.findAllExclusionWord(word);
-                        List<Word> sameWords = fuzzyWordService.findAllSameWord(word);
+                        List<Word> sameWords = fuzzyWordService.findAllInGroup(word);
                         for(Word sameWord : sameWords){
-                            highLightWords.add(sameWord.getWord());
+                            highLightWords.addAll(findAllWord(sameWord.getWord(), result.getOriginalBody(), originalConvertBody));
                         }
                         for(Word exclusionWord : exclusionWords){
                             String exclusionWordStr = exclusionWord.getWord();
                             if(!highLightWords.contains(exclusionWordStr))
-                                excludeWords.add(exclusionWordStr);
+                                excludeWords.addAll(findAllWord(exclusionWordStr, result.getOriginalBody(), originalConvertBody));
                         }
+                    }else{
+                        highLightWords.addAll(findAllWord(highlightWord, result.getOriginalBody(), originalConvertBody));
                     }
                 }
             }
         }
         List<String> highLightRanges = result.getHighLightRanges();
         if(matchRange != null) {
-            highLightRanges.add(matchRange);
+            highLightRanges.addAll(findAllWord(matchRange, result.getOriginalBody(), originalConvertBody));
         } else {
             String optimizedPart = email.getOptimizedText(false);
             List<FullNumberRange> fullNumberRanges = numberRangeService.buildNumberRangeForInput(email.getMessageId(), optimizedPart);
             for(FullNumberRange range : fullNumberRanges){
                 String rangeStr = range.toString();
                 if(!highLightRanges.contains(rangeStr)) {
-                    highLightRanges.add(rangeStr);
+                    highLightRanges.addAll(findAllWord(rangeStr, result.getOriginalBody(), originalConvertBody));
                 }
             }
         }
@@ -909,5 +910,21 @@ public class MailBoxService {
             }
         }
         return String.join(",", new HashSet<String>(result));
+    }
+
+    public List<String> findAllWord(String word, String content, String contentConvert){
+        List<String> result = new ArrayList<>();
+        if(content==null || contentConvert==null || content.length() != contentConvert.length()){
+            result.add(word);
+        }else{
+            String optimizeWord = matchingConditionService.getOptimizedText(word, false);
+            int index = contentConvert.indexOf(optimizeWord);
+            while (index >= 0) {
+                String highlightOriginalWord = content.substring(index, index + optimizeWord.length());
+                result.add(highlightOriginalWord);
+                index = contentConvert.indexOf(optimizeWord, index + optimizeWord.length());
+            }
+        }
+        return result;
     }
 }
