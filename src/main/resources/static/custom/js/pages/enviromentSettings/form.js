@@ -2,6 +2,7 @@
 (function () {
 
     "use strict";
+    var fullOldPath = "";
     var formChange = false;
     var selectedPath;
 
@@ -17,13 +18,13 @@
         });
     }
 
-    function getTreeOptions(data) {
+    function getTreeOptions(data, level) {
         return {
             data: data,
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
-            levels: 10,
+            levels: level,
             customize: function(treeItem, node){
                 // Add button
                 var html = '<a class="btn btn-default" style="float: right; padding: 0; background-color: transparent; border: none;">' +
@@ -90,14 +91,17 @@
 
     function showDirectoryTree(data){
         selectedPath = undefined;
-        $('#tree').treeview(getTreeOptions(data));
-        initState(data[0]);
-        $('#tree').treeview('selectNode', [ 40, { silent: true } ]);
+        var foldereName = fullOldPath.split("/");
+        var  level = foldereName.length + 1;
+        $('#tree').treeview(getTreeOptions(data, level));
+        var nodeIdFolderCurrent = getNodeIdFolderCurent();
+        $('#tree').treeview('selectNode', [ nodeIdFolderCurrent, { silent: true } ]);
         $('#tree').on('nodeExpanded', function(event, data) {
             var node = $('#tree').treeview('getNode', data.nodeId);
             if(node.nodes.length == 0){
                 loadDirectoryTree.call(this, node.path, true, function (data) {
                     node.nodes = data[0].nodes;
+                    console.log(node);
                     $('#tree').treeview('setInitialStates', node, 0);
                     $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);
                 })
@@ -218,24 +222,37 @@
             timeout: 600000,
             success: function (response) {
                 if(response && response.status) {
+                    fullOldPath = response.msg;
                     success(response.list);
                 } else {
-                    $.alert("Get full folder false");
+                   console.error("Get full folder false");
                 }
             },
             error: function (e) {
-                $.alert("Get full folder false");
+                console.error("Get full folder false");
             }
         });
     }
 
-    function initState(node) {
-        if(node.nodes){
-            $('#tree').treeview('setInitialStates', node, 0);
-            for(var i=0;i<node.nodes.length;i++){
-                initState(node.nodes);
+    function getAllNodes(){
+        var treeViewObject = $('#tree').data('treeview'),
+            allCollapsedNodes = treeViewObject.getCollapsed(),
+            allExpandedNodes = treeViewObject.getExpanded(),
+            allNodes = allCollapsedNodes.concat(allExpandedNodes);
+
+        return allNodes;
+    }
+
+    function getNodeIdFolderCurent(){
+        var arrAllNode = getAllNodes();
+        if(arrAllNode){
+            for(var i=0;i<arrAllNode.length;i++){
+                if(arrAllNode[i].path == fullOldPath){
+                    return arrAllNode[i].nodeId;
+                }
             }
         }
+        return -1;
     }
 
 })(jQuery);

@@ -91,7 +91,7 @@ public class FileAssert {
         String result = "";
         try {
             Runtime rt = Runtime.getRuntime();
-            String commands[] = { "/bin/sh", "-c", "cd ./storages; pwd" };
+            String commands[] = { "/bin/sh", "-c", "cd " + folderPath + "; pwd" };
             Process proc = rt.exec(commands);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
@@ -103,7 +103,7 @@ public class FileAssert {
             }
 
             while ((s = stdError.readLine()) != null) {
-                s = "/";
+                result = "/";
             }
 
         } catch (Exception e) {
@@ -113,10 +113,9 @@ public class FileAssert {
         return result;
     }
 
-    public static FileAssertResult getRootPath(String folderPath){
+    public static FileAssertResult getRootPath(String fullPath){
         FileAssertResult result = null;
         try {
-            String fullPath = findFullPath(folderPath);
             String subFolder[] = fullPath.split("/");
             File file = new File("/");
             result = new FileAssertResult(file);

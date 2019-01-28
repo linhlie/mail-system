@@ -106,10 +106,11 @@ public class SettingsController {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
             List<FileAssertResult> assertResults = new ArrayList<>();
-            FileAssertResult assertResult = FileAssert.getRootPath(folderName);
+            String fullpath = FileAssert.findFullPath(folderName);
+            FileAssertResult assertResult = FileAssert.getRootPath(fullpath);
             assertResults.add(assertResult);
             result.setList(assertResults);
-            result.setMsg("done");
+            result.setMsg(fullpath);
             result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
