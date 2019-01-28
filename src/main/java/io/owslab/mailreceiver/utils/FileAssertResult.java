@@ -12,6 +12,9 @@ public class FileAssertResult {
     private String path;
     private List<FileAssertResult> nodes;
 
+    public FileAssertResult() {
+    }
+
     public FileAssertResult(File file) {
         this.path = file.getAbsolutePath();
         this.text = file.getName() != null && file.getName().length() > 0 ? file.getName() : this.path;
@@ -44,5 +47,9 @@ public class FileAssertResult {
 
     public boolean addNode(File file){
         return this.nodes.add(new FileAssertResult(file));
+    }
+
+    public void addNode(FileAssertResult fileAssertResult){
+        this.nodes.add(fileAssertResult);
     }
 }

@@ -23,7 +23,7 @@
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
-            levels: 1,
+            levels: 10,
             customize: function(treeItem, node){
                 // Add button
                 var html = '<a class="btn btn-default" style="float: right; padding: 0; background-color: transparent; border: none;">' +
@@ -38,9 +38,18 @@
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
-            loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            var currentPath = $("#storagePath").val();
+            if(!currentPath || currentPath == null){
+                currentPath = "/";
+            }
+            getPath(currentPath, false, showDirectoryTree, function (e) {
                 console.log("loadDirectoryTree: error: ", e);
             });
+            // loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            //     console.log("loadDirectoryTree: error: ", e);
+            // });            // loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            //             //     console.log("loadDirectoryTree: error: ", e);
+            //             // });
         })
     }
     
@@ -82,6 +91,8 @@
     function showDirectoryTree(data){
         selectedPath = undefined;
         $('#tree').treeview(getTreeOptions(data));
+        initState(data[0]);
+        $('#tree').treeview('selectNode', [ 40, { silent: true } ]);
         $('#tree').on('nodeExpanded', function(event, data) {
             var node = $('#tree').treeview('getNode', data.nodeId);
             if(node.nodes.length == 0){
@@ -194,6 +205,37 @@
                 }
             }
         });
+    }
+
+    function getPath(folderName, subFolders, success, error) {
+
+        var url = "/admin/enviromentSettings/getFullPath?folderName="+folderName;
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (response) {
+                if(response && response.status) {
+                    success(response.list);
+                } else {
+                    $.alert("Get full folder false");
+                }
+            },
+            error: function (e) {
+                $.alert("Get full folder false");
+            }
+        });
+    }
+
+    function initState(node) {
+        if(node.nodes){
+            $('#tree').treeview('setInitialStates', node, 0);
+            for(var i=0;i<node.nodes.length;i++){
+                initState(node.nodes);
+            }
+        }
     }
 
 })(jQuery);

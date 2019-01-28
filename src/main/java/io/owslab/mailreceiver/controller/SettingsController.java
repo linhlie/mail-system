@@ -100,6 +100,26 @@ public class SettingsController {
         return "redirect:/admin/enviromentSettings";
     }
 
+    @RequestMapping(value="/enviromentSettings/getFullPath", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getFullPath (@RequestParam(value = "folderName", required = true) String folderName){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<FileAssertResult> assertResults = new ArrayList<>();
+            FileAssertResult assertResult = FileAssert.getRootPath(folderName);
+            assertResults.add(assertResult);
+            result.setList(assertResults);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
     @RequestMapping(value="/enviromentSettings/storagePath", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getDirectoryTree (@RequestParam(value = "path", required = false) String path, @RequestParam(value = "subFolders", required = false) boolean subFolders){
