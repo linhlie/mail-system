@@ -33,7 +33,7 @@ public class CheckIpScheduler extends AbstractScheduler{
         if(ipGlobal != null && !ipGlobal.equals(currentIp)){
             enviromentSettingService.set(EnviromentSettingService.IP_GLOBAL_KEY, ipGlobal);
             if(currentIp.equals(DEFAULT_IP_GLOBAL_VALUE)) return;
-            ReportErrorService.reportAutoFetchMail("[Warning] : The Ip global address has changed from "+currentIp+" to "+ipGlobal);
+            ReportErrorService.report("[Warning] : The Ip global address has changed from "+currentIp+" to "+ipGlobal);
         }
     }
 
