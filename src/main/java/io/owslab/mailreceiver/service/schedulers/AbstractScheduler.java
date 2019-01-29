@@ -79,10 +79,10 @@ public abstract class AbstractScheduler {
                 logger.warn("Time limit for job " + this);
                 THREAD_POOL.shutdownNow();
                 THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-                ReportErrorService.reportAutoFetchMail("Warning : [Service auto restarted] Time limit " + timeout_s + " seconds  for job " + this);
+                ReportErrorService.report("Warning : [Service auto restarted] Time limit " + timeout_s + " seconds  for job " + this);
                 restartService();
             } catch (Error e2){
-                ReportErrorService.reportAutoFetchMail("Critical: [Service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this);
+                ReportErrorService.report("Critical: [Service auto restart failed] Time limit " + timeout_s + " seconds  for job " + this);
                 restartService();
             }
 
