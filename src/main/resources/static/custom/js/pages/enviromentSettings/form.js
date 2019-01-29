@@ -2,6 +2,7 @@
 (function () {
 
     "use strict";
+    var fullOldPath = "";
     var formChange = false;
     var selectedPath;
 
@@ -17,13 +18,13 @@
         });
     }
 
-    function getTreeOptions(data) {
+    function getTreeOptions(data, level) {
         return {
             data: data,
             collapseIcon: "glyphicon glyphicon-folder-open",
             expandIcon: "glyphicon glyphicon-folder-close",
             emptyIcon: "glyphicon glyphicon-folder-close",
-            levels: 1,
+            levels: level,
             customize: function(treeItem, node){
                 // Add button
                 var html = '<a class="btn btn-default" style="float: right; padding: 0; background-color: transparent; border: none;">' +
@@ -38,9 +39,18 @@
     
     function setOpenModalListener(name) {
         $("button[name='"+name+"']").click(function () {
-            loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            var currentPath = $("#storagePath").val();
+            if(!currentPath || currentPath == null){
+                currentPath = "/";
+            }
+            getPath(currentPath, false, showDirectoryTree, function (e) {
                 console.log("loadDirectoryTree: error: ", e);
             });
+            // loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            //     console.log("loadDirectoryTree: error: ", e);
+            // });            // loadDirectoryTree("/", false, showDirectoryTree, function (e) {
+            //             //     console.log("loadDirectoryTree: error: ", e);
+            //             // });
         })
     }
     
@@ -81,12 +91,17 @@
 
     function showDirectoryTree(data){
         selectedPath = undefined;
-        $('#tree').treeview(getTreeOptions(data));
+        var foldereName = fullOldPath.split("/");
+        var  level = foldereName.length + 1;
+        $('#tree').treeview(getTreeOptions(data, level));
+        var nodeIdFolderCurrent = getNodeIdFolderCurent();
+        $('#tree').treeview('selectNode', [ nodeIdFolderCurrent, { silent: true } ]);
         $('#tree').on('nodeExpanded', function(event, data) {
             var node = $('#tree').treeview('getNode', data.nodeId);
             if(node.nodes.length == 0){
                 loadDirectoryTree.call(this, node.path, true, function (data) {
                     node.nodes = data[0].nodes;
+                    console.log(node);
                     $('#tree').treeview('setInitialStates', node, 0);
                     $('#tree').treeview('expandNode', [ node.nodeId, { levels: 1, silent: true } ]);
                 })
@@ -194,6 +209,50 @@
                 }
             }
         });
+    }
+
+    function getPath(folderName, subFolders, success, error) {
+
+        var url = "/admin/enviromentSettings/getFullPath?folderName="+folderName;
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: url,
+            cache: false,
+            timeout: 600000,
+            success: function (response) {
+                if(response && response.status) {
+                    fullOldPath = response.msg;
+                    success(response.list);
+                } else {
+                   console.error("Get full folder false");
+                }
+            },
+            error: function (e) {
+                console.error("Get full folder false");
+            }
+        });
+    }
+
+    function getAllNodes(){
+        var treeViewObject = $('#tree').data('treeview'),
+            allCollapsedNodes = treeViewObject.getCollapsed(),
+            allExpandedNodes = treeViewObject.getExpanded(),
+            allNodes = allCollapsedNodes.concat(allExpandedNodes);
+
+        return allNodes;
+    }
+
+    function getNodeIdFolderCurent(){
+        var arrAllNode = getAllNodes();
+        if(arrAllNode){
+            for(var i=0;i<arrAllNode.length;i++){
+                if(arrAllNode[i].path == fullOldPath){
+                    return arrAllNode[i].nodeId;
+                }
+            }
+        }
+        return -1;
     }
 
 })(jQuery);

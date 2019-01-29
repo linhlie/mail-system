@@ -1,9 +1,16 @@
 package io.owslab.mailreceiver.utils;
 
+import io.owslab.mailreceiver.controller.SettingsController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class FileAssert {
+    private static final Logger logger = LoggerFactory.getLogger(FileAssert.class);
 
     public static FileAssertResult getDirectoryTree(File folder, boolean subFolders) {
         if (!folder.isDirectory()) {
@@ -78,5 +85,63 @@ public class FileAssert {
             sb.append("|  ");
         }
         return sb.toString();
+    }
+
+    public static String findFullPath (String folderPath) {
+        String result = "";
+        try {
+            Runtime rt = Runtime.getRuntime();
+            String commands[] = { "/bin/sh", "-c", "cd " + folderPath + "; pwd" };
+            Process proc = rt.exec(commands);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            String s = "";
+            while ((s = stdInput.readLine()) != null) {
+                result = s;
+            }
+
+            while ((s = stdError.readLine()) != null) {
+                result = "/";
+            }
+
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
+
+        return result;
+    }
+
+    public static FileAssertResult getRootPath(String fullPath){
+        FileAssertResult result = null;
+        try {
+            String subFolder[] = fullPath.split("/");
+            File file = new File("/");
+            result = new FileAssertResult(file);
+            if (subFolder.length > 1) {
+                getFullNodeFile(result, file, subFolder, 1);
+            }
+        }catch (Exception e){
+            logger.error(e.toString());
+        }
+        return result;
+    }
+
+    public static void getFullNodeFile(FileAssertResult result, File currentFile, String[] subFolder, int level){
+        if(level >= subFolder.length){
+            return;
+        }
+        File[] files = currentFile.listFiles();
+        Arrays.sort(files);
+        for (File file : files) {
+            if (file.isDirectory()) {
+                FileAssertResult childNode = new FileAssertResult(file);
+                if(file.getName().equals(subFolder[level])){
+                    getFullNodeFile(childNode, file, subFolder, level+1);
+                }
+                result.addNode(childNode);
+            }
+        }
     }
 }
