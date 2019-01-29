@@ -63,6 +63,8 @@ public class ApplicationStartup {
     
     @Autowired
     private MonitoringScheduler motoringScheduler;
+    @Autowired
+    private CheckIpScheduler checkIpScheduler;
 
     @Autowired
     private UpdateDomainUnregisterScheduler updateDomainUnregisterScheduler;
@@ -149,6 +151,7 @@ public class ApplicationStartup {
             autoExtendScheduler.start();
             updateDomainUnregisterScheduler.start();
             motoringScheduler.start();
+            checkIpScheduler.start();
         }
         getDomain();
         configWordDatabase();
