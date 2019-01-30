@@ -161,15 +161,25 @@
                             <div class="form-group">
                                 <label class="col-sm-3 col-xs-4 control-label text-left">デバッグ受信メール</label>
 
-                                <div class="col-md-4 col-sm-5 col-xs-6">
+                                <div class="col-sm-5 col-xs-6">
                                     <input th:field="*{map['__debug_receive_mail_address__']}" type="email" class="form-control" placeholder="Mail address" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 col-xs-4 control-label text-left">管理者受信メール</label>
+                                <label class="col-sm-3 col-xs-4 control-label text-left">ワーニング受信メール（TO)</label>
 
-                                <div class="col-md-4 col-sm-5 col-xs-6">
+                                <div class="col-sm-5 col-xs-6">
                                     <input th:field="*{map['__adminstrator_mail_address__']}" type="email" class="form-control" placeholder="管理者受信メール"/>
+                                </div>
+                            </div>
+                            <div id="cc-container" class="form-group">
+                                <label class="col-sm-3 col-xs-4 control-label text-left">ワーニング受信メール（CC)</label>
+
+                                <div class="col-sm-5 col-xs-5">
+                                    <input id="senderCC" th:field="*{map['__cc_adminstrator_mail_address__']}" type="text" class="form-control" placeholder="user@example.com, user2@example.com"/>
+                                </div>
+                                <div class="col-md-4 col-xs-3">
+                                    <span class="help-block">メールアドレス一覧の各メールはカンマで区切りします。</span>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -177,7 +187,7 @@
                             <div class="form-group">
                                 <div class="col-xs-offset-2 col-xs-10">
                                     <div class="col-xs-offset-1 col-xs-5">
-                                        <button type="submit" class="btn btn-primary">更新</button>
+                                        <button id="submitBtn" type="submit" class="btn btn-primary">更新</button>
                                     </div>
                                     <div class="col-xs-5">
                                         <button name="backBtn" type="button" class="btn btn-danger">終了</button>
@@ -245,6 +255,7 @@
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/pages/enviromentSettings/form.js"></script>
+    <script src="/custom/js/utils.js"></script>
     <script src="/custom/js/api.js"></script>
 </th:block>
 </body>

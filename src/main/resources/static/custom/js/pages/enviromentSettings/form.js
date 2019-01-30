@@ -10,6 +10,8 @@
         setFormChangeListener();
         setGoBackListener('backBtn');
         setOpenModalListener('openDirectoriesModal');
+        setCCChangeListener();
+        validateSenderCC();
     });
 
     function setFormChangeListener() {
@@ -254,5 +256,38 @@
         }
         return -1;
     }
+
+    function setCCChangeListener() {
+        $('#senderCC').on('input', function() {
+            validateSenderCC();
+        });
+    }
+
+    function validateSenderCC() {
+        var rawCC = $('#senderCC').val();
+        rawCC = rawCC || "";
+        var ccText = rawCC.replace(/\s*,\s*/g, ",");
+        var cc = ccText.split(",");
+        var senderValid = true;
+        if(cc.length === 1 && cc[0] == "") {
+            senderValid = true;
+        } else {
+            for(var i = 0; i < cc.length; i++) {
+                var email = cc[i];
+                var valid = validateEmail(email);
+                if(!valid) {
+                    senderValid = false;
+                    break;
+                }
+            }
+        }
+        senderValid ? $('#cc-container').removeClass('has-error') : $('#cc-container').addClass('has-error');
+        disableSubmitBtn(!senderValid);
+    }
+
+    function disableSubmitBtn(disabled) {
+        $('#submitBtn').prop("disabled", disabled);
+    }
+
 
 })(jQuery);
