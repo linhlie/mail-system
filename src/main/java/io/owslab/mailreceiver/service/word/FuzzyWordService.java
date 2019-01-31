@@ -66,21 +66,21 @@ public class FuzzyWordService {
 
     @Cacheable(key="\"FuzzyWordService:findAllSameWord:\"+#word.id")
     public List<Word> findAllSameWord(Word word){
+        List<Word> words = new ArrayList<>();
         if(word!=null && word.getGroupWord()!=null){
-            List<Word> words = wordService.getListWordinGroup(word.getGroupWord());
+            words = wordService.getListWordinGroup(word.getGroupWord());
             int index = words.indexOf(word);
             words.remove(index);
-            return words;
         }
-        return null;
+        return words;
     }
 
     public List<Word> findAllInGroup(Word word){
+        List<Word> words = new ArrayList<>();
         if(word!=null && word.getGroupWord()!=null){
-            List<Word> words = wordService.getListWordinGroup(word.getGroupWord());
-            return words;
+            words = wordService.getListWordinGroup(word.getGroupWord());
         }
-        return null;
+        return words;
     }
 
     public List<FuzzyWordDTO> getExclusion(List<Word> listWordSame){
