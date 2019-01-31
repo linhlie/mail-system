@@ -44,6 +44,9 @@ public class EmailWordJobService {
     @Cacheable(key="\"EmailWordJobService:find:\"+#cacheId+'-'+toFind+'-'+spaceEffective")
     private ArrayList<Integer> find(String cacheId, String toSearch, String toFind, boolean spaceEffective){
         ArrayList<Integer> result = new ArrayList<Integer>();
+        if(toFind != null){
+            toFind = toFind.toLowerCase();
+        }
         Matcher matcher = Pattern.compile(toFind, Pattern.LITERAL).matcher(toSearch);
         boolean bFound = matcher.find();
         while (bFound) {
