@@ -1097,6 +1097,10 @@ button[name=builder-ec] {
     left: 250px;
 }
 
+.builder-wrapper-header div.builder-condition-sent {
+    transform: translateY(-5px);
+}
+
 .builder-wrapper-header div.edit-history {
     margin-left: 15px;
     display: inline-block;
@@ -1540,4 +1544,10 @@ div.bulletinboard-icon-wrapper {
 
 .tableInbox{
     overflow: hidden;
+}
+
+.condition-notification{
+    z-index: -1;
+    font-size: 20px;
+    transform: translateY(5px);
 }

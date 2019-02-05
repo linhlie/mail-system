@@ -47,12 +47,25 @@
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header" style="height: 35px;">
                                         <span>比較メール元抽出条件</span>
                                         <button name="builder-ec" data="#source-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
                                             <input id="source-condition-name" type="text" value=""/>
+                                        </div>
+                                        <div class="pull-right builder-condition-sent">
+                                            <div id="source-notification-bell" style="display: inline-block; width: 28px; text-align: center">
+                                                <span id="source-notification-new" class="glyphicon glyphicon-bell" style="position: absolute; top: 0px; left: 0px;"></span>
+                                                <span class="glyphicon glyphicon-bell condition-notification"></span>
+                                            </div>
+                                            <select id="source-notification-account" style="height: 34px; width: 200px;">
+                                                <option value="volvo">Volvo</option>
+                                                <option value="saab">Saab</option>
+                                                <option value="mercedes">Mercedes</option>
+                                                <option value="audi">Audi</option>
+                                            </select>
+                                            <button id="source-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">Primary</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
