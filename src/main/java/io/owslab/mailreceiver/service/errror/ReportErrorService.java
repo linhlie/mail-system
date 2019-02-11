@@ -106,6 +106,9 @@ public class ReportErrorService {
     }
 
     public static void reportOnlyAdministrator(String error) {
+        if(administratorMailAddress == null || administratorMailAddress.trim().equals("")){
+            return;
+        }
         if(shouldSendReportToAdmin()){
             if(sendUserName!=null){
                 lastReportSentAt = new Date();
@@ -128,6 +131,9 @@ public class ReportErrorService {
     }
 
     public static void report(String error) {
+        if(administratorMailAddress == null || administratorMailAddress.trim().equals("")){
+            return;
+        }
         if(sendUserName!=null){
             lastReportSentAt = new Date();
             try {
