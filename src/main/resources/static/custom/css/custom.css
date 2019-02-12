@@ -1551,3 +1551,26 @@ div.bulletinboard-icon-wrapper {
     font-size: 20px;
     transform: translateY(5px);
 }
+
+.condition-notification-div{
+    display: inline-block;
+    width: 28px;
+    text-align: center
+}
+.condition-notification-div:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.condition-notification-new{
+    position: absolute;
+    top: -2px;
+    left: -7px;
+    background: red;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+}
