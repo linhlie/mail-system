@@ -470,15 +470,15 @@
                 updateNotification(matchingNotification, MATCHING_CONDITION);
 
                 $('#'+sourceNotificationId).click(function () {
-                    showNotificationModal("Source Condition", sourceNotificationList, SOURCE_CONDITION)
+                    showNotificationModal("Source Condition", sourceNotificationList);
                 });
 
                 $('#'+destinationNotificationId).click(function () {
-                    showNotificationModal("Destination Condition", destinationNotificationList, DESTINATION_CONDITION)
+                    showNotificationModal("Destination Condition", destinationNotificationList);
                 });
 
                 $('#'+matchingNotificationId).click(function () {
-                    showNotificationModal("Matching Condition", matchingNotificationList, MATCHING_CONDITION)
+                    showNotificationModal("Matching Condition", matchingNotificationList);
                 });
             }
         }
@@ -1196,7 +1196,7 @@
         }
     }
 
-    function showNotificationModal(title, notificationList, conditionType) {
+    function showNotificationModal(title, notificationList) {
         $('#notificationModal').modal();
         $( '#notificationModalTitle').text(title);
         updateNotificationList(notificationList);
@@ -1204,9 +1204,13 @@
         $("#notificationModalClose").click(function () {
             $('#notificationModal').modal('hide');
         });
+        $('.notification-modal-show-more').addClass('hidden');
+        $('#modal-body-content').off('scroll');
         $('#modal-body-content').scroll(function() {
             if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-                $('.notification-modal-show-more').removeClass('hidden');
+                if($(this).scrollTop() > 0){
+                    $('.notification-modal-show-more').removeClass('hidden');
+                }
             }else{
                 $('.notification-modal-show-more').addClass('hidden');
             }
@@ -1217,7 +1221,10 @@
             $('.notification-modal-show-more').addClass('fa fa-spinner fa-spin');
             function onSuccess(response) {
                 if(response && response.status) {
-                    notificationList = notificationList.concat(response.list);
+                    var list = response.list;
+                    for(var i=0;i<list.length;i++){
+                        notificationList.push(list[i]);
+                    }
                     updateNotificationList(notificationList);
                 } else {
                     $.alert("show more condition notifications fail");
