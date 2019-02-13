@@ -157,12 +157,14 @@
                                         </div>
                                         <div class="pull-right builder-condition-sent">
                                             <div id="destination-notification" class="condition-notification-div">
-                                                <span id="destination-notification-new" class="condition-notification-new">99</span>
+                                                <span id="destination-notification-new" class="condition-notification-new hidden">0</span>
                                                 <span class="glyphicon glyphicon-bell condition-notification"></span>
                                             </div>
                                             <select id="destination-notification-account" style="height: 34px; width: 200px;">
+                                                <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
+                                                <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
                                             </select>
-                                            <button id="destination-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">Send</button>
+                                            <button id="destination-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">

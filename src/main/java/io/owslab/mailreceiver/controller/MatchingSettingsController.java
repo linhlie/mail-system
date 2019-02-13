@@ -2,17 +2,19 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.ClickType;
+import io.owslab.mailreceiver.exception.EngineerException;
 import io.owslab.mailreceiver.form.*;
-import io.owslab.mailreceiver.model.BusinessPartner;
-import io.owslab.mailreceiver.model.ClickHistory;
-import io.owslab.mailreceiver.model.EmailAccount;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.ConditionNotificationResponseBody;
 import io.owslab.mailreceiver.response.DetailMailResponseBody;
 import io.owslab.mailreceiver.response.MatchingResponeBody;
+import io.owslab.mailreceiver.service.condition.ConditionNotificationService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
@@ -37,6 +39,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +88,12 @@ public class MatchingSettingsController {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private ConditionNotificationService conditionNotificationService;
+
     @RequestMapping(value = "/matchingSettings", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
@@ -93,9 +102,11 @@ public class MatchingSettingsController {
         model.addAttribute("matchingItemOptions", matchingItemOptions);
 
         List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        List<AccountDTO> accountDTOS = accountService.getAllUserRoleAccountDTOs();
         model.addAttribute("ruleNumber",numberConditionSetting.get(0));
         model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
         model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
+        model.addAttribute("accounts",accountDTOS);
         return "user/matching/settings";
     }
 
@@ -408,4 +419,103 @@ public class MatchingSettingsController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = { "/matchingSettings/matchingConditionNotification" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getNotificationCondition() {
+        ConditionNotificationResponseBody result = new ConditionNotificationResponseBody();
+        try {
+            long accountId = accountService.getLoggedInAccountId();
+            long sourceNewnotification = conditionNotificationService.getNewConditionNotifications(accountId, ConditionNotification.Condition_Type.SOURCE_CONDITION);
+            long destinationNewnotification = conditionNotificationService.getNewConditionNotifications(accountId, ConditionNotification.Condition_Type.DESTINATION_CONDITION);
+            long matchingNewnotification = conditionNotificationService.getNewConditionNotifications(accountId, ConditionNotification.Condition_Type.MATCHING_CONDITION);
+            List<ConditionNotificationDTO> sourceConditions = conditionNotificationService.getConditionNotifications(accountId, ConditionNotification.Condition_Type.SOURCE_CONDITION, 1);
+            List<ConditionNotificationDTO> destinationConditions = conditionNotificationService.getConditionNotifications(accountId, ConditionNotification.Condition_Type.DESTINATION_CONDITION, 1);
+            List<ConditionNotificationDTO> matchingConditions = conditionNotificationService.getConditionNotifications(accountId, ConditionNotification.Condition_Type.MATCHING_CONDITION, 1);
+
+            result.setSourceNotification(sourceNewnotification);
+            result.setDestinationNotification(destinationNewnotification);
+            result.setMatchingNotification(matchingNewnotification);
+
+            result.setSourceNotificationList(sourceConditions);
+            result.setDestinationNotificationList(destinationConditions);
+            result.setMatchingNotificationList(matchingConditions);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getNotificationCondition: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/conditionNotification/add", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> addConditionNotification(
+            @Valid @RequestBody ConditionNotification form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            conditionNotificationService.add(form);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("addConditionNotification: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/conditionNotification/update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> updateConditionNotification(
+            @Valid @RequestBody ConditionNotificationDTO form, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            conditionNotificationService.update(form);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("updateConditionNotification: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/conditionNotification/showMore")
+    @ResponseBody
+    public ResponseEntity<?> showMoreConditionNotifications(@Valid @RequestBody ConditionNotificationDTO form, BindingResult bindingResult) {
+        MatchingResponeBody result = new MatchingResponeBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<ConditionNotificationDTO> conditionNotificationDTOS = conditionNotificationService.showMoreConditionNotifications(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(conditionNotificationDTOS);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("showMoreConditionNotifications: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
 }

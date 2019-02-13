@@ -1574,3 +1574,12 @@ div.bulletinboard-icon-wrapper {
     font-weight: bold;
     font-size: 13px;
 }
+
+.notification-modal-show-more{
+    cursor: pointer;
+    color: blue;
+}
+
+.notification-modal-show-more:hover{
+    color: orangered;
+}

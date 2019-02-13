@@ -4,7 +4,7 @@ CREATE TABLE `condition_notification` (
   `to_account_id` INT NOT NULL,
   `condition` MEDIUMTEXT NOT NULL,
   `condition_type` INT(4) NOT NULL,
-  `send_at` DATETIME NOT NULL,
+  `sent_at` DATETIME NOT NULL,
   `status` INT(4) NOT NULL DEFAULT 0,
   FOREIGN KEY fk_account_condition_from(from_account_id)
   REFERENCES accounts(id)

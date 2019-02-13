@@ -1,9 +1,6 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dto.DetailMailDTO;
-import io.owslab.mailreceiver.dto.EngineerListItemDTO;
-import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
-import io.owslab.mailreceiver.dto.ExtractMailDTO;
+import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
@@ -21,6 +18,7 @@ import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.EmailMatchingEngineerService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
@@ -95,6 +93,9 @@ public class EmailMatchingEngineerController {
     @Autowired
     private NumberTreatmentService numberTreatmentService;
 
+    @Autowired
+    private AccountService accountService;
+
     @RequestMapping(value = "/emailMatchingEngineerSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
@@ -103,9 +104,11 @@ public class EmailMatchingEngineerController {
         model.addAttribute("matchingItemOptions", matchingItemOptions);
 
         List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        List<AccountDTO> accountDTOS = accountService.getAllUserRoleAccountDTOs();
         model.addAttribute("ruleNumber",numberConditionSetting.get(0));
         model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
         model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
+        model.addAttribute("accounts",accountDTOS);
         return "user/emailMatchingEngineer/setting";
     }
     

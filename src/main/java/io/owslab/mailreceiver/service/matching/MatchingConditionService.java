@@ -1217,5 +1217,4 @@ public class MatchingConditionService {
         result.add(inboxDTO);
         return result;
     }
-
 }

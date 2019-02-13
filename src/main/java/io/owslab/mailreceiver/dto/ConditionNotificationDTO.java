@@ -16,10 +16,9 @@ public class ConditionNotificationDTO {
 
     }
 
-    public ConditionNotificationDTO(ConditionNotification conditionNotification, String fromAccount, String toAccount){
+    public ConditionNotificationDTO(ConditionNotification conditionNotification, String fromAccount){
         this.id  = conditionNotification.getId();
         this.fromAccount = fromAccount;
-        this.toAccount = toAccount;
         this.condition = conditionNotification.getCondition();
         this.conditionType = conditionNotification.getConditionType();
         this.sentAt = ConvertDate.convertDateToYYMMDDHHMM(conditionNotification.getSentAt());

@@ -11,10 +11,15 @@ public class ConditionNotification {
     private long id;
     private long fromAccountId;
     private long toAccountId;
+    @Column(name="[condition]")
     private String condition;
     private int conditionType;
     private Date sentAt;
     private int status;
+
+    public ConditionNotification(){
+
+    }
 
     public long getId() {
         return id;
@@ -82,7 +87,6 @@ public class ConditionNotification {
         public static final int SOURCE_CONDITION = 0;
         public static final int DESTINATION_CONDITION = 1;
         public static final int MATCHING_CONDITION = 2;
-        public static final int ENGINEER_CONDITION = 3;
-        public static final int ENGINEER_MATCHING_CONDITION = 4;
+        public static final int ENGINEER_MATCHING_CONDITION = 3;
     }
 }

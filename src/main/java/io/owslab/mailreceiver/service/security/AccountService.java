@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.service.security;
 
 import io.owslab.mailreceiver.dao.AccountDAO;
+import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.form.AdministratorSettingForm;
 import io.owslab.mailreceiver.form.RegisterAccountForm;
 import io.owslab.mailreceiver.form.UserAccountForm;
@@ -126,6 +127,19 @@ public class AccountService {
     public long getLoggedInAccountId() {
         MyUser user = (MyUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return user.getUserId();
+    }
+
+    public List<AccountDTO> getAllUserRoleAccountDTOs(){
+        List<AccountDTO> result = new ArrayList<>();
+        List<Account> accounts=getAllUserRoleAccounts();
+        long currentAccountId = getLoggedInAccountId();
+        for(Account account : accounts){
+            if (currentAccountId != account.getId()){
+                AccountDTO accountDTO = new AccountDTO(account);
+                result.add(accountDTO);
+            }
+        }
+        return result;
     }
 
     public String getLastNameUserLogged(){
