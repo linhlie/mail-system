@@ -38,6 +38,37 @@
     var destinationConditionNameId = "#destination-condition-name";
     var matchingConditionNameId = "#matching-condition-name";
 
+    var sourceNotificationId = "source-notification";
+    var sourceNotificationNewId = "source-notification-new";
+    var sourceNotificationAccountId = "source-notification-account";
+    var sourceNotificationSentBtnId = "#source-notification-sent";
+
+    var destinationNotificationId = "destination-notification";
+    var destinationNotificationNewId = "destination-notification-new";
+    var destinationNotificationAccountId = "destination-notification-account";
+    var destinationNotificationSentBtnId = "#destination-notification-sent";
+
+    var matchingNotificationId = "matching-notification";
+    var matchingNotificationNewId = "matching-notification-new";
+    var matchingNotificationAccountId = "matching-notification-account";
+    var matchingNotificationSentBtnId = "#matching-notification-sent";
+
+    var SOURCE_CONDITION = 0;
+    var DESTINATION_CONDITION = 1;
+    var MATCHING_CONDITION = 2;
+
+    var NOTIFICATION_NEW = 0;
+    var NOTIFICATION_ACCEPT = 1;
+    var NOTIFICATION_REJECT = 2;
+
+    var sourceNotificationList = [];
+    var destinationNotificationList = [];
+    var matchingNotificationList = [];
+
+    var default_source_configs = {};
+    var default_destination_configs = {};
+    var default_matching_configs = {};
+
     var ruleInvalidateIds = [];
 
     var RULE_NUMBER_ID = 4;
@@ -362,7 +393,7 @@
             })
         }
 
-        var default_source_configs = {
+        default_source_configs = {
             plugins: default_plugins,
             allow_empty: true,
             filters: default_filters,
@@ -370,7 +401,7 @@
             lang: globalConfig.default_lang,
         };
 
-        var default_destination_configs = {
+        default_destination_configs = {
             plugins: default_plugins,
             allow_empty: true,
             filters: default_filters,
@@ -378,7 +409,7 @@
             lang: globalConfig.default_lang,
         };
 
-        var default_matching_configs = {
+        default_matching_configs = {
             plugins: default_plugins,
             allow_empty: true,
             filters: default_filters_matching,
@@ -409,13 +440,146 @@
         setButtonClickListenter(submitFormBtnId, submit);
         setButtonClickListenter(extractSourceBtnId, extractSource);
         setButtonClickListenter(extractDestinationBtnId, extractDestination);
+        setButtonClickListenter(sourceNotificationSentBtnId, sendSourceConditions);
+        setButtonClickListenter(destinationNotificationSentBtnId, sendDestinationConditions);
+        setButtonClickListenter(matchingNotificationSentBtnId, sendMatchingConditions);
         initDuplicateHandle();
         initSameDomainHandle();
         initcheckDomainInPartnerGroup();
         loadDefaultSettings();
+        loadConditionNotification();
         $(window).on('beforeunload', saveDefaultSettings);
         $(document).on("keydown", keydownHandler);
     });
+
+    function loadConditionNotification(){
+        $('#'+sourceNotificationId).off('click');
+        $('#'+destinationNotificationId).off('click');
+        $('#'+matchingNotificationId).off('click');
+        function onSuccess(response) {
+            if(response && response.status) {
+                var sourceNotification = response.sourceNotification;
+                var destinationNotification = response.destinationNotification;
+                var matchingNotification = response.matchingNotification;
+                sourceNotificationList = response.sourceNotificationList;
+                destinationNotificationList = response.destinationNotificationList;
+                matchingNotificationList = response.matchingNotificationList;
+
+                updateNotification(sourceNotification, SOURCE_CONDITION);
+                updateNotification(destinationNotification, DESTINATION_CONDITION);
+                updateNotification(matchingNotification, MATCHING_CONDITION);
+
+                $('#'+sourceNotificationId).click(function () {
+                    showNotificationModal("メール元抽条件通知", sourceNotificationList);
+                });
+
+                $('#'+destinationNotificationId).click(function () {
+                    showNotificationModal("メール先抽出条件通知", destinationNotificationList);
+                });
+
+                $('#'+matchingNotificationId).click(function () {
+                    showNotificationModal("マッチング条件通知", matchingNotificationList);
+                });
+            }
+        }
+        function onError() {
+            alert('マッチング条件ロードに失敗しました。');
+        }
+
+        getMatchingConditionNotification(onSuccess, onError);
+    }
+
+    function updateNotification(notificationNumber, notificationType) {
+        var notification = null;
+        switch (notificationType) {
+            case SOURCE_CONDITION:
+                notification = $('#' + sourceNotificationNewId);
+                break;
+            case DESTINATION_CONDITION:
+                notification = $('#' + destinationNotificationNewId);
+                break;
+            case MATCHING_CONDITION:
+                notification = $('#' + matchingNotificationNewId);
+                break;
+        }
+        if(notificationNumber>0){
+            notificationNumber = notificationNumber>99? 99 : notificationNumber;
+            notification.text(notificationNumber);
+            notification.removeClass('hidden');
+        }else{
+            notification.addClass('hidden');
+        }
+    }
+    
+    function sendSourceConditions() {
+        var toAccount = $('#' + sourceNotificationAccountId).val();
+        if(!toAccount || toAccount==null){
+            $.alert("アカウントを最初に選択してください。");
+            return;
+        }
+        var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
+        if(!sourceConditions) return;
+        sendConditions(toAccount, sourceConditions, SOURCE_CONDITION);
+    }
+
+    function sendDestinationConditions() {
+        var toAccount = $('#' + destinationNotificationAccountId).val();
+        if(!toAccount || toAccount==null){
+            $.alert("アカウントを最初に選択してください。");
+            return;
+        }
+        var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
+        if(!destinationConditions) return;
+        sendConditions(toAccount, destinationConditions, DESTINATION_CONDITION);
+    }
+
+    function sendMatchingConditions() {
+        var toAccount = $('#' + matchingNotificationAccountId).val();
+        if(!toAccount || toAccount==null){
+            $.alert("アカウントを最初に選択してください。");
+            return;
+        }
+        var matchingConditions = $(matchingBuilderId).queryBuilder('getRules');
+        if(!matchingConditions) return;
+        sendConditions(toAccount, matchingConditions, MATCHING_CONDITION);
+    }
+
+
+    function sendConditions(toAccount, conditions, conditionType) {
+        var condition = JSON.stringify(conditions);
+        var sendBtn = null;
+        switch (conditionType) {
+            case SOURCE_CONDITION:
+                sendBtn = $(sourceNotificationSentBtnId);
+                break;
+            case DESTINATION_CONDITION:
+                sendBtn = $(destinationNotificationSentBtnId);
+                break;
+            case MATCHING_CONDITION:
+                sendBtn = $(matchingNotificationSentBtnId);
+                break;
+        }
+        sendBtn.button('loading');
+        function onSuccess(response) {
+            if(response && response.status) {
+                $.alert("条件送信に成功しました。");
+            } else {
+                $.alert("条件送信に失敗しました。");
+            }
+            sendBtn.button('reset');
+        }
+
+        function onError(response) {
+            $.alert("条件送信に失敗しました。");
+            sendBtn.button('reset');
+        }
+
+        addConditionNotification({
+            toAccountId: toAccount,
+            condition: condition,
+            conditionType: conditionType,
+        }, onSuccess, onError)
+    }
 
     function onExpandCollapseBuilder() {
         var builderId = this.getAttribute("data");
@@ -851,7 +1015,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -864,7 +1028,7 @@
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "distinguish": false,
-            "spaceEffective": false,
+            "Please allow popups for this websitespaceEffective": false,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "type": 2,
@@ -877,7 +1041,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -919,7 +1083,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -1030,6 +1194,243 @@
                 }
             }
         }
+    }
+
+    function showNotificationModal(title, notificationList) {
+        $('#notificationModal').modal();
+        $( '#notificationModalTitle').text(title);
+        updateNotificationList(notificationList);
+        $('#notificationModalClose').off('click');
+        $("#notificationModalClose").click(function () {
+            $('#notificationModal').modal('hide');
+        });
+        $('.notification-modal-show-more').addClass('hidden');
+        $('#modal-body-content').off('scroll');
+        $('#modal-body-content').scroll(function() {
+            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                if($(this).scrollTop() > 0){
+                    $('.notification-modal-show-more').removeClass('hidden');
+                }
+            }else{
+                $('.notification-modal-show-more').addClass('hidden');
+            }
+        });
+        $('.notification-modal-show-more').off('click');
+        $('.notification-modal-show-more').click(function () {
+            $('.notification-modal-show-more').text('');
+            $('.notification-modal-show-more').addClass('fa fa-spinner fa-spin');
+            function onSuccess(response) {
+                if(response && response.status) {
+                    var list = response.list;
+                    for(var i=0;i<list.length;i++){
+                        notificationList.push(list[i]);
+                    }
+                    updateNotificationList(notificationList);
+                } else {
+                    $.alert("条件通知表示に失敗しました。");
+                }
+                $('.notification-modal-show-more').text('もっと見せる');
+                $('.notification-modal-show-more').addClass('hidden');
+                $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
+            }
+
+            function onError(response) {
+                conditionNotification.status = NOTIFICATION_NEW;
+                $.alert("条件通知表示に失敗しました。");
+                $('.notification-modal-show-more').text('もっと見せる');
+                $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
+            }
+
+            if(notificationList.length>0){
+                showMoreConditionNotification(notificationList[notificationList.length - 1], onSuccess, onError)
+            }
+        });
+    }
+    
+    function updateNotificationList(notificationList) {
+        $('#modal-body-content').html("");
+        for(var i=0;i<notificationList.length;i++){
+            switch (notificationList[i].status) {
+                case NOTIFICATION_NEW:
+                    $('#modal-body-content').append(
+                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<span>' + notificationList[i].fromAccount + ' があなたに設定条件のレコードを送信しました。</span>' +
+                        '<button class="btn btn-danger pull-right btn-notification-reject"  style="margin-right: 10px;" data-index="'+ i +'">却下</button>' +
+                        '<button class="btn btn-success pull-right btn-notification-accept" style="margin-right: 10px;" data-index="'+ i +'">同意</button>' +
+                        '<button class="btn btn-primary pull-right btn-notification-preview" style="margin-right: 10px;" data-index="'+ i +'">プレビュー</button>' +
+                        '<br/>' +
+                        '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
+                        '</div>'
+                    );
+                    break;
+                case NOTIFICATION_ACCEPT:
+                    $('#modal-body-content').append(
+                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<span>' + notificationList[i].fromAccount + ' からのマッチング条件のレコードを受けました。</span>' +
+                        '<br/>' +
+                        '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
+                        '</div>'
+                    );
+                    break;
+                case NOTIFICATION_REJECT:
+                    $('#modal-body-content').append(
+                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<span>' + notificationList[i].fromAccount + ' からのマッチング条件のレコードを却下しました。</span>' +
+                        '<br/>' +
+                        '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
+                        '</div>'
+                    );
+                    break;
+            }
+
+        }
+        $('.btn-notification-preview').click(function () {
+            var index = $(this).attr('data-index');
+            showPreviewModal(notificationList[index]);
+        })
+
+        $('.btn-notification-accept').click(function () {
+            var index = $(this).attr('data-index');
+            $.confirm({
+                title: '<b>【条件通知】</b>',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">通知を許可しますか。<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            if(notificationList[index] && notificationList[index] != null){
+                                notificationList[index].status = NOTIFICATION_ACCEPT;
+                                editConditionNotification(notificationList[index], function () {
+                                    downNotification(notificationList[index].conditionType);
+                                    $('#notificationModal').modal('hide');
+                                    applyCondition(notificationList[index]);
+                                });
+                            }
+                            console.log(notificationList[index]);
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){}
+                    },
+                }
+            });
+        })
+
+        $('.btn-notification-reject').click(function () {
+            var index = $(this).attr('data-index');
+            $.confirm({
+                title: '<b>【条件通知】</b>',
+                titleClass: 'text-center',
+                content: '<div class="text-center" style="font-size: 16px;">通知を本当に拒否したいですか。<br/></div>',
+                buttons: {
+                    confirm: {
+                        text: 'はい',
+                        action: function(){
+                            if(notificationList[index] && notificationList[index] != null){
+                                notificationList[index].status = NOTIFICATION_REJECT;
+                                editConditionNotification(notificationList[index], function () {
+                                    downNotification(notificationList[index].conditionType);
+                                    $('#notificationModal').modal('hide');
+                                });
+                            }
+                            console.log(notificationList[index]);
+                        }
+                    },
+                    cancel: {
+                        text: 'いいえ',
+                        action: function(){}
+                    },
+                }
+            });
+        })
+    }
+
+    function showPreviewModal(conditionNotification) {
+        switch (conditionNotification.conditionType) {
+            case SOURCE_CONDITION:
+                $('#preview-builder').queryBuilder(default_source_configs);
+                break;
+            case DESTINATION_CONDITION:
+                $('#preview-builder').queryBuilder(default_destination_configs);
+                break;
+            case MATCHING_CONDITION:
+                $('#preview-builder').queryBuilder(default_matching_configs);
+                break;
+        }
+        var condition = jQuery.parseJSON(conditionNotification.condition);
+        replaceCondition(condition);
+        $('#preview-builder').queryBuilder('setRules', condition);
+        $('#previewConditionModal').modal();
+        $( '#previewConditionModalTitle').text("条件プレビュー");
+        $('#previewConditionModalClose').off('click');
+        $("#previewConditionModalClose").click(function () {
+            $('#previewConditionModal').modal('hide');
+        });
+    }
+
+    function editConditionNotification(conditionNotification, callback) {
+        $('.btn-notification-preview').button('loading');
+        $('.btn-notification-accept').button('loading');
+        $('.btn-notification-reject').button('loading');
+        function onSuccess(response) {
+            if(response && response.status) {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            } else {
+                conditionNotification.status = NOTIFICATION_NEW;
+                $.alert("条件送信に失敗しました。");
+            }
+            $('.btn-notification-preview').button('reset');
+            $('.btn-notification-accept').button('reset');
+            $('.btn-notification-reject').button('reset');
+        }
+
+        function onError(response) {
+            conditionNotification.status = NOTIFICATION_NEW;
+            $.alert("条件送信に失敗しました。");
+            $('.btn-notification-preview').button('reset');
+            $('.btn-notification-accept').button('reset');
+            $('.btn-notification-reject').button('reset');
+        }
+
+        updateConditionNotification(conditionNotification, onSuccess, onError)
+    }
+
+    function downNotification(conditionType){
+        var number = 0;
+        switch (conditionType) {
+            case SOURCE_CONDITION:
+                number = $('#' +sourceNotificationNewId).text();
+                break;
+            case DESTINATION_CONDITION:
+                number = $('#' +destinationNotificationNewId).text();
+                break;
+            case MATCHING_CONDITION:
+                number = $('#' +matchingNotificationNewId).text();
+                break;
+        }
+        updateNotification(number-1, conditionType);
+    }
+
+    function applyCondition(conditionNotification){
+        var queryBuilder = null;
+        switch (conditionNotification.conditionType) {
+            case SOURCE_CONDITION:
+                queryBuilder = $(sourceBuilderId);
+                break;
+            case DESTINATION_CONDITION:
+                queryBuilder = $(destinationBuilderId);
+                break;
+            case MATCHING_CONDITION:
+                queryBuilder = $(matchingBuilderId);
+                break;
+        }
+        var condition = jQuery.parseJSON(conditionNotification.condition);
+        replaceCondition(condition);
+        queryBuilder.queryBuilder('setRules', condition);
     }
 
 })(jQuery);

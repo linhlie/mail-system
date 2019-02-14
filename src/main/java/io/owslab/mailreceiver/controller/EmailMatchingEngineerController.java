@@ -1,36 +1,24 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dto.DetailMailDTO;
-import io.owslab.mailreceiver.dto.EngineerListItemDTO;
+import io.owslab.mailreceiver.dto.AccountDTO;
+import io.owslab.mailreceiver.dto.ConditionNotificationDTO;
 import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
-import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
-import io.owslab.mailreceiver.form.ExtractForm;
-import io.owslab.mailreceiver.form.MatchingConditionForm;
-import io.owslab.mailreceiver.form.SendMailForm;
-import io.owslab.mailreceiver.model.ClickHistory;
-import io.owslab.mailreceiver.model.EmailAccount;
+import io.owslab.mailreceiver.model.ConditionNotification;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
-import io.owslab.mailreceiver.response.DetailMailResponseBody;
+import io.owslab.mailreceiver.response.ConditionNotificationResponseBody;
 import io.owslab.mailreceiver.response.MatchingResponeBody;
+import io.owslab.mailreceiver.service.condition.ConditionNotificationService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
-import io.owslab.mailreceiver.service.mail.MailBoxService;
-import io.owslab.mailreceiver.service.mail.SendMailService;
 import io.owslab.mailreceiver.service.matching.EmailMatchingEngineerService;
-import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
-import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
-import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalEmailMatchingEngineerResult;
-import io.owslab.mailreceiver.utils.FinalMatchingResult;
 import io.owslab.mailreceiver.utils.SelectOption;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.ServletContext;
 import javax.validation.Valid;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,21 +58,6 @@ public class EmailMatchingEngineerController {
     private EmailMatchingEngineerService emailMatchingEngineerService;
 
     @Autowired
-    private MailBoxService mailBoxService;
-
-    @Autowired
-    private ServletContext servletContext;
-
-    @Autowired
-    private SendMailService sendMailService;
-
-    @Autowired
-    private EnviromentSettingService enviromentSettingService;
-
-    @Autowired
-    private MailAccountsService mailAccountsService;
-
-    @Autowired
     private ClickHistoryService clickHistoryService;
     
     @Autowired
@@ -94,6 +65,12 @@ public class EmailMatchingEngineerController {
 
     @Autowired
     private NumberTreatmentService numberTreatmentService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    ConditionNotificationService conditionNotificationService;
 
     @RequestMapping(value = "/emailMatchingEngineerSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -103,9 +80,11 @@ public class EmailMatchingEngineerController {
         model.addAttribute("matchingItemOptions", matchingItemOptions);
 
         List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
+        List<AccountDTO> accountDTOS = accountService.getAllUserRoleAccountDTOs();
         model.addAttribute("ruleNumber",numberConditionSetting.get(0));
         model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
         model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
+        model.addAttribute("accounts",accountDTOS);
         return "user/emailMatchingEngineer/setting";
     }
     
@@ -163,5 +142,26 @@ public class EmailMatchingEngineerController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value = { "/engineerMatching/matchingConditionNotification" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getNotificationCondition() {
+        ConditionNotificationResponseBody result = new ConditionNotificationResponseBody();
+        try {
+            long accountId = accountService.getLoggedInAccountId();
+            long destinationNewnotification = conditionNotificationService.getNewConditionNotifications(accountId, ConditionNotification.Condition_Type.ENGINEER_MATCHING_CONDITION);
+            List<ConditionNotificationDTO> destinationConditions = conditionNotificationService.getConditionNotifications(accountId, ConditionNotification.Condition_Type.ENGINEER_MATCHING_CONDITION, 1);
+
+            result.setDestinationNotification(destinationNewnotification);
+            result.setDestinationNotificationList(destinationConditions);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getNotificationCondition: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }

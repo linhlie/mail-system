@@ -47,12 +47,23 @@
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header" style="height: 35px;">
                                         <span>比較メール元抽出条件</span>
                                         <button name="builder-ec" data="#source-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
                                             <input id="source-condition-name" type="text" value=""/>
+                                        </div>
+                                        <div class="pull-right builder-condition-sent">
+                                            <div id="source-notification" class="condition-notification-div">
+                                                <span id="source-notification-new" class="condition-notification-new hidden">0</span>
+                                                <span class="glyphicon glyphicon-bell condition-notification"></span>
+                                            </div>
+                                            <select id="source-notification-account" style="height: 34px; width: 200px;">
+                                                <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
+                                                <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                            </select>
+                                            <button id="source-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -73,12 +84,23 @@
                                 </div>
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header"  style="height: 35px;">
                                         <span>比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#destination-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
                                             <input id="destination-condition-name" type="text" value=""/>
+                                        </div>
+                                        <div class="pull-right builder-condition-sent">
+                                            <div id="destination-notification" class="condition-notification-div">
+                                                <span id="destination-notification-new" class="condition-notification-new hidden">0</span>
+                                                <span class="glyphicon glyphicon-bell condition-notification"></span>
+                                            </div>
+                                            <select id="destination-notification-account" style="height: 34px; width: 200px;">
+                                                <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
+                                                <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                            </select>
+                                            <button id="destination-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -119,12 +141,23 @@
                                 <!--</div>-->
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header" style="height: 35px;">
                                         <span>マッチング条件</span>
                                         <button name="builder-ec" data="#matching-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
                                             <input id="matching-condition-name" type="text" value=""/>
+                                        </div>
+                                        <div class="pull-right builder-condition-sent">
+                                            <div id="matching-notification" class="condition-notification-div">
+                                                <span id="matching-notification-new" class="condition-notification-new hidden">0</span>
+                                                <span class="glyphicon glyphicon-bell condition-notification"></span>
+                                            </div>
+                                            <select id="matching-notification-account" style="height: 34px; width: 200px;">
+                                                <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
+                                                <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                            </select>
+                                            <button id="matching-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -142,17 +175,6 @@
                                 <div class="col-md-4">
                                     <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                                 </div>
-                                <!--<div class="form-group"></div>-->
-                                <!--<div class="matching-container">-->
-                                    <!--<div class="row">-->
-                                        <!--<div class="radio">-->
-                                            <!--<label><input type="radio" id="spaceEffective1" name="spaceEffective" value="false"/>Spaceを区別しない</label>-->
-                                        <!--</div>-->
-                                        <!--<div class="radio">-->
-                                            <!--<label><input type="radio" id="spaceEffective2" name="spaceEffective" value="true"/>Spaceを区別する</label>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
                                     <span>マッチングワード</span>
@@ -221,8 +243,45 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    <div id="notificationModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="notificationModalTitle" class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-body-content" style="overflow-y: scroll; height: 450px;">
+                    </div>
+                </div>
+                <div class="modal-footer" style=" text-align: center">
+                    <span class="notification-modal-show-more hidden">もっと見せる</span>
+                    <button type="button" id="notificationModalClose" class="btn btn-primary pull-right">閉じる</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="previewConditionModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="previewConditionModalTitle" class="modal-title"></h4>
+                </div>
+                <div id="preview-builder" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="previewConditionModalClose" class="btn btn-primary">閉じる</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/matching/settings.js"></script>
 </th:block>
 </body>

@@ -1097,6 +1097,10 @@ button[name=builder-ec] {
     left: 250px;
 }
 
+.builder-wrapper-header div.builder-condition-sent {
+    transform: translateY(-5px);
+}
+
 .builder-wrapper-header div.edit-history {
     margin-left: 15px;
     display: inline-block;
@@ -1540,4 +1544,42 @@ div.bulletinboard-icon-wrapper {
 
 .tableInbox{
     overflow: hidden;
+}
+
+.condition-notification{
+    z-index: -1;
+    font-size: 20px;
+    transform: translateY(5px);
+}
+
+.condition-notification-div{
+    display: inline-block;
+    width: 28px;
+    text-align: center
+}
+.condition-notification-div:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.condition-notification-new{
+    position: absolute;
+    top: -2px;
+    left: -7px;
+    background: red;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.notification-modal-show-more{
+    cursor: pointer;
+    color: blue;
+}
+
+.notification-modal-show-more:hover{
+    color: orangered;
 }

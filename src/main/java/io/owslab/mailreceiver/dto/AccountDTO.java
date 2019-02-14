@@ -22,6 +22,8 @@ public class AccountDTO {
 
     private boolean expansion;
 
+    private String fullName;
+
     public AccountDTO(Account account) {
         this.setId(account.getId());
         this.setUserName(account.getUserName());
@@ -30,6 +32,7 @@ public class AccountDTO {
         this.setLastName(account.getLastName());
         this.setFirstName(account.getFirstName());
         this.setExpansion(Account.Role.MEMBER_EXPANSION.equals(account.getUserRole()));
+        this.setFullName(account.getAccountName());
     }
 
     public long getId() {
@@ -86,5 +89,13 @@ public class AccountDTO {
 
     public void setExpansion(boolean expansion) {
         this.expansion = expansion;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

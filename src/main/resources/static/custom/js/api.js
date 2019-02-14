@@ -594,6 +594,31 @@ function deletenumberTreatment(onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getMatchingConditionNotification(onSuccess, onError) {
+    var url = "/user/matchingSettings/matchingConditionNotification";
+    _get(url, onSuccess, onError);
+}
+
+function getEngineerMatchingConditionNotification(onSuccess, onError) {
+    var url = "/user/engineerMatching/matchingConditionNotification";
+    _get(url, onSuccess, onError);
+}
+
+function addConditionNotification(data, onSuccess, onError) {
+    var url = "/user/conditionNotification/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateConditionNotification(data, onSuccess, onError) {
+    var url = "/user/conditionNotification/update";
+    _post(url, data, onSuccess, onError);
+}
+
+function showMoreConditionNotification(data, onSuccess, onError) {
+    var url = "/user/conditionNotification/showMore";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
