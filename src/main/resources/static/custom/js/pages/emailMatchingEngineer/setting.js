@@ -1426,7 +1426,7 @@
                 }
             } else {
                 conditionNotification.status = NOTIFICATION_NEW;
-                $.alert("条件送信に失敗しました。);
+                $.alert("条件送信に失敗しました。");
             }
             $('.btn-notification-preview').button('reset');
             $('.btn-notification-accept').button('reset');

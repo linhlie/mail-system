@@ -1321,7 +1321,7 @@
         $('.btn-notification-reject').click(function () {
             var index = $(this).attr('data-index');
             $.confirm({
-                title: '<b>【条件通知</b>',
+                title: '<b>【条件通知】</b>',
                 titleClass: 'text-center',
                 content: '<div class="text-center" style="font-size: 16px;">通知を本当に拒否したいですか。<br/></div>',
                 buttons: {
