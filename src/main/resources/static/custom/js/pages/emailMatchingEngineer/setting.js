@@ -1283,7 +1283,7 @@
                 } else {
                     $.alert("条件通知表示に失敗しました。");
                 }
-                $('.notification-modal-show-more').text('show more');
+                $('.notification-modal-show-more').text('もっと見せる');
                 $('.notification-modal-show-more').addClass('hidden');
                 $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
             }
@@ -1291,7 +1291,7 @@
             function onError(response) {
                 conditionNotification.status = NOTIFICATION_NEW;
                 $.alert("条件通知表示に失敗しました。");
-                $('.notification-modal-show-more').text('Show more');
+                $('.notification-modal-show-more').text('もっと見せる');
                 $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
             }
 
