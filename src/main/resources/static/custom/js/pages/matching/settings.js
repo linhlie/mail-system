@@ -470,20 +470,20 @@
                 updateNotification(matchingNotification, MATCHING_CONDITION);
 
                 $('#'+sourceNotificationId).click(function () {
-                    showNotificationModal("メール元抽条件", sourceNotificationList);
+                    showNotificationModal("メール元抽条件通知", sourceNotificationList);
                 });
 
                 $('#'+destinationNotificationId).click(function () {
-                    showNotificationModal("メール先抽出条件", destinationNotificationList);
+                    showNotificationModal("メール先抽出条件通知", destinationNotificationList);
                 });
 
                 $('#'+matchingNotificationId).click(function () {
-                    showNotificationModal("マッチング条件", matchingNotificationList);
+                    showNotificationModal("マッチング条件通知", matchingNotificationList);
                 });
             }
         }
         function onError() {
-            alert('Load matching condition fail');
+            alert('マッチング条件ロードに失敗しました。');
         }
 
         getMatchingConditionNotification(onSuccess, onError);
@@ -514,7 +514,7 @@
     function sendSourceConditions() {
         var toAccount = $('#' + sourceNotificationAccountId).val();
         if(!toAccount || toAccount==null){
-            $.alert("You must select account first");
+            $.alert("アカウントを最初に選択してください。");
             return;
         }
         var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
@@ -525,7 +525,7 @@
     function sendDestinationConditions() {
         var toAccount = $('#' + destinationNotificationAccountId).val();
         if(!toAccount || toAccount==null){
-            $.alert("You must select account first");
+            $.alert("アカウントを最初に選択してください。");
             return;
         }
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
@@ -536,7 +536,7 @@
     function sendMatchingConditions() {
         var toAccount = $('#' + matchingNotificationAccountId).val();
         if(!toAccount || toAccount==null){
-            $.alert("You must select account first");
+            $.alert("アカウントを最初に選択してください。");
             return;
         }
         var matchingConditions = $(matchingBuilderId).queryBuilder('getRules');
@@ -562,15 +562,15 @@
         sendBtn.button('loading');
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("Send conditions success");
+                $.alert("条件送信に成功しました。");
             } else {
-                $.alert("Send conditions fail");
+                $.alert("条件送信に失敗しました。");
             }
             sendBtn.button('reset');
         }
 
         function onError(response) {
-            $.alert("Send conditions fail");
+            $.alert("条件送信に失敗しました。");
             sendBtn.button('reset');
         }
 
@@ -1015,7 +1015,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -1028,7 +1028,7 @@
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "distinguish": false,
-            "spaceEffective": false,
+            "Please allow popups for this websitespaceEffective": false,
             "handleDuplicateSender": duplicateSettingData.handleDuplicateSender,
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "type": 2,
@@ -1041,7 +1041,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -1083,7 +1083,7 @@
             win.focus();
         } else {
             //Browser has blocked it
-            alert('Please allow popups for this website');
+            alert('このサイトのポップアップを許可してください');
         }
     }
     
@@ -1227,7 +1227,7 @@
                     }
                     updateNotificationList(notificationList);
                 } else {
-                    $.alert("show more condition notifications fail");
+                    $.alert("条件通知表示に失敗しました。");
                 }
                 $('.notification-modal-show-more').text('show more');
                 $('.notification-modal-show-more').addClass('hidden');
@@ -1236,7 +1236,7 @@
 
             function onError(response) {
                 conditionNotification.status = NOTIFICATION_NEW;
-                $.alert("show more condition notifications fail");
+                $.alert("条件通知表示に失敗しました。");
                 $('.notification-modal-show-more').text('Show more');
                 $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
             }
@@ -1292,9 +1292,9 @@
         $('.btn-notification-accept').click(function () {
             var index = $(this).attr('data-index');
             $.confirm({
-                title: '<b>【Condition Notification】</b>',
+                title: '<b>【条件通知】</b>',
                 titleClass: 'text-center',
-                content: '<div class="text-center" style="font-size: 16px;">Accept notification？<br/></div>',
+                content: '<div class="text-center" style="font-size: 16px;">通知を許可しますか。<br/></div>',
                 buttons: {
                     confirm: {
                         text: 'はい',
@@ -1321,9 +1321,9 @@
         $('.btn-notification-reject').click(function () {
             var index = $(this).attr('data-index');
             $.confirm({
-                title: '<b>【Condition Notification】</b>',
+                title: '<b>【条件通知</b>',
                 titleClass: 'text-center',
-                content: '<div class="text-center" style="font-size: 16px;">Reject notification？<br/></div>',
+                content: '<div class="text-center" style="font-size: 16px;">通知を本当に拒否したいですか。<br/></div>',
                 buttons: {
                     confirm: {
                         text: 'はい',
@@ -1363,7 +1363,7 @@
         replaceCondition(condition);
         $('#preview-builder').queryBuilder('setRules', condition);
         $('#previewConditionModal').modal();
-        $( '#previewConditionModalTitle').text("Preview Condition");
+        $( '#previewConditionModalTitle').text("条件プレビュー");
         $('#previewConditionModalClose').off('click');
         $("#previewConditionModalClose").click(function () {
             $('#previewConditionModal').modal('hide');
@@ -1381,7 +1381,7 @@
                 }
             } else {
                 conditionNotification.status = NOTIFICATION_NEW;
-                $.alert("Send conditions fail");
+                $.alert("条件送信に失敗しました。");
             }
             $('.btn-notification-preview').button('reset');
             $('.btn-notification-accept').button('reset');
@@ -1390,7 +1390,7 @@
 
         function onError(response) {
             conditionNotification.status = NOTIFICATION_NEW;
-            $.alert("Send conditions fail");
+            $.alert("条件送信に失敗しました。");
             $('.btn-notification-preview').button('reset');
             $('.btn-notification-accept').button('reset');
             $('.btn-notification-reject').button('reset');
