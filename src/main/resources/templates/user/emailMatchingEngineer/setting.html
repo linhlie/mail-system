@@ -247,6 +247,41 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    <div id="notificationModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="notificationModalTitle" class="modal-title">権限設定</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-body-content" style="overflow-y: scroll; height: 450px;">
+                    </div>
+                </div>
+                <div class="modal-footer" style=" text-align: center">
+                    <span class="notification-modal-show-more hidden">Show more</span>
+                    <button type="button" id="notificationModalClose" class="btn btn-primary pull-right">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="previewConditionModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="previewConditionModalTitle" class="modal-title">絞り込み条件</h4>
+                </div>
+                <div id="preview-builder" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="previewConditionModalClose" class="btn btn-primary">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>
