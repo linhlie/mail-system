@@ -367,7 +367,7 @@
                 updateNotification(destinationNotification);
 
                 $('#'+destinationNotificationId).click(function () {
-                    showNotificationModal("Engineer Matching Condition", destinationNotificationList);
+                    showNotificationModal("比較メール先抽出条件", destinationNotificationList);
                 });
             }
         }
@@ -1309,9 +1309,9 @@
                     $('#modal-body-content').append(
                         '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
                         '<span>' + notificationList[i].fromAccount + ' があなたに設定条件のレコードを送信しました。</span>' +
-                        '<button class="btn btn-danger pull-right btn-notification-reject"  style="margin-right: 10px;" data-index="'+ i +'">reject</button>' +
-                        '<button class="btn btn-success pull-right btn-notification-accept" style="margin-right: 10px;" data-index="'+ i +'">accept</button>' +
-                        '<button class="btn btn-primary pull-right btn-notification-preview" style="margin-right: 10px;" data-index="'+ i +'">preview</button>' +
+                        '<button class="btn btn-danger pull-right btn-notification-reject"  style="margin-right: 10px;" data-index="'+ i +'">却下</button>' +
+                        '<button class="btn btn-success pull-right btn-notification-accept" style="margin-right: 10px;" data-index="'+ i +'">同意</button>' +
+                        '<button class="btn btn-primary pull-right btn-notification-preview" style="margin-right: 10px;" data-index="'+ i +'">プレビュー</button>' +
                         '<br/>' +
                         '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
                         '</div>'
