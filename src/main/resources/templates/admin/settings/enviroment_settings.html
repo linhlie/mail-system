@@ -33,7 +33,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔</label>
+                                <label class="col-sm-3 col-xs-4 control-label text-left">新着メール確認間隔 <span style="color: red">＊必須</span></label>
 
                                 <div class="col-md-2 col-sm-3 col-xs-3">
                                     <input th:field="*{map['__check_mail_time_interval__']}" type="number" min="1" style="text-align:right;" class="form-control" placeholder="Minute" required="required"/>
@@ -79,7 +79,7 @@
                                         <input th:field="*{map['__delete_after__']}" type="number" min="1" style="text-align:right;" class="form-control " placeholder="Day" required="required"/>
                                     </div>
                                 </div>
-                                <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除</label>
+                                <label class="col-sm-8 col-xs-7 control-label text-left">日以前のメールをPCから削除 <span style="color: red">＊必須</span></label>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 col-xs-4 control-label text-left">e!Helper@メールの送信履歴の保存日数</label>
@@ -159,17 +159,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 col-xs-4 control-label text-left">デバッグ受信メール</label>
+                                <label class="col-sm-3 col-xs-4 control-label text-left">デバッグ受信メール <span style="color: red">＊必須</span></label>
 
                                 <div class="col-sm-5 col-xs-6">
                                     <input th:field="*{map['__debug_receive_mail_address__']}" type="email" class="form-control" placeholder="Mail address" required="required"/>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 col-xs-4 control-label text-left">ワーニング受信メール（TO)</label>
+                                <label class="col-sm-3 col-xs-4 control-label text-left">ワーニング受信メール（TO) <span style="color: red">＊必須</span></label>
 
                                 <div class="col-sm-5 col-xs-6">
-                                    <input th:field="*{map['__adminstrator_mail_address__']}" type="email" class="form-control" placeholder="管理者受信メール"/>
+                                    <input th:field="*{map['__adminstrator_mail_address__']}" type="email" class="form-control" placeholder="管理者受信メール" required="required"/>
                                 </div>
                             </div>
                             <div id="cc-container" class="form-group">
