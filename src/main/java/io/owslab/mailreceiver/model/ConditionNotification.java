@@ -88,5 +88,6 @@ public class ConditionNotification {
         public static final int DESTINATION_CONDITION = 1;
         public static final int MATCHING_CONDITION = 2;
         public static final int ENGINEER_MATCHING_CONDITION = 3;
+        public static final int STATISTIC_CONDITION = 4;
     }
 }

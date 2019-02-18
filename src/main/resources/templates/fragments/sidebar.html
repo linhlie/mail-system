@@ -32,21 +32,38 @@
                         </li>
                         </ul>
                         <ul class="treeview-menu visible">
-                        <li class="treeview menu-open">
-                            <a href="#"><i class="fa fa-circle-o"></i>DB⇔メールマッチング
-                                <span class="pull-right-container">
-                            		<i class="fa fa-angle-left pull-right"></i>
-                        		</span>
-                            </a>
-                            <ul class="treeview-menu visible">
-                                <li th:class="(${currentMenu == 'emailMatchingEngineerSetting'})?'active':''"><a href="#"
+                            <li class="treeview menu-open">
+                                <a href="#"><i class="fa fa-circle-o"></i>DB⇔メールマッチング
+                                    <span class="pull-right-container">
+                            		    <i class="fa fa-angle-left pull-right"></i>
+                        		    </span>
+                                </a>
+                                <ul class="treeview-menu visible">
+                                    <li th:class="(${currentMenu == 'emailMatchingEngineerSetting'})?'active':''"><a href="#"
                                                                                                      th:href="@{/user/emailMatchingEngineerSetting}"><i
                                         class="fa fa-circle-o"></i>条件設定</a></li>
-                                <li th:class="(${currentMenu == 'emailMatchingEngineerResult'})?'active':''"><a href="#"
+                                    <li th:class="(${currentMenu == 'emailMatchingEngineerResult'})?'active':''"><a href="#"
                                                                                                    th:href="@{/user/emailMatchingEngineerResult}"><i
                                         class="fa fa-circle-o"></i>結果表示</a></li>
-                            </ul>
-                        </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="treeview-menu visible">
+                            <li class="treeview menu-open">
+                                <a href="#"><i class="fa fa-circle-o"></i>メール集計
+                                    <span class="pull-right-container">
+                            		    <i class="fa fa-angle-left pull-right"></i>
+                        		    </span>
+                                </a>
+                                <ul class="treeview-menu visible">
+                                    <li th:class="(${currentMenu == 'emailStatisticSetting'})?'active':''"><a href="#"
+                                                                                                                     th:href="@{/user/emailStatisticSetting}"><i
+                                            class="fa fa-circle-o"></i>条件設定</a></li>
+                                    <li th:class="(${currentMenu == 'emailStatisticResult'})?'active':''"><a href="#"
+                                                                                                                    th:href="@{/user/emailStatisticResult}"><i
+                                            class="fa fa-circle-o"></i>結果表示</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </ul>
                 </li>

@@ -604,6 +604,11 @@ function getEngineerMatchingConditionNotification(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getStatisticConditionNotification(onSuccess, onError) {
+    var url = "/user/statistic/matchingConditionNotification";
+    _get(url, onSuccess, onError);
+}
+
 function addConditionNotification(data, onSuccess, onError) {
     var url = "/user/conditionNotification/add";
     _post(url, data, onSuccess, onError);
