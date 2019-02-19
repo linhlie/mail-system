@@ -26,6 +26,7 @@ public interface EmailDAO extends PagingAndSortingRepository<Email, String> {
     List<Email> findFirst1ByStatusOrderByReceivedAtDesc(int status);
     List<Email> findFirst1ByAccountIdAndStatusOrderByReceivedAtDesc(long accountId, int status);
     List<Email> findByStatusOrderByReceivedAtDesc(int status);
+    List<Email> findByStatusOrderBySentAtAsc(int status);
     List<Email> findByStatusOrStatusOrderByReceivedAtDesc(int status, int orStatus);
     long countByStatus(int status);
     long countByAccountIdAndReceivedAtBetweenAndStatus(long accountId, Date fromDate, Date toDate, int status);

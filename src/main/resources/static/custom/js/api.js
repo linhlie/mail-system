@@ -605,7 +605,7 @@ function getEngineerMatchingConditionNotification(onSuccess, onError) {
 }
 
 function getStatisticConditionNotification(onSuccess, onError) {
-    var url = "/user/statistic/matchingConditionNotification";
+    var url = "/user/emailStatistic/statisticConditionNotification";
     _get(url, onSuccess, onError);
 }
 

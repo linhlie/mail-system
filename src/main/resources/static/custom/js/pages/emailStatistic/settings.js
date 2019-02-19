@@ -512,7 +512,7 @@
         sessionStorage.setItem(STATISTIC_CONDITION_DATA_KEY, JSON.stringify(form));
         // window.location = '/user/matchingResult';
         saveDefaultSettings();
-        var win = window.open('/user/statisticResult', '_blank');
+        var win = window.open('/user/emailStatisticResult', '_blank');
         if (win) {
             //Browser has allowed it to be opened
             win.focus();

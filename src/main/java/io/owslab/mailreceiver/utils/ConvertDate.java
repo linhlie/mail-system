@@ -11,6 +11,8 @@ public class ConvertDate {
     private static final Logger logger = LoggerFactory.getLogger(ConvertDate.class);
 
     private static DateFormat fullDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private static DateFormat dateFormatMMdd = new SimpleDateFormat("MM/dd");
+    private static DateFormat dateFormatHHmm = new SimpleDateFormat("HH:mm");
 
     public static String convertDateToYYMMDDHHMM(Date date){
         String dateConvert = "unknow";
@@ -19,6 +21,30 @@ public class ConvertDate {
         }catch (Exception ex){
             logger.error(ex.toString());
         }
+        return dateConvert;
+    }
+
+    public static String convertDateToMMdd(Date date){
+        String dateConvert = "unknow";
+        try {
+            dateConvert = dateFormatMMdd.format(date);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+        }
+        String str[] = dateConvert.split("/");
+        dateConvert = str[0]+ "月" +str[1]+ "日";
+        return dateConvert;
+    }
+
+    public static String convertHourStatistic(Date date){
+        String dateConvert = "unknow";
+        try {
+            dateConvert = dateFormatHHmm.format(date);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+        }
+        String str[] = dateConvert.split(":");
+        dateConvert = str[0]+ ":00";
         return dateConvert;
     }
 }
