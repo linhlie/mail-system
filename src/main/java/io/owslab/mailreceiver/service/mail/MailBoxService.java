@@ -940,4 +940,8 @@ public class MailBoxService {
         }
         return result;
     }
+
+    public List<Email> getEmailsByMessageId(List<String> listMessageId){
+        return emailDAO.findByMessageIdIn(listMessageId);
+    }
 }

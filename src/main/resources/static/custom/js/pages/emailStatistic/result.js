@@ -9,6 +9,7 @@
     var statisticByDomainId = '#statisticByDomain';
     var statisticByWordId = '#statisticByWord';
 
+    var SHOW_DETAIL_EMAIL_STATISTIC_KEY = "show-detail-email-statistic";
     var STATISTIC_CONDITION_DATA_KEY = "statistic-condition-data";
     var STATISTIC_BY_DAY_KEY = "statistic-by-day";
     var STATISTIC_BY_HOUR_KEY = "statistic-by-hour";
@@ -30,7 +31,7 @@
     var statisticByDomainBody =   '<td name="emailStatistic" rowspan="1" colspan="1" data="domain"><span></span></td>';
     var statisticByWordBody =    '<td name="emailStatistic" rowspan="1" colspan="1" data="word"><span></span></td>';
     var countEmailBody =   '<td name="emailStatistic" rowspan="1" colspan="1" data="count"><span></span></td>';
-    var openButtonBody =   '<td name="open-email-statistic" rowspan="1" colspan="1" data=""><button type="button" style="margin-left: 5px; margin-right: 5px;">Open</button></td>';
+    var openButtonBody =   '<td name="open-email-statistic" rowspan="1" colspan="1" data=""><button type="button" style="margin-left: 5px; margin-right: 5px; width: 50px;">開く</button></td>';
 
 
     $(function () {
@@ -101,8 +102,23 @@
                 statisticCounter++;
             }
             $("#"+ tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", function () {
-                selectedRow($(this).closest('tr'))
+            setRowClickListener("open-email-statistic", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = statisticResult[index];
+                if (rowData && rowData.listMessageId) {
+                    console.log(rowData);
+                    var data = {
+                        "listMessageId" : rowData.listMessageId,
+                    };
+                    sessionStorage.setItem(SHOW_DETAIL_EMAIL_STATISTIC_KEY, JSON.stringify(data));
+                    var win = window.open('/user/emailStatistic/showDetail', '_blank');
+                    if (win) {
+                        win.focus();
+                    } else {
+                        alert('Please allow popups for this website');
+                    }
+                }
             });
         }
         enableResizeColumns();
@@ -152,7 +168,7 @@
     }
 
     function updateTotalStatisticResult(total) {
-        $('#totalStatisticResult').text("集計" + total + "records")
+        $('#totalStatisticResult').text("絞り込み元:" + total + "件")
     }
 
     function initStickyHeader() {

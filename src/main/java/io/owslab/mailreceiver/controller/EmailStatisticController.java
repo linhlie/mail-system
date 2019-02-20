@@ -3,7 +3,10 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.dto.AccountDTO;
 import io.owslab.mailreceiver.dto.ConditionNotificationDTO;
 import io.owslab.mailreceiver.dto.EmailStatisticDTO;
+import io.owslab.mailreceiver.dto.ExtractMailDTO;
 import io.owslab.mailreceiver.enums.ClickType;
+import io.owslab.mailreceiver.form.EmailStatisticDetailForm;
+import io.owslab.mailreceiver.form.ExtractForm;
 import io.owslab.mailreceiver.form.MatchingConditionForm;
 import io.owslab.mailreceiver.form.StatisticConditionForm;
 import io.owslab.mailreceiver.model.ConditionNotification;
@@ -67,14 +70,14 @@ public class EmailStatisticController {
 
         List<String> numberConditionSetting = numberTreatmentService.getNumberSetting();
         List<AccountDTO> accountDTOS = accountService.getAllUserRoleAccountDTOs();
-        model.addAttribute("ruleNumber",numberConditionSetting.get(0));
-        model.addAttribute("ruleNumberDownRate",numberConditionSetting.get(1));
-        model.addAttribute("ruleNumberUpRate",numberConditionSetting.get(2));
-        model.addAttribute("accounts",accountDTOS);
+        model.addAttribute("ruleNumber", numberConditionSetting.get(0));
+        model.addAttribute("ruleNumberDownRate", numberConditionSetting.get(1));
+        model.addAttribute("ruleNumberUpRate", numberConditionSetting.get(2));
+        model.addAttribute("accounts", accountDTOS);
         return "user/emailStatistic/settings";
     }
 
-    @RequestMapping(value = { "/emailStatistic/statisticConditionNotification" }, method = RequestMethod.GET)
+    @RequestMapping(value = {"/emailStatistic/statisticConditionNotification"}, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getStatisticNotificationCondition() {
         ConditionNotificationResponseBody result = new ConditionNotificationResponseBody();
@@ -96,7 +99,7 @@ public class EmailStatisticController {
     }
 
 
-    @RequestMapping(value = "/emailStatisticResult", method = RequestMethod.GET)
+    @RequestMapping(value = "emailStatistic/emailStatisticResult", method = RequestMethod.GET)
     public String getMatchingResult(Model model) {
         return "user/emailStatistic/result";
     }
@@ -118,7 +121,36 @@ public class EmailStatisticController {
             result.setList(list);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            logger.error("emailStatisticSubmitForm " +e.getMessage());
+            logger.error("emailStatisticSubmitForm " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "emailStatistic/showDetail", method = RequestMethod.GET)
+    public String showDetail(Model model) {
+        return "user/emailStatistic/showDetail";
+    }
+
+    @PostMapping("/emailStatistic/submitEmailDetailRequest")
+    @ResponseBody
+    public ResponseEntity<?> showEmailDetailRequest(Model model, @Valid @RequestBody EmailStatisticDetailForm form, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
+        MatchingResponeBody result = new MatchingResponeBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            List<ExtractMailDTO> extractResult = emailStatisticService.getDetailEmails(form);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setList(extractResult);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("showEmailDetailRequest " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);

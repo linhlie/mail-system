@@ -1,11 +1,19 @@
 package io.owslab.mailreceiver.service.statistics;
 
+import io.owslab.mailreceiver.dto.EmailDTO;
 import io.owslab.mailreceiver.dto.EmailStatisticDTO;
+import io.owslab.mailreceiver.dto.ExtractMailDTO;
+import io.owslab.mailreceiver.form.EmailStatisticDetailForm;
 import io.owslab.mailreceiver.form.StatisticConditionForm;
+import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.Email;
+import io.owslab.mailreceiver.model.PeopleInChargePartner;
+import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.utils.FilterRule;
+import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.MatchingWordResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +29,13 @@ public class EmailStatisticService {
 
     @Autowired
     MailBoxService mailBoxService;
+
+    @Autowired
+    BusinessPartnerService partnerService;
+
+    @Autowired
+    PeopleInChargePartnerService peopleInChargeService;
+
 
     public List<EmailStatisticDTO> statisticEmail(StatisticConditionForm form){
         if (form==null) new ArrayList<>();
@@ -262,5 +277,23 @@ public class EmailStatisticService {
             result.add(entry.getValue());
         }
         return result;
+    }
+
+    public List<ExtractMailDTO> getDetailEmails(EmailStatisticDetailForm form) {
+        List<ExtractMailDTO> listResult = new ArrayList<>();
+        List<String> listMessageId = form.getListMessageId();
+        List<Email> listEmail = mailBoxService.getEmailsByMessageId(listMessageId);
+
+        List<BusinessPartner> listPartner = partnerService.getAll();
+        List<PeopleInChargePartner> peoleIncharges = peopleInChargeService.getAll();
+        LinkedHashMap<String, PeopleInChargePartner> peopleInChargeMap = new LinkedHashMap<>();
+        for(PeopleInChargePartner people : peoleIncharges){
+            peopleInChargeMap.put(people.getEmailAddress().toLowerCase(), people);
+        }
+
+        for(Email email : listEmail){
+            listResult.add(new ExtractMailDTO(email, listPartner, peopleInChargeMap));
+        }
+        return listResult;
     }
 }
