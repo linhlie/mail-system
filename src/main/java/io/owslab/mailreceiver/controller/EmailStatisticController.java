@@ -61,7 +61,7 @@ public class EmailStatisticController {
     @Autowired
     private EmailStatisticService emailStatisticService;
 
-    @RequestMapping(value = "/emailStatisticSetting", method = RequestMethod.GET)
+    @RequestMapping(value = "emailStatistic/emailStatisticSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
         model.addAttribute("conditionOptions", conditionOptions);
