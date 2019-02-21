@@ -112,7 +112,7 @@
                         "listMessageId" : rowData.listMessageId,
                     };
                     sessionStorage.setItem(SHOW_DETAIL_EMAIL_STATISTIC_KEY, JSON.stringify(data));
-                    var win = window.open('/user/emailStatistic/showDetail', '_blank');
+                    var win = window.open('/user/showDetail', '_blank');
                     if (win) {
                         win.focus();
                     } else {
@@ -168,7 +168,7 @@
     }
 
     function updateTotalStatisticResult(total) {
-        $('#totalStatisticResult').text("絞り込み元:" + total + "件")
+        $('#totalStatisticResult').text("絞りこみの結果:" + total + "件")
     }
 
     function initStickyHeader() {

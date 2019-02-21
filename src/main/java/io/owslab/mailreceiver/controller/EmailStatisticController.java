@@ -61,7 +61,7 @@ public class EmailStatisticController {
     @Autowired
     private EmailStatisticService emailStatisticService;
 
-    @RequestMapping(value = "emailStatistic/emailStatisticSetting", method = RequestMethod.GET)
+    @RequestMapping(value = "emailStatisticSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
         model.addAttribute("combineOptions", combineOptions);
         model.addAttribute("conditionOptions", conditionOptions);
@@ -99,7 +99,7 @@ public class EmailStatisticController {
     }
 
 
-    @RequestMapping(value = "emailStatistic/emailStatisticResult", method = RequestMethod.GET)
+    @RequestMapping(value = "emailStatisticResult", method = RequestMethod.GET)
     public String getMatchingResult(Model model) {
         return "user/emailStatistic/result";
     }
@@ -128,7 +128,7 @@ public class EmailStatisticController {
         }
     }
 
-    @RequestMapping(value = "emailStatistic/showDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "showDetail", method = RequestMethod.GET)
     public String showDetail(Model model) {
         return "user/emailStatistic/showDetail";
     }

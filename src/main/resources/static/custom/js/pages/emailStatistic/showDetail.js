@@ -349,14 +349,9 @@
                 }
             });
         }
-        updateTotalResult(data.length);
         initSortSource();
         selectFirstRow();
         enableResizeColums();
-    }
-
-    function updateTotalResult(total) {
-        $('#' + totalResultContainId).text("Show detail" + total + "件")
     }
 
     function destroySortSource() {

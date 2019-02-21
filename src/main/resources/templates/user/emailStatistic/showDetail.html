@@ -1,18 +1,17 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
 <head>
-    <title>比較メールのみ抽出</title>
+    <title>詳細なメール</title>
 </head>
 <body>
 <div layout:fragment="content" th:with="isExtractSource=${extract == 'source'}">
     <section class="content-header">
-        <h1 th:text="${isExtractSource} ? '比較メール元のみ抽出': '比較メール先のみ抽出'"></h1>
+        <h1>詳細なメール</h1>
     </section>
     <section class="content matching-result">
         <div class="row matching-result-container" style="position: relative">
             <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
                 <div class="col-sm-12" id="table-section">
-                    <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元:': '絞り込み先:'"></h4>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 450px;">
                             <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">
@@ -22,8 +21,6 @@
                                     <th class="col-sm-2" >送信者</th>
                                     <th class="col-sm-7" >件名</th>
                                     <th class="col-sm-1" ></th>
-                                    <!--<th class="col-sm-1" style="color: red">取引先アラート</th>-->
-                                    <!--<th class="col-sm-1" style="color: red">担当アラート</th>-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -135,6 +132,7 @@
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>
     <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/storage/sendTabSetting.js"></script>
     <script src="/custom/js/pages/emailStatistic/showDetail.js"></script>
 </th:block>
 </body>
