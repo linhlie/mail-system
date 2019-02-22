@@ -276,7 +276,7 @@ public class MailBoxService {
 
     public List<Email> getAllASC(boolean forceUpdate){
         if(forceUpdate || cachedEmailListASC == null){
-            cachedEmailListASC = emailDAO.findByStatusOrderBySentAtAsc(Email.Status.DONE);
+            cachedEmailListASC = emailDAO.findByStatusOrderByReceivedAtAsc(Email.Status.DONE);
         }
         return cachedEmailListASC;
     }

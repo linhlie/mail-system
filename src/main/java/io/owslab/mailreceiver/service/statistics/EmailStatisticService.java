@@ -70,7 +70,6 @@ public class EmailStatisticService {
             findDupliateMatching(listResult, listResultFinal, 0, listResult.size(), isFrom, isWord);
             return listResultFinal;
         }
-
         sortList(listResult, isDate, isHour);
         solutionMatchingStatistic(listResult, listResultFinal, isDate, isHour, isFrom, isWord);
         return listResultFinal;

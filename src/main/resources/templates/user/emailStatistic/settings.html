@@ -27,7 +27,7 @@
                             </datalist>
                             <div class="msw-header">
                                 <div class="msw-header-label">
-                                    <h4><b>マッチング条件</b></h4>
+                                    <h4><b style="background: #f4f4f4; border-radius: 5px; padding: 5px;">マッチング条件</b></h4>
                                     <span class="col-xs-12 hidden" id="ruleNumber" th:utext="${ruleNumber}"></span>
                                     <span class="col-xs-12 hidden" id="ruleNumberUpRate" th:utext="${ruleNumberUpRate}"></span>
                                     <span class="col-xs-12 hidden" id="ruleNumberDownRate" th:utext="${ruleNumberDownRate}"></span>
@@ -37,7 +37,7 @@
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
                                     <div class="builder-wrapper-header" style="height: 35px;">
-                                        <span>比較メール先抽出条件</span>
+                                        <span style="background: #f4f4f4; border-radius: 5px; padding: 5px;">比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#statistic-condition-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <button style="background-color: #ffe837;" id="extractConditionBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う</button>
+                                    <button id="extractConditionBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う</button>
                                 </div>
                                 <div class="col-md-4">
                                     <button id="saveConditionBtnId" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
@@ -73,8 +73,8 @@
                                 </div>
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <span>分析ワード</span>
-                                    <textarea id="matchingWordsArea" style="width: 100%" rows="4"></textarea>
+                                    <span style="background: #f4f4f4; border-radius: 5px; padding: 5px;">分析ワード</span>
+                                    <textarea id="matchingWordsArea" style="width: 100%; margin-top: 5px;" rows="4"></textarea>
                                 </div>
                                 <div class="form-group"></div>
                             </div>
