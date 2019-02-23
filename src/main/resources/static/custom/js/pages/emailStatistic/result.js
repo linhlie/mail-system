@@ -107,7 +107,6 @@
                 var index = row.getAttribute("data");
                 var rowData = statisticResult[index];
                 if (rowData && rowData.listMessageId) {
-                    console.log(rowData);
                     var data = {
                         "listMessageId" : rowData.listMessageId,
                     };
@@ -224,7 +223,6 @@
 
     function onChangeConditionFilter(){
         $(".filter-statistic").change(function() {
-            console.log("change");
             var statisticByDay = $(statisticByDayId).is(":checked");
             var statisticByHour = $(statisticByHourId).is(":checked");
             var statisticByDomain = $(statisticByDomainId).is(":checked");
@@ -256,7 +254,6 @@
         statisticConditionJson.statisticByDomain = statisticByDomain;
         statisticConditionJson.statisticByWord = statisticByWord;
 
-        console.log(statisticConditionJson);
         statisticConditionStr = JSON.stringify(statisticConditionJson);
         if(statisticConditionStr){
             $('body').loadingModal({
@@ -279,7 +276,6 @@
                     $('body').loadingModal('hide');
                     if(data && data.status){
                         statisticResult = data.list;
-                        console.log(statisticResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }

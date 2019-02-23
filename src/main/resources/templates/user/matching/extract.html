@@ -4,15 +4,15 @@
     <title>比較メールのみ抽出</title>
 </head>
 <body>
-<div layout:fragment="content" th:with="isExtractSource=${extract == 'source'}">
+<div layout:fragment="content">
     <section class="content-header">
-        <h1 th:text="${isExtractSource} ? '比較メール元のみ抽出': '比較メール先のみ抽出'"></h1>
+        <h1 th:text="${extractTitle}"></h1>
     </section>
     <section class="content matching-result">
         <div class="row matching-result-container" style="position: relative">
             <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
                 <div class="col-sm-12" id="table-section">
-                    <h4 id="totalResultContain" th:text="${isExtractSource} ? '絞り込み元:': '絞り込み先:'"></h4>
+                    <h4 id="totalResultContain" th:text="${extractResult}"></h4>
                     <div class="main-left">
                         <div class="table-container table-container-wrapper" style="height: 450px;">
                             <table id="sourceMatch" class="table table-bordered table-hover tablesorter sticky-header-table">

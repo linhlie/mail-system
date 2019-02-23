@@ -452,9 +452,9 @@
             "handleDuplicateSubject": duplicateSettingData.handleDuplicateSubject,
             "type": 2,
         };
-        sessionStorage.setItem("extractDestinationData", JSON.stringify(data));
+        sessionStorage.setItem("extractEmailStatisticData", JSON.stringify(data));
         saveDefaultSettings();
-        var win = window.open('/user/extractDestination', '_blank');
+        var win = window.open('/user/extractEmailStatistic', '_blank');
         if (win) {
             //Browser has allowed it to be opened
             win.focus();

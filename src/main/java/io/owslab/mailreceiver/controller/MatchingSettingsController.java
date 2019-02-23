@@ -335,13 +335,22 @@ public class MatchingSettingsController {
 
     @RequestMapping(value = "/extractSource", method = RequestMethod.GET)
     public String getExtractSource(Model model) {
-        model.addAttribute("extract", "source");
+        model.addAttribute("extractTitle", "比較メール元のみ抽出");
+        model.addAttribute("extractResult", "絞り込み元");
         return "user/matching/extract";
     }
 
     @RequestMapping(value = "/extractDestination", method = RequestMethod.GET)
     public String getExtractDestination(Model model) {
-        model.addAttribute("extract", "destination");
+        model.addAttribute("extractTitle", "比較メール先のみ抽出");
+        model.addAttribute("extractResult", "絞り込み先");
+        return "user/matching/extract";
+    }
+
+    @RequestMapping(value = "/extractEmailStatistic", method = RequestMethod.GET)
+    public String getExtractEmailStatistic(Model model) {
+        model.addAttribute("extractTitle", "集計対象メール一覧");
+        model.addAttribute("extractResult", "絞り込み");
         return "user/matching/extract";
     }
 

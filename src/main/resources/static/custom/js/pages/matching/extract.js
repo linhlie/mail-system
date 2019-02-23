@@ -213,6 +213,9 @@
     function loadExtractData() {
         var extractDataStr;
         var key = window.location.href.indexOf("extractSource") >= 0 ? "extractSourceData" : "extractDestinationData";
+        if(window.location.href.indexOf("extractEmailStatistic") >= 0){
+            key = "extractEmailStatisticData";
+        }
         extractDataStr = sessionStorage.getItem(key);
         if (extractDataStr) {
             $('body').loadingModal({

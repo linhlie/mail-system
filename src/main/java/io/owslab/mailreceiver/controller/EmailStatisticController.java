@@ -98,7 +98,6 @@ public class EmailStatisticController {
         return ResponseEntity.ok(result);
     }
 
-
     @RequestMapping(value = "emailStatisticResult", method = RequestMethod.GET)
     public String getMatchingResult(Model model) {
         return "user/emailStatistic/result";
