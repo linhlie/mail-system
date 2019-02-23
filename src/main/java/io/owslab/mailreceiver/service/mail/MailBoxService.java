@@ -118,6 +118,8 @@ public class MailBoxService {
     
     private List<Email> cachedEmailList = null;
 
+    private List<Email> cachedEmailListASC = null;
+
     private DecimalFormat df = new DecimalFormat("#,##0");
 
     private PrettyTime p = new PrettyTime();
@@ -266,6 +268,17 @@ public class MailBoxService {
             cachedEmailList = emailDAO.findByStatusOrderByReceivedAtDesc(Email.Status.DONE);
         }
         return cachedEmailList;
+    }
+
+    public List<Email> getAllASC(){
+        return getAllASC(false);
+    }
+
+    public List<Email> getAllASC(boolean forceUpdate){
+        if(forceUpdate || cachedEmailListASC == null){
+            cachedEmailListASC = emailDAO.findByStatusOrderByReceivedAtAsc(Email.Status.DONE);
+        }
+        return cachedEmailListASC;
     }
 
     public List<Email> getAllInBox(){
@@ -926,5 +939,9 @@ public class MailBoxService {
             }
         }
         return result;
+    }
+
+    public List<Email> getEmailsByMessageId(List<String> listMessageId){
+        return emailDAO.findByMessageIdIn(listMessageId);
     }
 }

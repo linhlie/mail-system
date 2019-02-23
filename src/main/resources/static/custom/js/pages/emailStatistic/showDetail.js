@@ -39,6 +39,8 @@
     var lastReceiver;
     var lastMessageId;
 
+    var SHOW_DETAIL_EMAIL_STATISTIC_KEY = "show-detail-email-statistic";
+
     var markOptions = {
         "element": "mark",
         "separateWordSearch": false,
@@ -69,8 +71,7 @@
     }
 
     var headerOrigin = '<tr>'+
-        '<th class="col-sm-1" >金額</th>'+
-        '<th class="col-sm-1" >受信日時</th>'+
+        '<th class="col-sm-2" >受信日時</th>'+
         '<th class="col-sm-2" >送信者</th>'+
         '<th class="col-sm-7" >件名</th>'+
         '<th class="col-sm-1" ></th>';
@@ -80,7 +81,6 @@
     var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="receivedAt"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="subject"><span></span></td>' +
@@ -121,7 +121,7 @@
         initDropzone();
         getEnvSettings();
         setButtonClickListenter(printBtnId, printPreviewEmail);
-        loadExtractData();
+        loadEmailStatisticData();
         initStickyHeader();
         setButtonClickListenter(extractFirstBtnId, extractFirst);
         setButtonClickListenter(extractLastBtnId, extractLast);
@@ -210,14 +210,9 @@
         );
     }
 
-    function loadExtractData() {
-        var extractDataStr;
-        var key = window.location.href.indexOf("extractSource") >= 0 ? "extractSourceData" : "extractDestinationData";
-        if(window.location.href.indexOf("extractEmailStatistic") >= 0){
-            key = "extractEmailStatisticData";
-        }
-        extractDataStr = sessionStorage.getItem(key);
-        if (extractDataStr) {
+    function loadEmailStatisticData() {
+        var emailStatisticData = sessionStorage.getItem(SHOW_DETAIL_EMAIL_STATISTIC_KEY);
+        if (emailStatisticData) {
             $('body').loadingModal({
                 position: 'auto',
                 text: '抽出中...',
@@ -229,8 +224,8 @@
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: "/user/submitExtract",
-                data: extractDataStr,
+                url: "/user/emailStatistic/submitEmailDetailRequest",
+                data: emailStatisticData,
                 dataType: 'json',
                 cache: false,
                 timeout: 600000,
@@ -238,6 +233,7 @@
                     $('body').loadingModal('hide');
                     if (data && data.status) {
                         extractResult = data.list;
+                        console.log(extractResult);
                     } else {
                         console.error("[ERROR] submit failed: ");
                     }
@@ -353,15 +349,9 @@
                 }
             });
         }
-        updateTotalResult(data.length);
         initSortSource();
         selectFirstRow();
         enableResizeColums();
-    }
-
-    function updateTotalResult(total) {
-        var raw = $('#' + totalResultContainId).text();
-        $('#' + totalResultContainId).text(raw + " " + total + "件")
     }
 
     function destroySortSource() {

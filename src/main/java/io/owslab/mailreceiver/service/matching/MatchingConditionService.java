@@ -839,7 +839,7 @@ public class MatchingConditionService {
         return result;
     }
 
-    private List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective, boolean distinguish){
+    public List<MatchingWordResult> findMatchWithWord(List<String> words, List<Email> emailList, boolean spaceEffective, boolean distinguish){
         List<MatchingWordResult> matchingWordResults = new ArrayList<>();
         for(Email email : emailList){
             MatchingWordResult result = emailWordJobService.matchWords(email, words, spaceEffective, distinguish);

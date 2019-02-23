@@ -1,0 +1,64 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>メール集計</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>メール集計</h1>
+    </section>
+    <section class="content matching-result">
+        <div class="row matching-result-container" style="position: relative">
+            <div style="position: absolute; right: 25px; top: 15px; z-index: 1000;">
+                <form>
+                    <label class="checkbox-inline">
+                        <input id="statisticByDay" class="filter-statistic" type="checkbox" value="" checked="checked"/>日別
+                    </label>
+                    <label class="checkbox-inline">
+                        <input id="statisticByHour" class="filter-statistic" type="checkbox" value="" checked="checked"/>時間別
+                    </label>
+                    <label class="checkbox-inline">
+                        <input id="statisticByDomain" class="filter-statistic" type="checkbox" value="" checked="checked"/>送信者ドメイン
+                    </label>
+                    <label class="checkbox-inline">
+                        <input id="statisticByWord" class="filter-statistic" type="checkbox" value="" checked="checked"/>分析ワード別
+                    </label>
+                </form>
+            </div>
+            <form id="matchingConditionSettingsForm" class="form-horizontal" action="javascript:void(0);">
+                <div class="col-sm-12">
+                    <span id="totalStatisticResult" style="background: #f4f4f4; border-radius: 5px; padding: 5px; font-size: 18px">絞りこみの結果</span>
+                </div>
+                <div class="col-sm-12" style="padding-top: 0px;" id="table-section">
+                    <div class="main-left">
+                        <div class="table-statistic-container table-container table-container-wrapper" style="height: 900px;">
+                            <table id="statisticTable" class="table table-bordered table-hover tablesorter sticky-header-table">
+                                <thead class="sticky-header" style="background: whitesmoke">
+                                <tr>
+                                    <th class="col-sm-2" >日別</th>
+                                    <th class="col-sm-2" >時間別 </th>
+                                    <th class="col-sm-3" >送信者別</th>
+                                    <th class="col-sm-2" >ワード別</th>
+                                    <th class="col-sm-2" >件数</th>
+                                    <th class="fit" ></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/storage/sendTabSetting.js"></script>
+    <script src="/custom/js/pages/emailStatistic/result.js"></script>
+</th:block>
+</body>
+</html>
