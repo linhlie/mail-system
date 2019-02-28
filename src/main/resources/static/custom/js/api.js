@@ -624,6 +624,26 @@ function showMoreConditionNotification(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function getEmailAddressGroup(onSuccess, onError) {
+    var url = "/user/emailGroupSetting/getListEmailAddressGroup";
+    _get(url, onSuccess, onError);
+}
+
+function addEmailAddressGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/addEmailAddressGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateEmailAddressGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/editEmailAddressGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteEmailAddressGroup(id, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/deleteEmailAddressGroup/" + id;
+    _delete(url, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;

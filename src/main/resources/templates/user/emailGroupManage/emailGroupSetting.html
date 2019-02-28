@@ -1,0 +1,167 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>Email Group Manage</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>Email Group Manage</h1>
+    </section>
+    <section class="content email-group">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="email-group-description" >
+                                    <p style="word-wrap: break-word">Setting email group to send email to many peole </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12 email-group-form-container">
+                                    <div class="col-xs-5 full-height non-paddinng">
+                                        <h3 style="padding-left: 10px;">Email Group</h3>
+                                        <div class="email-group-table-container" style="background-color: white; ">
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="groupTable" style="margin: auto;" class="table table-bordered ">
+                                                    <thead>
+                                                        <tr class="main-table-row-head">
+                                                            <th class="col-xs-9" colspan="1" style="text-align: center">Group Name</th>
+                                                            <th class="col-xs-3 text-center" colspan="2">
+                                                                <span id="addEmailGroup" class="glyphicon glyphicon-plus" style="cursor: pointer;" title="Add email group"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan="1">
+                                                                <div>
+                                                                    <input id="searchWordTxt" name="search" type="text" class="form-control input-sm" placeholder="Seach email group"/>
+                                                                </div>
+                                                            </th>
+                                                            <th class="text-center" colspan="2"><button id="btnSearchWord" type="submit">条件</button></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-1 full-height text-align: center;" >
+                                        <span class="glyphicon glyphicon-arrow-right" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
+                                    </div>
+                                    <div class="col-xs-6 full-height non-paddinng">
+                                        <h3 style="padding-left: 10px;">Email List</h3>
+                                        <div class="email-group-table-container">
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="wordExclusionTable" class="table table-bordered">
+                                                    <thead class="sticky-header">
+                                                    <tr>
+                                                        <th class="col-xs-5">People in charge</th>
+                                                        <th class="col-xs-5">Email Address</th>
+                                                        <th class="col-xs-2" colspan="2" style="text-align: center">
+                                                            <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="cursor: pointer; display: none;" title="Add email list"></span>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="2" >
+                                                            <div>
+                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="Seach emai"/>
+                                                            </div>
+                                                        </th>
+                                                        <th class="text-center"><button id="btnSearchEmail" type="submit">条件</button></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title" style="text-align: center">Title</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModal" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">主ワード</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="word" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label style="transform: translateY(10px);">除外単語</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="modalAddGroup" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 50%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="modalAddGroupTitle" class="modal-title">Title</h4>
+                </div>
+                <div class="modal-body mainAddGroup">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModalAddGroup" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label style="transform: translateY(10px);">Group Name</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="groupName" class="form-control "/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalAddGroupCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="modalAddGroupOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/emailGroupManage/emailGroupSetting.js"></script>
+</th:block>
+</body>
+</html>

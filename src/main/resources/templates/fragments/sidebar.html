@@ -227,6 +227,31 @@
                 <i class="fa fa-inbox"></i> <span>全メールリスト</span>
             </a>
         </li>
+        <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'emailGroupSetting' || currentMenu == 'sendGroupEmail' || currentMenu == 'scheduleSendGroupEmail'})?'treeview menu-open':'treeview'">
+            <a href="#">
+                <i class="fa fa-cogs"></i> <span>Email Group Manage</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu" th:class="(${currentMenu == 'fuzzyWord' || currentMenu == 'numberTreatment'})?'treeview-menu visible':'treeview-menu'">
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailGroupSetting'})?'active':''">
+                    <a href="#" th:href="@{/user/emailGroupSetting}">
+                        <i class="fa fa-external-link-square"></i> <span>emailGroupSetting</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'sendGroupEmail'})?'active':''">
+                    <a href="#" th:href="@{/user/sendGroupEmail}">
+                        <i class="fa fa-sort-numeric-asc"></i> <span>sendGroupEmail</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'scheduleSendGroupEmail'})?'active':''">
+                    <a href="#" th:href="@{/user/scheduleSendGroupEmail}">
+                        <i class="fa fa-sort-numeric-asc"></i> <span>scheduleSendGroupEmail</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </section>
 <!-- /.sidebar -->
