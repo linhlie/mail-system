@@ -624,8 +624,13 @@ function showMoreConditionNotification(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
-function getEmailAddressGroup(onSuccess, onError) {
-    var url = "/user/emailGroupSetting/getListEmailAddressGroup";
+function getEmailAddressGroup(groupName, onSuccess, onError) {
+    var url = "";
+    if(groupName){
+        url = "/user/emailGroupSetting/getListEmailAddressGroup?groupName="+groupName;
+    }else{
+        url = "/user/emailGroupSetting/getListEmailAddressGroup";
+    }
     _get(url, onSuccess, onError);
 }
 
@@ -641,6 +646,26 @@ function updateEmailAddressGroup(data, onSuccess, onError) {
 
 function deleteEmailAddressGroup(id, onSuccess, onError) {
     var url = "/user/emailGroupSetting/deleteEmailAddressGroup/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function getEmailAddressList(id, search, onSuccess, onError) {
+    var url = "";
+    if(search){
+        url = "/user/emailGroupSetting/getListEmailAddressList?id=" +id +"&search="+search;
+    }else{
+        url = "/user/emailGroupSetting/getListEmailAddressList?id=" +id;
+    }
+    _get(url, onSuccess, onError);
+}
+
+function addEmailAddressToGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/addEmailAddressToList";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteEmailAddressInGroup(id, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/deleteEmailAddressInGroup/" + id;
     _delete(url, onSuccess, onError);
 }
 

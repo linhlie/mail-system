@@ -463,6 +463,10 @@ table#sourceMatch, table#destinationMatch, table#sendMailHistory, table#usersTab
      background-color: #ffffcc;
 }
 
+tr.highlight-selected td {
+    background-color: #ffffcc;
+}
+
 .matching-result .table td.fit,
 .matching-result .table th.fit {
     white-space: nowrap;

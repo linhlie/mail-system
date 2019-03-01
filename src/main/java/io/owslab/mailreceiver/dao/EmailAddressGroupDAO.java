@@ -10,4 +10,6 @@ public interface EmailAddressGroupDAO extends JpaRepository<EmailAddressGroup, L
     List<EmailAddressGroup> findByGroupNameAndAccountCreateId(String groupName, long accountCreateId);
 
     List<EmailAddressGroup> findByAccountCreateIdOrderByGroupNameAsc(long accountCreateId);
+
+    List<EmailAddressGroup> findByAccountCreateIdAndGroupNameContainsOrderByGroupNameAsc(long accountCreateId, String groupName);
 }

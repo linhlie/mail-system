@@ -1,23 +1,22 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dao.VariableDAO;
-import io.owslab.mailreceiver.form.NumberTreatmentForm;
+import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
+import io.owslab.mailreceiver.response.EmailGroupResponseBody;
+import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.mail.EmailAddressGroupService;
-import io.owslab.mailreceiver.service.statistics.EmailStatisticService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,9 @@ public class EmailGroupSettingController {
     @Autowired
     EmailAddressGroupService emailAddressGroupService;
 
+    @Autowired
+    PeopleInChargePartnerService peopleInChargePartnerService;
+
     @RequestMapping(value = "/emailGroupSetting", method = RequestMethod.GET)
     public String emailGroupSetting(Model model) {
         return "user/emailGroupManage/emailGroupSetting";
@@ -39,10 +41,15 @@ public class EmailGroupSettingController {
 
     @RequestMapping(value = { "/emailGroupSetting/getListEmailAddressGroup" }, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> getListGroup() {
+    public ResponseEntity<?> getListGroup(@RequestParam(value = "groupName", required = false) String groupName) {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<EmailAddressGroup> listGroup = emailAddressGroupService.getList();
+            List<EmailAddressGroup> listGroup = new ArrayList<>();
+            if(groupName==null || groupName.equals("")){
+                listGroup = emailAddressGroupService.getGroupList();
+            }else{
+                listGroup = emailAddressGroupService.searchGroup(groupName);
+            }
             result.setList(listGroup);
             result.setMsg("done");
             result.setStatus(true);
@@ -102,7 +109,64 @@ public class EmailGroupSettingController {
     @ResponseBody
     public ResponseEntity<Void> deleteEmailGroup(@PathVariable("id") long id) {
         try {
-            emailAddressGroupService.delete(id);
+            emailAddressGroupService.deleteGroup(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = { "/emailGroupSetting/getListEmailAddressList" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getEmailList(@RequestParam(value = "id", required = true) long id, @RequestParam(value = "search", required = false)  String search) {
+        EmailGroupResponseBody result = new EmailGroupResponseBody();
+        try {
+            List<EmailsAddressInGroupDTO> listEmail = new ArrayList<>();
+            if(search==null || search.equals("")){
+                listEmail = emailAddressGroupService.getEmailList(id);
+            }else{
+                listEmail = emailAddressGroupService.searchEmailList(id, search);
+            }
+            List<PeopleInChargePartner> listPeople = peopleInChargePartnerService.getAll();
+            result.setList(listEmail);
+            result.setListPeople(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListEmailAddressList: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/emailGroupSetting/addEmailAddressToList")
+    @ResponseBody
+    public ResponseEntity<?> addEmailAddressToList(@Valid @RequestBody EmailsAddressInGroup emailsAddressInGroup, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            emailAddressGroupService.addEmailAddressToList(emailsAddressInGroup);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value = "/emailGroupSetting/deleteEmailAddressInGroup/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteEmailInGroup(@PathVariable("id") long id) {
+        try {
+            emailAddressGroupService.deleteEmail(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

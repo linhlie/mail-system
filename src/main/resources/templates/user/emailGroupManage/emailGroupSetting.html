@@ -38,10 +38,10 @@
                                                         <tr>
                                                             <th colspan="1">
                                                                 <div>
-                                                                    <input id="searchWordTxt" name="search" type="text" class="form-control input-sm" placeholder="Seach email group"/>
+                                                                    <input id="searchGroupName" name="search" type="text" class="form-control input-sm" placeholder="Seach email group"/>
                                                                 </div>
                                                             </th>
-                                                            <th class="text-center" colspan="2"><button id="btnSearchWord" type="submit">条件</button></th>
+                                                            <th class="text-center" colspan="2"><button id="btnSearchGroup" type="submit">条件</button></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -51,28 +51,28 @@
                                         </div>
                                     </div>
                                     <div class="col-xs-1 full-height text-align: center;" >
-                                        <span class="glyphicon glyphicon-arrow-right" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
+                                        <span id="showEmailList" class="glyphicon glyphicon-arrow-right hidden" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
                                     </div>
                                     <div class="col-xs-6 full-height non-paddinng">
                                         <h3 style="padding-left: 10px;">Email List</h3>
                                         <div class="email-group-table-container">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
-                                                <table id="wordExclusionTable" class="table table-bordered">
+                                                <table id="emailListTable" class="table table-bordered">
                                                     <thead class="sticky-header">
                                                     <tr>
                                                         <th class="col-xs-5">People in charge</th>
                                                         <th class="col-xs-5">Email Address</th>
                                                         <th class="col-xs-2" colspan="2" style="text-align: center">
-                                                            <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="cursor: pointer; display: none;" title="Add email list"></span>
+                                                            <span id="addEmailList" class="glyphicon glyphicon-plus hidden" style="cursor: pointer;" title="Add email list"></span>
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th colspan="2" >
+                                                        <th colspan="2">
                                                             <div>
-                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="Seach emai"/>
+                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="Seach email"/>
                                                             </div>
                                                         </th>
-                                                        <th class="text-center"><button id="btnSearchEmail" type="submit">条件</button></th>
+                                                        <th class="text-center" colspan="1"><button id="btnSearchEmail" type="submit">条件</button></th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -93,32 +93,24 @@
         </div>
     </section>
     <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 40%;">
+        <div class="modal-dialog" role="document" style="width: 50%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="dataModalTitle" class="modal-title" style="text-align: center">Title</h4>
+                    <h4 id="dataModalTitle" class="modal-title">Add email to group</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body mainAddGroup">
                     <div class="form-group row" style="text-align: center">
-                        <span id="hasErrorModal" class="form-error"></span>
+                        <span id="hasErrorModalAddEmailList" class="form-error"></span>
                     </div>
                     <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label style="transform: translateY(10px);">主ワード</label>
+                        <div class="col-sm-3">
+                            <label style="transform: translateY(10px);">Email Address</label>
                         </div>
                         <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
-                            <input id="word" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
                             <datalist id="keylist">
                             </datalist>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2">
-                            <label style="transform: translateY(10px);">除外単語</label>
-                        </div>
-                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
-                            <input id="wordExclusion" class="dataModalName form-control " type="text" placeholder=""/>
                         </div>
                     </div>
                 </div>
