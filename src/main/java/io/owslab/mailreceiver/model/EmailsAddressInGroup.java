@@ -12,6 +12,15 @@ public class EmailsAddressInGroup {
     private long groupId;
     private long peopleInChargeId;
 
+    public EmailsAddressInGroup() {
+    }
+
+
+    public EmailsAddressInGroup(long groupId, long peopleInChargeId) {
+        this.groupId = groupId;
+        this.peopleInChargeId = peopleInChargeId;
+    }
+
     public long getId() {
         return id;
     }

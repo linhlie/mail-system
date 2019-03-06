@@ -1626,3 +1626,9 @@ div.bulletinboard-icon-wrapper {
 .send-by-day-checkbox{
     margin-right: 20px;
 }
+
+.email-address-receiver{
+    overflow-y: scroll;
+    height: 450px;
+    border: solid 1px #75787b;
+}

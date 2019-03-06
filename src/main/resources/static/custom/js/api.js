@@ -634,6 +634,11 @@ function getEmailAddressGroup(groupName, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
+function getEmailAddressAndGroup(groupName, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/getListEmailAddressAndGroup";
+    _get(url, onSuccess, onError);
+}
+
 function addEmailAddressGroup(data, onSuccess, onError) {
     var url = "/user/emailGroupSetting/addEmailAddressGroup";
     _post(url, data, onSuccess, onError);

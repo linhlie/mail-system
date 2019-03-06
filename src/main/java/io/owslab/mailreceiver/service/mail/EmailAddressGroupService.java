@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.EmailAddressGroupDAO;
 import io.owslab.mailreceiver.dao.EmailsAddressInGroupDAO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
+import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.model.EmailAddressGroup;
 import io.owslab.mailreceiver.model.EmailsAddressInGroup;
@@ -112,6 +113,16 @@ public class EmailAddressGroupService {
         return listRelust;
     }
 
+    public void addListEmailAddress(EmailsAddressInGroupForm form) throws Exception {
+        if(form==null || form.getListPeopleId() == null){
+            throw new Exception("[addListEmailAddress] form null");
+        }
+        for(long id : form.getListPeopleId()){
+            addEmailAddressToList(new EmailsAddressInGroup(form.getGroupId(), id));
+        }
+
+    }
+
     public void addEmailAddressToList(EmailsAddressInGroup emailsAddressInGroup) throws Exception {
         EmailAddressGroup emailAddressGroup = emailAddressGroupDAO.findOne(emailsAddressInGroup.getGroupId());
         if(emailAddressGroup==null){
@@ -119,7 +130,7 @@ public class EmailAddressGroupService {
         }
         List<EmailsAddressInGroup> listGroup = emailsAddressInGroupDAO.findByGroupIdAndPeopleInChargeId(emailsAddressInGroup.getGroupId(), emailsAddressInGroup.getPeopleInChargeId());
         if(listGroup !=null && listGroup.size()>0){
-            throw new Exception("[EmailsAddressInGroup] Email is exist in group");
+            return;
         }
         emailsAddressInGroupDAO.save(emailsAddressInGroup);
     }

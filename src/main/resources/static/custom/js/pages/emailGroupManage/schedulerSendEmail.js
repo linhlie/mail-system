@@ -33,6 +33,7 @@
 
     var emailGroupTableId = 'emailGroupTable';
     var selectAllEmailGroupId = '#selectAllEmailGroup';
+    var emailAddressReceiverId = "#emailAddressReceiver";
 
     var settingEmailBlockId = '#setting-email';
     var settingSchedulerBlockId = '#setting-scheduler';
@@ -45,9 +46,10 @@
     var sendByMonthDayId = '#sendByMonthDay';
     var sendByMonthHourId = '#sendByMonthHour';
 
-    var selectEmailGroupId = '#selectEmailGroup';
+    var selectEmailReceiverId = '#selectEmailGroup';
 
     var emailGroups = [];
+    var listPeople = [];
     var emailGroupsSelected = [];
     var emailSenders = [];
 
@@ -67,7 +69,7 @@
         loadEmailSender();
         setButtonClickListenter(nextToSettingSchedulerId, nextToSettingSchedulerPage);
         setButtonClickListenter(backToSettingEmailId, backToSettingEmail);
-        setButtonClickListenter(selectEmailGroupId, selectEmailGroupOnclick);
+        setButtonClickListenter(selectEmailReceiverId, selectEmailReceiverOnclick);
     });
 
     function initDropzone() {
@@ -262,7 +264,7 @@
         });
     }
 
-    function selectEmailGroupOnclick(){
+    function selectEmailReceiverOnclick(){
         loadListEmailGroup();
     }
 
@@ -270,10 +272,10 @@
         function onSuccess(response) {
             if(response && response.status){
                 emailGroups = response.list;
-                if(emailGroups && emailGroups.length>0){
-                    console.log(emailGroups);
-                    showSelectModal(addReceiverEmailAddress);
-                }
+                listPeople = response.listPeople;
+                console.log(emailGroups);
+                console.log(listPeople);
+                showSelectModal(addReceiverEmailAddress);
             }
         }
 
@@ -281,7 +283,7 @@
             console.log("loadListEmailGroup fail");
         }
 
-        getEmailAddressGroup(groupName, onSuccess, onError);
+        getEmailAddressAndGroup(groupName, onSuccess, onError);
     }
     
     function addReceiverEmailAddress() {

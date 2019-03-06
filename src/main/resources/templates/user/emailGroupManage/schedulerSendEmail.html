@@ -198,19 +198,13 @@
                     <h4 id="dataModalTitle" class="modal-title">Select Email Group</h4>
                 </div>
                 <div class="modal-body">
-                    <div style="overflow-y: scroll; height: 450px;" class="permission-table table-container-wrapper">
-                        <table id="emailGroupTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
-                            <thead class="sticky-header">
-                            <tr>
-                                <th class="fit dark" style="text-align: center;">権限変更&nbsp;
-                                    <input type="checkbox" id="selectAllEmailGroup"/>
-                                </th>
-                                <th class="dark">Email Group</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                    <div>
+                        <label tyle="display: block" >
+                            <input type="checkbox" name="send-by-day_day" value="saturday"/>&nbsp;Select All
+                        </label>
+                        <div id="emailAddressReceiver" class="email-address-receiver">
+
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

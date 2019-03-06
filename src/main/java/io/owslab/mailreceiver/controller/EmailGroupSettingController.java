@@ -1,14 +1,13 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dto.EmailAccountDTO;
 import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
+import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.EmailGroupResponseBody;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
-import io.owslab.mailreceiver.service.mail.EmailAccountSettingService;
 import io.owslab.mailreceiver.service.mail.EmailAddressGroupService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.slf4j.Logger;
@@ -150,7 +149,7 @@ public class EmailGroupSettingController {
 
     @PostMapping("/emailGroupSetting/addEmailAddressToList")
     @ResponseBody
-    public ResponseEntity<?> addEmailAddressToList(@Valid @RequestBody EmailsAddressInGroup emailsAddressInGroup, BindingResult bindingResult) {
+    public ResponseEntity<?> addEmailAddressToList(@Valid @RequestBody EmailsAddressInGroupForm form, BindingResult bindingResult) {
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -159,7 +158,7 @@ public class EmailGroupSettingController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            emailAddressGroupService.addEmailAddressToList(emailsAddressInGroup);
+            emailAddressGroupService.addListEmailAddress(form);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
@@ -225,5 +224,24 @@ public class EmailGroupSettingController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @RequestMapping(value = { "/emailGroupSetting/getListEmailAddressAndGroup" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getListEmailAndGroup() {
+        EmailGroupResponseBody result = new EmailGroupResponseBody();
+        try {
+            List<EmailAddressGroup> listGroup = emailAddressGroupService.getGroupList();
+            List<PeopleInChargePartner> listPeople = peopleInChargePartnerService.getAll();
+            result.setList(listGroup);
+            result.setListPeople(listPeople);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListGroup: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }

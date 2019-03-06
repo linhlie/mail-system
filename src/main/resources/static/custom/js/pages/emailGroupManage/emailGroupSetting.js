@@ -352,7 +352,7 @@
         showAddEmailListModal(doAddEmailList);
     }
 
-    function doAddEmailList(id) {
+    function doAddEmailList(ids) {
         function onSuccess(response) {
             if(response){
                 if(response.status){
@@ -368,7 +368,7 @@
 
         addEmailAddressToGroup({
             groupId: emailGroupCurrent.id,
-            peopleInChargeId: id
+            listPeopleId: ids
         }, onSuccess, onError);
     }
 
@@ -407,15 +407,15 @@
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
-            var index = validateEmailAddressPeople(name);
-            if(index<0){
+            var ids = validateEmailAddressPeople(name);
+            if(ids.length <= 0){
                 showError("#hasErrorModalAddEmailList", "This email isn't exist in email of people in charge partner list");
                 return;
             }
 
             $('#dataModal').modal('hide');
             if(typeof callback === "function"){
-                callback(index);
+                callback(ids);
             }
         });
         $('#dataModalCancel').off('click');
@@ -441,13 +441,6 @@
         $(addEmailListId).addClass("hidden");
         emailGroups = [];
         emailGroupCurrent = null;
-        emailList = [];
-        emailCurrent = null;
-    }
-    
-    function clearTableList() {
-        $("#"+showEmailListId).addClass("hidden");
-        $(addEmailListId).addClass("hidden");
         emailList = [];
         emailCurrent = null;
     }
@@ -484,13 +477,29 @@
     }
 
     function validateEmailAddressPeople(name){
-        var index = -1;
+        var listId = [];
         for(var i=0;i<dataList.length;i++){
             if(name == dataList[i].value){
-                return dataList[i].id;
+                listId.push(dataList[i].id);
+                return listId;
             }
         }
-        return index;
+
+        if(name.charAt(0) == "*" && name.charAt(1) == "@"){
+            for(var i=0;i<dataList.length;i++){
+                var index = dataList[i].value.indexOf("@");
+                if(index>0){
+                    var domain = "*" + dataList[i].value.substring(index);
+                    console.log(domain);
+                    if(name == domain){
+                        listId.push(dataList[i].id);
+                    }
+                }
+
+            }
+        }
+
+        return listId;
     }
 
 })(jQuery);
