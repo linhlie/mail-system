@@ -669,6 +669,16 @@ function deleteEmailAddressInGroup(id, onSuccess, onError) {
     _delete(url, onSuccess, onError);
 }
 
+function getEmailSenders(onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getListEmailSender";
+    _get(url, onSuccess, onError);
+}
+
+function getEmailReceivers(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getEmailReceivers";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
