@@ -2,7 +2,6 @@
     "use strict";
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBodyTab';
-    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailCCId = 'rdMailCC';
     var rdMailReceiverId = 'rdMailReceiver';
@@ -17,28 +16,17 @@
     var attachmentDropzone;
 
     var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-    var lastReceiver;
-    var lastMessageId;
-    var lastTextRange;
-    var lastTextMatchRange;
-    var lastReplaceType;
-    var lastSendTo;
-    var lastHistoryType;
-    var engineer;
-    var type;
-    var matching = false;
 
-    var originalContentWrapId = "ows-mail-body";
-    var dataLinesConfirm;
+    var selectAllReceiverId = "#select-all-receiver";
 
-    var emailGroupTableId = 'emailGroupTable';
-    var selectAllEmailGroupId = '#selectAllEmailGroup';
-    var emailAddressReceiverId = "#emailAddressReceiver";
+    var showEmailReceiverGroupId = "#scheduler-email-group-ul";
+    var showEmailReceiverAddressId = "#scheduler-email-address-ul";
 
     var settingEmailBlockId = '#setting-email';
     var settingSchedulerBlockId = '#setting-scheduler';
     var nextToSettingSchedulerId = '#nextToSettingScheduler';
     var backToSettingEmailId = '#backToSettingEmail';
+    var createSheduleSendEmailId = '#sendSuggestMail';
 
     var sendByHourDayId = '#sendByHourDay';
     var sendByHourHourId = '#sendByHourHour';
@@ -50,15 +38,16 @@
 
     var emailGroups = [];
     var listPeople = [];
+
+    var checkedAllReceiverFlag = false;
+    var checkedAllGroupReceiverFlag = false;
+    var checkedAllEmailReceiverFlag = false;
     var emailGroupsSelected = [];
+    var emailGroupNamesSelected = [];
+    var emailAddressSelected = [];
     var emailSenders = [];
 
-    var replaceRow = '<tr role="row" class="hidden">' +
-        '<td align="center" rowspan="1" colspan="1" data="selectGroup">' +
-        '<input type="checkbox" class="selectAll"/>' +
-        '</td>' +
-        '<td rowspan="1" colspan="1" data="groupName" name="groupName"><span></span></td>' +
-        '</tr>';
+    var emailForm = null;
 
     $(function () {
         initDropzone();
@@ -70,6 +59,7 @@
         setButtonClickListenter(nextToSettingSchedulerId, nextToSettingSchedulerPage);
         setButtonClickListenter(backToSettingEmailId, backToSettingEmail);
         setButtonClickListenter(selectEmailReceiverId, selectEmailReceiverOnclick);
+        setButtonClickListenter(createSheduleSendEmailId, createSheduleSendEmailOnclick);
     });
 
     function initDropzone() {
@@ -93,7 +83,7 @@
                 });
                 this.on("removedfile", function(file) {
                     if(!!file && !!file.upload && !!file.id){
-                        file(file.id)
+                        removeFile(file.id)
                     }
                 });
             },
@@ -201,7 +191,6 @@
         });
         for(var i=0;i<accounts.length;i++){
             if(accounts[i].id == lastSelectedSendMailAccountId){
-                console.log(accounts[i].cc);
                 $('#' + rdMailCCId).importTags(accounts[i].cc);
             }
         }
@@ -211,14 +200,34 @@
             lastSelectedSendMailAccountId = this.value;
             for(var i=0;i<accounts.length;i++){
                 if(accounts[i].id == lastSelectedSendMailAccountId){
-                    console.log(accounts[i].cc);
                     $('#' + rdMailCCId).importTags(accounts[i].cc);
                 }
             }
         });
     }
 
+    function getMailEditorContent() {
+        var editor = tinymce.get(rdMailBodyId);
+        return editor.getContent();
+    }
+
     function nextToSettingSchedulerPage() {
+        receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
+        ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
+        if(!(receiverValidate && ccValidate)) return;
+        var attachmentData = getAttachmentData(attachmentDropzone);
+        emailForm = {
+            subject: $( "#" + rdMailSubjectId).val(),
+            receiver: $( "#" + rdMailReceiverId).val().replace(/\s*,\s*/g, ","),
+            cc: $( "#" + rdMailCCId).val().replace(/\s*,\s*/g, ","),
+            content: getMailEditorContent(),
+            originAttachment: attachmentData.origin,
+            uploadAttachment: attachmentData.upload,
+            accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
+            sendType: 16,
+            historyType: 16,
+        };
+
         $(settingEmailBlockId).css("display", "none");
         $(settingSchedulerBlockId).css("display", "block");
     }
@@ -228,19 +237,153 @@
         $(settingEmailBlockId).css("display", "block");
     }
 
+    function selectEmailReceiverOnclick(){
+        loadListEmailGroup();
+    }
+
+    function createSheduleSendEmailOnclick() {
+        var typeSendMail = $('input[name=send-email-scheduler]:checked').val();
+
+        if(typeSendMail == 0){
+            sendEmailNow();
+        }
+
+        if(typeSendMail == 1){
+            sendEmailByHour();
+        }
+
+        if(typeSendMail == 2){
+            sendEmailByDay();
+        }
+
+        if(typeSendMail == 3){
+            sendEmailByMonth();
+        }
+    }
+
+    function sendEmailNow() {
+        var form = {
+            sendMailForm: emailForm,
+            typeSendEmail: 0
+        }
+        createScheduler(form);
+    }
+
+    function sendEmailByHour() {
+        var day = $(sendByHourDayId).val();
+        var hour = $(sendByHourHourId).find("input").val();
+        if(!hour || hour == null){
+            showAlertFillData();
+            return;
+        }
+        if(!day || day == null){
+            showAlertFillData();
+            return;
+        }
+        var form = {
+            sendMailForm: emailForm,
+            typeSendEmail: 1,
+            dateSendMail: day,
+            hourSendMail: hour
+        }
+        createScheduler(form);
+    }
+
+    function sendEmailByDay() {
+        var date = "";
+        var dateArr = [];
+        $('input[name=send-by-day_day]:checked').each(function() {
+            dateArr.push(this.value);
+        });
+        date = dateArr.join();
+        var hour = $(sendByDayHourId).find("input").val();
+        if(!date || date == null){
+            showAlertFillData();
+            return;
+        }
+        if(!hour || hour == null){
+            showAlertFillData();
+            return;
+        }
+        var form = {
+            sendMailForm: emailForm,
+            typeSendEmail: 2,
+            dateSendMail: date,
+            hourSendMail: hour
+        }
+        createScheduler(form);
+    }
+
+    function sendEmailByMonth() {
+        var typeSendDay = $('input[name=send-by-month-day]:checked').val();
+        var day = "1";
+        if(!typeSendDay || typeSendDay == null){
+            showAlertFillData();
+            return;
+        }
+        day = $("#sendByMonthDay").val();
+
+        if(typeSendDay == "send-by-month"){
+            day = $("#sendByMonthDay").val();
+        }
+
+        if(typeSendDay == "the-first-day"){
+            day = "the-first-day";
+        }
+
+        if(typeSendDay == "the-last-day"){
+            day = "the-last-day";
+        }
+        if(!day || day == null){
+            showAlertFillData();
+            return;
+        }
+        var hour = $(sendByMonthHourId).find("input").val();
+        if(!hour || hour == null){
+            showAlertFillData();
+            return;
+        }
+        var form = {
+            sendMailForm: emailForm,
+            typeSendEmail: 3,
+            dateSendMail: day,
+            hourSendMail: hour
+        }
+        createScheduler(form);
+    }
+
+    function showAlertFillData(){
+        $.alert("You must fill full data to create scheduler");
+    }
+
+    function createScheduler(form) {
+        function onSuccess(response) {
+            if(response){
+                if(response.status){
+                    $.alert({
+                        title: "",
+                        content: "created scheduler success",
+                        onClose: function () {
+                            location.reload();
+                        }
+                    });
+                }else{
+                    $.alert("created scheduler fail");
+                }
+            }
+        }
+
+        function onError(error) {
+            console.log("create scheduler fail");
+        }
+        console.log(form);
+        createSchedulerSendEmail(form, onSuccess, onError);
+    }
+
     function setupDatePickers() {
         var datepicker = $.fn.datepicker.noConflict();
         $.fn.bootstrapDP = datepicker;
         $(sendByHourDayId).datepicker({
-            dateFormat: 'mm-dd-yy',
-            beforeShow: function() {
-                setTimeout(function(){
-                    $('.ui-datepicker').css('z-index', 99999999999999);
-                }, 0);
-            }
-        });
-
-        $(sendByMonthDayId).datepicker({
             dateFormat: 'mm-dd-yy',
             beforeShow: function() {
                 setTimeout(function(){
@@ -264,17 +407,11 @@
         });
     }
 
-    function selectEmailReceiverOnclick(){
-        loadListEmailGroup();
-    }
-
     function loadListEmailGroup(groupName) {
         function onSuccess(response) {
             if(response && response.status){
                 emailGroups = response.list;
                 listPeople = response.listPeople;
-                console.log(emailGroups);
-                console.log(listPeople);
                 showSelectModal(addReceiverEmailAddress);
             }
         }
@@ -292,10 +429,9 @@
 
     function showSelectModal(callback) {
         $('#dataModal').modal();
-        updateEmailGroupTable();
+        updateEmailsReceiver();
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
-
             if(typeof callback === "function"){
                 getEmailGroupsSelected();
                 loadEmailReceivers();
@@ -311,89 +447,195 @@
         });
     }
 
-    function removeAllRow(tableId, replaceHtml) {
-        $("#" + tableId + "> tbody").html(replaceHtml);
-    }
-
-    function updateEmailGroupTable() {
-        removeAllRow(emailGroupTableId, replaceRow);
-        if (emailGroups.length > 0) {
-            var html = replaceRow;
-            for (var i = 0; i < emailGroups.length; i++) {
-                html = html + addRowWithData(emailGroupTableId, emailGroups[i], i);
-            }
-            $("#" + emailGroupTableId + "> tbody").html(html);
+    function updateEmailsReceiver() {
+        var emailGroupHtml = "";
+        $(showEmailReceiverGroupId).empty();
+        var emailAddressHtml = "";
+        $(showEmailReceiverAddressId).empty();
+        if(!emailGroups || !listPeople){
+            return;
         }
+        for(var i=0;i<emailGroups.length;i++){
+            var flag = false;
+            for(var j=0;j<emailGroupsSelected.length;j++){
+                if(emailGroupsSelected[j] == emailGroups[i].id){
+                    flag = true;
+                }
+            }
+            if(flag == true){
+                emailGroupHtml = emailGroupHtml +
+                    '<li class="scheduler-email-li"><label style="display: block">' +
+                    '<input type="checkbox" class="select-email-group" value="' + emailGroups[i].id +'" checked="checked"/>&nbsp;' + emailGroups[i].groupName +
+                    '</label></li>';
+            }else{
+                emailGroupHtml = emailGroupHtml +
+                    '<li class="scheduler-email-li"><label style="display: block">' +
+                    '<input type="checkbox" class="select-email-group" value="' + emailGroups[i].id +'"/>&nbsp;' + emailGroups[i].groupName +
+                    '</label></li>';
+            }
+        }
+        $(showEmailReceiverGroupId).append(emailGroupHtml);
+
+        for(var i=0;i<listPeople.length;i++){
+            var flag = false;
+            for(var j=0;j<emailAddressSelected.length;j++) {
+                if (emailAddressSelected[j] == listPeople[i].emailAddress) {
+                    flag = true;
+                }
+            }
+            if (flag == true) {
+                emailAddressHtml = emailAddressHtml +
+                    '<li class="scheduler-email-li"><label style="display: block">' +
+                    '<input type="checkbox" class="select-email-address" value="' + listPeople[i].emailAddress + '" checked="checked"/>&nbsp;' + listPeople[i].emailAddress +
+                    '</label></li>';
+            } else {
+                emailAddressHtml = emailAddressHtml +
+                    '<li class="scheduler-email-li"><label style="display: block">' +
+                    '<input type="checkbox" class="select-email-address" value="' + listPeople[i].emailAddress + '"/>&nbsp;' + listPeople[i].emailAddress +
+                    '</label></li>';
+            }
+        }
+        $(showEmailReceiverAddressId).append(emailAddressHtml);
+
+        showList();
         setupSelectBoxes();
     }
 
-    function addRowWithData(tableId, data, index) {
-        var table = document.getElementById(tableId);
-        if (!table) return "";
-        var rowToClone = table.rows[1];
-        var row = rowToClone.cloneNode(true);
-        row.setAttribute("data-id", data.id);
-        row.setAttribute("data", index);
-        row.className = undefined;
-        var cells = row.cells;
-        for (var i = 0; i < cells.length; i++) {
-            var cell = cells.item(i);
-            var cellKey = cell.getAttribute("data");
-            if (!cellKey) continue;
-            var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
-            if (cellNode) {
-                if(cellNode.nodeName == "INPUT") {
-                    var cellData = data[cellKey];
-                    cellNode.defaultChecked = cellData;
-                    cellNode.value = data['id'];
-                    if (cellKey == "selectGroup") {
-                        cellNode.name = "selectEmailGroup";
-                    }
-                } else{
-                    var cellData = data[cellKey];
-                    cellNode.textContent = cellData;
-                }
-            }
-        }
-        return row.outerHTML;
+    function showList() {
+        $('.scheduler-email-show-list').off('click');
+        $('.scheduler-email-show-list').click(function () {
+            // var checkbox = $(this).siblings("label").children("input");
+            // checkbox.prop("checked", !checkbox.prop("checked"));
+            $(this).siblings("ul").slideToggle("slow");
+            $(this).siblings(".sheduler-icon-arrow").toggleClass("glyphicon-chevron-down");
+        })
+
+        $('.sheduler-icon-arrow').off('click');
+        $('.sheduler-icon-arrow').click(function () {
+            $(this).toggleClass("glyphicon-chevron-down");
+            $(this).siblings("ul").slideToggle("slow");
+        })
     }
 
     function setupSelectBoxes() {
-        var selectAll = $("input[name=selectEmailGroup]").length == $("input[name=selectEmailGroup]:checked").length? true: false;
-        $(selectAllEmailGroupId).prop("checked", selectAll);
+        $(selectAllReceiverId).prop("checked", checkedAllReceiverFlag);
+        $('.select-all-email-group').prop("checked", checkedAllGroupReceiverFlag);
+        $('.select-all-email-address').prop("checked", checkedAllEmailReceiverFlag);
 
-        $(selectAllEmailGroupId).off('click');
-        $(selectAllEmailGroupId).click(function () {
-            setAllCheckBoxEmailGroup(this.checked);
+        $(selectAllReceiverId).off('click');
+        $(selectAllReceiverId).click(function () {
+            setAllCheckBoxReceiver(this.checked);
         });
 
-        $('input[name=selectEmailGroup]').off('click');
-        $('input[name=selectEmailGroup]').click(function(){
-            if($("input[name=selectEmailGroup]").length == $("input[name=selectEmailGroup]:checked").length) {
-                $(selectAllEmailGroupId).prop("checked", true);
+        $('.select-all-email-group').off('click');
+        $('.select-all-email-group').click(function(){
+            setAllCheckBoxEmailGroupReceiver(this.checked);
+            if(this.checked) {
+                checkAllCheckBoxReceiver();
             } else {
-                $(selectAllEmailGroupId).prop("checked", false);
+                $(selectAllReceiverId).prop("checked", false);
+            }
+        });
+
+        $('.select-all-email-address').off('click');
+        $('.select-all-email-address').click(function(){
+            setAllCheckBoxEmailAddresseceiver(this.checked);
+            if(this.checked) {
+                checkAllCheckBoxReceiver();
+            } else {
+                $(selectAllReceiverId).prop("checked", false);
+            }
+        });
+
+        $('.select-email-group').off('click');
+        $('.select-email-group').click(function(){
+            if($('.select-email-group').length == $(".select-email-group:checked").length) {
+                $('.select-all-email-group').prop("checked", true);
+            } else {
+                $('.select-all-email-group').prop("checked", false);
+            }
+        });
+
+
+        $('.select-email-address').off('click');
+        $('.select-email-address').click(function(){
+            if($('.select-email-address').length == $(".select-email-address:checked").length) {
+                $('.select-all-email-address').prop("checked", false);
+            } else {
+                $('.select-all-email-address').prop("checked", false);
             }
         });
     }
 
-    function setAllCheckBoxEmailGroup(checked) {
-        $("input[name=selectEmailGroup]").each(function( index ) {
+    function setAllCheckBoxReceiver(checked) {
+        $('.select-all-email-group').prop('checked', checked);
+        $('.select-all-email-address').prop('checked', checked);
+
+        $('.select-email-group').each(function() {
+            $(this).prop('checked', checked);
+        });
+
+        $('.select-email-address').each(function() {
             $(this).prop('checked', checked);
         });
     }
 
+    function setAllCheckBoxEmailGroupReceiver(checked) {
+        $('.select-email-group').each(function() {
+            $(this).prop('checked', checked);
+        });
+    }
+
+    function setAllCheckBoxEmailAddresseceiver(checked) {
+        $('.select-email-address').each(function() {
+            $(this).prop('checked', checked);
+        });
+    }
+    
+    function checkAllCheckBoxReceiver() {
+        var checkedGroup = $('.select-all-email-group').is(":checked");
+        var checkedEmail = $('.select-all-email-address').is(":checked");
+        if(checkedGroup && checkedEmail){
+            $(selectAllReceiverId).prop('checked', true);
+        }
+    }
+
     function getEmailGroupsSelected() {
         emailGroupsSelected = [];
-        $("input[name=selectEmailGroup]:checked").each(function( index ) {
-            emailGroupsSelected.push($(this).val());
+        emailGroupNamesSelected = [];
+        emailAddressSelected = [];
+
+        checkedAllReceiverFlag = $(selectAllReceiverId).is(":checked");
+        checkedAllGroupReceiverFlag = $('.select-all-email-group').is(":checked");
+        checkedAllEmailReceiverFlag = $('.select-all-email-address').is(":checked");
+
+        $('.select-email-group').each(function() {
+            if(this.checked){
+                emailGroupsSelected.push($(this).val());
+                emailGroupNamesSelected.push($(this).parent('label').text());
+            }
+        });
+
+        $('.select-email-address').each(function() {
+            if(this.checked) {
+                emailAddressSelected.push($(this).val());
+            }
         });
     }
 
     function loadEmailReceivers() {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
+                if(response.list){
+                    var recivers  = '';
+                    for(var i=0; i<response.list.length; i++) {
+                        recivers = recivers + ", " + response.list[i];
+                    }
+                    $('#' + rdMailReceiverId).importTags(recivers);
+                    if(emailGroupNamesSelected && emailGroupNamesSelected.length>0){
+                        $("#rdEmailGroup").val(emailGroupNamesSelected.join());
+                    }
+                }
             }
         }
 
@@ -402,8 +644,13 @@
         }
 
         getEmailReceivers({
-            listId: emailGroupsSelected
+            listEmailGroupId: emailGroupsSelected,
+            listEmailAddress: emailAddressSelected
         }, onSuccess, onError);
+    }
+
+    function resetForm() {
+        $(".setting-scheduler-block").trigger("reset");
     }
 
 })(jQuery);

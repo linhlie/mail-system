@@ -1630,5 +1630,30 @@ div.bulletinboard-icon-wrapper {
 .email-address-receiver{
     overflow-y: scroll;
     height: 450px;
-    border: solid 1px #75787b;
+}
+
+.group-email-address-ul{
+    background: white;
+    color: #0c0c0c;
+    padding-left: 0px;
+}
+
+.scheduler-email-ul{
+    list-style-type: none;
+    padding-left: 0;
+}
+.scheduler-email-li{
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+.scheduler-email-radio-label{
+    padding-left: 20px;
+    margin-bottom: 10px;
+
+}
+
+.scheduler-email-show-list{
+    cursor: pointer;
+    font-weight: bold;
 }

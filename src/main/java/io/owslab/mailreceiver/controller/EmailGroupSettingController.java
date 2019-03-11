@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
+import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.EmailGroupResponseBody;
@@ -243,5 +244,27 @@ public class EmailGroupSettingController {
             result.setStatus(false);
         }
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/schedulerSendEmail/createSchedulerSendEmail")
+    @ResponseBody
+    public ResponseEntity<?> createSchedulerSendEmail(@Valid @RequestBody SchedulerSendEmailForm scheduler, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            emailAddressGroupService.createScheduler(scheduler);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }

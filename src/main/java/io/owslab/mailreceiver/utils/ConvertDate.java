@@ -47,4 +47,14 @@ public class ConvertDate {
         dateConvert = str[0]+ ":00";
         return dateConvert;
     }
+
+    public static Date convertDateScheduler(String dateString){
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("MM-dd-yyyy HH:mm").parse(dateString);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+        }
+        return date;
+    }
 }

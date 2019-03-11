@@ -2,22 +2,21 @@ package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.EmailAddressGroupDAO;
 import io.owslab.mailreceiver.dao.EmailsAddressInGroupDAO;
+import io.owslab.mailreceiver.dao.SchedulerSendEmailDAO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
-import io.owslab.mailreceiver.model.EmailAddressGroup;
-import io.owslab.mailreceiver.model.EmailsAddressInGroup;
-import io.owslab.mailreceiver.model.PeopleInChargePartner;
+import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
+import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.utils.ConvertDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class EmailAddressGroupService {
@@ -29,10 +28,16 @@ public class EmailAddressGroupService {
     EmailsAddressInGroupDAO emailsAddressInGroupDAO;
 
     @Autowired
+    SchedulerSendEmailDAO schedulerSendEmailDAO;
+
+    @Autowired
     PeopleInChargePartnerService peopleInChargePartnerService;
 
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    MailAccountsService mailAccountsService;
 
     public void createGroup(EmailAddressGroup emailGroup) throws Exception {
         long accountId = accountService.getLoggedInAccountId();
@@ -140,8 +145,11 @@ public class EmailAddressGroupService {
     }
 
     public List<String> getEmailReceivers(IdsForm form){
+        if(form == null){
+            return new ArrayList<>();
+        }
         Set<String> emails = new HashSet<>();
-        List<EmailAddressGroup> addressGroupList = emailAddressGroupDAO.findByIdIn(form.getListId());
+        List<EmailAddressGroup> addressGroupList = emailAddressGroupDAO.findByIdIn(form.getListEmailGroupId());
         for(EmailAddressGroup emailAddressGroup : addressGroupList){
             List<EmailsAddressInGroup> listEmail = emailsAddressInGroupDAO.findByGroupId(emailAddressGroup.getId());
             for(EmailsAddressInGroup email : listEmail){
@@ -151,8 +159,32 @@ public class EmailAddressGroupService {
                 }
             }
         }
+        for(String s : form.getListEmailAddress()){
+            emails.add(s);
+        }
+
         List<String> result = new ArrayList<>();
         result.addAll(emails);
         return result;
+    }
+
+    public void createScheduler(SchedulerSendEmailForm scheduler) throws Exception {
+        if(scheduler==null || scheduler.getSendMailForm()==null){
+            return;
+        }
+        long accountId = accountService.getLoggedInAccountId();
+        String sendEmailId = scheduler.getSendMailForm().getAccountId();
+        if(sendEmailId == null) return;
+        long sendEmailAccountId = Long.parseLong(sendEmailId);
+        EmailAccount emailAccount = mailAccountsService.getEmailAccountById(sendEmailAccountId);
+        SchedulerSendEmail schedulerSendEmail = new SchedulerSendEmail(scheduler, emailAccount, accountId);
+        if(schedulerSendEmail.getTypeSendEmail() == SchedulerSendEmail.Type.SEND_BY_HOUR){
+            Date date = ConvertDate.convertDateScheduler(schedulerSendEmail.getDateSendEmail() + " " + schedulerSendEmail.getHourSendEmail());
+            Date now = new Date();
+            if(now.after(date)){
+                throw new Exception("scheduler date must after now");
+            }
+        }
+        schedulerSendEmailDAO.save(schedulerSendEmail);
     }
 }

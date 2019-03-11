@@ -684,6 +684,11 @@ function getEmailReceivers(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function createSchedulerSendEmail(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/createSchedulerSendEmail";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
