@@ -35,6 +35,9 @@
     var sendByMonthHourId = '#sendByMonthHour';
 
     var selectEmailReceiverId = '#selectEmailGroup';
+    var showSchedulerKey = "show-detail-scheduler-send-email";
+    var schedulerType = null;
+    var schedulerId = null;
 
     var emailGroups = [];
     var listPeople = [];
@@ -55,7 +58,6 @@
         initTinyMCE();
         setupDatePickers();
         setupTimePickers();
-        loadEmailSender();
         setButtonClickListenter(nextToSettingSchedulerId, nextToSettingSchedulerPage);
         setButtonClickListenter(backToSettingEmailId, backToSettingEmail);
         setButtonClickListenter(selectEmailReceiverId, selectEmailReceiverOnclick);
@@ -156,6 +158,7 @@
             toolbar: 'undo redo | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image',
             fontsize_formats: '6pt 8pt 10pt 11pt 12pt 13pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 40pt 45pt 50pt',
             init_instance_callback: function (editor) {
+                loadEmailSender();
             }
         });
     }
@@ -167,6 +170,7 @@
                 console.log(response.list);
                 if(emailSenders && emailSenders.length>0){
                     updateSenderSelector(emailSenders);
+                    checkSchedulerType();
                 }
             }
         }
@@ -321,7 +325,7 @@
             showAlertFillData();
             return;
         }
-        day = $("#sendByMonthDay").val();
+        day = $(sendByMonthDayId).val();
 
         if(typeSendDay == "send-by-month"){
             day = $("#sendByMonthDay").val();
@@ -375,6 +379,9 @@
 
         function onError(error) {
             console.log("create scheduler fail");
+        }
+        if(schedulerType == "update-scheduler"){
+            form.id = schedulerId;
         }
         console.log(form);
         createSchedulerSendEmail(form, onSuccess, onError);
@@ -651,6 +658,83 @@
 
     function resetForm() {
         $(".setting-scheduler-block").trigger("reset");
+    }
+
+    function checkSchedulerType() {
+        var schedulerData= sessionStorage.getItem(showSchedulerKey);
+        if(schedulerData){
+            var schedulerDataJson = JSON.parse(schedulerData);
+            if(schedulerDataJson && schedulerDataJson.id){
+                schedulerId = schedulerDataJson.id;
+                schedulerType = schedulerDataJson.type;
+                loadSchedulerEmail(schedulerId);
+                var data = {
+                    type: "create-scheduler",
+                }
+                sessionStorage.setItem(showSchedulerKey, JSON.stringify(data));
+            }
+        }
+    }
+
+    function loadSchedulerEmail(id) {
+        function onSuccess(response) {
+            if(response && response.status){
+                if(response.list && response.list.length >0){
+                    setFormData(response.list[0]);
+                }
+            }
+        }
+
+        function onError(error) {
+            console.log("loadSchedulerEmail fail");
+        }
+
+        getSchedulerEmail(id, onSuccess, onError);
+    }
+    
+    function setFormData(data) {
+        if(!data || data==null){
+            return;
+        }
+        console.log(data);
+        $('#'+rdMailSenderId).val(data.accountSentMailId);
+        $('#' + rdMailReceiverId).importTags(data.to);
+        $('#'+rdMailSubjectId).val(data.subject);
+        tinymce.get(rdMailBodyId).setContent(data.body);
+
+        $('input[name=send-email-scheduler][value='+data.typeSendEmail+']').prop("checked",true);
+        switch (data.typeSendEmail) {
+            case 0:
+                console.log("0");
+                break;
+            case 1:
+                console.log("1");
+                $(sendByHourDayId).val(data.dateSendEmail);
+                $(sendByHourHourId).find("input").val(data.hourSendEmail);
+                break;
+            case 2:
+                console.log("2");
+                var dateArr = data.dateSendEmail.split(",");
+                for(var i=0;i<dateArr.length;i++){
+                    $('input[name=send-by-day_day][value='+dateArr[i]+']').prop("checked",true);
+                }
+                $(sendByDayHourId).find("input").val(data.hourSendEmail);
+                break;
+            case 3:
+                console.log("3");
+                if(data.dateSendEmail == "the-first-day"){
+                    $('input[name=send-by-month-day][value=the-first-day]').prop("checked",true);
+                }else{
+                    if(data.dateSendEmail == "the-last-day"){
+                        $('input[name=send-by-month-day][value=the-last-day]').prop("checked",true);
+                    }else{
+                        $('input[name=send-by-month-day][value=send-by-month]').prop("checked",true);
+                        $("#sendByMonthDay").val(data.dateSendEmail);
+                    }
+                }
+                $(sendByMonthHourId).find("input").val(data.hourSendEmail);
+                break;
+        }
     }
 
 })(jQuery);

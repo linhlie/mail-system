@@ -1657,3 +1657,7 @@ div.bulletinboard-icon-wrapper {
     cursor: pointer;
     font-weight: bold;
 }
+
+.table-text-center {
+    text-align: center;
+}

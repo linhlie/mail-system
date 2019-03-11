@@ -1,6 +1,7 @@
 package io.owslab.mailreceiver.form;
 
 public class SchedulerSendEmailForm {
+    private long id;
     private SendMailForm sendMailForm;
     private int typeSendEmail;
     private String dateSendMail;
@@ -8,6 +9,14 @@ public class SchedulerSendEmailForm {
 
     public SendMailForm getSendMailForm() {
         return sendMailForm;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setSendMailForm(SendMailForm sendMailForm) {
@@ -36,13 +45,6 @@ public class SchedulerSendEmailForm {
 
     public void setHourSendMail(String hourSendMail) {
         this.hourSendMail = hourSendMail;
-    }
-
-    public static class Type {
-        public static final int NOW = 0;
-        public static final int SEND_BY_HOUR = 1;
-        public static final int SEND_BY_DAY = 2;
-        public static final int SEND_BY_MONTH = 3;
     }
 
 }

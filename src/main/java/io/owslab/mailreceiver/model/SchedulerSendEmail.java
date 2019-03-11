@@ -41,6 +41,7 @@ public class SchedulerSendEmail {
 
     public SchedulerSendEmail(SchedulerSendEmailForm form, EmailAccount emailAccount, long accountId){
         SendMailForm sendMailForm = form.getSendMailForm();
+        this.id = form.getId();
         this.accountId = accountId;
         this.accountSentMailId = emailAccount.getId();
         this.from = emailAccount.getAccount();

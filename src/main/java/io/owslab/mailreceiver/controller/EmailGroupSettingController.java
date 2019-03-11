@@ -267,4 +267,76 @@ public class EmailGroupSettingController {
             return ResponseEntity.ok(result);
         }
     }
+
+    @RequestMapping(value = "/showSchedulerSendEmail", method = RequestMethod.GET)
+    public String showSchedulerSendEmail(Model model) {
+        return "user/emailGroupManage/showSchedulerSendEmail";
+    }
+
+    @RequestMapping(value = { "schedulerSendEmail/getListSchedulerData" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getListSchedulerData() {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<SchedulerSendEmail> list = emailAddressGroupService.getAllScheduler();
+            result.setList(list);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListSchedulerData: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = { "schedulerSendEmail/getSchedulerData/{id}" }, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> getSchedulerData(@PathVariable("id") long id) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<SchedulerSendEmail> list = emailAddressGroupService.getScheduler(id);
+            result.setList(list);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getSchedulerData: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/schedulerSendEmail/deleteSchedulerSendEmail/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> deleteSchedulerSendEmail(@PathVariable("id") long id) {
+        try {
+            emailAddressGroupService.deleteSchedulerSendEmail(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/schedulerSendEmail/changeStatusSchedulerEmail")
+    @ResponseBody
+    public ResponseEntity<?> changeStatusSchedulerEmail(@Valid @RequestBody SchedulerSendEmail scheduler, BindingResult bindingResult) {
+        AjaxResponseBody result = new AjaxResponseBody();
+        if (bindingResult.hasErrors()) {
+            result.setMsg(bindingResult.getAllErrors()
+                    .stream().map(x -> x.getDefaultMessage())
+                    .collect(Collectors.joining(",")));
+            return ResponseEntity.badRequest().body(result);
+        }
+        try {
+            emailAddressGroupService.changeStatusScheduler(scheduler);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
 }

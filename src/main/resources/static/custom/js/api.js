@@ -689,6 +689,26 @@ function createSchedulerSendEmail(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function getSchedulerData(onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getListSchedulerData";
+    _get(url, onSuccess, onError);
+}
+
+function getSchedulerEmail(id, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getSchedulerData/"+id;
+    _get(url, onSuccess, onError);
+}
+
+function deleteSchedulerEmail(id, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/deleteSchedulerSendEmail/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function changeStatusSchedulerEmail(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/changeStatusSchedulerEmail";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
