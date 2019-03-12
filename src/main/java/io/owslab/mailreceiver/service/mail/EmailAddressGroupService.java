@@ -187,11 +187,10 @@ public class EmailAddressGroupService {
         long sendEmailAccountId = Long.parseLong(sendEmailId);
         EmailAccount emailAccount = mailAccountsService.getEmailAccountById(sendEmailAccountId);
         SchedulerSendEmail schedulerSendEmail = new SchedulerSendEmail(scheduler, emailAccount, accountId);
-        System.out.println(schedulerSendEmail.getId());
         if(schedulerSendEmail.getTypeSendEmail() == SchedulerSendEmail.Type.SEND_BY_HOUR){
             Date date = ConvertDate.convertDateScheduler(schedulerSendEmail.getDateSendEmail() + " " + schedulerSendEmail.getHourSendEmail());
             Date now = new Date();
-            if(now.after(date)){
+            if(ConvertDate.compareMinuteOfDate(now, date)>=-1){
                 throw new Exception("scheduler date must after now");
             }
         }
@@ -231,5 +230,18 @@ public class EmailAddressGroupService {
 
     public void changeStatusScheduler(SchedulerSendEmail scheduler) {
         schedulerSendEmailDAO.save(scheduler);
+    }
+
+    public List<SchedulerSendEmail> getSchedulerByStatus(){
+        return schedulerSendEmailDAO.findByStatus(SchedulerSendEmail.Status.ACTIVE);
+    }
+
+    public List<Long> getListFileUpload(long scheduleId){
+        List<SchedulerSendEmailFile>  list = schedulerSendEmailFileDAO.findBySchedulerSendEmailId(scheduleId);
+        List<Long> result = new ArrayList<>();
+        for(SchedulerSendEmailFile file : list){
+            result.add(file.getUploadFilesId());
+        }
+        return  result;
     }
 }

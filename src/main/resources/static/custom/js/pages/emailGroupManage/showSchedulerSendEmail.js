@@ -231,7 +231,7 @@
             type: "update-scheduler",
             id: id
         }
-        sessionStorage.setItem(showSchedulerKey, JSON.stringify(data));
+        localStorage.setItem(showSchedulerKey, JSON.stringify(data));
         var win = window.open('/user/schedulerSendEmail', '_blank');
         if (win) {
             //Browser has allowed it to be opened

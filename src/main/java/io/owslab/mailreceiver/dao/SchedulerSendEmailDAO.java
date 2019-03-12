@@ -8,4 +8,5 @@ import java.util.List;
 public interface SchedulerSendEmailDAO extends JpaRepository<SchedulerSendEmail, Long> {
     List<SchedulerSendEmail> findByAccountIdOrderBySentAt(long accountId);
     List<SchedulerSendEmail> findById(long id);
+    List<SchedulerSendEmail> findByStatus(int status);
 }

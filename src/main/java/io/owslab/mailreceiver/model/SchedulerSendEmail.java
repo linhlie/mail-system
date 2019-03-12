@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.form.SendMailForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity
@@ -48,7 +49,7 @@ public class SchedulerSendEmail {
         this.subject = sendMailForm.getSubject();
         this.to = sendMailForm.getReceiver();
         this.cc = sendMailForm.getCc();
-        this.sentAt = new Date();
+        this.sentAt = addMinutesToADate(new Date(), -10);
         if((sendMailForm.getUploadAttachment() != null && sendMailForm.getUploadAttachment().size() > 0) ||  (sendMailForm.getOriginAttachment() != null && sendMailForm.getOriginAttachment().size() > 0)){
             this.hasAttachment = true;
         }else{
@@ -193,6 +194,13 @@ public class SchedulerSendEmail {
         public static final int ACTIVE = 1;
         public static final int SENDING = 2;
         public static final int ERROR = 3;
+    }
+
+    private Date addMinutesToADate(Date date, int minute){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MINUTE, minute);
+        return cal.getTime();
     }
 
 }

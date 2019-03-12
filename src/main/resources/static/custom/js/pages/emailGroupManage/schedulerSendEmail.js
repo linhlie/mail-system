@@ -661,7 +661,7 @@
     }
 
     function checkSchedulerType() {
-        var schedulerData= sessionStorage.getItem(showSchedulerKey);
+        var schedulerData= localStorage.getItem(showSchedulerKey);
         if(schedulerData){
             var schedulerDataJson = JSON.parse(schedulerData);
             if(schedulerDataJson && schedulerDataJson.id){
@@ -671,7 +671,7 @@
                 var data = {
                     type: "create-scheduler",
                 }
-                sessionStorage.setItem(showSchedulerKey, JSON.stringify(data));
+                localStorage.setItem(showSchedulerKey, JSON.stringify(data));
             }
         }
     }
