@@ -5,6 +5,18 @@
     var rdMailSenderId = 'rdMailSender';
     var rdMailCCId = 'rdMailCC';
     var rdMailReceiverId = 'rdMailReceiver';
+    var rdMailAttachmentId = 'rdMailAttachment';
+
+    var extensionCommands = {
+        ".pdf": "ms-word:ofv|u|",
+        ".docx": "ms-word:ofv|u|",
+        ".doc": "ms-word:ofv|u|",
+        ".xls": "ms-excel:ofv|u|",
+        ".xlsx": "ms-excel:ofv|u|",
+        ".xlsm": "ms-excel:ofv|u|",
+        ".ppt": "ms-powerpoint:ofv|u|",
+        ".pptx": "ms-powerpoint:ofv|u|",
+    }
 
     var receiverValidate = true;
     var ccValidate = true;
@@ -357,7 +369,7 @@
     }
 
     function showAlertFillData(){
-        $.alert("You must fill full data to create scheduler");
+        $.alert("スケジュール作成為の必須データを入力してください");
     }
 
     function createScheduler(form) {
@@ -366,13 +378,13 @@
                 if(response.status){
                     $.alert({
                         title: "",
-                        content: "created scheduler success",
+                        content: "メール送信スケジュール設定が成功しました",
                         onClose: function () {
                             location.reload();
                         }
                     });
                 }else{
-                    $.alert("created scheduler fail");
+                    $.alert("スケジュール作成が失敗しました");
                 }
             }
         }
@@ -647,7 +659,7 @@
         }
 
         function onError(error) {
-            console.log("loadEmailReceivers fail");
+            console.error("loadEmailReceivers fail");
         }
 
         getEmailReceivers({
@@ -680,19 +692,19 @@
         function onSuccess(response) {
             if(response && response.status){
                 if(response.list && response.list.length >0){
-                    setFormData(response.list[0]);
+                    setFormData(response.list[0], response.listFile);
                 }
             }
         }
 
         function onError(error) {
-            console.log("loadSchedulerEmail fail");
+            console.error("loadSchedulerEmail fail");
         }
 
         getSchedulerEmail(id, onSuccess, onError);
     }
     
-    function setFormData(data) {
+    function setFormData(data, files) {
         if(!data || data==null){
             return;
         }
@@ -735,6 +747,75 @@
                 $(sendByMonthHourId).find("input").val(data.hourSendEmail);
                 break;
         }
+        var rdMailAttachment = document.getElementById(rdMailAttachmentId);
+        showFileAttach(rdMailAttachment, files);
+    }
+
+    function showFileAttach(divFileAttachId, files){
+        if(files && files.length > 0){
+            var filesInnerHTML = "";
+            for(var i = 0; i < files.length; i++ ){
+                var file = files[i];
+                var fileExtension = getFileExtension(file.fileName);
+                var command = extensionCommands[fileExtension];
+                command = (isWindows() && !!command) ? command : "nope";
+                var url = window.location.origin + "/download/fileUpload/" + encodeURIComponent(file.digest) + "/" + file.fileName;
+                if(i > 0){
+                    filesInnerHTML += "<br/>";
+                }
+                filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-id='"+file.id+"' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + ") </button>");
+            }
+            divFileAttachId.innerHTML = filesInnerHTML;
+            setDownloadLinkClickListener();
+        } else {
+            divFileAttachId.innerHTML = "添付ファイルなし";
+        }
+    }
+
+    function setDownloadLinkClickListener() {
+        $('button.download-link').off("click");
+        $('button.download-link').click(function(event) {
+            var command = $(this).attr("data-command");
+            var href = $(this).attr("data-download");
+            var fileName = $(this).attr('data-filename');
+            if(command.startsWith("nope")) {
+                alert("Not support features");
+            } else {
+                doDownload(command+href, fileName);
+            }
+        });
+
+        $.contextMenu({
+            selector: 'button.download-link',
+            callback: function(key, options) {
+                var m = "clicked: " + key;
+                var command = $(this).attr("data-command");
+                var href = $(this).attr("data-download");
+                var fileName = $(this).attr('data-filename');
+                if(key === "open") {
+                    if(command.startsWith("nope")) {
+                        alert("Not support features");
+                    } else {
+                        doDownload(command+href, fileName);
+                    }
+                } else if (key === "save_as") {
+                    doDownload(href, fileName);
+                }
+            },
+            items: {
+                "open": {"name": "Open"},
+                "save_as": {"name": "Save as"},
+            }
+        });
+    }
+
+    function doDownload(href, fileName){
+        var a = document.createElement('A');
+        a.href = href;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
 })(jQuery);

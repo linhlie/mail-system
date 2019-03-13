@@ -2,6 +2,7 @@ package io.owslab.mailreceiver.service.mail;
 
 import io.owslab.mailreceiver.dao.*;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
+import io.owslab.mailreceiver.dto.FileDTO;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
@@ -47,6 +48,9 @@ public class EmailAddressGroupService {
 
     @Autowired
     UploadFileDAO uploadFileDAO;
+
+    @Autowired
+    SendMailService sendMailService;
 
     public void createGroup(EmailAddressGroup emailGroup) throws Exception {
         long accountId = accountService.getLoggedInAccountId();
@@ -184,6 +188,13 @@ public class EmailAddressGroupService {
         long accountId = accountService.getLoggedInAccountId();
         String sendEmailId = scheduler.getSendMailForm().getAccountId();
         if(sendEmailId == null) return;
+        if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.NOW){
+            sendMailService.sendMailScheduler(scheduler.getSendMailForm(), accountId);
+            if(scheduler.getId()>0){
+                schedulerSendEmailDAO.delete(scheduler.getId());
+            }
+            return;
+        }
         long sendEmailAccountId = Long.parseLong(sendEmailId);
         EmailAccount emailAccount = mailAccountsService.getEmailAccountById(sendEmailAccountId);
         SchedulerSendEmail schedulerSendEmail = new SchedulerSendEmail(scheduler, emailAccount, accountId);
@@ -197,15 +208,8 @@ public class EmailAddressGroupService {
         schedulerSendEmail = schedulerSendEmailDAO.save(schedulerSendEmail);
 
         SendMailForm form = scheduler.getSendMailForm();
-        List<Long> originAttachment = form.getOriginAttachment();
         List<Long> uploadAttachment = form.getUploadAttachment();
         List<SchedulerSendEmailFile> listSchedulerFile = new ArrayList<>();
-        if(originAttachment != null && originAttachment.size() > 0) {
-            List<AttachmentFile> files = fileDAO.findByIdInAndDeleted(originAttachment, false);
-            for (AttachmentFile attachmentFile : files){
-                listSchedulerFile.add(new SchedulerSendEmailFile(schedulerSendEmail.getId(), attachmentFile.getId()));
-            }
-        }
         if(uploadAttachment != null && uploadAttachment.size() > 0) {
             List<UploadFile> uploadFiles = uploadFileDAO.findByIdIn(uploadAttachment);
             for (UploadFile uploadFile : uploadFiles){
@@ -241,6 +245,16 @@ public class EmailAddressGroupService {
         List<Long> result = new ArrayList<>();
         for(SchedulerSendEmailFile file : list){
             result.add(file.getUploadFilesId());
+        }
+        return  result;
+    }
+
+    public List<FileDTO> getListFileUploadDTO(long scheduleId){
+        List<Long>  listId  = getListFileUpload(scheduleId);
+        List<UploadFile> listFile = uploadFileDAO.findByIdIn(listId);
+        List<FileDTO> result = new ArrayList<>();
+        for(UploadFile file : listFile){
+            result.add(new FileDTO(file));
         }
         return  result;
     }

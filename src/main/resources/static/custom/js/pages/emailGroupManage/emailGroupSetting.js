@@ -20,10 +20,10 @@
     var replaceGroupRow = '<tr role="row" class="hidden">' +
         '<td name="showlistEmailAddress" rowspan="1" colspan="1" data="groupName" style="padding-left:10px; cursor: pointer;"><span></span></td>' +
         '<td name="editEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
-        '<button type="button">Edit</button>' +
+        '<button type="button">編集</button>' +
         '</td>' +
-        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" >' +
-        '<button type="button">Delete</button>' +
+        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
+        '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
 
@@ -31,7 +31,7 @@
         '<td rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
         '<td rowspan="1" colspan="1" data="emailAddress" style="cursor: pointer;"><span></span></td>' +
         '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
-        '<button type="button">Delete</button>' +
+        '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
 
@@ -202,11 +202,11 @@
     }
 
     function addEmailGroupOnclick() {
-        showAddEditGroupModal("Add Email Group", "", doAddEmailGroup);
+        showAddEditGroupModal("メールグループ追加", "", doAddEmailGroup);
     }
 
     function editEmailGroupOnclick(groupName) {
-        showAddEditGroupModal("Edit Email Group", groupName, doUpdateEmailGroup);
+        showAddEditGroupModal("メールグループ編集", groupName, doUpdateEmailGroup);
     }
 
     function doAddEmailGroup(groupName) {
@@ -256,9 +256,9 @@
             $.alert("保存に失敗しました。");
         }
         $.confirm({
-            title: '<b>【Delete Email Group】</b>',
+            title: '<b>【メールグループ消除】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want delete group？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
@@ -308,13 +308,13 @@
             }
 
             if(groupName == name){
-                showError("#hasErrorModalAddGroup", " New group name must different old group name");
+                showError("#hasErrorModalAddGroup", "新しいメールグループ名が現在のグループ名と違わなければなりません");
                 return;
             }
 
             for(var i=0;i<emailGroups.length;i++){
                 if(emailGroups[i].groupName == groupName){
-                    showError("#hasErrorModalAddGroup", "Group Name is exist");
+                    showError("#hasErrorModalAddGroup", "グループ名が既存しています");
                     return;
                 }
             }
@@ -377,12 +377,12 @@
             loadEmailList(emailGroupCurrent.id);
         }
         function onError() {
-            $.alert("save email list failse");
+            $.alert("メールリスト保存が失敗しました");
         }
         $.confirm({
-            title: '<b>【Delete Email】</b>',
+            title: '<b>【メール消除】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want delete it？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
@@ -409,7 +409,7 @@
             var name = $( '#dataModalName').val();
             var ids = validateEmailAddressPeople(name);
             if(ids.length <= 0){
-                showError("#hasErrorModalAddEmailList", "This email isn't exist in email of people in charge partner list");
+                showError("#hasErrorModalAddEmailList", "メールは取引先担当者一覧に既存しません");
                 return;
             }
 
@@ -428,7 +428,6 @@
     }
 
     function updateKeyList(datalist) {
-        console.log(datalist);
         datalist = datalist || [];
         $('#keylist').html('');
         for(var i = 0; i < datalist.length; i++){
@@ -490,7 +489,6 @@
                 var index = dataList[i].value.indexOf("@");
                 if(index>0){
                     var domain = "*" + dataList[i].value.substring(index);
-                    console.log(domain);
                     if(name == domain){
                         listId.push(dataList[i].id);
                     }

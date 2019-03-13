@@ -229,25 +229,25 @@
         </li>
         <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'emailGroupSetting' || currentMenu == 'schedulerSendEmail' || currentMenu == 'showSchedulerSendEmail'})?'treeview menu-open':'treeview'">
             <a href="#">
-                <i class="fa fa-cogs"></i> <span>Email Group Manage</span>
+                <i class="fa fa-tasks"></i> <span>メールグループ管理</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
             </a>
-            <ul class="treeview-menu" th:class="(${currentMenu == 'emailGroupSetting' || currentMenu == 'schedulerSendEmail' || currentMenu == 'showSchedulerSendEmail'})?'treeview-menu visible':'treeview-menu'">
+            <ul class="treeview-menu" th:class="(${currentMenu == 'emailGroupSetting' || currentMenu == 'schedulerSendEmail' || currentMenu == 'showSchedulerSendEmail'})?'treeview-menu visible':'treeview-menu'" style="padding-left: 15px;">
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'emailGroupSetting'})?'active':''">
                     <a href="#" th:href="@{/user/emailGroupSetting}">
-                        <i class="fa fa-external-link-square"></i> <span>emailGroupSetting</span>
+                        <i class="fa fa-cogs"></i> <span>メールグループ設定</span>
                     </a>
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'schedulerSendEmail'})?'active':''">
                     <a href="#" th:href="@{/user/schedulerSendEmail}">
-                        <i class="fa fa-sort-numeric-asc"></i> <span>sendGroupEmail</span>
+                        <i class="fa fa-send"></i> <span>メール送信</span>
                     </a>
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'showSchedulerSendEmail'})?'active':''">
                     <a href="#" th:href="@{/user/showSchedulerSendEmail}">
-                        <i class="fa fa-sort-numeric-asc"></i> <span>scheduleSendGroupEmail</span>
+                        <i class="fa fa-table"></i> <span>スケジュール管理</span>
                     </a>
                 </li>
             </ul>

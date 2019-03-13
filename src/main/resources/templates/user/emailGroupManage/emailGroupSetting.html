@@ -1,12 +1,12 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
 <head>
-    <title>Email Group Manage</title>
+    <title>メールグループ設定</title>
 </head>
 <body>
 <div layout:fragment="content">
     <section class="content-header">
-        <h1>Email Group Manage</h1>
+        <h1>メールグループ設定</h1>
     </section>
     <section class="content email-group">
         <div class="row">
@@ -16,7 +16,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="email-group-description" >
-                                    <p style="word-wrap: break-word">Setting email group to send email to many peole </p>
+                                    <p style="word-wrap: break-word">多数宛先にメール送信設定</p>
                                 </div>
                             </div>
                         </div>
@@ -24,21 +24,21 @@
                             <div class="col-md-12">
                                 <div class="col-md-12 email-group-form-container">
                                     <div class="col-xs-5 full-height non-paddinng">
-                                        <h3 style="padding-left: 10px;">Email Group</h3>
+                                        <h3 style="padding-left: 10px;">メールグループ</h3>
                                         <div class="email-group-table-container" style="background-color: white; ">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
                                                 <table id="groupTable" style="margin: auto;" class="table table-bordered ">
                                                     <thead>
                                                         <tr class="main-table-row-head">
-                                                            <th class="col-xs-9" colspan="1" style="text-align: center">Group Name</th>
-                                                            <th class="col-xs-3 text-center" colspan="2">
-                                                                <span id="addEmailGroup" class="glyphicon glyphicon-plus" style="cursor: pointer;" title="Add email group"></span>
+                                                            <th class="col-xs-8" colspan="1" style="text-align: center">グループ名</th>
+                                                            <th class="col-xs-4 text-center" colspan="2">
+                                                                <span id="addEmailGroup" class="glyphicon glyphicon-plus" style="cursor: pointer;" title="メールグループ追加"></span>
                                                             </th>
                                                         </tr>
                                                         <tr>
                                                             <th colspan="1">
                                                                 <div>
-                                                                    <input id="searchGroupName" name="search" type="text" class="form-control input-sm" placeholder="Seach email group"/>
+                                                                    <input id="searchGroupName" name="search" type="text" class="form-control input-sm" placeholder="メールグループ検索"/>
                                                                 </div>
                                                             </th>
                                                             <th class="text-center" colspan="2"><button id="btnSearchGroup" type="submit">条件</button></th>
@@ -54,22 +54,22 @@
                                         <span id="showEmailList" class="glyphicon glyphicon-arrow-right hidden" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
                                     </div>
                                     <div class="col-xs-6 full-height non-paddinng">
-                                        <h3 style="padding-left: 10px;">Email List</h3>
+                                        <h3 style="padding-left: 10px;">メールリスト</h3>
                                         <div class="email-group-table-container">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
                                                 <table id="emailListTable" class="table table-bordered">
                                                     <thead class="sticky-header">
                                                     <tr>
-                                                        <th class="col-xs-5">People in charge</th>
-                                                        <th class="col-xs-5">Email Address</th>
+                                                        <th class="col-xs-5">担当者</th>
+                                                        <th class="col-xs-5">メールアドレス</th>
                                                         <th class="col-xs-2" colspan="2" style="text-align: center">
-                                                            <span id="addEmailList" class="glyphicon glyphicon-plus hidden" style="cursor: pointer;" title="Add email list"></span>
+                                                            <span id="addEmailList" class="glyphicon glyphicon-plus hidden" style="cursor: pointer;" title="のメール追加"></span>
                                                         </th>
                                                     </tr>
                                                     <tr>
                                                         <th colspan="2">
                                                             <div>
-                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="Seach email"/>
+                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="メール検索"/>
                                                             </div>
                                                         </th>
                                                         <th class="text-center" colspan="1"><button id="btnSearchEmail" type="submit">条件</button></th>
@@ -97,7 +97,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 id="dataModalTitle" class="modal-title">Add email to group</h4>
+                    <h4 id="dataModalTitle" class="modal-title">のメール追加</h4>
                 </div>
                 <div class="modal-body mainAddGroup">
                     <div class="form-group row" style="text-align: center">
@@ -105,7 +105,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-3">
-                            <label style="transform: translateY(10px);">Email Address</label>
+                            <label style="transform: translateY(10px);">メールアドレス</label>
                         </div>
                         <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
                             <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
@@ -117,7 +117,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -136,7 +136,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-3">
-                            <label style="transform: translateY(10px);">Group Name</label>
+                            <label style="transform: translateY(10px);">グループ名</label>
                         </div>
                         <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
                             <input id="groupName" class="form-control "/>
@@ -145,7 +145,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="modalAddGroupCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                    <button type="button" id="modalAddGroupOk" class="btn btn-primary">OK</button>
+                    <button type="button" id="modalAddGroupOk" class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

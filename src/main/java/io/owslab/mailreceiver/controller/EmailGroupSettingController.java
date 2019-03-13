@@ -2,13 +2,16 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
+import io.owslab.mailreceiver.dto.FileDTO;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.EmailGroupResponseBody;
+import io.owslab.mailreceiver.response.SchedulerSendEmailResponseBody;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
+import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.mail.EmailAddressGroupService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.slf4j.Logger;
@@ -262,6 +265,7 @@ public class EmailGroupSettingController {
             result.setStatus(true);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
+            e.printStackTrace();
             result.setMsg(e.getMessage());
             result.setStatus(false);
             return ResponseEntity.ok(result);
@@ -293,9 +297,13 @@ public class EmailGroupSettingController {
     @RequestMapping(value = { "schedulerSendEmail/getSchedulerData/{id}" }, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getSchedulerData(@PathVariable("id") long id) {
-        AjaxResponseBody result = new AjaxResponseBody();
+        SchedulerSendEmailResponseBody result = new SchedulerSendEmailResponseBody();
         try {
             List<SchedulerSendEmail> list = emailAddressGroupService.getScheduler(id);
+            if(list!=null && list.size()>=0){
+                List<FileDTO> listFile = emailAddressGroupService.getListFileUploadDTO(list.get(0).getId());
+                result.setListFile(listFile);
+            }
             result.setList(list);
             result.setMsg("done");
             result.setStatus(true);

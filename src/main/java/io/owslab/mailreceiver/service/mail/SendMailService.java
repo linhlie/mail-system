@@ -397,11 +397,7 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
-            logger.info("Send email from "+from+" to "+to);
-            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, null, "", form, hasAttachment, accountUserId);
-            if(sentMail!=null){
-                sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
-            }
+            logger.info("Send email scheduler from "+from+" to "+to);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {

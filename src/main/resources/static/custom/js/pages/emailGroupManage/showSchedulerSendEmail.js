@@ -12,9 +12,9 @@
         '<td class="clickable" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable" rowspan="1" colspan="1" data="typeSendEmail"><span></span></td>' +
         '<td class="clickable" rowspan="1" colspan="1" data="status"><span></span></td>' +
-        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="action" data="status"><button type="button" class="btn btn-xs btn-default">action</button></td>' +
-        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="detail"><button type="button" class="btn btn-xs btn-default">detail</button></td>' +
-        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="delete"><button type="button" class="btn btn-xs btn-default">delete</button></td>' +
+        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="action" data="status"><button type="button" class="btn btn-xs btn-default">アクション</button></td>' +
+        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="detail"><button type="button" class="btn btn-xs btn-default">詳細</button></td>' +
+        '<td class="clickable table-text-center" rowspan="1" colspan="1" name="delete"><button type="button" class="btn btn-xs btn-default">削除</button></td>' +
     '</tr>';
 
     $(function () {
@@ -39,7 +39,6 @@
     function loadSchedulerData() {
         function onSuccess(response) {
             if(response && response.status){
-                console.log(response.list);
                 schedulers = response.list;
                 if(schedulers && schedulers.length>0){
                     showDataTable(sendMailHistoryTableId, schedulers);
@@ -48,7 +47,7 @@
         }
 
         function onError(error) {
-            console.log("create scheduler fail");
+            console.error("create scheduler fail");
         }
         getSchedulerData(onSuccess, onError);
     }
@@ -146,26 +145,26 @@
                     } else {
                         if(cellKeysData === "typeSendEmail"){
                             switch (cellData) {
-                                case 0:cellData = "NOW";
+                                case 0:cellData = "即時に送信";
                                     break;
-                                case 1:cellData = "SEND_BY_HOUR";
+                                case 1:cellData = "指定時間に送信";
                                     break;
-                                case 2:cellData = "SEND_BY_DAY";
+                                case 2:cellData = "毎日送信";
                                     break;
-                                case 3:cellData = "SEND_BY_MONTH";
+                                case 3:cellData = "毎月送信";
                                     break;
                                 default: cellData="Unknow";
                             }
                         }
                         if(cellKeysData === "status"){
                             switch (cellData) {
-                                case 0:cellData = "INACTIVE";
+                                case 0:cellData = "インアクティブ";
                                     break;
-                                case 1:cellData = "ACTIVE";
+                                case 1:cellData = "アクティブ";
                                     break;
-                                case 2:cellData = "SENDING";
+                                case 2:cellData = "送信";
                                     break;
-                                case 3:cellData = "ERROR";
+                                case 3:cellData = "誤差";
                                     break;
                                 default: cellData="Unknow";
                             }
@@ -178,12 +177,11 @@
                     if (Array.isArray(cellData)) {
                         cellNode.textContent = cellData.length;
                     } else {
-                        console.log(cellKeysData+" "+cellData);
                         if(cellKeysData === "status"){
                             switch (cellData) {
-                                case 0:cellData = "active";
+                                case 0:cellData = "アクティブ";
                                     break;
-                                case 1:cellData = "stopped";
+                                case 1:cellData = "中止";
                                     break;
                                 case 2:cellData = "none";
                                     break;
@@ -226,7 +224,6 @@
     }
 
     function showDetailScheduler(id) {
-        console.log(id);
         var data = {
             type: "update-scheduler",
             id: id
@@ -247,10 +244,10 @@
             loadSchedulerData()
         }
         function onError() {
-            $.alert("Delete scheduler fail。");
+            $.alert("スケジュール消除が失敗しました。");
         }
         $.confirm({
-            title: '<b>【Delete scheduler】</b>',
+            title: '<b>スケジュール消除</b>',
             titleClass: 'text-center',
             content: '<div class="text-center" style="font-size: 16px;">削除してもよろしいですか？<br/></div>',
             buttons: {
@@ -274,12 +271,12 @@
         }
         function onError() {
             loadSchedulerData();
-            $.alert("Change status scheduler fail");
+            $.alert("スケジュールのステータス変更が失敗しました");
         }
         $.confirm({
-            title: '<b>【Change status scheduler】</b>',
+            title: '<b>【スケジュールのステータス変更</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Are you sure want to change status of it？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当にステータスを変更したいですか<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
