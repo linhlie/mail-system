@@ -229,7 +229,7 @@
         </li>
         <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:class="(${currentMenu == 'emailGroupSetting' || currentMenu == 'schedulerSendEmail' || currentMenu == 'showSchedulerSendEmail'})?'treeview menu-open':'treeview'">
             <a href="#">
-                <i class="fa fa-tasks"></i> <span>メールグループ管理</span>
+                <i class="fa fa-tasks"></i> <span>メール一斉配信管理</span>
                 <span class="pull-right-container">
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
@@ -242,7 +242,7 @@
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'schedulerSendEmail'})?'active':''">
                     <a href="#" th:href="@{/user/schedulerSendEmail}">
-                        <i class="fa fa-send"></i> <span>メール送信</span>
+                        <i class="fa fa-send"></i> <span>メール一斉配信</span>
                     </a>
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_MEMBER', 'ROLE_MEM_EXPANSION')" class="treeview" th:data="${currentMenu}" th:class="(${currentMenu == 'showSchedulerSendEmail'})?'active':''">
