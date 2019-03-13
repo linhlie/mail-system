@@ -8,10 +8,10 @@
 
 
     var replaceHistoryHTML = '<tr role="row" class="hidden">' +
-        '<td class="clickable" rowspan="1" colspan="1" data="subject"><span></span></td>' +
-        '<td class="clickable" rowspan="1" colspan="1" data="from"><span></span></td>' +
-        '<td class="clickable" rowspan="1" colspan="1" data="typeSendEmail"><span></span></td>' +
-        '<td class="clickable" rowspan="1" colspan="1" data="status"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="subject"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="from"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="typeSendEmail"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="status"><span></span></td>' +
         '<td class="clickable table-text-center" rowspan="1" colspan="1" name="action" data="status"><button type="button" class="btn btn-xs btn-default">アクション</button></td>' +
         '<td class="clickable table-text-center" rowspan="1" colspan="1" name="detail"><button type="button" class="btn btn-xs btn-default">詳細</button></td>' +
         '<td class="clickable table-text-center" rowspan="1" colspan="1" name="delete"><button type="button" class="btn btn-xs btn-default">削除</button></td>' +
