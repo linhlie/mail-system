@@ -47,6 +47,7 @@ public class EmailStatisticService {
 
         List<EmailStatisticDTO> listResult = new ArrayList<>();
         List<Email> emailList = getStatisEmail(form.getStatisticConditionData());
+        System.out.println("[Email Statistic] matching condition done : "+emailList.size());
         List<String> matchingWords = matchingConditionService.getWordList(form.getMatchingWords());
         if(matchingWords==null || matchingWords.size()<=0){
             for(Email email : emailList){
@@ -65,6 +66,7 @@ public class EmailStatisticService {
                 }
             }
         }
+        System.out.println("[Email Statistic] matching word done : "+listResult.size());
         List<EmailStatisticDTO> listResultFinal = new ArrayList<>();
         if(!isDate && !isHour){
             findDupliateMatching(listResult, listResultFinal, 0, listResult.size(), isFrom, isWord);

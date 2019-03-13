@@ -254,6 +254,7 @@
         statisticConditionJson.statisticByDomain = statisticByDomain;
         statisticConditionJson.statisticByWord = statisticByWord;
 
+        console.log(statisticConditionJson);
         statisticConditionStr = JSON.stringify(statisticConditionJson);
         if(statisticConditionStr){
             $('body').loadingModal({
