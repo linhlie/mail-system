@@ -154,7 +154,7 @@ public class BusinessPartnerRegistController {
     @ResponseBody
     public ResponseEntity<?> getDomainUnregister() {AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<DomainUnregister> listDomain = domainService.getDomainsByStatus(DomainUnregister.Status.ALLOW_REGISTER);
+            List<DomainUnregister> listDomain = domainService.getDomainsUnregister();
             result.setList(listDomain);
             result.setMsg("done");
             result.setStatus(true);
