@@ -12,6 +12,7 @@ import io.owslab.mailreceiver.model.Email;
 import io.owslab.mailreceiver.model.RelationshipEngineerPartner;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -44,6 +45,17 @@ public class DomainService {
 	
 	public List<DomainUnregister> getDomainsByStatus(int status) {
 		return domainDAO.findByStatus(status);
+	}
+
+	public List<DomainUnregister> getDomainsUnregister() {
+		List<DomainUnregister> domainUnregisters = getDomainsByStatus(DomainUnregister.Status.ALLOW_REGISTER);
+		domainUnregisters.sort(new Comparator<DomainUnregister>() {
+			@Override
+			public int compare(DomainUnregister o1, DomainUnregister o2) {
+				return o1.getDomain().compareToIgnoreCase(o2.getDomain());
+			}
+		});
+		return domainUnregisters;
 	}
 	
 	public DomainUnregister getDomain(Long id) {
