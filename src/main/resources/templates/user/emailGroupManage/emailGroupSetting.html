@@ -1,0 +1,160 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>メール一斉配信管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content-header">
+        <h1>メールグループ設定</h1>
+    </section>
+    <section class="content email-group">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="email-group-description" >
+                                    <p style="word-wrap: break-word">多数宛先にメール送信設定</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12 email-group-form-container">
+                                    <div class="col-xs-5 full-height non-paddinng">
+                                        <h3 style="padding-left: 10px;">メールグループ</h3>
+                                        <div class="email-group-table-container" style="background-color: white; ">
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="groupTable" style="margin: auto;" class="table table-bordered ">
+                                                    <thead>
+                                                        <tr class="main-table-row-head">
+                                                            <th class="col-xs-8" colspan="1" style="text-align: center">グループ名</th>
+                                                            <th class="col-xs-4 text-center" colspan="2">
+                                                                <span id="addEmailGroup" class="glyphicon glyphicon-plus" style="cursor: pointer;" title="メールグループ追加"></span>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan="1">
+                                                                <div>
+                                                                    <input id="searchGroupName" name="search" type="text" class="form-control input-sm" placeholder="メールグループ検索"/>
+                                                                </div>
+                                                            </th>
+                                                            <th class="text-center" colspan="2"><button id="btnSearchGroup" type="submit">条件</button></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-1 full-height text-align: center;" >
+                                        <span id="showEmailList" class="glyphicon glyphicon-arrow-right hidden" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
+                                    </div>
+                                    <div class="col-xs-6 full-height non-paddinng">
+                                        <h3 style="padding-left: 10px;">メールリスト</h3>
+                                        <div class="email-group-table-container">
+                                            <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
+                                                <table id="emailListTable" class="table table-bordered">
+                                                    <thead class="sticky-header">
+                                                    <tr>
+                                                        <th class="col-xs-5">担当者</th>
+                                                        <th class="col-xs-5">メールアドレス</th>
+                                                        <th class="col-xs-2" colspan="2" style="text-align: center">
+                                                            <span id="addEmailList" class="glyphicon glyphicon-plus hidden" style="cursor: pointer;" title="のメール追加"></span>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="2">
+                                                            <div>
+                                                                <input id="searchEmail" name="search" type="text" class="form-control input-sm" placeholder="メール検索"/>
+                                                            </div>
+                                                        </th>
+                                                        <th class="text-center" colspan="1"><button id="btnSearchEmail" type="submit">条件</button></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+        </div>
+    </section>
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 50%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">のメール追加</h4>
+                </div>
+                <div class="modal-body mainAddGroup">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModalAddEmailList" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label style="transform: translateY(10px);">メールアドレス</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
+                            <span style="margin-top: 1px; color: grey">abc.comドメインの全てのメールアドレスを追加するため、*@abc.comを入力してください。</span>
+                            <datalist id="keylist">
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">保存</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="modalAddGroup" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 50%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="modalAddGroupTitle" class="modal-title">Title</h4>
+                </div>
+                <div class="modal-body mainAddGroup">
+                    <div class="form-group row" style="text-align: center">
+                        <span id="hasErrorModalAddGroup" class="form-error"></span>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label style="transform: translateY(10px);">グループ名</label>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-1" style="margin-left: 0px; padding-left: 0px;">
+                            <input id="groupName" class="form-control "/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalAddGroupCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="modalAddGroupOk" class="btn btn-primary">保存</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/emailGroupManage/emailGroupSetting.js"></script>
+</th:block>
+</body>
+</html>

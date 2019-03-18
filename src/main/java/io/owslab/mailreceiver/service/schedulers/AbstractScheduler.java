@@ -52,9 +52,11 @@ public abstract class AbstractScheduler {
                     }
                 } catch (RuntimeException e){
                     logger.error("[AbstractScheduler] RuntimeException: "+ e.toString());
+                    e.printStackTrace();
                     return; // Keep working
                 }catch (Throwable e){
                     logger.error("[AbstractScheduler] Throwable: "+ e.toString());
+                    e.printStackTrace();
                     ReportErrorService.sendReportError(e.toString());
                     return;
                 }

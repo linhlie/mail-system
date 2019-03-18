@@ -47,4 +47,31 @@ public class ConvertDate {
         dateConvert = str[0]+ ":00";
         return dateConvert;
     }
+
+    public static Date convertDateScheduler(String dateString){
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("MM-dd-yyyy HH:mm").parse(dateString);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+        }
+        return date;
+    }
+
+    public static String getDateScheduler(Date date){
+        DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+        String dateConvert = "unknow";
+        try {
+            dateConvert = df.format(date);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+        }
+        return dateConvert;
+    }
+
+    public static long compareMinuteOfDate(Date dateObj2, Date dateObj1){
+        long diff = dateObj2.getTime() - dateObj1.getTime();
+        long diffmin = diff / (60 * 1000);
+        return diffmin;
+    }
 }

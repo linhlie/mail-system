@@ -287,7 +287,7 @@
         var validated = engineerFormValidate();
         if(!validated) return;
         var data = getFormData();
-        var addRemovePartnerNotGoodIds = getAddRemovePartnerNotGoodIds();
+        var addRemovePartnerNotGoodIdsdelet = getAddRemovePartnerNotGoodIds();
         function onSuccess(response) {
             if(response && response.status) {
                 $.alert({

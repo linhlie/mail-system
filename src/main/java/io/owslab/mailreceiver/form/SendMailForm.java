@@ -1,7 +1,8 @@
 package io.owslab.mailreceiver.form;
 
-import io.owslab.mailreceiver.model.ReplaceNumber;
+import io.owslab.mailreceiver.model.SchedulerSendEmail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,19 @@ public class SendMailForm {
     private String matchingMessageId;
 
     public SendMailForm() {
+    }
+
+    public SendMailForm(SchedulerSendEmail scheduler, List<Long> uploadAttachment) {
+        this.subject = scheduler.getSubject();
+        this.receiver = scheduler.getTo();
+        this.activeCC = true;
+        this.cc = scheduler.getCc();
+        this.content = scheduler.getBody();
+        this.originAttachment = new ArrayList<>();
+        this.uploadAttachment = uploadAttachment;
+        this.accountId = scheduler.getAccountSentMailId()+"";
+        this.sendType = 16;
+        this.historyType =16;
     }
 
     public String getMessageId() {
