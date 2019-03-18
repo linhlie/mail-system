@@ -40,9 +40,7 @@
         function onSuccess(response) {
             if(response && response.status){
                 schedulers = response.list;
-                if(schedulers && schedulers.length>0){
-                    showDataTable(sendMailHistoryTableId, schedulers);
-                }
+                showDataTable(sendMailHistoryTableId, schedulers);
             }
         }
 
