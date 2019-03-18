@@ -1,36 +1,64 @@
 
 (function () {
     var groupTableId = "groupTable";
+    var emailListTableId = "emailListTable";
     var addEmailGroupId = "#addEmailGroup";
+    var addEmailListId = "#addEmailList"
+    var btnSearchGroupId = "#btnSearchGroup";
+    var searchGroupNameId = "searchGroupName";
+    var showEmailListId = "showEmailList";
+    var searchEmailId = "searchEmail";
+    var btnSearchEmailId = "#btnSearchEmail";
 
     var emailGroups = [];
+    var emailList =[];
+    var peopleInChargeList = [];
+    var dataList = [];
     var emailGroupCurrent;
+    var emailCurrent;
 
     var replaceGroupRow = '<tr role="row" class="hidden">' +
-        '<td name="showlistEmailAddress" rowspan="1" colspan="1" data="groupName" style="text-align: center; cursor: pointer;"><span></span></td>' +
-        '<td name="editEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">Edit</button>' +
+        '<td name="showlistEmailAddress" rowspan="1" colspan="1" data="groupName" style="padding-left:10px; cursor: pointer;"><span></span></td>' +
+        '<td name="editEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
+        '<button type="button">編集</button>' +
         '</td>' +
-        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">Delete</button>' +
+        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
+        '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
 
     var replaceListRow = '<tr role="row" class="hidden">' +
-        '<td rowspan="1" colspan="1" data="persionNme" style="text-align: center; cursor: pointer;"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="emailAddress" style="text-align: center; cursor: pointer;"><span></span></td>' +
-        '<td name="editEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">Edit</button>' +
-        '</td>' +
-        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id">' +
-        '<button type="button">Delete</button>' +
+        '<td rowspan="1" colspan="1" data="name" style="cursor: pointer;"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="emailAddress" style="cursor: pointer;"><span></span></td>' +
+        '<td name="deleteEmailAddressGroup" class="fit action deleteEngineerRow" rowspan="1" colspan="1" data="id" style="text-align: center">' +
+        '<button type="button">削除</button>' +
         '</td>' +
         '</tr>';
 
     $(function () {
         loadListGroup();
         setButtonClickListenter(addEmailGroupId, addEmailGroupOnclick);
+        setButtonClickListenter(addEmailListId, addEmailListOnclick);
+        setButtonClickListenter(btnSearchGroupId, searchGroupOnclick);
+        setButtonClickListenter(btnSearchEmailId, searchEmailOnclick);
+        keyPressOnclick()
     });
+    
+    function keyPressOnclick() {
+        $("#"+searchGroupNameId).keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == '13'){
+                searchGroupOnclick();
+            }
+        });
+
+        $("#"+searchEmailId).keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode == '13'){
+                searchEmailOnclick();
+            }
+        });
+    }
 
     function setButtonClickListenter(id, callback) {
         $(id).off('click');
@@ -41,7 +69,7 @@
         });
     }
 
-    function loadListGroup() {
+    function loadListGroup(groupName) {
         function onSuccess(response) {
             if(response && response.status){
                 emailGroups = response.list;
@@ -52,7 +80,25 @@
         function onError(error) {
         }
 
-        getEmailAddressGroup(onSuccess, onError);
+        clearAll();
+        getEmailAddressGroup(groupName, onSuccess, onError);
+    }
+
+    function loadEmailList(id, search) {
+        function onSuccess(response) {
+            if(response && response.status){
+                emailList = response.list;
+                peopleInChargeList = response.listPeople;
+                showEmailListTable(emailListTableId, emailList);
+            }
+        }
+
+        function onError(error) {
+        }
+
+        emailList = [];
+        emailCurrent = null;
+        getEmailAddressList(id, search, onSuccess, onError);
     }
 
     function setRowClickListener(name, callback) {
@@ -104,8 +150,16 @@
                 html = html + addRowWithData(tableId, data[i], i);
             }
             $("#" + tableId + "> tbody").html(html);
-            setRowClickListener("sourceRow", function () {
-                selectedRow($(this).closest('tr'))
+            setRowClickListener("showlistEmailAddress", function () {
+                var rowSelect = $(this).closest('tr');
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = emailGroups[index];
+                if (rowData && rowData.id) {
+                    emailGroupCurrent = rowData;
+                    showTableList(rowData.id);
+                    rowSelect.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+                }
             });
 
             setRowClickListener("editEmailAddressGroup", function () {
@@ -128,12 +182,31 @@
         }
     }
 
+    function showEmailListTable(tableId, data) {
+        removeAllRow(tableId, replaceListRow);
+        if (data.length > 0) {
+            var html = replaceGroupRow;
+            for (var i = 0; i < data.length; i++) {
+                html = html + addRowWithData(tableId, data[i], i);
+            }
+            $("#" + tableId + "> tbody").html(html);
+            setRowClickListener("deleteEmailAddressGroup", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = emailList[index];
+                if (rowData && rowData.id) {
+                    doDeleteEmailInGroup(rowData.id);
+                }
+            });
+        }
+    }
+
     function addEmailGroupOnclick() {
-        showAddEditGroupModal("Add Email Group", "", doAddEmailGroup);
+        showAddEditGroupModal("メールグループ追加", "", doAddEmailGroup);
     }
 
     function editEmailGroupOnclick(groupName) {
-        showAddEditGroupModal("Edit Email Group", groupName, doUpdateEmailGroup);
+        showAddEditGroupModal("メールグループ編集", groupName, doUpdateEmailGroup);
     }
 
     function doAddEmailGroup(groupName) {
@@ -183,9 +256,9 @@
             $.alert("保存に失敗しました。");
         }
         $.confirm({
-            title: '<b>【Delete Email Group】</b>',
+            title: '<b>【メールグループ消除】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want delete group？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
@@ -235,13 +308,13 @@
             }
 
             if(groupName == name){
-                showError("#hasErrorModalAddGroup", " New group name must different old group name");
+                showError("#hasErrorModalAddGroup", "新しいメールグループ名が現在のグループ名と違わなければなりません");
                 return;
             }
 
             for(var i=0;i<emailGroups.length;i++){
                 if(emailGroups[i].groupName == groupName){
-                    showError("#hasErrorModalAddGroup", "Group Name is exist");
+                    showError("#hasErrorModalAddGroup", "グループ名が既存しています");
                     return;
                 }
             }
@@ -255,6 +328,176 @@
         $("#modalAddGroupCancel").click(function () {
             $('#modalAddGroup').modal('hide');
         });
+    }
+
+    function searchGroupOnclick(){
+        var groupName = $("#"+searchGroupNameId).val();
+        if(!groupName || groupName==null || groupName.trim()==""){
+            loadListGroup();
+        }else{
+            loadListGroup(groupName);
+        }
+    }
+
+    function searchEmailOnclick(){
+        var search = $("#"+searchEmailId).val();
+        if(!search || search==null || search.trim()==""){
+            loadEmailList(emailGroupCurrent.id);
+        }else{
+            loadEmailList(emailGroupCurrent.id, search);
+        }
+    }
+
+    function addEmailListOnclick() {
+        showAddEmailListModal(doAddEmailList);
+    }
+
+    function doAddEmailList(ids) {
+        function onSuccess(response) {
+            if(response){
+                if(response.status){
+                    loadEmailList(emailGroupCurrent.id)
+                }else{
+                    $.alert("保存に失敗しました");
+                }
+            }
+        }
+        function onError(error) {
+            $.alert("保存に失敗しました");
+        }
+
+        addEmailAddressToGroup({
+            groupId: emailGroupCurrent.id,
+            listPeopleId: ids
+        }, onSuccess, onError);
+    }
+
+    function doDeleteEmailInGroup(id) {
+        function onSuccess(response) {
+            loadEmailList(emailGroupCurrent.id);
+        }
+        function onError() {
+            $.alert("メールリスト保存が失敗しました");
+        }
+        $.confirm({
+            title: '<b>【メール消除】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deleteEmailAddressInGroup(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                }
+            }
+        });
+    }
+
+    function showAddEmailListModal(callback) {
+        $('#dataModal').modal();
+        $( '#dataModalName').val("");
+        showError("#hasErrorModalAddEmailList", "");
+        buildDataList();
+        setInputAutoComplete("dataModalName");
+        $('#dataModalOk').off('click');
+        $("#dataModalOk").click(function () {
+            var name = $( '#dataModalName').val();
+            var ids = validateEmailAddressPeople(name);
+            if(ids.length <= 0){
+                showError("#hasErrorModalAddEmailList", "メールは取引先担当者一覧に既存しません");
+                return;
+            }
+
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback(ids);
+            }
+        });
+        $('#dataModalCancel').off('click');
+        $("#dataModalCancel").click(function () {
+            $('#dataModal').modal('hide');
+            if(typeof callback === "function"){
+                callback();
+            }
+        });
+    }
+
+    function updateKeyList(datalist) {
+        datalist = datalist || [];
+        $('#keylist').html('');
+        for(var i = 0; i < datalist.length; i++){
+            $('#keylist').append("<option value='" + datalist[i].value + "'>");
+        }
+    }
+
+    function clearAll() {
+        $("#" + showEmailListId).addClass("hidden");
+        $(addEmailListId).addClass("hidden");
+        emailGroups = [];
+        emailGroupCurrent = null;
+        emailList = [];
+        emailCurrent = null;
+    }
+
+    function showTableList(id) {
+        $("#"+showEmailListId).removeClass("hidden");
+        $(addEmailListId).removeClass("hidden");
+        loadEmailList(id);
+    }
+
+    function buildDataList() {
+        dataList = [];
+        for(var i=0;i<peopleInChargeList.length;i++){
+            dataList.push({
+                id : peopleInChargeList[i].id,
+                value : getPeopleName(peopleInChargeList[i]) + "/" + peopleInChargeList[i].emailAddress
+            });
+        }
+        updateKeyList(dataList);
+    }
+
+    function getPeopleName(people) {
+        if(!people || people==null) return "";
+        if(people.lastName !=null && people.firstName !=null){
+            return people.lastName+ " " + people.firstName;
+        }
+        if(people.lastName != null){
+            return people.lastName;
+        }
+        if(people.firstName != null){
+            return people.firstName;
+        }
+        return "";
+    }
+
+    function validateEmailAddressPeople(name){
+        var listId = [];
+        for(var i=0;i<dataList.length;i++){
+            if(name == dataList[i].value){
+                listId.push(dataList[i].id);
+                return listId;
+            }
+        }
+
+        if(name.charAt(0) == "*" && name.charAt(1) == "@"){
+            for(var i=0;i<dataList.length;i++){
+                var index = dataList[i].value.indexOf("@");
+                if(index>0){
+                    var domain = "*" + dataList[i].value.substring(index);
+                    if(name == domain){
+                        listId.push(dataList[i].id);
+                    }
+                }
+
+            }
+        }
+
+        return listId;
     }
 
 })(jQuery);

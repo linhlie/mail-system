@@ -259,6 +259,13 @@ public class SendMailService {
         return sentMailHistoryDAO.save(history);
     }
 
+    private SentMailHistory saveSentMailScheduler(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountId) {
+        String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
+        if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return null;
+        SentMailHistory history = new SentMailHistory(emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountId);
+        return sentMailHistoryDAO.save(history);
+    }
+
     public void sendReportMail(ReportErrorService.ReportErrorParams report) {
         EmailAccountSetting accountSetting = emailAccountSettingService.findOneSendByEmail(report.getUserName());
         Properties props = MailUtils.buildProperties(accountSetting);
@@ -296,6 +303,106 @@ public class SendMailService {
             logger.info("Send email warning from "+from+" to "+to);
         } catch (MessagingException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendMailScheduler(SendMailForm form, long accountUserId){
+        String formAccountId = form.getAccountId();
+        long accountId = Long.parseLong(formAccountId);
+        List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
+        EmailAccount account = emailAccounts.size() > 0 ? emailAccounts.get(0) : null;
+        if(account == null) return;
+        EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
+        boolean debugOn = enviromentSettingService.getDebugOn();
+        if(debugOn){
+            accountSetting = emailAccountSettingService.findOneSendByEmail("ows-test@world-link-system.com");
+        }
+        if(accountSetting == null) return;
+
+        // Sender's email ID needs to be mentioned
+        String from = account.getAccount();
+        String to = form.getReceiver();
+        String cc = form.getCc();
+        if(debugOn){
+            to = enviromentSettingService.getDebugReceiveMailAddress();
+            cc = "";
+            from = "ows-test@world-link-system.com";
+        }
+
+        final String username = accountSetting.getUserName() != null && accountSetting.getUserName().length() > 0 ? accountSetting.getUserName() : from;
+        final String password = accountSetting.getPassword();
+
+        Properties props = MailUtils.buildProperties(accountSetting);
+
+        to = selfEliminateDuplicates(to);
+        cc = selfEliminateDuplicates(cc);
+
+        cc = eliminateDuplicates(cc, to);
+
+        // Get the Session object.
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+            String encodingOptions = "text/html; charset=UTF-8";
+            // Create a default MimeMessage object.
+            MimeMessage message = new MimeMessage(session);
+            message.setHeader("Content-Type", encodingOptions);
+            // Set From: header field of the header.
+            message.setFrom(new InternetAddress(from));
+
+            // Set To: header field of the header.
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(to));
+            message.setRecipients(Message.RecipientType.CC,
+                    InternetAddress.parse(cc));
+
+            // Set Subject: header field
+            message.setSubject(form.getSubject(), "UTF-8");
+
+            // Create the message part
+            BodyPart messageBodyPart = new MimeBodyPart();
+
+            // Now set the actual message
+            messageBodyPart.setContent(form.getContent(), encodingOptions);
+
+            // Create a multipar message
+            Multipart multipart = new MimeMultipart();
+
+            // Set text message part
+            multipart.addBodyPart(messageBodyPart);
+
+            List<Long> uploadAttachment = form.getUploadAttachment();
+
+            boolean hasAttachment = false;
+            List<Long> uploadFileReality = new ArrayList<>();
+
+            if(uploadAttachment != null && uploadAttachment.size() > 0) {
+                List<UploadFile> uploadFiles = uploadFileDAO.findByIdIn(uploadAttachment);
+                for (UploadFile uploadFile : uploadFiles){
+                    uploadFileReality.add(uploadFile.getId());
+                    MimeBodyPart attachmentPart = buildUploadAttachmentPart(uploadFile.getStoragePath(), uploadFile.getFileName());
+                    multipart.addBodyPart(attachmentPart);
+                    hasAttachment = true;
+                }
+            }
+
+            // Send the complete message parts
+            message.setContent(multipart);
+
+            // Send message
+            Transport.send(message);
+            logger.info("Send email scheduler from "+from+" to "+to);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
