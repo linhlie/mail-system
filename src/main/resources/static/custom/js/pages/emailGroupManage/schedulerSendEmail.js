@@ -228,6 +228,7 @@
     }
 
     function nextToSettingSchedulerPage() {
+        lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
         receiverValidate = validateAndShowEmailListInput(rdMailReceiverId, false);
         ccValidate = validateAndShowEmailListInput(rdMailCCId, true);
         if(!(receiverValidate && ccValidate)) return;
