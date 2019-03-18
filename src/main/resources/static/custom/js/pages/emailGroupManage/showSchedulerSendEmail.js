@@ -69,12 +69,12 @@
                 var index = row.getAttribute("data");
                 var rowData = schedulers[index];
                 if (rowData && rowData.id) {
-                    if(action == "stopped" && rowData.status == 1 ){
+                    if(action == "中止" && rowData.status == 1 ){
                         rowData.status = 0;
                         changeStatusScheduler(rowData);
                     }
 
-                    if(action == "active" && rowData.status == 0){
+                    if(action == "アクティブ" && rowData.status == 0){
                         rowData.status = 1;
                         changeStatusScheduler(rowData);
                     }
