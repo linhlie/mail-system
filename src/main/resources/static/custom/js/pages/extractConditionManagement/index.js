@@ -5,33 +5,26 @@
     var dConditionTableId = "dConditionTable";
     var mConditionTableId = "mConditionTable";
 
-    var sourceListKey = "/user/matchingSettings/listSourceKey";
-    var sourcePrefixUrlKey = "/user/matchingSettings/source";
-    var destinationListKey = "/user/matchingSettings/listDestinationKey";
-    var destinationPrefixUrlKey = "/user/matchingSettings/destination";
-    var matchingListKey = "/user/matchingSettings/listMatchingKey";
-    var matchingPrefixUrlKey = "/user/matchingSettings/matching";
-
     var importFileType;
 
     var firstRowHTML = '<tr class="hidden" role="row">' +
-        '<td rowspan="1" colspan="1" data="key"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="conditionName"><span></span></td>' +
         '<td class="action fit" rowspan="1" colspan="1" data="id"><button class="btn btn-block btn-default" name="removeCondition" type="button">削除</button></td>' +
         '<td class="action fit" rowspan="1" colspan="1" data="id"><button class="btn btn-block btn-default" name="exportCondition" type="button">エクスポート</button></td>' +
         '</tr>';
 
-    var conditionData = {
-        "source": [],
-        "destination": [],
-        "matching": [],
-    };
+
+    var SOURCE_CONDITION = 1;
+    var DESTINATION_CONDITION = 2;
+    var MATCHING_CONDITION = 3;
+
+    var conditionSavedArr = [];
 
     $(function () {
         addEventListeners();
         initStickyHeader();
-        initConditionTable(sConditionTableId);
-        initConditionTable(dConditionTableId);
-        initConditionTable(mConditionTableId);
+
+        loadConditionSaved();
     });
     
     function addEventListeners() {
@@ -58,28 +51,42 @@
     
     function saveConditionSetting(conditionSettingStr) {
         var conditionSetting = JSON.parse(conditionSettingStr);
-        if(conditionSetting && conditionSetting.type) {
-            var isAllow = isAllowType(conditionSetting.type);
+        if(conditionSetting && conditionSetting.conditionType) {
+            var isAllow = isAllowType(conditionSetting.conditionType);
             if(!isAllow) {
-                var incompatibleTypeMessage = getIncompatibleTypeMessage(conditionSetting.type);
+                var incompatibleTypeMessage = getIncompatibleTypeMessage(conditionSetting.conditionType);
                 alert(incompatibleTypeMessage);
                 return;
             }
-            var listKey = getListKey(importFileType);
-            var prefixUrlKey = getPrefixUrlKey(importFileType);
-            var tableId = getTableIdFromType(importFileType);
-            var datalistStr = localStorage.getItem(listKey);
-            var datalist = JSON.parse(datalistStr);
-            datalist = datalist || [];
-            var name = prompt("保存された名前を入力してください:", conditionSetting.name);
+            var name = prompt("保存された名前を入力してください:", conditionSetting.conditionName);
             if (name == null || name == "") return;
-            if(datalist.indexOf(name) < 0){
-                datalist.push(name);
+            var conditionStr = JSON.stringify(conditionSetting.condition);
+            var data = {
+                conditionName: name,
+                condition: conditionStr,
+                conditionType: conditionSetting.conditionType
+            };
+
+            function onSuccess(response) {
+                if(response && response.status) {
+                    $.alert({
+                        title: "",
+                        content: "add condition success",
+                        onClose: function () {
+                            loadConditionSaved();
+                        }
+                    });
+                } else {
+                    $.alert("add condition fail");
+                }
             }
-            var key = prefixUrlKey + "@" + name;
-            localStorage.setItem(listKey, JSON.stringify(datalist));
-            localStorage.setItem(key, JSON.stringify(conditionSetting.conditions));
-            initConditionTable(tableId);
+
+            function onError(response) {
+                $.alert("add condition fail");
+            }
+
+            addConditionSaved(data, onSuccess, onError);
+
         }
     }
     
@@ -91,11 +98,11 @@
     
     function getTypeMessageInJapanese(type) {
         switch (type) {
-            case "source":
+            case SOURCE_CONDITION:
                 return "比較メール元抽出条件";
-            case "destination":
+            case DESTINATION_CONDITION:
                 return "比較メール先抽出条件";
-            case "matching":
+            case MATCHING_CONDITION:
                 return "マッチング条件";
             default:
                 return "比較メール元抽出条件"
@@ -103,16 +110,16 @@
     }
 
     function isAllowType(type) {
-        switch (type) {
-            case "source":
-                return (importFileType === "source");
-            case "destination":
-                return (importFileType === "destination");
-            case "matching":
-                return (importFileType === "matching");
-            default:
-                return false
+        if(type == SOURCE_CONDITION){
+            return (importFileType == SOURCE_CONDITION);
         }
+        if(type == DESTINATION_CONDITION){
+            return (importFileType == DESTINATION_CONDITION);
+        }
+        if(type == MATCHING_CONDITION){
+            return (importFileType == MATCHING_CONDITION);
+        }
+        return false;
     }
 
     function initStickyHeader() {
@@ -128,90 +135,46 @@
     }
 
     function initConditionTable(tableId) {
-        loadConditionData(tableId);
         pushConditionData(tableId);
     }
     
     function getConditionType(tableId) {
         switch (tableId) {
             case sConditionTableId:
-                return "source";
+                return SOURCE_CONDITION;
             case dConditionTableId:
-                return "destination";
+                return DESTINATION_CONDITION;
             case mConditionTableId:
-                return "matching";
+                return MATCHING_CONDITION;
             default:
-                return "source";
+                return SOURCE_CONDITION;
         }
-    }
-    
-    function getTableIdFromType(type) {
-        switch (type) {
-            case "source":
-                return sConditionTableId;
-            case "destination":
-                return dConditionTableId;
-            case "matching":
-                return mConditionTableId;
-            default:
-                return sConditionTableId;
-        }
-    }
-    
-    function getListKey(type) {
-        switch (type) {
-            case "source":
-                return sourceListKey;
-            case "destination":
-                return destinationListKey;
-            case "matching":
-                return matchingListKey;
-            default:
-                return sourceListKey;
-        }
-    }
-
-    function getPrefixUrlKey(type) {
-        switch (type) {
-            case "source":
-                return sourcePrefixUrlKey;
-            case "destination":
-                return destinationPrefixUrlKey;
-            case "matching":
-                return matchingPrefixUrlKey;
-            default:
-                return sourcePrefixUrlKey;
-        }
-    }
-
-    function loadConditionData(tableId) {
-        var type = getConditionType(tableId);
-        var listKey = getListKey(type);
-        var conditionDataStr = localStorage.getItem(listKey);
-        conditionData[type] = JSON.parse(conditionDataStr);
-        conditionData[type] = Array.isArray(conditionData[type]) ? conditionData[type] : [];
-        return conditionData[type];
     }
 
     function pushConditionData(tableId) {
         var type = getConditionType(tableId);
         removeAllRow(tableId, firstRowHTML);
         var html = firstRowHTML;
-        if (conditionData[type].length > 0) {
-            for(var i = 0; i < conditionData[type].length; i++) {
-                html = html + addRowWithData(tableId, conditionData[type][i], i, type);
+        if (conditionSavedArr.length > 0) {
+            for(var i = 0; i < conditionSavedArr.length; i++) {
+                if(conditionSavedArr[i].conditionType == type){
+                    html = html + addRowWithData(tableId, conditionSavedArr[i], i, type);
+                }
             }
             $("#" + tableId + "> tbody").html(html);
             setButtonClickListener("exportCondition", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
-                var type = $(this).closest('tr')[0].getAttribute("data-type");
-                var rowData = conditionData[type][index];
-                exportCondition(rowData, type, index);
+                var rowData = conditionSavedArr[index];
+                if(rowData != null && rowData.id != null){
+                    exportCondition(rowData);
+                }
             });
             setButtonClickListener("removeCondition", function () {
                 var index = $(this).closest('tr')[0].getAttribute("data");
-                var type = $(this).closest('tr')[0].getAttribute("data-type");
-                removeCondition(index, type);
+                var rowData = conditionSavedArr[index];
+                if(rowData != null && rowData.id != null){
+                    removeCondition(rowData.id );
+                }
             });
         }
     }
@@ -236,7 +199,7 @@
             var cellNode = cell.childNodes.length > 1 ? cell.childNodes[1] : cell.childNodes[0];
             if (cellNode) {
                 if (cellNode.nodeName == "SPAN") {
-                    var cellData = data;
+                    var cellData = data[cellKey];
                     cellNode.textContent = cellData;
                 }
             }
@@ -253,31 +216,40 @@
         })
     }
 
-    function exportCondition(conditionName, type, index) {
-        var listKey = getListKey(type);
-        var prefixUrlKey = getPrefixUrlKey(type);
-        var key = prefixUrlKey + "@" + conditionName;
-        var conditionData = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
+    function exportCondition(condition) {
+        var conditionJson = JSON.parse(condition.condition);
         var data = {
-            type: type,
-            name: conditionName,
-            listKey: listKey,
-            prefixUrlKey: prefixUrlKey,
-            conditions: conditionData
+            conditionType: condition.conditionType,
+            conditionName: condition.conditionName,
+            condition: conditionJson
         };
-        download(JSON.stringify(data), conditionName, "text/plain");
+        download(JSON.stringify(data), condition.conditionName, "text/plain");
     }
 
-    function removeCondition(index, type) {
-        console.log("removeCondition: ", index, type);
-        var conditionName = conditionData[type][index];
-        conditionData[type].splice(index, 1);
-        var listKey = getListKey(type);
-        var prefixUrlKey = getPrefixUrlKey(type);
-        var tableId = getTableIdFromType(type);
-        localStorage.setItem(listKey, JSON.stringify(conditionData[type]));
-        localStorage.removeItem(prefixUrlKey + "@" + conditionName);
-        initConditionTable(tableId);
+    function removeCondition(id) {
+        function onSuccess() {
+            loadConditionSaved();
+        }
+        function onError() {
+            $.alert("delete matching condition fail");
+        }
+        $.confirm({
+            title: '<b>【Delete condition】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">Do you want delete it？<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deleteConditionSaved(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
     }
 
     function download(data, filename, type) {
@@ -296,6 +268,23 @@
                 window.URL.revokeObjectURL(url);
             }, 0);
         }
+    }
+
+    function loadConditionSaved(){
+        function onSuccess(response) {
+            if(response && response.status){
+                conditionSavedArr = response.list;
+                initConditionTable(sConditionTableId);
+                initConditionTable(dConditionTableId);
+                initConditionTable(mConditionTableId);
+            }
+        }
+
+        function onError(error) {
+            console.error("load condition data fail")
+        }
+
+        getConditionSaved(onSuccess, onError);
     }
 
 })(jQuery);

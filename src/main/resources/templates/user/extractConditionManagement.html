@@ -30,7 +30,7 @@
                         </div>
                         <input class="hide" id='importFileId' type='file'/>
                         <div style="width: 100%; text-align: right">
-                            <button data="source" name="importFile" class="btn btn-default">インポート</button>
+                            <button data="1" name="importFile" class="btn btn-default">インポート</button>
                         </div>
                         <h5>比較メール先抽出条件</h5>
                         <div class="condition-management-part table-container-section" style="height: 150px; position: relative">
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div style="width: 100%; text-align: right">
-                            <button data="destination" name="importFile" class="btn btn-default">インポート</button>
+                            <button data="2" name="importFile" class="btn btn-default">インポート</button>
                         </div>
                         <h5>マッチング条件</h5>
                         <div class="condition-management-part table-container-section" style="height: 150px; position: relative">
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                         <div style="width: 100%; text-align: right">
-                            <button data="matching" name="importFile" class="btn btn-default">インポート</button>
+                            <button data="3" name="importFile" class="btn btn-default">インポート</button>
                         </div>
                     </div>
                 </div>
@@ -79,6 +79,7 @@
     </section>
 </div>
 <th:block layout:fragment="scripts">
+    <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/extractConditionManagement/index.js"></script>
 </th:block>
 </body>
