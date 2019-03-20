@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 @Service
 public class ConditionNotificationService {
+    public static final int sendAll=-1;
     private static final int PAGE_SIZE = 10;
     @Autowired
     AccountService accountService;
@@ -25,10 +25,25 @@ public class ConditionNotificationService {
         if(conditionNotification == null || conditionNotification.getCondition() == null){
             throw new Exception("Can't add condition notification");
         }
-        conditionNotification.setFromAccountId(accountService.getLoggedInAccountId());
-        conditionNotification.setSentAt(new Date());
-        conditionNotification.setStatus(ConditionNotification.Status.NEW);
-        conditionDAO.save(conditionNotification);
+        long accoutId = accountService.getLoggedInAccountId();
+        if(conditionNotification.getToAccountId()==sendAll){
+            System.out.println("+++");
+            for (Account account : accountService.getAllUserRoleAccounts())
+            {
+                List<ConditionNotification>list= new ArrayList<>();
+                if (account.getId()!=accountService.getLoggedInAccountId()){
+                    list.add(new ConditionNotification(accoutId, account.getId(),conditionNotification.getCondition(),conditionNotification.getConditionType(),new Date(),
+                            ConditionNotification.Status.NEW));
+                }
+                conditionDAO.save(list);
+            }
+        }
+        else {
+            conditionNotification.setFromAccountId(accountService.getLoggedInAccountId());
+            conditionNotification.setSentAt(new Date());
+            conditionNotification.setStatus(ConditionNotification.Status.NEW);
+            conditionDAO.save(conditionNotification);
+        }
     }
 
     public void update(ConditionNotificationDTO conditionNotificationDTO) throws Exception {
