@@ -51,6 +51,7 @@
                                             <select id="condition-notification-account" style="height: 34px; width: 200px;">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option value="-100" >Send All</option>
                                             </select>
                                             <button id="condition-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>

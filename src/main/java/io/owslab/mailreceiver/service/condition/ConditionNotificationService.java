@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 @Service
 public class ConditionNotificationService {
-    public static final int sendAll=-1;
+    public static final int sendAll=-100;
     private static final int PAGE_SIZE = 10;
     @Autowired
     AccountService accountService;
