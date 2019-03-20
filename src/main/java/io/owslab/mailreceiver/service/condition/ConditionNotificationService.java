@@ -27,7 +27,6 @@ public class ConditionNotificationService {
         }
         long accoutId = accountService.getLoggedInAccountId();
         if(conditionNotification.getToAccountId()==sendAll){
-            System.out.println("+++");
             for (Account account : accountService.getAllUserRoleAccounts())
             {
                 List<ConditionNotification>list= new ArrayList<>();
@@ -38,6 +37,7 @@ public class ConditionNotificationService {
                 conditionDAO.save(list);
             }
         }
+
         else {
             conditionNotification.setFromAccountId(accountService.getLoggedInAccountId());
             conditionNotification.setSentAt(new Date());
