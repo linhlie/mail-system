@@ -512,7 +512,6 @@
     }
     
     function sendSourceConditions() {
-        console.log($('#' + sourceNotificationAccountId).val());
         var toAccount = $('#' + sourceNotificationAccountId).val();
         if(!toAccount || toAccount==null){
             $.alert("アカウントを最初に選択してください。");
