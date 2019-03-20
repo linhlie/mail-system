@@ -53,12 +53,12 @@
         setButtonClickListenter(clearBulletinBoardId, clearBulletinBoardOnclick);
         setButtonClickListenter(changeShowTypeId, changeShowTypeOnclick);
         setButtonClickListenter(settingPermissionId, settingPermissionOnclick);
-        initPrevew();
+        initEditor();
         loadBulletinPreview();
         initTab();
     });
 
-    function initPrevew() {
+    function initEditor() {
         tinymce.init({
             force_br_newlines : true,
             force_p_newlines : false,
