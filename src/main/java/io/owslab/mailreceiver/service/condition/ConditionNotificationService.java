@@ -35,7 +35,6 @@ public class ConditionNotificationService {
                             new Date(), ConditionNotification.Status.NEW));
                 }
                 conditionDAO.save(list);
-                System.out.println("sent");
             }
         } else {
             conditionNotification.setFromAccountId(accountId);
