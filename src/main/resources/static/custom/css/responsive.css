@@ -20,10 +20,6 @@
         text-align: center
     }
 
-    .builder-condition-ec{
-        width: 50%;
-    }
-
     .builder-condition-name{
         width: 50%;
     }
@@ -39,7 +35,7 @@
         margin-bottom: 20px;
     }
 
-    .builder-wrapper-header{
+    .matching-setting-builder-wrapper-header{
         height: 70px;
     }
 
