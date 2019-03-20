@@ -1661,3 +1661,8 @@ div.bulletinboard-icon-wrapper {
 .table-text-center {
     text-align: center;
 }
+
+.dashboard-bulletin-board-editor{
+    height: 930px;
+    margin-top: 20px;
+}

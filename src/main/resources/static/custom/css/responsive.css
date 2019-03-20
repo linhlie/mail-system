@@ -1,0 +1,28 @@
+
+@media screen and (max-width: 1024px){
+
+}
+
+@media screen and (max-width: 768px){
+    /*.content-wrapper {*/
+        /*min-height: calc(100vh - 100px) !important;*/
+        /*max-height: calc(100vh - 100px) !important;*/
+        /*overflow-y: scroll;*/
+    /*}*/
+
+    #bulletinBoardEditor_ifr{
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .bulletin{
+        height: 1050px !important;
+    }
+
+    .dashboard-bulletin-board-editor{
+        height: 960px;
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
