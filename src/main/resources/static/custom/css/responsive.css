@@ -16,6 +16,9 @@
     }
 
     /* start matching setting page*/
+    .matching-setting-switch-conditions{
+        text-align: center
+    }
 
     .builder-condition-ec{
         width: 50%;

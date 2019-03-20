@@ -6,13 +6,20 @@
 <body>
 <div layout:fragment="content">
     <section class="content-header" style="position: relative;">
-        <h1>メールマッチング条件設定</h1>
-        <div style="position: absolute; z-index: 1; width: 210px; left: 400px; top: 11px; bottom: 0;">
-            <button id="switchConditions" style="background-color: #ffffdd" type="button" class="btn btn-default btn-block">
-                <span style="font-size: 19px" class="glyphicon glyphicon-refresh pull-left"></span>
-                元と先の抽出条件の入替
-            </button>
+        <div class="col-md-12 col-xs-12" style="margin-bottom: 15px">
+            <div class="col-md-4 col-xs-12">
+                <span style="font-size: 24px;">メールマッチング条件設定</span>
+            </div>
+            <div class="col-md-8 col-xs-12 matching-setting-switch-conditions">
+                <button id="switchConditions" style="background-color: #ffffdd" type="button" class="btn btn-default">
+                    <span style="font-size: 19px" class="glyphicon glyphicon-refresh pull-left"></span>
+                    元と先の抽出条件の入替
+                </button>
+            </div>
         </div>
+        <!--<div style="position: absolute; z-index: 1; width: 210px; left: 400px; top: 11px; bottom: 0;" class="matching-setting-switch-conditions">-->
+            <!---->
+        <!--</div>-->
     </section>
     <section class="content mail-analysis">
         <div class="row">
