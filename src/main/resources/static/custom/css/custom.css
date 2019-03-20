@@ -1666,3 +1666,12 @@ div.bulletinboard-icon-wrapper {
     height: 930px;
     margin-top: 20px;
 }
+
+.builder-wrapper-header{
+    height: 35px;
+}
+
+.matching-setting-notification-account{
+    height: 34px;
+    width: 200px;
+}

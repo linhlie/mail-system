@@ -4,25 +4,66 @@
 }
 
 @media screen and (max-width: 768px){
-    /*.content-wrapper {*/
-        /*min-height: calc(100vh - 100px) !important;*/
-        /*max-height: calc(100vh - 100px) !important;*/
-        /*overflow-y: scroll;*/
-    /*}*/
 
     #bulletinBoardEditor_ifr{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
 
-    .bulletin{
-        height: 1050px !important;
-    }
-
     .dashboard-bulletin-board-editor{
-        height: 960px;
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
+
+    /* start matching setting page*/
+
+    .builder-condition-ec{
+        width: 50%;
+    }
+
+    .builder-condition-name{
+        width: 50%;
+    }
+
+    .builder-condition-name-input{
+        min-width: 100px !important;
+        width: 150px ;
+    }
+
+    .builder-condition-sent{
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .builder-wrapper-header{
+        height: 70px;
+    }
+
+    .msw-header-arrow-matching{
+        display: none;
+    }
+
+    .matching-setting-submit-button{
+        width: 100% !important;
+        margin: 10px 0px 15px 0px !important;
+    }
+
+    .matching-setting-submit-button-div{
+        padding: 0px !important;;
+    }
+
+    .matching-setting-notification-account{
+        height: 22px;
+        padding: 1px 21px 1px 1px !important;
+        width: 200px;
+    }
+
+    .matching-setting-notification-sent{
+        padding: 1px 12px 1px 12px !important;
+        height: 22px;
+    }
+
+    /* end matching setting page*/
 }
 
