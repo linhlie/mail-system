@@ -1,0 +1,260 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout">
+<head>
+    <title>メール一斉配信管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="content sendTab">
+        <div id="sendDiv" class="col-md-12">
+            <div id="setting-email" class="box box-primary">
+                <h3 style="font-weight: bold; margin-left: 10px">メールを作成する</h3>
+                <div class="box-body padding" style="margin-top: 20px; padding-left: 20px;">
+                    <div class="form-horizontal">
+                        <div class="form-group row">
+                            <label for="rdMailSender" class="control-label col-md-1 text-left">送信者:</label>
+                            <div class="col-md-5">
+                                <select style="padding-left: 12px; min-height: 30px;" id="rdMailSender" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div>
+                                <label class="control-label col-md-1 text-left">グループ選:</label>
+                                <div class="col-md-5">
+                                    <button id="selectEmailGroup" style="min-height: 34px">グループ選択</button>
+                                    <!--<input id="rdEmailGroup" class="form-control"  style="min-height: 30px;" disabled="disabled"/>-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="rdMailReceiver-container">
+                                <label for="rdMailReceiver" class="control-label col-md-1 text-left">受信者:</label>
+                                <div class="col-md-11">
+                                    <input id="rdMailReceiver" class="tags form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div id="rdMailCC-container">
+                                <label for="rdMailCC" class="control-label col-md-1 text-left">CC:</label>
+                                <div class="col-md-11">
+                                    <input id="rdMailCC" class="tags form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="rdMailSubject" class="control-label col-md-1 text-left">件名:</label>
+                            <div class="col-md-11">
+                                <input id="rdMailSubject" class="form-control" placeholder="件名:"/>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea id="rdMailBodyTab"></textarea>
+                    <div id="rdMailAttachment" class="mail-attachment"></div>
+                    <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="attachment-dropzone-tab"></div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <button type="button" id="nextToSettingScheduler" class="btn btn-primary">次へ</button>
+                    </div>
+                </div>
+            </div> <!-- setting email -->
+
+
+            <div id="setting-scheduler" class="box box-primary" style="display: none">
+                <div class="box-body padding">
+                    <h3 style="font-weight: bold">Scheduler Setting</h3>
+                    <div class="form-group row" style="margin-top: 30px">
+                        <div class="col-md-12">
+                            <label style="display: block">
+                                <input type="radio" name="send-email-scheduler" checked="checked" value="0"/>&nbsp;即時に送信
+                            </label>
+                            <hr/>
+
+                            <label style="display: block">
+                                <input type="radio" name="send-email-scheduler" value="1"/>&nbsp;指定時間に送信
+                            </label>
+                            <div class="setting-scheduler-block">
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <label for="sendByHourDay" class="control-label col-md-1 text-left">日付:</label>
+                                    <div class="col-md-3">
+                                        <input id="sendByHourDay" class="form-control" placeholder="MM-DD-YYYY"/>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <label class="control-label col-md-1 text-left">時刻</label>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <div class='input-group date' id='sendByHourHour'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-time"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+
+                            <label style="display: block">
+                                <input type="radio" name="send-email-scheduler" value="2"/>&nbsp;毎日送信(繰り返す)
+                            </label>
+                            <div class="setting-scheduler-block">
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <label class="control-label col-md-1 text-left">曜日:</label>
+                                    <label class="checkbox-inline send-by-day-checkbox" style="margin-left: 15px;">
+                                        <input type="checkbox" name="send-by-day_day" value="2"/>&nbsp;月
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="3"/>&nbsp;火
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="4"/>&nbsp;水
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="5"/>&nbsp;木
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="6"/>&nbsp;金
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="7"/>&nbsp;土
+                                    </label>
+                                    <label class="checkbox-inline send-by-day-checkbox">
+                                        <input type="checkbox" name="send-by-day_day" value="1"/>&nbsp;日
+                                    </label>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <label class="control-label col-md-1 text-left">時刻</label>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <div class='input-group date' id='sendByDayHour'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-time"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+
+                            <label style="display: block">
+                                <input type="radio" name="send-email-scheduler" value="3"/>&nbsp;毎月送信(繰り返す)
+                            </label>
+                            <div class="setting-scheduler-block">
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <div class='col-md-1'>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="send-by-month-day" value="send-by-month"/>&nbsp;日付
+                                        </label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="sendByMonthDay" class="form-control" type="number" min="1" max="28"/>
+                                    </div>
+                                    <div class='col-md-3'>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="send-by-month-day" value="the-first-day"/>&nbsp;月の最初日
+                                        </label>
+                                    </div>
+                                    <div class='col-md-3'>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="send-by-month-day" value="the-last-day"/>&nbsp;月の最終日
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-1"></div>
+                                    <label class="control-label col-md-1 text-left">時刻</label>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <div class='input-group date' id='sendByMonthHour'>
+                                                <input type='text' class="form-control" />
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-time"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <button type="button" id="backToSettingEmail" class="btn btn-default">前へ</button>
+                        <button type="button" id="sendSuggestMail" class="btn btn-primary">OK</button>
+                    </div>
+                </div>
+            </div><!-- setting scheduler -->
+        </div>
+    </section>
+
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 50%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title">Select Emails Receiver</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div id="emailAddressReceiver" class="email-address-receiver">
+                            <label tyle="display: block" style="padding-left: 20px;">
+                                <input id="select-all-receiver" type="checkbox" class="select-all" value="selectAll"/>&nbsp;Select All
+                            </label>
+                            <hr/>
+                            <ul class="visible scheduler-email-ul">
+                                <li class="treeview">
+                                    <span class="glyphicon glyphicon-chevron-right sheduler-icon-arrow pull-right"></span>
+                                    <label class="scheduler-email-radio-label">
+                                        <input id="select-all-email-group" type="checkbox" class="select-all-email-group"/>
+                                    </label>
+                                    <span class="scheduler-email-show-list">Email Group</span>
+                                    <ul id="scheduler-email-group-ul" class="visible" style="padding-left: 30px; display: none;">
+
+                                    </ul>
+                                </li>
+                            </ul>
+                            <hr/>
+                            <ul class="visible scheduler-email-ul">
+                                <li class="treeview">
+                                    <span class="glyphicon glyphicon-chevron-right sheduler-icon-arrow pull-right"></span>
+                                    <label class="scheduler-email-radio-label">
+                                        <input id="select-all-email-address" type="checkbox" class="select-all-email-address"/>
+                                    </label>
+                                    <span class="scheduler-email-show-list">Email Address</span>
+                                    <ul id="scheduler-email-address-ul"  class="visible" style="padding-left: 30px; display: none;">
+
+                                    </ul>
+                                </li>
+                            </ul>
+                            <hr/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalCancel" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                    <button type="button" id="dataModalOk" class="btn btn-primary">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</div>
+<th:block layout:fragment="scripts">
+    <script src="/custom/js/utils.js"></script>
+    <script src="/custom/js/api.js"></script>
+    <script src="/custom/js/pages/emailGroupManage/schedulerSendEmail.js"></script>
+</th:block>
+</body>
+</html>

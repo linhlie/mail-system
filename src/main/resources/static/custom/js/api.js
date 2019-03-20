@@ -624,6 +624,91 @@ function showMoreConditionNotification(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function getEmailAddressGroup(groupName, onSuccess, onError) {
+    var url = "";
+    if(groupName){
+        url = "/user/emailGroupSetting/getListEmailAddressGroup?groupName="+groupName;
+    }else{
+        url = "/user/emailGroupSetting/getListEmailAddressGroup";
+    }
+    _get(url, onSuccess, onError);
+}
+
+function getEmailAddressAndGroup(groupName, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/getListEmailAddressAndGroup";
+    _get(url, onSuccess, onError);
+}
+
+function addEmailAddressGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/addEmailAddressGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateEmailAddressGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/editEmailAddressGroup";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteEmailAddressGroup(id, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/deleteEmailAddressGroup/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function getEmailAddressList(id, search, onSuccess, onError) {
+    var url = "";
+    if(search){
+        url = "/user/emailGroupSetting/getListEmailAddressList?id=" +id +"&search="+search;
+    }else{
+        url = "/user/emailGroupSetting/getListEmailAddressList?id=" +id;
+    }
+    _get(url, onSuccess, onError);
+}
+
+function addEmailAddressToGroup(data, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/addEmailAddressToList";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteEmailAddressInGroup(id, onSuccess, onError) {
+    var url = "/user/emailGroupSetting/deleteEmailAddressInGroup/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function getEmailSenders(onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getListEmailSender";
+    _get(url, onSuccess, onError);
+}
+
+function getEmailReceivers(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getEmailReceivers";
+    _post(url, data, onSuccess, onError);
+}
+
+function createSchedulerSendEmail(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/createSchedulerSendEmail";
+    _post(url, data, onSuccess, onError);
+}
+
+function getSchedulerData(onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getListSchedulerData";
+    _get(url, onSuccess, onError);
+}
+
+function getSchedulerEmail(id, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/getSchedulerData/"+id;
+    _get(url, onSuccess, onError);
+}
+
+function deleteSchedulerEmail(id, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/deleteSchedulerSendEmail/" + id;
+    _delete(url, onSuccess, onError);
+}
+
+function changeStatusSchedulerEmail(data, onSuccess, onError) {
+    var url = "/user/schedulerSendEmail/changeStatusSchedulerEmail";
+    _post(url, data, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;

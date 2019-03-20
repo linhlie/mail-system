@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.List;
 @Service
 public class ConditionNotificationService {
-    public static final int sendAll=-100;
     private static final int PAGE_SIZE = 10;
+    private static final int SEND_ALL_USERS = -100;
     @Autowired
     AccountService accountService;
 
@@ -25,21 +25,18 @@ public class ConditionNotificationService {
         if(conditionNotification == null || conditionNotification.getCondition() == null){
             throw new Exception("Can't add condition notification");
         }
-        long accoutId = accountService.getLoggedInAccountId();
-        if(conditionNotification.getToAccountId()==sendAll){
-            for (Account account : accountService.getAllUserRoleAccounts())
-            {
-                List<ConditionNotification>list= new ArrayList<>();
-                if (account.getId()!=accountService.getLoggedInAccountId()){
-                    list.add(new ConditionNotification(accoutId, account.getId(),conditionNotification.getCondition(),conditionNotification.getConditionType(),new Date(),
-                            ConditionNotification.Status.NEW));
+        long accountId = accountService.getLoggedInAccountId();
+        if (conditionNotification.getToAccountId() == SEND_ALL_USERS) {
+            for (Account account : accountService.getAllUserRoleAccounts()) {
+                List<ConditionNotification> list = new ArrayList<>();
+                if (account.getId() != accountService.getLoggedInAccountId()) {
+                    list.add(new ConditionNotification(accountId, account.getId(), conditionNotification.getCondition(), conditionNotification.getConditionType(),
+                            new Date(), ConditionNotification.Status.NEW));
                 }
                 conditionDAO.save(list);
             }
-        }
-
-        else {
-            conditionNotification.setFromAccountId(accountService.getLoggedInAccountId());
+        } else {
+            conditionNotification.setFromAccountId(accountId);
             conditionNotification.setSentAt(new Date());
             conditionNotification.setStatus(ConditionNotification.Status.NEW);
             conditionDAO.save(conditionNotification);

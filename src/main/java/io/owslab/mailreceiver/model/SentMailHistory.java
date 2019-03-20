@@ -83,6 +83,22 @@ public class SentMailHistory {
         this.accountSentMailId = accountSentMailId;
     }
 
+    public SentMailHistory(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId) {
+        this.messageId = "send-email-scheduler";
+        this.accountId = emailAccount.getId();
+        this.from = emailAccount.getAccount();
+        this.subject = form.getSubject();
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.replyTo = replyTo;
+        this.sentAt = new Date();
+        this.hasAttachment = hasAttachment;
+        this.body = form.getContent();
+        this.sendType = form.getSendType();
+        this.accountSentMailId = accountSentMailId;
+    }
+
 
     public long getId() {
         return id;
