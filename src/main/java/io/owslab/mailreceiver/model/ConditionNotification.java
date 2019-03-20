@@ -21,6 +21,15 @@ public class ConditionNotification {
 
     }
 
+    public ConditionNotification(long fromAccountId, long toAccountId, String condition, int conditionType, Date sentAt, int status) {
+        this.fromAccountId = fromAccountId;
+        this.toAccountId = toAccountId;
+        this.condition = condition;
+        this.conditionType = conditionType;
+        this.sentAt = sentAt;
+        this.status = status;
+    }
+
     public long getId() {
         return id;
     }

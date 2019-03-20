@@ -62,6 +62,7 @@
                                             <select id="source-notification-account" style="height: 34px; width: 200px;">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
                                             <button id="source-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
@@ -99,6 +100,7 @@
                                             <select id="destination-notification-account" style="height: 34px; width: 200px;">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
                                             <button id="destination-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
@@ -156,6 +158,7 @@
                                             <select id="matching-notification-account" style="height: 34px; width: 200px;">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
                                             <button id="matching-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
                                         </div>
