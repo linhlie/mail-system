@@ -1667,6 +1667,10 @@ div.bulletinboard-icon-wrapper {
     margin-top: 20px;
 }
 
+.dashboard-bulletin-board-header-title{
+    font-size: 40px;
+}
+
 .matching-setting-builder-wrapper-header{
     height: 35px;
 }
