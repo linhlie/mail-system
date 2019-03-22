@@ -105,6 +105,11 @@
     .filterEngineer{
         margin-left: 15px;
     }
+
+    .btn-notification-div button{
+        padding: 3px 6px 3px 6px;
+        font-size: 12px !important;
+    }
     /* end engineer matching*/
 
     /* start minimine side bar */
