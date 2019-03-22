@@ -36,7 +36,7 @@
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
-                                    <div class="builder-wrapper-header" style="height: 35px;">
+                                    <div class="builder-wrapper-header matching-setting-builder-wrapper-header">
                                         <span style="background: #f4f4f4; border-radius: 5px; padding: 5px;">比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#statistic-condition-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
@@ -48,12 +48,12 @@
                                                 <span id="condition-notification-new" class="condition-notification-new hidden">0</span>
                                                 <span class="glyphicon glyphicon-bell condition-notification"></span>
                                             </div>
-                                            <select id="condition-notification-account" style="height: 34px; width: 200px;">
+                                            <select id="condition-notification-account" class="matching-setting-notification-account">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
                                                 <option value="-100" >全てのユーザー</option>
                                             </select>
-                                            <button id="condition-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
+                                            <button id="condition-notification-sent" type="button" class="btn btn-primary matching-setting-notification-sent" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -63,14 +63,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <button id="extractConditionBtn" type="button" class="btn btn-default btn-xs btn-block">集計対象メールを一覧で確認</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="saveConditionBtnId" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="getConditionBtnId" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                <div class="col-md-12 col-xs-12" style="padding: 5px 0px 15px 0px;">
+                                    <div class="col-md-4 matching-setting-action-button">
+                                        <button id="extractConditionBtn" type="button" class="btn btn-default btn-xs btn-block">集計対象メールを一覧で確認</button>
+                                    </div>
+                                    <div class="col-md-4 matching-setting-action-button">
+                                        <button id="saveConditionBtnId" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                    </div>
+                                    <div class="col-md-4 matching-setting-action-button">
+                                        <button id="getConditionBtnId" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                    </div>
                                 </div>
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
@@ -80,10 +82,10 @@
                                 <div class="form-group"></div>
                             </div>
                             <div style="width: 100%; height: 50px;">
-                                <div class="col-md-6" style="font-size: 13px; padding-top: 28px; position: relative;">
+                                <div class="col-md-6 col-xs-12">
                                 </div>
-                                <div class="col-md-6">
-                                    <button style="background-color: #ffe837; z-index: 1;margin-left: 90px; width: calc(100% - 90px); margin-top: 28px" id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block">集計</button>
+                                <div class="col-md-6 col-xs-12 matching-setting-submit-button-div">
+                                    <button id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block matching-setting-submit-button">集計</button>
                                 </div>
                             </div>
                         </form>
