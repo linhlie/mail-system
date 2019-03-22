@@ -703,6 +703,10 @@ mark.mark-range {
     height: 18px;
 }
 
+.domain-control-container{
+    transform: translateX(-1px);
+}
+
 .domain-control-container .domain-control {
     font-weight: normal;
 }
@@ -1679,3 +1683,21 @@ div.bulletinboard-icon-wrapper {
     height: 34px;
     width: 200px;
 }
+
+.matching-setting-submit-button{
+    background-color: #ffe837;
+    z-index: 1;
+    margin-left: 90px;
+    width: calc(100% - 90px);
+    margin-top: 28px
+}
+
+.engineer-matching-filter-engineer{
+    margin-left: 30px;
+    height: 40px;
+}
+
+.engineer-matching-last-month-active{
+    width: 100px;
+}
+

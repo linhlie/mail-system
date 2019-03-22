@@ -6,7 +6,6 @@
 @media screen and (max-width: 768px){
 
     /* start dash board page*/
-
     #bulletinBoardEditor_ifr{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
@@ -38,11 +37,9 @@
     #bulletinBoardTabs.nav > li > a{
         padding: 5px 10px;
     }
-
     /* start dash board page*/
 
     /* start matching setting page*/
-
     .matching-setting-switch-conditions{
         text-align: center
     }
@@ -85,8 +82,30 @@
         height: 22px;
     }
 
+    .matching-setting-action-button{
+        margin-bottom: 3px;
+    }
     /* end matching setting page*/
 
+
+    /* start engineer matching */
+    .engineer-matching-filter-engineer{
+        margin-left: 5px;
+        height: 40px;
+    }
+
+    .engineer-matching-last-month-active{
+        width: 90px;
+    }
+
+    .engineer-matching-action-engineer-div{
+        margin-bottom: 3px;
+    }
+
+    .filterEngineer{
+        margin-left: 15px;
+    }
+    /* end engineer matching*/
 
     /* start minimine side bar */
 
