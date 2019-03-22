@@ -217,7 +217,9 @@
         top: 44px;
         margin-left: 0;
     }
-
+    .treeview-menu>li>a{
+        font-size: 11px;
+    }
     /* end minimine side bar */
 }
 
