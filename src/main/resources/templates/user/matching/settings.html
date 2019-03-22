@@ -20,11 +20,6 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <form id="matchingConditionSettingsForm" class="form-horizontal" method="POST">
-                            <!--<datalist id="itemlist">-->
-                                <!--<option th:each="option : ${matchingItemOptions}"-->
-                                        <!--th:data-value="${option.value}"-->
-                                        <!--th:value="${option.text}"/>-->
-                            <!--</datalist>-->
                             <datalist id="itemlist">
                                 <option data-value="送信者" value="送信者"></option>
                                 <option data-value="受信者" value="受信者"></option>
@@ -44,26 +39,28 @@
                                     <span class="col-xs-12 hidden" id="ruleNumberDownRate" th:utext="${ruleNumberDownRate}"></span>
                                 </div>
                             </div>
+
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
-                                <div class="col-xs-12">
-                                    <div class="builder-wrapper-header" style="height: 35px;">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="builder-wrapper-header">
                                         <span>比較メール元抽出条件</span>
                                         <button name="builder-ec" data="#source-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
-                                            <input id="source-condition-name" type="text" value=""/>
+                                            <input id="source-condition-name" type="text" value="" class="builder-condition-name-input"/>
                                         </div>
                                         <div class="pull-right builder-condition-sent">
                                             <div id="source-notification" class="condition-notification-div">
                                                 <span id="source-notification-new" class="condition-notification-new hidden">0</span>
                                                 <span class="glyphicon glyphicon-bell condition-notification"></span>
                                             </div>
-                                            <select id="source-notification-account" style="height: 34px; width: 200px;">
+                                            <select id="source-notification-account" class="matching-setting-notification-account">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
-                                            <button id="source-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
+                                            <button id="source-notification-sent" type="button" class="btn btn-primary matching-setting-notification-sent" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -73,34 +70,38 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <button style="background-color: #ffe837;" id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う(F3)</button>
+                                <div class="col-md-12 col-xs-12" style="padding: 5px 0px 15px 0px;">
+                                    <div class="col-md-4">
+                                        <button style="background-color: #ffe837;" id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う(F3)</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
-                                </div>
+
                                 <div class="form-group"></div>
-                                <div class="col-xs-12">
-                                    <div class="builder-wrapper-header"  style="height: 35px;">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="builder-wrapper-header">
                                         <span>比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#destination-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
-                                            <input id="destination-condition-name" type="text" value=""/>
+                                            <input id="destination-condition-name" type="text" value="" class="builder-condition-name-input"/>
                                         </div>
                                         <div class="pull-right builder-condition-sent">
                                             <div id="destination-notification" class="condition-notification-div">
                                                 <span id="destination-notification-new" class="condition-notification-new hidden">0</span>
                                                 <span class="glyphicon glyphicon-bell condition-notification"></span>
                                             </div>
-                                            <select id="destination-notification-account" style="height: 34px; width: 200px;">
+                                            <select id="destination-notification-account"  class="matching-setting-notification-account">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
-                                            <button id="destination-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
+                                            <button id="destination-notification-sent" type="button" class="btn btn-primary matching-setting-notification-sent" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -110,17 +111,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <button style="background-color: #ffe837;" id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う(F4)</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                <div class="col-md-12 col-xs-12" style="padding: 5px 0px 15px 0px;">
+                                    <div class="col-md-4">
+                                        <button style="background-color: #ffe837;" id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う(F4)</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                    </div>
                                 </div>
                                 <div class="form-group"></div>
                             </div>
+
                             <div class="msw-header">
                                 <div class="msw-header-label">
                                     <h4><b>マッチング条件</b></h4>
@@ -128,36 +132,26 @@
                                 <div class="msw-header-arrow-down"></div>
                             </div>
                             <div class="matching-section-wrapper">
-                                <!--<div class="form-group"></div>-->
-                                <!--<div class="matching-container">-->
-                                    <!--<div class="row">-->
-                                        <!--<div class="radio">-->
-                                            <!--<label><input type="radio" id="distinguish1" name="distinguish" value="false"/>全角/半角を区別しない</label>-->
-                                        <!--</div>-->
-                                        <!--<div class="radio">-->
-                                            <!--<label><input type="radio" id="distinguish2" name="distinguish" value="true"/>全角/半角を区別する</label>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
                                 <div class="form-group"></div>
-                                <div class="col-xs-12">
-                                    <div class="builder-wrapper-header" style="height: 35px;">
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="builder-wrapper-header">
                                         <span>マッチング条件</span>
                                         <button name="builder-ec" data="#matching-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
                                             <label>条件名&nbsp;</label>
-                                            <input id="matching-condition-name" type="text" value=""/>
+                                            <input id="matching-condition-name" type="text" value="" class="builder-condition-name-input"/>
                                         </div>
                                         <div class="pull-right builder-condition-sent">
                                             <div id="matching-notification" class="condition-notification-div">
                                                 <span id="matching-notification-new" class="condition-notification-new hidden">0</span>
                                                 <span class="glyphicon glyphicon-bell condition-notification"></span>
                                             </div>
-                                            <select id="matching-notification-account" style="height: 34px; width: 200px;">
+                                            <select id="matching-notification-account"  class="matching-setting-notification-account">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
                                                 <option th:each="account : ${accounts}" th:value="${account.id}" th:utext="${account.fullName}"></option>
+                                                <option th:value="-100">全てのユーザー</option>
                                             </select>
-                                            <button id="matching-notification-sent" type="button" class="btn btn-primary" style="margin-bottom: 5px;">送信</button>
+                                            <button id="matching-notification-sent" type="button" class="btn btn-primary matching-setting-notification-sent" style="margin-bottom: 5px;">送信</button>
                                         </div>
                                     </div>
                                     <div class="builder-wrapper">
@@ -167,13 +161,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="saveMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
-                                </div>
-                                <div class="col-md-4">
-                                    <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                <div class="col-md-12 col-xs-12" style="padding: 5px 0px 5px 0px;">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4">
+                                        <button id="saveMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
+                                    </div>
                                 </div>
                                 <div class="form-group"></div>
                                 <div class="col-xs-12">
@@ -182,8 +177,9 @@
                                 </div>
                                 <div class="form-group"></div>
                             </div>
+
                             <div style="width: 100%; height: 50px;">
-                                <div class="col-md-6" style="font-size: 13px; padding-top: 28px; position: relative;">
+                                <div class="col-md-6 col-xs-12" style="font-size: 13px; padding-top: 28px; position: relative;">
                                     <div class="duplicate-control-container">
                                         <label class="duplicate-control">
                                             <input id="enable-duplicate-handle" type="checkbox"/> 重複メールは最新のメールのみ抽出・マッチング
@@ -206,9 +202,9 @@
                                     	</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 col-xs-12 matching-setting-submit-button-div">
                                     <div class="msw-header-arrow-matching"></div>
-                                    <button style="background-color: #ffe837; z-index: 1;margin-left: 90px; width: calc(100% - 90px); margin-top: 28px" id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block">マッチング(F5)</button>
+                                    <button style="background-color: #ffe837; z-index: 1;margin-left: 90px; width: calc(100% - 90px); margin-top: 28px" id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block matching-setting-submit-button">マッチング(F5)</button>
                                 </div>
                             </div>
                         </form>
