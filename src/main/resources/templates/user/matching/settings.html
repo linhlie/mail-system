@@ -6,13 +6,20 @@
 <body>
 <div layout:fragment="content">
     <section class="content-header" style="position: relative;">
-        <h1>メールマッチング条件設定</h1>
-        <div style="position: absolute; z-index: 1; width: 210px; left: 400px; top: 11px; bottom: 0;">
-            <button id="switchConditions" style="background-color: #ffffdd" type="button" class="btn btn-default btn-block">
-                <span style="font-size: 19px" class="glyphicon glyphicon-refresh pull-left"></span>
-                元と先の抽出条件の入替
-            </button>
+        <div class="col-md-12 col-xs-12" style="margin-bottom: 15px">
+            <div class="col-md-4 col-xs-12">
+                <span style="font-size: 24px;">メールマッチング条件設定</span>
+            </div>
+            <div class="col-md-8 col-xs-12 matching-setting-switch-conditions">
+                <button id="switchConditions" style="background-color: #ffffdd" type="button" class="btn btn-default">
+                    <span style="font-size: 19px" class="glyphicon glyphicon-refresh pull-left"></span>
+                    元と先の抽出条件の入替
+                </button>
+            </div>
         </div>
+        <!--<div style="position: absolute; z-index: 1; width: 210px; left: 400px; top: 11px; bottom: 0;" class="matching-setting-switch-conditions">-->
+            <!---->
+        <!--</div>-->
     </section>
     <section class="content mail-analysis">
         <div class="row">
@@ -43,7 +50,7 @@
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
                                 <div class="col-md-12 col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header matching-setting-builder-wrapper-header">
                                         <span>比較メール元抽出条件</span>
                                         <button name="builder-ec" data="#source-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
@@ -71,20 +78,20 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-xs-12" style="padding: 5px 0px 15px 0px;">
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button style="background-color: #ffe837;" id="extractSourceBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール元のみ抽出を行う(F3)</button>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="saveSourceBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="getSourceBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                                     </div>
                                 </div>
 
                                 <div class="form-group"></div>
                                 <div class="col-md-12 col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header matching-setting-builder-wrapper-header">
                                         <span>比較メール先抽出条件</span>
                                         <button name="builder-ec" data="#destination-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
@@ -112,13 +119,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-xs-12" style="padding: 5px 0px 15px 0px;">
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button style="background-color: #ffe837;" id="extractDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">比較メール先のみ抽出を行う(F4)</button>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="saveDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="getDestinationBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                                     </div>
                                 </div>
@@ -134,7 +141,7 @@
                             <div class="matching-section-wrapper">
                                 <div class="form-group"></div>
                                 <div class="col-md-12 col-xs-12">
-                                    <div class="builder-wrapper-header">
+                                    <div class="builder-wrapper-header matching-setting-builder-wrapper-header">
                                         <span>マッチング条件</span>
                                         <button name="builder-ec" data="#matching-builder" type="button" class="btn btn-default btn-xs">&nbsp;</button>
                                         <div class="builder-condition-name">
@@ -163,10 +170,10 @@
                                 </div>
                                 <div class="col-md-12 col-xs-12" style="padding: 5px 0px 5px 0px;">
                                     <div class="col-md-4"></div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="saveMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">条件に名前を付けて保存</button>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 matching-setting-action-button">
                                         <button id="getMatchingBtn" type="button" class="btn btn-default btn-xs btn-block">保存済条件を読み込み</button>
                                     </div>
                                 </div>
@@ -204,7 +211,7 @@
                                 </div>
                                 <div class="col-md-6 col-xs-12 matching-setting-submit-button-div">
                                     <div class="msw-header-arrow-matching"></div>
-                                    <button style="background-color: #ffe837; z-index: 1;margin-left: 90px; width: calc(100% - 90px); margin-top: 28px" id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block matching-setting-submit-button">マッチング(F5)</button>
+                                    <button id="submitFormBtn" type="button" class="btn btn-default btn-xs btn-block matching-setting-submit-button">マッチング(F5)</button>
                                 </div>
                             </div>
                         </form>
