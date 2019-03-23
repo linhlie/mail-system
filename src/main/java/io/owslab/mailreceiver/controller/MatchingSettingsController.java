@@ -463,6 +463,7 @@ public class MatchingSettingsController {
     @ResponseBody
     public ResponseEntity<?> addConditionNotification(
             @Valid @RequestBody ConditionNotification form, BindingResult bindingResult) {
+        System.out.println("=======================");
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -523,7 +524,7 @@ public class MatchingSettingsController {
             logger.error("showMoreConditionNotifications: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(result);       
         }
     }
 

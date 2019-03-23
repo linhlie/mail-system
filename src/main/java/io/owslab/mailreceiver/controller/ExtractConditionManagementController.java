@@ -1,8 +1,12 @@
 package io.owslab.mailreceiver.controller;
 
+import io.owslab.mailreceiver.dao.MatchingConditionDAO;
+import io.owslab.mailreceiver.dao.MatchingConditionSavedDAO;
+import io.owslab.mailreceiver.model.Account;
 import io.owslab.mailreceiver.model.MatchingConditionSaved;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.condition.MatchingConditionSavedService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +32,12 @@ public class ExtractConditionManagementController {
 
     @Autowired
     MatchingConditionSavedService conditionSavedService;
+
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    MatchingConditionSavedDAO matchingConditionSavedDAO;
 
     @RequestMapping(value = { "/extractConditionManagement" }, method = RequestMethod.GET)
     public String index(Model model, HttpServletRequest request) {
@@ -53,6 +64,7 @@ public class ExtractConditionManagementController {
     @RequestMapping(value = "/extractConditionManagement/add", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> addListConditionSaved(@Valid @RequestBody MatchingConditionSaved form, BindingResult bindingResult) {
+        form.setAccountCreatedId(accountService.getLoggedInAccountId());
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -61,7 +73,7 @@ public class ExtractConditionManagementController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            conditionSavedService.addConditionSaved(form);
+            conditionSavedService.saveConditionSaved(form);
             result.setMsg("done");
             result.setStatus(true);
         } catch (Exception e) {
@@ -81,5 +93,23 @@ public class ExtractConditionManagementController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping(value = "/extractConditionManagement/get", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> get(@RequestParam("conditionType") int conditionType){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<MatchingConditionSaved> list = matchingConditionSavedDAO.findByConditionTypeAndAccountCreatedId(conditionType, accountService.getLoggedInAccountId());
+
+            result.setList(list);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListConditionSaved: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }
