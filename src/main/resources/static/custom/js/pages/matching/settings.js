@@ -734,16 +734,13 @@
         })
     }
 
-    var SOURCE_CONDITION;
-    var DESTINATION_CONDITION;
-    var MATCHING_CONDITION;
-
     function saveSourceListData() {
         var result = $(sourceBuilderId).queryBuilder('getRules');
+        var defaultName = $(sourceConditionNameId).val();
         if ($.isEmptyObject(result)) return;
 
         function onSuccess(response) {
-            showNamePrompt(response.list, SOURCE_CONDITIONTYPE, "", function (name) {
+            showNamePrompt(response.list, SOURCE_CONDITIONTYPE, defaultName, function (name) {
                 var data = {
                     conditionName: name,
                     condition: JSON.stringify(result),
@@ -780,7 +777,7 @@
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
         $("input#dataModalName").css("border-color", "lightgray")
-        $("#warning").remove()
+        $("#warning").addClass("warning")
         updateKeyList(datalist);
         $("#dataModalName").off("change paste keyup");
         $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
@@ -797,15 +794,14 @@
             var x = $("#dataModalName").val().length;
             if (x > 0) {
                 $("input#dataModalName").css("border-color", "lightgray")
-                $("#warning").remove()
+                $("#warning").addClass("warning")
             }
         })
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
             if (name.length == 0) {
                 $("input#dataModalName").css("border-color", "red")
-                $(".col-sm-8").append("<div id='warning'></div>")
-                $("#warning").html("<div style='color:red'>Condition name is required</div>")
+                $("#warning").removeClass("warning")
                 return;
             } else {
                 $("input#dataModalName").css("border-color", "lightgray")
@@ -875,10 +871,11 @@
 
     function saveDestinationListData(){
         var result = $(destinationBuilderId).queryBuilder('getRules');
+        var defaultName = $(destinationConditionNameId).val();
         if ($.isEmptyObject(result)) return;
 
         function onSuccess(response) {
-            showNamePrompt(response.list, DESTINATION_CONDITIONTYPE, "", function (name) {
+            showNamePrompt(response.list, DESTINATION_CONDITIONTYPE, defaultName, function (name) {
                 var data = {
                     conditionName: name,
                     condition: JSON.stringify(result),
@@ -911,10 +908,11 @@
 
     function saveMatchingListData() {
         var result = $(matchingBuilderId).queryBuilder('getRules');
+        var defaultName = $(matchingConditionNameId).val();
         if ($.isEmptyObject(result)) return;
 
         function onSuccess(response) {
-            showNamePrompt(response.list, MATCHING_CONDITIONTYPE, "", function (name) {
+            showNamePrompt(response.list, MATCHING_CONDITIONTYPE, defaultName, function (name) {
                 var data = {
                     conditionName: name,
                     condition: JSON.stringify(result),
@@ -1042,31 +1040,28 @@
             }
         }
         if (data == null) {
-            $.alert("add condition fail");
+            $.alert("load condition data fail");
         } else {
             if (name && name.length > 0) {
                 function onSuccess(response) {
                     if (response && response.status) {
-                        $.alert({
-                            title: "",
-                            content: "add condition success",
-                        });
-                        if (conditionType == 1){
+
+                        if (conditionType == SOURCE_CONDITIONTYPE){
                             $(sourceConditionNameId).val(name)
                         }
-                        else if(conditionType == 2){
+                        else if(conditionType == DESTINATION_CONDITIONTYPE){
                             $(destinationConditionNameId).val(name)
                         }
-                        else if (conditionType == 3){
+                        else if (conditionType == MATCHING_CONDITIONTYPE){
                             $(matchingConditionNameId).val(name)
                         }
                     } else {
-                        $.alert("add condition fail");
+                        $.alert("load condition data fail");
                     }
                 }
 
                 function onError(response) {
-                    $.alert("add condition fail");
+                    $.alert("load condition data fail");
                 }
 
                 getAllConditionSaved(conditionType, onSuccess, onError);
