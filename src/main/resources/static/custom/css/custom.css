@@ -1707,3 +1707,7 @@ div.bulletinboard-icon-wrapper {
     width: 100px;
 }
 
+.warning{
+    display: none;
+}
+

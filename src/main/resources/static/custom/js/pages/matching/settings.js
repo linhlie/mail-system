@@ -749,15 +749,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-                        $.alert("Add condition successfully")
+                        $.alert("条件追加が成功しました")
                         $(sourceConditionNameId).val(name)
                     } else {
-                        $.alert("Fail to add condition")
+                        $.alert("条件追加が失敗しました")
                     }
                 }
 
                 function onError(response) {
-                    $.alert("Fail to add condition")
+                    $.alert("条件追加が失敗しました")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -776,6 +776,10 @@
 
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
+        if(defaultName == ""){
+            $('#dataModalName').attr('placeholder','')
+        }
+        console.log($('#dataModalName'))
         $("input#dataModalName").css("border-color", "lightgray")
         $("#warning").addClass("warning")
         updateKeyList(datalist);
@@ -836,12 +840,12 @@
         }
 
         function onSuccess(result){
-            $.alert("Delete successfully")
+            $.alert("条件消除が成功しました")
             $("#dataModalName").val("")
             updateKeyList(datalist)
         }
         function onError(){
-            $.alert("Fail to delete")
+            $.alert("条件消除が失敗しました")
         }
         deleteConditionSaved(dataId, onSuccess, onError)
     }
@@ -884,15 +888,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-                        $.alert("Add condition successfully")
+                        $.alert("条件追加が成功しました")
                         $(destinationConditionNameId).val(name)
                     } else {
-                        $.alert("Fail to add condition")
+                        $.alert("条件追加が失敗しました")
                     }
                 }
 
                 function onError(response) {
-                    $.alert("Fail to add condition")
+                    $.alert("条件追加が失敗しました")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -921,15 +925,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-                        $.alert("Add condition successfully")
+                        $.alert("条件追加が成功しました")
                         $(matchingConditionNameId).val(name)
                     } else {
-                        $.alert("Fail to add condition")
+                        $.alert("条件追加が失敗しました")
                     }
                 }
 
                 function onError(response) {
-                    $.alert("Fail to add condition")
+                    $.alert("条件追加が失敗しました")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -984,7 +988,7 @@
         }
 
         function onError() {
-            console.error("load condition data fail")
+            console.error("条件データロードが失敗しました")
         }
 
         getAllConditionSaved(SOURCE_CONDITIONTYPE, onSuccess, onError)
@@ -1006,7 +1010,7 @@
         }
 
         function onError() {
-            console.error("load condition data fail")
+            console.error("条件データロードが失敗しました")
         }
 
         getAllConditionSaved(DESTINATION_CONDITIONTYPE, onSuccess, onError)
@@ -1017,16 +1021,16 @@
             showNamePrompt(response.list, MATCHING_CONDITIONTYPE, "", function (name) {
                 if (name != null && name.length > 0) {
                     getListData(name, response, MATCHING_CONDITIONTYPE, matchingBuilderId);
-                    $("input#dataModalName").css("border-color", "lightgray")
+                    $("#dataModalName").css("border-color", "lightgray")
 
                 } else {
-                    $("input#dataModalName").css("border-color", "red")
+                    $("#dataModalName").css("border-color", "red")
                 }
             })
         }
 
         function onError() {
-            console.error("load condition data fail")
+            console.error("条件データロードが失敗しました")
         }
 
         getAllConditionSaved(MATCHING_CONDITIONTYPE, onSuccess, onError)
@@ -1040,7 +1044,7 @@
             }
         }
         if (data == null) {
-            $.alert("load condition data fail");
+            $.alert("条件データロードが失敗しました");
         } else {
             if (name && name.length > 0) {
                 function onSuccess(response) {
@@ -1056,12 +1060,12 @@
                             $(matchingConditionNameId).val(name)
                         }
                     } else {
-                        $.alert("load condition data fail");
+                        $.alert("条件データロードが失敗しました");
                     }
                 }
 
                 function onError(response) {
-                    $.alert("load condition data fail");
+                    $.alert("条件データロードが失敗しました");
                 }
 
                 getAllConditionSaved(conditionType, onSuccess, onError);
