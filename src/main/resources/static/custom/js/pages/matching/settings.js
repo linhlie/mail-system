@@ -779,7 +779,7 @@
         if(defaultName == ""){
             $('#dataModalName').attr('placeholder','')
         }
-        console.log($('#dataModalName'))
+
         $("input#dataModalName").css("border-color", "lightgray")
         $("#warning").addClass("warning")
         updateKeyList(datalist);
@@ -793,7 +793,7 @@
             removeDataListItem(name, datalist)
 
         });
-        $('#dataModalOk').off('click');
+        $('#dataModalName').off('input');
         $("#dataModalName").on('input', function () {
             var x = $("#dataModalName").val().length;
             if (x > 0) {
@@ -801,6 +801,7 @@
                 $("#warning").addClass("warning")
             }
         })
+        $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
             if (name.length == 0) {
@@ -1453,7 +1454,6 @@
                                     applyCondition(notificationList[index]);
                                 });
                             }
-                            console.log(notificationList[index]);
                         }
                     },
                     cancel: {
@@ -1482,7 +1482,6 @@
                                     $('#notificationModal').modal('hide');
                                 });
                             }
-                            console.log(notificationList[index]);
                         }
                     },
                     cancel: {

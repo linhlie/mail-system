@@ -40,11 +40,8 @@ public class MatchingConditionSavedService {
         conditionSavedDAO.delete(id);
     }
 
-    public long getLoggedAccountId(){
-        return accountService.getLoggedInAccountId();
-    }
-
-    public List<MatchingConditionSaved> findByConditionTypeAndAccountCreatedId(int conditionType, long accountCreatedId){
+    public List<MatchingConditionSaved> findByConditionTypeAndAccountCreatedId(int conditionType){
+        long accountCreatedId = accountService.getLoggedInAccountId();
         return conditionSavedDAO.findByConditionTypeAndAccountCreatedId(conditionType, accountCreatedId);
     }
 }
