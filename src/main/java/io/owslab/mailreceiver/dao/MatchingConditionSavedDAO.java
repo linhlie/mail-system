@@ -9,4 +9,7 @@ public interface MatchingConditionSavedDAO extends JpaRepository<MatchingConditi
     List<MatchingConditionSaved> findByAccountCreatedId(long accountId);
 
     List<MatchingConditionSaved> findByAccountCreatedIdAndConditionNameAndConditionType(long accountId, String conditionName, int conditionType);
+
+    List<MatchingConditionSaved> findByConditionTypeAndAccountCreatedId(int conditionType, long accountCreatedId);
+
 }
