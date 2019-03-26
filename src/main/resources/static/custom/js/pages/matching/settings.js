@@ -752,11 +752,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-
+                        $.alert("Add condition successfully")
+                        $(sourceConditionNameId).val(name)
+                    } else {
+                        $.alert("Fail to add condition")
                     }
                 }
 
                 function onError(response) {
+                    $.alert("Fail to add condition")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -772,6 +776,7 @@
 
 
     function showNamePrompt(datalist, conditionType, defaultName, callback) {
+
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
         $("input#dataModalName").css("border-color", "lightgray")
@@ -781,10 +786,11 @@
         $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
         setInputAutoComplete("dataModalName");
         $(removeDatalistItemBtnId).off('click');
-        $(removeDatalistItemBtnId).click(function () {
-            var name = $( '#dataModalName').val();
+        $(removeDatalistItemBtnId).click(function (result) {
+            var name = $("#dataModalName").val();
 
-            removeDatalistItem(name);
+            removeDataListItem(name, datalist)
+
         });
         $('#dataModalOk').off('click');
         $("#dataModalName").on('input', function () {
@@ -799,7 +805,7 @@
             if (name.length == 0) {
                 $("input#dataModalName").css("border-color", "red")
                 $(".col-sm-8").append("<div id='warning'></div>")
-                $("#warning").html("<div style='color:red'>Required Condition</div>")
+                $("#warning").html("<div style='color:red'>Condition name is required</div>")
                 return;
             } else {
                 $("input#dataModalName").css("border-color", "lightgray")
@@ -819,17 +825,29 @@
         });
     }
 
-    function removeDatalistItem(listKey, prefixUrlKey, name){
-        var datalistStr = localStorage.getItem(listKey);
-        var datalist = JSON.parse(datalistStr);
-        var index = datalist.indexOf(name);
-        if (index > -1) {
-            datalist.splice(index, 1);
+    function removeDataListItem(name, datalist) {
+        var dataId;
+        var removeCondition;
+        for (var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                dataId = datalist[i].id;
+                removeCondition = datalist[i]
+            }
+            var conditionPosition = datalist.indexOf(removeCondition)
+            if(conditionPosition != -1) {
+                datalist.splice(conditionPosition, 1);
+            }
         }
-        localStorage.setItem(listKey, JSON.stringify(datalist));
-        localStorage.removeItem(prefixUrlKey + "@" + name);
-        $( '#dataModalName').val('');
-        updateKeyList(datalist);
+
+        function onSuccess(result){
+            $.alert("Delete successfully")
+            $("#dataModalName").val("")
+            updateKeyList(datalist)
+        }
+        function onError(){
+            $.alert("Fail to delete")
+        }
+        deleteConditionSaved(dataId, onSuccess, onError)
     }
 
     function updateKeyList(datalist) {
@@ -869,11 +887,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-
+                        $.alert("Add condition successfully")
+                        $(destinationConditionNameId).val(name)
+                    } else {
+                        $.alert("Fail to add condition")
                     }
                 }
 
                 function onError(response) {
+                    $.alert("Fail to add condition")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -901,11 +923,15 @@
 
                 function onSuccess(response) {
                     if (response && response.status) {
-
+                        $.alert("Add condition successfully")
+                        $(matchingConditionNameId).val(name)
+                    } else {
+                        $.alert("Fail to add condition")
                     }
                 }
 
                 function onError(response) {
+                    $.alert("Fail to add condition")
                 }
 
                 addConditionSaved(data, onSuccess, onError);
@@ -942,18 +968,21 @@
     }
 
 
+
     function getSourceListData() {
-
         function onSuccess(response) {
-            showNamePrompt(response.list, SOURCE_CONDITIONTYPE, "", function (name) {
-                if (name != null && name.length > 0) {
-                    getListData(name, response, SOURCE_CONDITIONTYPE, sourceBuilderId);
-                    $("input#dataModalName").css("border-color", "lightgray")
+            if(response && response.status){
+                showNamePrompt(response.list, SOURCE_CONDITIONTYPE, "", function (name) {
+                    if (name != null && name.length > 0) {
+                        getListData(name, response, SOURCE_CONDITIONTYPE, sourceBuilderId);
+                        $("input#dataModalName").css("border-color", "lightgray")
 
-                } else {
-                    $("input#dataModalName").css("border-color", "red")
-                }
-            })
+                    } else {
+                        $("input#dataModalName").css("border-color", "red")
+                    }
+                })
+            }
+
         }
 
         function onError() {

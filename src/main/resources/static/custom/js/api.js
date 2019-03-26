@@ -715,19 +715,8 @@ function getConditionSaved(onSuccess, onError) {
 }
 
 function getAllConditionSaved(conditionType, onSuccess, onError) {
-    var url = "/user/extractConditionManagement/get";
-    $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: url,
-        data:{
-          conditionType: conditionType
-        },
-        cache: false,
-        timeout: 600000,
-        success: onSuccess,
-        error: onError
-    });
+    var url = "/user/extractConditionManagement/get?conditionType="+conditionType;
+    _get(url, onSuccess, onError)
 }
 
 function addConditionSaved(data, onSuccess, onError) {

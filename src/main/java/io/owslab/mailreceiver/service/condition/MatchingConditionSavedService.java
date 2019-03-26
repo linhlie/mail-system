@@ -23,14 +23,14 @@ public class MatchingConditionSavedService {
         return conditionSavedDAO.findByAccountCreatedId(accountId);
     }
 
-    public void addConditionSaved(MatchingConditionSaved form) throws Exception {
+    public void saveConditionSaved(MatchingConditionSaved form) throws Exception {
         if(form == null) {
             throw new Exception("[MatchingConditionSavedService] form doesn't null");
         }
         long accountId = accountService.getLoggedInAccountId();
         List<MatchingConditionSaved> list = conditionSavedDAO.findByAccountCreatedIdAndConditionNameAndConditionType(accountId, form.getConditionName(), form.getConditionType());
         if(list.size() > 0){
-            throw new Exception("[MatchingConditionSavedService] condition name existed");
+            form.setId(list.get(0).getId());
         }
         form.setAccountCreatedId(accountId);
         conditionSavedDAO.save(form);
@@ -38,5 +38,13 @@ public class MatchingConditionSavedService {
 
     public void delete(long id) {
         conditionSavedDAO.delete(id);
+    }
+
+    public long getLoggedAccountId(){
+        return accountService.getLoggedInAccountId();
+    }
+
+    public List<MatchingConditionSaved> findByConditionTypeAndAccountCreatedId(int conditionType, long accountCreatedId){
+        return conditionSavedDAO.findByConditionTypeAndAccountCreatedId(conditionType, accountCreatedId);
     }
 }

@@ -33,12 +33,6 @@ public class ExtractConditionManagementController {
     @Autowired
     MatchingConditionSavedService conditionSavedService;
 
-    @Autowired
-    AccountService accountService;
-
-    @Autowired
-    MatchingConditionSavedDAO matchingConditionSavedDAO;
-
     @RequestMapping(value = { "/extractConditionManagement" }, method = RequestMethod.GET)
     public String index(Model model, HttpServletRequest request) {
         return "user/extractConditionManagement";
@@ -49,6 +43,7 @@ public class ExtractConditionManagementController {
     public ResponseEntity<?> getListConditionSaved() {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
+
             List<MatchingConditionSaved> list = conditionSavedService.getListConditionSaved();
             result.setList(list);
             result.setMsg("done");
@@ -64,7 +59,7 @@ public class ExtractConditionManagementController {
     @RequestMapping(value = "/extractConditionManagement/add", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<?> addListConditionSaved(@Valid @RequestBody MatchingConditionSaved form, BindingResult bindingResult) {
-        form.setAccountCreatedId(accountService.getLoggedInAccountId());
+        form.setAccountCreatedId(conditionSavedService.getLoggedAccountId());
         AjaxResponseBody result = new AjaxResponseBody();
         if (bindingResult.hasErrors()) {
             result.setMsg(bindingResult.getAllErrors()
@@ -100,7 +95,7 @@ public class ExtractConditionManagementController {
     public ResponseEntity<?> get(@RequestParam("conditionType") int conditionType){
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<MatchingConditionSaved> list = matchingConditionSavedDAO.findByConditionTypeAndAccountCreatedId(conditionType, accountService.getLoggedInAccountId());
+            List<MatchingConditionSaved> list = conditionSavedService.findByConditionTypeAndAccountCreatedId(conditionType, conditionSavedService.getLoggedAccountId());
 
             result.setList(list);
             result.setMsg("done");
