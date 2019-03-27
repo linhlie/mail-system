@@ -46,6 +46,8 @@
     var RULE_NUMBER_UP_RATE_ID = 5;
     var RULE_NUMBER_DOWN_RATE_ID = 6;
 
+    var STATISTIC_CONDITIONTYPE=5;
+
     var ruleNumberId = "ruleNumber";
     var ruleNumberUpRateId = "ruleNumberUpRate";
     var ruleNumberDownRateId = "ruleNumberDownRate";
@@ -302,21 +304,42 @@
         })
     }
 
-    function showNamePrompt(datalist, listKey, prefixUrlKey, defaultName, callback) {
+    function showNamePrompt(datalist, conditionType, defaultName, callback) {
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
+        if(defaultName == ""){
+            $('#dataModalName').attr('placeholder','')
+        }
+        console.log($('#dataModalName'))
+        $("input#dataModalName").css("border-color", "lightgray")
+        $("#warning").addClass("warning")
         updateKeyList(datalist);
         $("#dataModalName").off("change paste keyup");
         $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
         setInputAutoComplete("dataModalName");
         $(removeDatalistItemBtnId).off('click');
-        $(removeDatalistItemBtnId).click(function () {
-            var name = $( '#dataModalName').val();
-            removeDatalistItem(listKey, prefixUrlKey, name);
+        $(removeDatalistItemBtnId).click(function (result) {
+            var name = $("#dataModalName").val();
+            removeDataListItem(name, datalist)
         });
+        $('#dataModalName').off('input');
+        $("#dataModalName").on('input', function () {
+            var x = $("#dataModalName").val().length;
+            if (x > 0) {
+                $("input#dataModalName").css("border-color", "lightgray")
+                $("#warning").addClass("warning")
+            }
+        })
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
+            if (name.length == 0) {
+                $("input#dataModalName").css("border-color", "red")
+                $("#warning").removeClass("warning")
+                return;
+            } else {
+                $("input#dataModalName").css("border-color", "lightgray")
+            }
             $('#dataModal').modal('hide');
             if(typeof callback === "function"){
                 callback(name);
@@ -331,24 +354,35 @@
         });
     }
 
-    function removeDatalistItem(listKey, prefixUrlKey, name){
-        var datalistStr = localStorage.getItem(listKey);
-        var datalist = JSON.parse(datalistStr);
-        var index = datalist.indexOf(name);
-        if (index > -1) {
-            datalist.splice(index, 1);
+    function removeDataListItem(name, datalist) {
+        var dataId;
+        var removeCondition;
+        for (var i = 0; i < datalist.length; i++) {
+            if (name == datalist[i].conditionName) {
+                dataId = datalist[i].id;
+                removeCondition = datalist[i]
+            }
+            var conditionPosition = datalist.indexOf(removeCondition)
+            if(conditionPosition != -1) {
+                datalist.splice(conditionPosition, 1);
+            }
         }
-        localStorage.setItem(listKey, JSON.stringify(datalist));
-        localStorage.removeItem(prefixUrlKey + "@" + name);
-        $( '#dataModalName').val('');
-        updateKeyList(datalist);
+        function onSuccess() {
+            $.alert("条件消除が成功しました");
+            $("#dataModalName").val("");
+            updateKeyList(datalist);
+        }
+        function onError() {
+            console.error("条件消除が失敗しました")
+        }
+        deleteConditionSaved(dataId,onSuccess,onError);
     }
 
     function updateKeyList(datalist) {
         datalist = datalist || [];
         $('#keylist').html('');
         for(var i = 0; i < datalist.length; i++){
-            $('#keylist').append("<option value='" + datalist[i] + "'>");
+            $('#keylist').append("<option value='" + datalist[i].conditionName + "'>");
         }
     }
 
@@ -366,27 +400,37 @@
             $(buttonId).prop("disabled", disabled);
         }
     }
-
     function saveStatisticConditionListData(){
         var result = $(statisticConditionBuilderId).queryBuilder('getRules');
         if ($.isEmptyObject(result)) return;
-        var datalistStr = localStorage.getItem(STATISTIC_CONDITION_LIST_KEY);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
         var defaultPromptName = getInputValue(statisticConditionNameId);
-        showNamePrompt(datalist, STATISTIC_CONDITION_LIST_KEY, STATISTIC_PRE_FIX_URL_KEY, defaultPromptName, function (name) {
-            if (name != null && name.length > 0) {
-                if(datalist.indexOf(name) < 0){
-                    datalist.push(name);
-                }
-                localStorage.setItem(STATISTIC_CONDITION_LIST_KEY, JSON.stringify(datalist));
-                saveListData(
-                    STATISTIC_PRE_FIX_URL_KEY,
-                    name,
-                    result
-                )
+        function onSuccess(response) {
+            if (response && response.status) {
+                showNamePrompt(response.list, STATISTIC_CONDITIONTYPE, defaultPromptName,function (name)  {
+                    var data = {
+                        conditionName: name,
+                        condition: JSON.stringify(result),
+                        conditionType: STATISTIC_CONDITIONTYPE
+                    }
+                    function onSuccess(response) {
+                        if (response && response.status) {
+                            $.alert("条件追加が成功しました")
+                            $(statisticConditionNameId).val(name)
+                        } else {
+                            $.alert("条件追加が失敗しました")
+                        }
+                    }
+                    function onError(response) {
+                        $.alert("条件追加が失敗しました")
+                    }
+                    addConditionSaved(data, onSuccess, onError);
+                })
             }
-        })
+        }
+        function onError() {
+            console.error("load condition data fail")
+        }
+        getAllConditionSaved(STATISTIC_CONDITIONTYPE, onSuccess, onError)
     }
 
     function saveListData(url, name,  data) {
@@ -413,30 +457,39 @@
         });
     }
 
-    function getStaContisticditionListData(skip) {
-        var datalistStr = localStorage.getItem(STATISTIC_CONDITION_LIST_KEY);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        showNamePrompt(datalist, STATISTIC_CONDITION_LIST_KEY, STATISTIC_PRE_FIX_URL_KEY, "", function (name) {
-            if (name != null && name.length > 0) {
-                getListData(STATISTIC_PRE_FIX_URL_KEY, name, statisticConditionBuilderId);
+    function getStaContisticditionListData() {
+        function onSuccess(response) {
+            if (response && response.status) {
+                showNamePrompt(response.list, STATISTIC_CONDITIONTYPE, "", function (name) {
+                    if (name != null && name.length > 0) {
+                        getListData(name, response.list, STATISTIC_CONDITIONTYPE, statisticConditionBuilderId);
+                        $("input#dataModalName").css("border-color", "lightgray");
+                    } else {
+                        $("input#dataModalName").css("border-color", "red")
+                    }
+                })
             }
-        })
+        }
+        function onError() {
+            console.error("条件データロードが失敗しました")
+        }
+        getAllConditionSaved(STATISTIC_CONDITIONTYPE, onSuccess, onError)
     }
 
-    function getListData(url, name, builderId, skipAddDefaultRow) {
+    function getListData(name, datalist, conditionType, builderId) {
         var data = null;
-        if(name && name.length > 0){
-            var key = url + "@" + name;
-            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
+        for(var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                data = datalist[i].condition
+            }
         }
-        if(data != null){
-            var inputId = getInputIdFromUrl(url);
-            setInputValue(inputId, name);
+        if(data == null){
+            $.alert("条件追加が失敗しました");
+        } else {
+            $(statisticConditionNameId).val(name)
+            data = JSON.parse(data);
             replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
-        } else {
-            alert("見つけませんでした。");
         }
     }
 

@@ -714,9 +714,9 @@ function getConditionSaved(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getAllConditionSaved(conditionType, onSuccess, onError) {
+function getAllConditionSaved(conditionType,onSuccess,onError) {
     var url = "/user/extractConditionManagement/get?conditionType="+conditionType;
-    _get(url, onSuccess, onError)
+    _get(url, onSuccess, onError);
 }
 
 function addConditionSaved(data, onSuccess, onError) {
