@@ -18,6 +18,10 @@
     var DESTINATION_CONDITION = 2;
     var MATCHING_CONDITION = 3;
 
+    var SOURCE_CONDITION_OLD = "source";
+    var DESTINATION_CONDITION_OLD  = "destination";
+    var MATCHING_CONDITION_OLD  = "matching";
+
     var conditionSavedArr = [];
 
     $(function () {
@@ -51,38 +55,68 @@
     
     function saveConditionSetting(conditionSettingStr) {
         var conditionSetting = JSON.parse(conditionSettingStr);
-        if(conditionSetting && conditionSetting.conditionType) {
-            var isAllow = isAllowType(conditionSetting.conditionType);
+        var conditionType = "";
+        if(conditionSetting.conditionType){
+            conditionType = conditionSetting.conditionType;
+        }else{
+            switch (conditionSetting.type) {
+                case SOURCE_CONDITION_OLD:
+                    conditionType = SOURCE_CONDITION;
+                    break;
+                case DESTINATION_CONDITION_OLD:
+                    conditionType = DESTINATION_CONDITION;
+                    break;
+                case MATCHING_CONDITION_OLD:
+                    conditionType = MATCHING_CONDITION;
+                    break;
+                default:
+                    conditionType = SOURCE_CONDITION;
+                    break;
+            }
+        }
+        if(conditionSetting && conditionType) {
+            var isAllow = isAllowType(conditionType);
             if(!isAllow) {
                 var incompatibleTypeMessage = getIncompatibleTypeMessage(conditionSetting.conditionType);
                 alert(incompatibleTypeMessage);
                 return;
             }
-            var name = prompt("保存された名前を入力してください:", conditionSetting.conditionName);
+            var conditionName = "";
+            if(conditionSetting.conditionName){
+                conditionName = conditionSetting.conditionName;
+            }else{
+                conditionName = conditionSetting.name;
+            }
+            var name = prompt("保存された名前を入力してください:", conditionName);
             if (name == null || name == "") return;
-            var conditionStr = JSON.stringify(conditionSetting.condition);
+            var conditionStr = null;
+            if(conditionSetting.condition){
+                conditionStr = JSON.stringify(conditionSetting.condition);
+            }else{
+                conditionStr = JSON.stringify(conditionSetting.conditions);
+            }
             var data = {
                 conditionName: name,
                 condition: conditionStr,
-                conditionType: conditionSetting.conditionType
+                conditionType: conditionType
             };
 
             function onSuccess(response) {
                 if(response && response.status) {
                     $.alert({
                         title: "",
-                        content: "add condition success",
+                        content: "条件追加が成功しました",
                         onClose: function () {
                             loadConditionSaved();
                         }
                     });
                 } else {
-                    $.alert("add condition fail");
+                    $.alert("条件追加が失敗しました");
                 }
             }
 
             function onError(response) {
-                $.alert("add condition fail");
+                $.alert("条件追加が失敗しました");
             }
 
             addConditionSaved(data, onSuccess, onError);
@@ -110,13 +144,13 @@
     }
 
     function isAllowType(type) {
-        if(type == SOURCE_CONDITION){
+        if(type == SOURCE_CONDITION || type == SOURCE_CONDITION_OLD){
             return (importFileType == SOURCE_CONDITION);
         }
-        if(type == DESTINATION_CONDITION){
+        if(type == DESTINATION_CONDITION || type == DESTINATION_CONDITION_OLD){
             return (importFileType == DESTINATION_CONDITION);
         }
-        if(type == MATCHING_CONDITION){
+        if(type == MATCHING_CONDITION || type == MATCHING_CONDITION_OLD){
             return (importFileType == MATCHING_CONDITION);
         }
         return false;
@@ -231,12 +265,12 @@
             loadConditionSaved();
         }
         function onError() {
-            $.alert("delete matching condition fail");
+            $.alert("条件消除が失敗しました");
         }
         $.confirm({
-            title: '<b>【Delete condition】</b>',
+            title: '<b>【削除条件】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want delete it？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">削除しますか？<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
