@@ -322,7 +322,6 @@
         loadEngineers();
         loadConditionNotification();
         $(window).on('beforeunload', saveDefaultSettings);
-        $(document).on("keydown", keydownHandler);
     });
 
     function sendDestinationConditions() {
