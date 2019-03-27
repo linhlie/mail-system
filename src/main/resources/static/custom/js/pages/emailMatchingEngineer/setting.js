@@ -321,6 +321,8 @@
         loadDefaultSettings();
         loadEngineers();
         loadConditionNotification();
+        $(window).on('beforeunload', saveDefaultSettings);
+        $(document).on("keydown", keydownHandler);
     });
 
     function sendDestinationConditions() {
@@ -1162,27 +1164,10 @@
         if(data == null){
             $.alert("条件追加が失敗しました");
         } else{
-            if(name && name.length > 0){
-                function onSuccess(response) {
-                    if(response && response.status) {
-                        $(destinationConditionNameId).val(name)
-                    } else {
-                        $.alert("条件追加が失敗しました");
-                    }
-                }
-
-                function onError(response) {
-                    $.alert("条件追加が失敗しました");
-                }
-                getAllConditionSaved(conditionType, onSuccess, onError);
-                data = JSON.parse(data);
-            }
-        }
-        if(data != null){
+            $(destinationConditionNameId).val(name)
+            data = JSON.parse(data);
             replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
-        } else {
-            alert("見つけませんでした。");
         }
     }
 
