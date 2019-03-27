@@ -46,6 +46,7 @@
     var destinationNotificationAccountId = "destination-notification-account";
     var destinationNotificationSentBtnId = "#destination-notification-sent";
 
+    var ENGINEER_MATCHING_CONDITION = 3;
 
     var NOTIFICATION_NEW = 0;
     var NOTIFICATION_ACCEPT = 1;
@@ -333,7 +334,7 @@
         }
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
         if(!destinationConditions) return;
-        sendConditions(toAccount, destinationConditions, ENGINEER_CONDITIONTYPE);
+        sendConditions(toAccount, destinationConditions, ENGINEER_MATCHING_CONDITION);
     }
 
     function sendConditions(toAccount, conditions, conditionType) {
@@ -629,7 +630,6 @@
         sessionStorage.setItem("distinguish-email-matching-engineer", distinguish);
         sessionStorage.setItem("spaceEffective-email-matching-engineer", spaceEffective);
         sessionStorage.setItem(matchingConditionEmailMatchingEngineerKey, JSON.stringify(form));
-        console.log(form);
         saveDefaultSettings();
         var win = window.open('/user/emailMatchingEngineerResult', '_blank');
         if (win) {
@@ -1072,7 +1072,6 @@
         if(defaultName == ""){
             $('#dataModalName').attr('placeholder','')
         }
-        console.log($('#dataModalName'))
         $("input#dataModalName").css("border-color", "lightgray")
         $("#warning").addClass("warning")
         updateKeyList(datalist);
@@ -1084,7 +1083,7 @@
             var name = $("#dataModalName").val();
             removeDataListItem(name, datalist)
         });
-        $('#dataModalOk').off('click');
+        $('#dataModalName').off('input');
         $("#dataModalName").on('input', function () {
             var x = $("#dataModalName").val().length;
             if (x > 0) {
@@ -1092,6 +1091,7 @@
                 $("#warning").addClass("warning")
             }
         })
+        $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
             if (name.length == 0) {
@@ -1162,7 +1162,7 @@
             }
         }
         if(data == null){
-            $.alert("add condition fail");
+            $.alert("条件追加が失敗しました");
         } else{
             if(name && name.length > 0){
                 function onSuccess(response) {
@@ -1182,12 +1182,12 @@
                             $(statisticConditionNameId).val(name)
                         }
                     } else {
-                        $.alert("add condition fail");
+                        $.alert("条件追加が失敗しました");
                     }
                 }
 
                 function onError(response) {
-                    $.alert("add condition fail");
+                    $.alert("条件追加が失敗しました");
                 }
                 getAllConditionSaved(conditionType, onSuccess, onError);
                 data = JSON.parse(data);

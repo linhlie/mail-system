@@ -1,11 +1,8 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dao.MatchingConditionDAO;
-import io.owslab.mailreceiver.dao.MatchingConditionSavedDAO;
 import io.owslab.mailreceiver.model.MatchingConditionSaved;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.service.condition.MatchingConditionSavedService;
-import io.owslab.mailreceiver.service.security.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,7 @@ public class ExtractConditionManagementController {
 
     @Autowired
     MatchingConditionSavedService conditionSavedService;
+
     @RequestMapping(value = { "/extractConditionManagement" }, method = RequestMethod.GET)
     public String index(Model model, HttpServletRequest request) {
         return "user/extractConditionManagement";

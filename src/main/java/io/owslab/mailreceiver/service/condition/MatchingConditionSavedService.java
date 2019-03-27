@@ -1,6 +1,5 @@
 package io.owslab.mailreceiver.service.condition;
 
-import io.owslab.mailreceiver.dao.MatchingConditionDAO;
 import io.owslab.mailreceiver.dao.MatchingConditionSavedDAO;
 import io.owslab.mailreceiver.model.MatchingConditionSaved;
 import io.owslab.mailreceiver.service.security.AccountService;
@@ -15,11 +14,6 @@ public class MatchingConditionSavedService {
     @Autowired
     MatchingConditionSavedDAO conditionSavedDAO;
 
-    @Autowired
-    MatchingConditionDAO matchingConditionDAO;
-
-    @Autowired
-    MatchingConditionSavedDAO matchingConditionSavedDAO;
     @Autowired
     AccountService accountService;
 

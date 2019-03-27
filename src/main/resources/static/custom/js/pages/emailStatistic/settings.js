@@ -324,7 +324,7 @@
             var name = $("#dataModalName").val();
             removeDataListItem(name, datalist)
         });
-        $('#dataModalOk').off('click');
+        $('#dataModalName').off('input');
         $("#dataModalName").on('input', function () {
             var x = $("#dataModalName").val().length;
             if (x > 0) {
@@ -332,6 +332,7 @@
                 $("#warning").addClass("warning")
             }
         })
+        $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
             if (name.length == 0) {
@@ -462,7 +463,6 @@
             if (response && response.status) {
                 showNamePrompt(response.list, STATISTIC_CONDITIONTYPE, "", function (name) {
                     if (name != null && name.length > 0) {
-                        console.log("++++");
                         getListData(name, response, STATISTIC_CONDITIONTYPE, statisticConditionBuilderId);
                         $("input#dataModalName").css("border-color", "lightgray");
                     } else {
@@ -472,7 +472,7 @@
             }
         }
         function onError() {
-            console.error("load condition data fail")
+            console.error("条件データロードが失敗しました")
         }
         getAllConditionSaved(STATISTIC_CONDITIONTYPE, onSuccess, onError)
     }
@@ -486,7 +486,7 @@
         }
         console.log(data);
         if(data == null){
-            $.alert("add condition fail");
+            $.alert("条件追加が失敗しました");
         } else{
             if(name && name.length > 0){
                 function onSuccess(response) {
@@ -506,12 +506,12 @@
                             $(statisticConditionNameId).val(name)
                         }
                     } else {
-                        $.alert("add condition fail");
+                        $.alert("条件追加が失敗しました");
                     }
                 }
 
                 function onError(response) {
-                    $.alert("add condition fail");
+                    $.alert("条件追加が失敗しました");
                 }
                 getAllConditionSaved(conditionType, onSuccess, onError);
                 data = JSON.parse(data);
