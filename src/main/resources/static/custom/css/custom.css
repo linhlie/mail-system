@@ -703,6 +703,10 @@ mark.mark-range {
     height: 18px;
 }
 
+.domain-control-container{
+    transform: translateX(-1px);
+}
+
 .domain-control-container .domain-control {
     font-weight: normal;
 }
@@ -1588,6 +1592,12 @@ div.bulletinboard-icon-wrapper {
     color: orangered;
 }
 
+.btn-notification-div{
+    border: grey solid 1px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
 .email-group .email-group-description {
     padding: 20px;
     width: 100%;
@@ -1667,7 +1677,11 @@ div.bulletinboard-icon-wrapper {
     margin-top: 20px;
 }
 
-.builder-wrapper-header{
+.dashboard-bulletin-board-header-title{
+    font-size: 40px;
+}
+
+.matching-setting-builder-wrapper-header{
     height: 35px;
 }
 
@@ -1675,6 +1689,25 @@ div.bulletinboard-icon-wrapper {
     height: 34px;
     width: 200px;
 }
+
+.matching-setting-submit-button{
+    background-color: #ffe837;
+    z-index: 1;
+    margin-left: 90px;
+    width: calc(100% - 90px);
+    margin-top: 28px
+}
+
+.engineer-matching-filter-engineer{
+    margin-left: 30px;
+    height: 40px;
+}
+
+.engineer-matching-last-month-active{
+    width: 100px;
+}
+
 .warning{
     display: none;
 }
+

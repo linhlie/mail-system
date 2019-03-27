@@ -714,7 +714,6 @@ function getConditionSaved(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-
 function getAllConditionSaved(conditionType,onSuccess,onError) {
     var url = "/user/extractConditionManagement/get?conditionType="+conditionType;
     _get(url, onSuccess, onError);
@@ -724,7 +723,6 @@ function addConditionSaved(data, onSuccess, onError) {
     var url = "/user/extractConditionManagement/add";
     _post(url, data, onSuccess, onError);
 }
-
 function deleteConditionSaved(id, onSuccess, onError) {
     var url = "/user/extractConditionManagement/delete/" + id;
     _delete(url, onSuccess, onError);

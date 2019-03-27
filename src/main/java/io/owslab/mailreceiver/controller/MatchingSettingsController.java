@@ -523,7 +523,7 @@ public class MatchingSettingsController {
             logger.error("showMoreConditionNotifications: " + e.getMessage());
             result.setMsg(e.getMessage());
             result.setStatus(false);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(result);       
         }
     }
 

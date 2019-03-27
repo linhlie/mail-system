@@ -5,6 +5,7 @@
 
 @media screen and (max-width: 768px){
 
+    /* start dash board page*/
     #bulletinBoardEditor_ifr{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
@@ -15,19 +16,36 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    /* start matching setting page*/
+    .dashboard-bulletin-board-header{
+        margin-bottom: 5px;
+        padding-left: 85px !important;
+    }
 
-    .builder-condition-ec{
-        width: 50%;
+    .dashboard-bulletin-board-header-title{
+        font-size: 32px;
+    }
+
+    .dashboard-bulletin-board-header #changeShowType{
+        margin-left: 5px;
+    }
+
+    .dashboard-bulletin-board-header .edit-history{
+        margin-left: 5px !important;
+        font-size: 12px;
+    }
+
+    #bulletinBoardTabs.nav > li > a{
+        padding: 5px 10px;
+    }
+    /* start dash board page*/
+
+    /* start matching setting page*/
+    .matching-setting-switch-conditions{
+        text-align: center
     }
 
     .builder-condition-name{
         width: 50%;
-    }
-
-    .builder-condition-name-input{
-        min-width: 100px !important;
-        width: 150px ;
     }
 
     .builder-condition-sent{
@@ -36,7 +54,7 @@
         margin-bottom: 20px;
     }
 
-    .builder-wrapper-header{
+    .matching-setting-builder-wrapper-header{
         height: 70px;
     }
 
@@ -64,6 +82,144 @@
         height: 22px;
     }
 
+    .matching-setting-action-button{
+        margin-bottom: 3px;
+    }
     /* end matching setting page*/
+
+
+    /* start engineer matching */
+    .engineer-matching-filter-engineer{
+        margin-left: 5px;
+        height: 40px;
+    }
+
+    .engineer-matching-last-month-active{
+        width: 90px;
+    }
+
+    .engineer-matching-action-engineer-div{
+        margin-bottom: 3px;
+    }
+
+    .filterEngineer{
+        margin-left: 15px;
+    }
+
+    .btn-notification-div button{
+        padding: 3px 6px 3px 6px;
+        font-size: 12px !important;
+    }
+    /* end engineer matching*/
+
+    /* start minimine side bar */
+
+    a.sidebar-toggle{
+        display: none;
+    }
+
+    .content-wrapper,
+    .main-footer {
+        margin-left: 0;
+    }
+
+    .main-sidebar {
+        -webkit-transform: translate(-230px, 0);
+        -ms-transform: translate(-230px, 0);
+        -o-transform: translate(-230px, 0);
+        transform: translate(-230px, 0);
+    }
+
+    .sidebar-mini .content-wrapper,
+    .sidebar-mini .right-side,
+    .sidebar-mini .main-footer {
+        margin-left: 50px !important;
+        z-index: 840;
+    }
+
+    .sidebar-mini .main-sidebar {
+        -webkit-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        -o-transform: translate(0, 0);
+        transform: translate(0, 0);
+        width: 50px !important;
+        z-index: 850;
+    }
+
+    .sidebar-mini .sidebar-menu > li {
+        position: relative;
+    }
+    .sidebar-mini .sidebar-menu > li > a {
+        margin-right: 0;
+    }
+    .sidebar-mini .sidebar-menu > li > a > span {
+        border-top-right-radius: 4px;
+    }
+    .sidebar-mini .sidebar-menu > li:not(.treeview) > a > span {
+        border-bottom-right-radius: 4px;
+    }
+    .sidebar-mini .sidebar-menu > li > .treeview-menu {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .sidebar-mini .main-sidebar .user-panel > .info,
+    .sidebar-mini .sidebar-form,
+    .sidebar-mini .sidebar-menu > li > a > span,
+    .sidebar-mini .sidebar-menu > li > .treeview-menu,
+    .sidebar-mini .sidebar-menu > li > a > .pull-right,
+    .sidebar-mini .sidebar-menu li.header {
+        display: none !important;
+        -webkit-transform: translateZ(0);
+    }
+    .sidebar-mini .main-header .logo {
+        width: 50px;
+    }
+    .sidebar-mini .main-header .logo > .logo-mini {
+        display: block;
+        margin-left: -15px;
+        margin-right: -15px;
+        font-size: 18px;
+    }
+    .sidebar-mini .main-header .logo > .logo-lg {
+        display: none;
+    }
+    .sidebar-mini .main-header .navbar {
+        margin-left: 50px;
+    }
+
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > a > span:not(.pull-right),
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > .treeview-menu {
+        display: block !important;
+        position: absolute;
+        width: 180px;
+        left: 50px;
+    }
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > a > span {
+        top: 0;
+        margin-left: -3px;
+        padding: 12px 5px 12px 20px;
+        background-color: inherit;
+    }
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > a > .pull-right-container {
+        position: relative !important;
+        float: right;
+        width: auto !important;
+        left: 180px !important;
+        top: -22px !important;
+        z-index: 900;
+    }
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > a > .pull-right-container > .label:not(:first-of-type) {
+        display: none;
+    }
+    .sidebar-mini:not(.sidebar-mini-expand-feature) .sidebar-menu > li:hover > .treeview-menu {
+        top: 44px;
+        margin-left: 0;
+    }
+    .treeview-menu>li>a{
+        font-size: 11px;
+    }
+    /* end minimine side bar */
 }
 

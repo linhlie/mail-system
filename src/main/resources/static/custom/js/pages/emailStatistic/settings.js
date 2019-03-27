@@ -711,11 +711,11 @@
             switch (notificationList[i].status) {
                 case NOTIFICATION_NEW:
                     $('#modal-body-content').append(
-                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<div class="btn-notification-div">' +
                         '<span>' + notificationList[i].fromAccount + ' があなたに設定条件のレコードを送信しました。</span>' +
-                        '<button class="btn btn-danger pull-right btn-notification-reject"  style="margin-right: 10px;" data-index="'+ i +'">却下</button>' +
-                        '<button class="btn btn-success pull-right btn-notification-accept" style="margin-right: 10px;" data-index="'+ i +'">同意</button>' +
-                        '<button class="btn btn-primary pull-right btn-notification-preview" style="margin-right: 10px;" data-index="'+ i +'">プレビュー</button>' +
+                        '<button class="btn btn-danger pull-right btn-notification-reject"  style="margin-left: 10px;" data-index="'+ i +'">却下</button>' +
+                        '<button class="btn btn-success pull-right btn-notification-accept" style="margin-left: 10px;" data-index="'+ i +'">同意</button>' +
+                        '<button class="btn btn-primary pull-right btn-notification-preview" style="margin-left: 10px;" data-index="'+ i +'">プレビュー</button>' +
                         '<br/>' +
                         '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
                         '</div>'
@@ -723,7 +723,7 @@
                     break;
                 case NOTIFICATION_ACCEPT:
                     $('#modal-body-content').append(
-                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<div class="btn-notification-div">' +
                         '<span>' + notificationList[i].fromAccount + ' からのマッチング条件のレコードを受けました。</span>' +
                         '<br/>' +
                         '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +
@@ -732,7 +732,7 @@
                     break;
                 case NOTIFICATION_REJECT:
                     $('#modal-body-content').append(
-                        '<div style="border: grey solid 1px; padding: 10px; margin-bottom: 10px;">' +
+                        '<div class="btn-notification-div">' +
                         '<span>' + notificationList[i].fromAccount + ' からのマッチング条件のレコードを却下しました。</span>' +
                         '<br/>' +
                         '<span style="font-size: 13px; color: grey">受信日付：' + notificationList[i].sentAt + '</span>' +

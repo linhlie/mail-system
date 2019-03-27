@@ -35,22 +35,6 @@ public class ExtractConditionManagementController {
         return "user/extractConditionManagement";
     }
 
-    @RequestMapping(value = "/extractConditionManagement/get", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<?> get(@RequestParam("conditionType") int conditionType){
-        AjaxResponseBody result = new AjaxResponseBody();
-        try {
-            List<MatchingConditionSaved> list = conditionSavedService.getListConditionSaved();
-            result.setList(list);
-            result.setMsg("done");
-            result.setStatus(true);
-        } catch (Exception e) {
-            logger.error("getListConditionSaved: " + e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-        }
-        return ResponseEntity.ok(result);
-    }
     @RequestMapping(value = { "/extractConditionManagement/getListConditionSaved" }, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getListConditionSaved() {
@@ -79,7 +63,6 @@ public class ExtractConditionManagementController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            form.setAccountCreatedId(conditionSavedService.getLoggedInAccountId());
             conditionSavedService.saveConditionSaved(form);
             result.setMsg("done");
             result.setStatus(true);
@@ -100,5 +83,22 @@ public class ExtractConditionManagementController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping(value = "/extractConditionManagement/get", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<?> get(@RequestParam("conditionType") int conditionType){
+        AjaxResponseBody result = new AjaxResponseBody();
+        try {
+            List<MatchingConditionSaved> list = conditionSavedService.findByConditionTypeAndAccountCreatedId(conditionType);
+            result.setList(list);
+            result.setMsg("done");
+            result.setStatus(true);
+        } catch (Exception e) {
+            logger.error("getListConditionSaved: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+        }
+        return ResponseEntity.ok(result);
     }
 }
