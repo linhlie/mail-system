@@ -1044,39 +1044,19 @@
                 data = response.list[i].condition
             }
         }
-        if (data == null) {
-            $.alert("条件データロードが失敗しました");
-        } else {
-            if (name && name.length > 0) {
-                function onSuccess(response) {
-                    if (response && response.status) {
-
-                        if (conditionType == SOURCE_CONDITIONTYPE){
-                            $(sourceConditionNameId).val(name)
-                        }
-                        else if(conditionType == DESTINATION_CONDITIONTYPE){
-                            $(destinationConditionNameId).val(name)
-                        }
-                        else if (conditionType == MATCHING_CONDITIONTYPE){
-                            $(matchingConditionNameId).val(name)
-                        }
-                    } else {
-                        $.alert("条件データロードが失敗しました");
-                    }
-                }
-
-                function onError(response) {
-                    $.alert("条件データロードが失敗しました");
-                }
-
-                getAllConditionSaved(conditionType, onSuccess, onError);
-                data = JSON.parse(data);
-
-            }
-        }
         if (data != null) {
+            data = JSON.parse(data);
             replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
+            if (conditionType == SOURCE_CONDITIONTYPE){
+                $(sourceConditionNameId).val(name)
+            }
+            else if(conditionType == DESTINATION_CONDITIONTYPE){
+                $(destinationConditionNameId).val(name)
+            }
+            else if (conditionType == MATCHING_CONDITIONTYPE){
+                $(matchingConditionNameId).val(name)
+            }
         } else {
             alert("見つけませんでした。");
         }
