@@ -1675,3 +1675,6 @@ div.bulletinboard-icon-wrapper {
     height: 34px;
     width: 200px;
 }
+.warning{
+    display: none;
+}

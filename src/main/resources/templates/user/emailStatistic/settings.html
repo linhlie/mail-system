@@ -46,7 +46,7 @@
                                         <div class="pull-right builder-condition-sent">
                                             <div id="condition-notification" class="condition-notification-div">
                                                 <span id="condition-notification-new" class="condition-notification-new hidden">0</span>
-                                                <span class="glyphicon glyphicon-bell condition-notification"></span>
+                                                <span class="glyphicon glyphicon-bell condition-nsaveConditionBtnIdotification"></span>
                                             </div>
                                             <select id="condition-notification-account" style="height: 34px; width: 200px;">
                                                 <option value="" style="" disabled="disabled" selected="selected">アカウント選択</option>
@@ -101,6 +101,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group row">
+                    <div class="warning col-sm-8 col-sm-offset-1" id="warning" style="color:red">条件名は必要です</div>
                         <div class="col-sm-8 col-sm-offset-1">
                             <input id="dataModalName" class="dataModalName form-control black-down-triangle black-down-triangle-center" type="text" name="dataModalName" list="keylist" placeholder=""/>
                             <datalist id="keylist">
