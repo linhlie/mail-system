@@ -441,9 +441,6 @@ function matchingMumberValidator(value, rule) {
     if (!value || value.trim().length === 0) {
         return "Value can not be empty!";
     } else if (rule.operator.type !== 'in') {
-        if(value === ruleNumberName || value === ruleNumberUpRateName || value === ruleNumberDownRateName){
-            return true;
-        }
         value = fullWidthNumConvert(value);
         value = value.replace(/，/g, ",");
         var pattern = /^\d+(,\d{3})*(\.\d+)?$/;

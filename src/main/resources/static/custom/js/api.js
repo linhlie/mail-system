@@ -709,6 +709,25 @@ function changeStatusSchedulerEmail(data, onSuccess, onError) {
     _post(url, data, onSuccess, onError);
 }
 
+function getConditionSaved(onSuccess, onError) {
+    var url = "/user/extractConditionManagement/getListConditionSaved";
+    _get(url, onSuccess, onError);
+}
+
+function getAllConditionSaved(conditionType, onSuccess, onError) {
+    var url = "/user/extractConditionManagement/get?conditionType="+conditionType;
+    _get(url, onSuccess, onError)
+}
+
+function addConditionSaved(data, onSuccess, onError) {
+    var url = "/user/extractConditionManagement/add";
+    _post(url, data, onSuccess, onError);
+}
+function deleteConditionSaved(id, onSuccess, onError) {
+    var url = "/user/extractConditionManagement/delete/" + id;
+    _delete(url, onSuccess, onError);
+}
+
 function _doDownload(href){
     var a = document.createElement('A');
     a.href = href;
