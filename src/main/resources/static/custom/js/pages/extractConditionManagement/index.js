@@ -4,6 +4,9 @@
     var sConditionTableId = "sConditionTable";
     var dConditionTableId = "dConditionTable";
     var mConditionTableId = "mConditionTable";
+    var sConditionTableId = "sConditionTable";
+    var engineerConditionTableId = "engineerConditionTable";
+    var statisticConditionTableId = "statisticConditionTable";
 
     var importFileType;
 
@@ -17,6 +20,8 @@
     var SOURCE_CONDITION = 1;
     var DESTINATION_CONDITION = 2;
     var MATCHING_CONDITION = 3;
+    var ENGINEER_CONDITION = 4;
+    var STATISTIC_CONDITION = 5;
 
     var SOURCE_CONDITION_OLD = "source";
     var DESTINATION_CONDITION_OLD  = "destination";
@@ -27,7 +32,6 @@
     $(function () {
         addEventListeners();
         initStickyHeader();
-
         loadConditionSaved();
     });
     
@@ -138,6 +142,10 @@
                 return "比較メール先抽出条件";
             case MATCHING_CONDITION:
                 return "マッチング条件";
+            case ENGINEER_CONDITION:
+                return "エンジニアの条件";
+            case STATISTIC_CONDITION:
+                return "統計的条件";
             default:
                 return "比較メール元抽出条件"
         }
@@ -152,6 +160,12 @@
         }
         if(type == MATCHING_CONDITION || type == MATCHING_CONDITION_OLD){
             return (importFileType == MATCHING_CONDITION);
+        }
+        if(type == ENGINEER_CONDITION){
+            return (importFileType == ENGINEER_CONDITION);
+        }
+        if(type == STATISTIC_CONDITION){
+            return (importFileType == STATISTIC_CONDITION);
         }
         return false;
     }
@@ -180,6 +194,10 @@
                 return DESTINATION_CONDITION;
             case mConditionTableId:
                 return MATCHING_CONDITION;
+            case engineerConditionTableId:
+                return ENGINEER_CONDITION;
+            case statisticConditionTableId:
+                return STATISTIC_CONDITION;
             default:
                 return SOURCE_CONDITION;
         }
@@ -311,6 +329,8 @@
                 initConditionTable(sConditionTableId);
                 initConditionTable(dConditionTableId);
                 initConditionTable(mConditionTableId);
+                initConditionTable(engineerConditionTableId);
+                initConditionTable(statisticConditionTableId);
             }
         }
 
