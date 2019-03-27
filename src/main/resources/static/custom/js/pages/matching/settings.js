@@ -1044,9 +1044,6 @@
                 data = response.list[i].condition
             }
         }
-        if (data == null) {
-            $.alert("条件データロードが失敗しました");
-        }
         if (data != null) {
             data = JSON.parse(data);
             replaceCondition(data);
