@@ -70,11 +70,8 @@
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
 
-    var SOURCE_CONDITIONTYPE = 1;
-    var DESTINATION_CONDITIONTYPE = 2;
-    var MATCHING_CONDITIONTYPE = 3;
     var ENGINEER_CONDITIONTYPE=4;
-    var STATISTIC_CONDITIONTYPE=5;
+
     var replaceRow = '<tr role="row" class="hidden">' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="name" name="engineerRow"><span></span></td>' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="partnerName" name="engineerRow"><span></span></td>' +
@@ -1031,7 +1028,7 @@
             if (response && response.status) {
                 showNamePrompt(response.list, ENGINEER_CONDITIONTYPE, "",function (name) {
                     if (name != null && name.length > 0) {
-                        getListData(name, response, ENGINEER_CONDITIONTYPE,destinationBuilderId);
+                        getListData(name, response.list, ENGINEER_CONDITIONTYPE,destinationBuilderId);
                     }
                     else {
                     }
@@ -1059,6 +1056,7 @@
         }
         function onSuccess() {
             $.alert("条件消除が成功しました");
+            $("#dataModalName").val("");
             updateKeyList(datalist);
         }
         function onError() {
@@ -1154,11 +1152,11 @@
         localStorage.setItem(key, JSON.stringify(data));
     }
 
-    function getListData(name, response, conditionType, builderId) {
+    function getListData(name, datalist, conditionType, builderId) {
         var data = null;
-        for(var i = 0; i < response.list.length; i++){
-            if(name == response.list[i].conditionName){
-                data = response.list[i].condition
+        for(var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                data = datalist[i].condition
             }
         }
         if(data == null){
@@ -1167,20 +1165,7 @@
             if(name && name.length > 0){
                 function onSuccess(response) {
                     if(response && response.status) {
-                        if (conditionType == SOURCE_CONDITIONTYPE){
-                            $(sourceConditionNameId).val(name)
-                        }
-                        else if(conditionType == DESTINATION_CONDITIONTYPE){
-                            $(destinationConditionNameId).val(name)
-                        }
-                        else if (conditionType == MATCHING_CONDITIONTYPE){
-                            $(matchingConditionNameId).val(name)
-                        }
-                        else if (conditionType == ENGINEER_CONDITIONTYPE){
-                            $(destinationConditionNameId).val(name)
-                        }else if (conditionType == STATISTIC_CONDITIONTYPE) {
-                            $(statisticConditionNameId).val(name)
-                        }
+                        $(destinationConditionNameId).val(name)
                     } else {
                         $.alert("条件追加が失敗しました");
                     }

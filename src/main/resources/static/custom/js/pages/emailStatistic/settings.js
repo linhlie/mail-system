@@ -45,11 +45,9 @@
     var RULE_NUMBER_ID = 4;
     var RULE_NUMBER_UP_RATE_ID = 5;
     var RULE_NUMBER_DOWN_RATE_ID = 6;
-    var SOURCE_CONDITIONTYPE = 1;
-    var DESTINATION_CONDITIONTYPE = 2;
-    var MATCHING_CONDITIONTYPE = 3;
-    var ENGINEER_CONDITIONTYPE=4;
+
     var STATISTIC_CONDITIONTYPE=5;
+
     var ruleNumberId = "ruleNumber";
     var ruleNumberUpRateId = "ruleNumberUpRate";
     var ruleNumberDownRateId = "ruleNumberDownRate";
@@ -371,6 +369,7 @@
         }
         function onSuccess() {
             $.alert("条件消除が成功しました");
+            $("#dataModalName").val("");
             updateKeyList(datalist);
         }
         function onError() {
@@ -463,7 +462,7 @@
             if (response && response.status) {
                 showNamePrompt(response.list, STATISTIC_CONDITIONTYPE, "", function (name) {
                     if (name != null && name.length > 0) {
-                        getListData(name, response, STATISTIC_CONDITIONTYPE, statisticConditionBuilderId);
+                        getListData(name, response.list, STATISTIC_CONDITIONTYPE, statisticConditionBuilderId);
                         $("input#dataModalName").css("border-color", "lightgray");
                     } else {
                         $("input#dataModalName").css("border-color", "red")
@@ -477,34 +476,20 @@
         getAllConditionSaved(STATISTIC_CONDITIONTYPE, onSuccess, onError)
     }
 
-    function getListData(name, response, conditionType, builderId) {
+    function getListData(name, datalist, conditionType, builderId) {
         var data = null;
-        for(var i = 0; i < response.list.length; i++){
-            if(name == response.list[i].conditionName){
-                data = response.list[i].condition
+        for(var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                data = datalist[i].condition
             }
         }
-        console.log(data);
         if(data == null){
             $.alert("条件追加が失敗しました");
         } else{
             if(name && name.length > 0){
                 function onSuccess(response) {
                     if(response && response.status) {
-                        if (conditionType == SOURCE_CONDITIONTYPE){
-                            $(sourceConditionNameId).val(name)
-                        }
-                        else if(conditionType == DESTINATION_CONDITIONTYPE){
-                            $(destinationConditionNameId).val(name)
-                        }
-                        else if (conditionType == MATCHING_CONDITIONTYPE){
-                            $(matchingConditionNameId).val(name)
-                        }
-                        else if (conditionType == ENGINEER_CONDITIONTYPE){
-                            $(destinationConditionNameId).val(name)
-                        }else if (conditionType == STATISTIC_CONDITIONTYPE) {
-                            $(statisticConditionNameId).val(name)
-                        }
+                        $(statisticConditionNameId).val(name)
                     } else {
                         $.alert("条件追加が失敗しました");
                     }
@@ -515,7 +500,6 @@
                 }
                 getAllConditionSaved(conditionType, onSuccess, onError);
                 data = JSON.parse(data);
-                console.log(data)
             }
         }
         if(data != null){
