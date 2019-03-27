@@ -31,7 +31,7 @@
     var collapsedPrefixKey = "/user/matchingSettings/collapsed";
 
     var collapseViewPostfix = "-collapse-view";
-    
+
     var checkDomainInPartnerGroupKey = "/user/matchingSettings/checkDomainInPartnerGroup";
 
     var sourceConditionNameId = "#source-condition-name";
@@ -82,6 +82,10 @@
     var ruleNumberDownRateName = "";
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
+
+    var SOURCE_CONDITIONTYPE = 1;
+    var DESTINATION_CONDITIONTYPE = 2;
+    var MATCHING_CONDITIONTYPE = 3;
 
     var default_source_rules = {
         condition: "AND",
@@ -510,7 +514,7 @@
             notification.addClass('hidden');
         }
     }
-    
+
     function sendSourceConditions() {
         var toAccount = $('#' + sourceNotificationAccountId).val();
         if(!toAccount || toAccount==null){
@@ -601,7 +605,7 @@
             }
         }
     }
-    
+
     function switchConditions() {
         var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
@@ -629,7 +633,7 @@
             $(submitFormBtnId).click();
         }
     }
-    
+
     function saveDefaultSettings() {
         var sourceConditions = $(sourceBuilderId).queryBuilder('getRules');
         localStorage.setItem("sourceConditions", JSON.stringify(sourceConditions));
@@ -657,7 +661,7 @@
         localStorage.setItem("destinationConditionName", destinationConditionName);
         localStorage.setItem("matchingConditionName", matchingConditionName);
     }
-    
+
     function getCollapseKey(builderId) {
         return collapsedPrefixKey + "-" + builderId;
     }
@@ -730,43 +734,84 @@
         })
     }
 
-    function saveSourceListData(){
+    function saveSourceListData() {
         var result = $(sourceBuilderId).queryBuilder('getRules');
+        var defaultName = $(sourceConditionNameId).val();
         if ($.isEmptyObject(result)) return;
-        var datalistStr = localStorage.getItem(sourceListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        var defaultPromptName = getInputValue(sourceConditionNameId);
-        showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, defaultPromptName, function (name) {
-            if (name != null && name.length > 0) {
-                if(datalist.indexOf(name) < 0){
-                    datalist.push(name);
+
+        function onSuccess(response) {
+            showNamePrompt(response.list, SOURCE_CONDITIONTYPE, defaultName, function (name) {
+                var data = {
+                    conditionName: name,
+                    condition: JSON.stringify(result),
+                    conditionType: SOURCE_CONDITIONTYPE
                 }
-                localStorage.setItem(sourceListKey, JSON.stringify(datalist));
-                saveListData(
-                    sourcePrefixUrlKey,
-                    name,
-                    result
-                )
-            }
-        })
+
+                function onSuccess(response) {
+                    if (response && response.status) {
+                        $.alert("条件追加が成功しました")
+                        $(sourceConditionNameId).val(name)
+                    } else {
+                        $.alert("条件追加が失敗しました")
+                    }
+                }
+
+                function onError(response) {
+                    $.alert("条件追加が失敗しました")
+                }
+
+                addConditionSaved(data, onSuccess, onError);
+
+            })
+        }
+
+        function onError() {
+        }
+
+        getAllConditionSaved(SOURCE_CONDITIONTYPE, onSuccess, onError)
     }
-    
-    function showNamePrompt(datalist, listKey, prefixUrlKey, defaultName, callback) {
+
+
+    function showNamePrompt(datalist, conditionType, defaultName, callback) {
+
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
+        if(defaultName == ""){
+            $('#dataModalName').attr('placeholder','')
+        }
+
+        $("input#dataModalName").css("border-color", "lightgray")
+        $("#warning").addClass("warning")
         updateKeyList(datalist);
         $("#dataModalName").off("change paste keyup");
         $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
         setInputAutoComplete("dataModalName");
         $(removeDatalistItemBtnId).off('click');
-        $(removeDatalistItemBtnId).click(function () {
-            var name = $( '#dataModalName').val();
-            removeDatalistItem(listKey, prefixUrlKey, name);
+        $(removeDatalistItemBtnId).click(function (result) {
+            var name = $("#dataModalName").val();
+
+            removeDataListItem(name, datalist)
+
         });
+        $('#dataModalName').off('input');
+        $("#dataModalName").on('input', function () {
+            var x = $("#dataModalName").val().length;
+            if (x > 0) {
+                $("input#dataModalName").css("border-color", "lightgray")
+                $("#warning").addClass("warning")
+            }
+        })
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
+            if (name.length == 0) {
+                $("input#dataModalName").css("border-color", "red")
+                $("#warning").removeClass("warning")
+                return;
+            } else {
+                $("input#dataModalName").css("border-color", "lightgray")
+            }
+
             $('#dataModal').modal('hide');
             if(typeof callback === "function"){
                 callback(name);
@@ -781,24 +826,36 @@
         });
     }
 
-    function removeDatalistItem(listKey, prefixUrlKey, name){
-        var datalistStr = localStorage.getItem(listKey);
-        var datalist = JSON.parse(datalistStr);
-        var index = datalist.indexOf(name);
-        if (index > -1) {
-            datalist.splice(index, 1);
+    function removeDataListItem(name, datalist) {
+        var dataId;
+        var removeCondition;
+        for (var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                dataId = datalist[i].id;
+                removeCondition = datalist[i]
+            }
+            var conditionPosition = datalist.indexOf(removeCondition)
+            if(conditionPosition != -1) {
+                datalist.splice(conditionPosition, 1);
+            }
         }
-        localStorage.setItem(listKey, JSON.stringify(datalist));
-        localStorage.removeItem(prefixUrlKey + "@" + name);
-        $( '#dataModalName').val('');
-        updateKeyList(datalist);
+
+        function onSuccess(result){
+            $.alert("条件消除が成功しました")
+            $("#dataModalName").val("")
+            updateKeyList(datalist)
+        }
+        function onError(){
+            $.alert("条件消除が失敗しました")
+        }
+        deleteConditionSaved(dataId, onSuccess, onError)
     }
 
     function updateKeyList(datalist) {
         datalist = datalist || [];
         $('#keylist').html('');
         for(var i = 0; i < datalist.length; i++){
-            $('#keylist').append("<option value='" + datalist[i] + "'>");
+            $('#keylist').append("<option value='" + datalist[i].conditionName + "'>");
         }
     }
 
@@ -819,118 +876,187 @@
 
     function saveDestinationListData(){
         var result = $(destinationBuilderId).queryBuilder('getRules');
+        var defaultName = $(destinationConditionNameId).val();
         if ($.isEmptyObject(result)) return;
-        var datalistStr = localStorage.getItem(destinationListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        var defaultPromptName = getInputValue(destinationConditionNameId);
-        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, defaultPromptName, function (name) {
-            if (name != null && name.length > 0) {
-                if(datalist.indexOf(name) < 0){
-                    datalist.push(name);
+
+        function onSuccess(response) {
+            showNamePrompt(response.list, DESTINATION_CONDITIONTYPE, defaultName, function (name) {
+                var data = {
+                    conditionName: name,
+                    condition: JSON.stringify(result),
+                    conditionType: DESTINATION_CONDITIONTYPE
                 }
-                localStorage.setItem(destinationListKey, JSON.stringify(datalist));
-                saveListData(
-                    destinationPrefixUrlKey,
-                    name,
-                    result
-                )
-            }
-        })
+
+                function onSuccess(response) {
+                    if (response && response.status) {
+                        $.alert("条件追加が成功しました")
+                        $(destinationConditionNameId).val(name)
+                    } else {
+                        $.alert("条件追加が失敗しました")
+                    }
+                }
+
+                function onError(response) {
+                    $.alert("条件追加が失敗しました")
+                }
+
+                addConditionSaved(data, onSuccess, onError);
+
+            })
+        }
+
+        function onError() {
+        }
+
+        getAllConditionSaved(DESTINATION_CONDITIONTYPE, onSuccess, onError)
     }
 
-    function saveMatchingListData(){
+    function saveMatchingListData() {
         var result = $(matchingBuilderId).queryBuilder('getRules');
+        var defaultName = $(matchingConditionNameId).val();
         if ($.isEmptyObject(result)) return;
-        var datalistStr = localStorage.getItem(matchingListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        var defaultPromptName = getInputValue(matchingConditionNameId);
-        showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, defaultPromptName, function (name) {
-            if (name != null && name.length > 0) {
-                if(datalist.indexOf(name) < 0){
-                    datalist.push(name);
+
+        function onSuccess(response) {
+            showNamePrompt(response.list, MATCHING_CONDITIONTYPE, defaultName, function (name) {
+                var data = {
+                    conditionName: name,
+                    condition: JSON.stringify(result),
+                    conditionType: MATCHING_CONDITIONTYPE
                 }
-                localStorage.setItem(matchingListKey, JSON.stringify(datalist));
-                saveListData(
-                    matchingPrefixUrlKey,
-                    name,
-                    result
-                )
-            }
-        })
+
+                function onSuccess(response) {
+                    if (response && response.status) {
+                        $.alert("条件追加が成功しました")
+                        $(matchingConditionNameId).val(name)
+                    } else {
+                        $.alert("条件追加が失敗しました")
+                    }
+                }
+
+                function onError(response) {
+                    $.alert("条件追加が失敗しました")
+                }
+
+                addConditionSaved(data, onSuccess, onError);
+
+            })
+        }
+
+        function onError() {
+        }
+
+        getAllConditionSaved(MATCHING_CONDITIONTYPE, onSuccess, onError)
     }
 
-    function saveListData(url, name,  data) {
+    function saveListData(url, name, data) {
         var key = url + "@" + name;
         var inputId = getInputIdFromUrl(url);
         setInputValue(inputId, name);
         localStorage.setItem(key, JSON.stringify(data));
     }
-    
+
     function setInputAutoComplete(className) {
-        $( "." + className ).off('click');
-        $( "." + className ).off('mouseleave');
-        $( "." + className ).on('click', function() {
-            $(this).attr('placeholder',$(this).val());
+        $("." + className).off('click');
+        $("." + className).off('mouseleave');
+        $("." + className).on('click', function () {
+            $(this).attr('placeholder', $(this).val());
             $(this).val('');
             disableRemoveDatalistItem();
         });
-        $( "." + className ).on('mouseleave', function() {
+        $("." + className).on('mouseleave', function () {
             if ($(this).val() == '') {
                 $(this).val($(this).attr('placeholder'));
             }
         });
     }
-    
+
+
+
     function getSourceListData() {
-        var datalistStr = localStorage.getItem(sourceListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        showNamePrompt(datalist, sourceListKey, sourcePrefixUrlKey, "", function (name) {
-            if (name != null && name.length > 0) {
-                getListData(sourcePrefixUrlKey, name, sourceBuilderId);
+        function onSuccess(response) {
+            if(response && response.status){
+                showNamePrompt(response.list, SOURCE_CONDITIONTYPE, "", function (name) {
+                    if (name != null && name.length > 0) {
+                        getListData(name, response, SOURCE_CONDITIONTYPE, sourceBuilderId);
+                        $("input#dataModalName").css("border-color", "lightgray")
+
+                    } else {
+                        $("input#dataModalName").css("border-color", "red")
+                    }
+                })
             }
-        })
+
+        }
+
+        function onError() {
+            console.error("条件データロードが失敗しました")
+        }
+
+        getAllConditionSaved(SOURCE_CONDITIONTYPE, onSuccess, onError)
+
     }
 
+
     function getDestinationListData(skip) {
-        var datalistStr = localStorage.getItem(destinationListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, "", function (name) {
-            if (name != null && name.length > 0) {
-                getListData(destinationPrefixUrlKey, name, destinationBuilderId);
-            }
-        })
+        function onSuccess(response) {
+            showNamePrompt(response.list, DESTINATION_CONDITIONTYPE, "", function (name) {
+                if (name != null && name.length > 0) {
+                    getListData(name, response, DESTINATION_CONDITIONTYPE, destinationBuilderId);
+                    $("input#dataModalName").css("border-color", "lightgray")
+
+                } else {
+                    $("input#dataModalName").css("border-color", "red")
+                }
+            })
+        }
+
+        function onError() {
+            console.error("条件データロードが失敗しました")
+        }
+
+        getAllConditionSaved(DESTINATION_CONDITIONTYPE, onSuccess, onError)
     }
 
     function getMatchingListData(skip) {
-        var datalistStr = localStorage.getItem(matchingListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        showNamePrompt(datalist, matchingListKey, matchingPrefixUrlKey, "", function (name) {
-            if (name != null && name.length > 0) {
-                getListData(matchingPrefixUrlKey, name, matchingBuilderId, true);
-            }
-        })
+        function onSuccess(response) {
+            showNamePrompt(response.list, MATCHING_CONDITIONTYPE, "", function (name) {
+                if (name != null && name.length > 0) {
+                    getListData(name, response, MATCHING_CONDITIONTYPE, matchingBuilderId);
+                    $("#dataModalName").css("border-color", "lightgray")
+
+                } else {
+                    $("#dataModalName").css("border-color", "red")
+                }
+            })
+        }
+
+        function onError() {
+            console.error("条件データロードが失敗しました")
+        }
+
+        getAllConditionSaved(MATCHING_CONDITIONTYPE, onSuccess, onError)
     }
 
-    function getListData(url, name, builderId, skipAddDefaultRow) {
+    function getListData(name, response, conditionType, builderId) {
         var data = null;
-        if(name && name.length > 0){
-            var key = url + "@" + name;
-            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
+        for (var i = 0; i < response.list.length; i++) {
+            if (name == response.list[i].conditionName) {
+                data = response.list[i].condition
+            }
         }
-        if(data != null){
-            // var enableAddDefaultRow = !skipAddDefaultRow;
-            // if(enableAddDefaultRow) {
-            //     data = addDefaultReceiveDateRow(data);
-            // }
-            var inputId = getInputIdFromUrl(url);
-            setInputValue(inputId, name);
+        if (data != null) {
+            data = JSON.parse(data);
             replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
+            if (conditionType == SOURCE_CONDITIONTYPE){
+                $(sourceConditionNameId).val(name)
+            }
+            else if(conditionType == DESTINATION_CONDITIONTYPE){
+                $(destinationConditionNameId).val(name)
+            }
+            else if (conditionType == MATCHING_CONDITIONTYPE){
+                $(matchingConditionNameId).val(name)
+            }
         } else {
             alert("見つけませんでした。");
         }
@@ -938,19 +1064,19 @@
 
     function addDefaultReceiveDateRow(data) {
         var receivedDateCondition = null;
-        if(data.rules) {
-            for(var i = 0; i < data.rules.length; i ++){
+        if (data.rules) {
+            for (var i = 0; i < data.rules.length; i++) {
                 var condition = data.rules[i];
-                if(condition.id == "8"){
+                if (condition.id == "8") {
                     receivedDateCondition = condition;
                 }
             }
         }
-        if(receivedDateCondition == null){
+        if (receivedDateCondition == null) {
             receivedDateCondition = {
                 id: "8",
                 operator: "greater_or_equal",
-                type:  "string",
+                type: "string",
                 value: "-7"
             }
             data.rules = data.rules ? data.rules : [];
@@ -965,7 +1091,7 @@
         return buildGroupDataFromRaw(result);
     }
 
-    function buildGroupDataFromRaw(data){
+    function buildGroupDataFromRaw(data) {
         var result = {
             condition: data.condition,
             rules: buildRulesDataFromRaw(data)
@@ -975,9 +1101,9 @@
 
     function buildRulesDataFromRaw(data) {
         var result = [];
-        for(var i = 0; i < data.rules.length; i++){
+        for (var i = 0; i < data.rules.length; i++) {
             var rawRule = data.rules[i];
-            if(rawRule.id){
+            if (rawRule.id) {
                 var rule = {
                     id: rawRule.id,
                     operator: rawRule.operator,
@@ -992,13 +1118,13 @@
         }
         return result;
     }
-    
+
     function extractSource() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
-        if(!sourceConditionData) return;
+        if (!sourceConditionData) return;
         var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
-            "conditionData" : sourceConditionData,
+            "conditionData": sourceConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "distinguish": false,
@@ -1018,13 +1144,13 @@
             alert('このサイトのポップアップを許可してください');
         }
     }
-    
+
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
-        if(!destinationConditionData) return;
+        if (!destinationConditionData) return;
         var duplicateSettingData = getCachedDuplicationSettingData();
         var data = {
-            "conditionData" : destinationConditionData,
+            "conditionData": destinationConditionData,
             // "distinguish": $('input[name=distinguish]:checked', formId).val() === "true",
             // "spaceEffective": $('input[name=spaceEffective]:checked', formId).val() === "true",
             "distinguish": false,
@@ -1044,14 +1170,14 @@
             alert('このサイトのポップアップを許可してください');
         }
     }
-    
+
     function submit() {
         var sourceConditionData = buildDataFromBuilder(sourceBuilderId);
-        if(!sourceConditionData) return;
+        if (!sourceConditionData) return;
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
-        if(!destinationConditionData) return;
+        if (!destinationConditionData) return;
         var matchingConditionData = buildDataFromBuilder(matchingBuilderId);
-        if(!matchingConditionData) return;
+        if (!matchingConditionData) return;
         var matchingWords = $(matchingWordsAreaId).val();
         matchingWords = matchingWords.toLocaleLowerCase();
         matchingWords = matchingWords.trim();
@@ -1061,9 +1187,9 @@
         var distinguish = false;
         var duplicateSettingData = getCachedDuplicationSettingData();
         var form = {
-            "sourceConditionData" : sourceConditionData,
-            "destinationConditionData" : destinationConditionData,
-            "matchingConditionData" : matchingConditionData,
+            "sourceConditionData": sourceConditionData,
+            "destinationConditionData": destinationConditionData,
+            "matchingConditionData": matchingConditionData,
             "matchingWords": matchingWords,
             "distinguish": distinguish,
             "spaceEffective": spaceEffective,
@@ -1086,26 +1212,26 @@
             alert('このサイトのポップアップを許可してください');
         }
     }
-    
-    
+
+
     function initDuplicateHandle() {
         var duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
         duplicateSettingData.enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
         $('#duplicate-sender').prop('checked', duplicateSettingData.sender);
         $('#duplicate-subject').prop('checked', duplicateSettingData.subject);
-        $('#enable-duplicate-handle').change(function() {
+        $('#enable-duplicate-handle').change(function () {
             var enable = $(this).is(":checked");
             enable ? $('.duplicate-control.duplicate-control-option').show() : $('.duplicate-control.duplicate-control-option').hide();
             localStorage.setItem("enableDuplicateHandle", enable);
         });
 
-        $('#duplicate-sender').change(function() {
+        $('#duplicate-sender').change(function () {
             var senderEnable = $(this).is(":checked");
             localStorage.setItem("handleDuplicateSender", senderEnable);
         });
 
-        $('#duplicate-subject').change(function() {
+        $('#duplicate-subject').change(function () {
             var subjectEnable = $(this).is(":checked");
             localStorage.setItem("handleDuplicateSubject", subjectEnable);
         });
@@ -1126,37 +1252,37 @@
             handleDuplicateSubject: enableDuplicateHandle && handleDuplicateSubject,
         }
     }
-    
+
     function initSameDomainHandle() {
         var enableSameDomainHandle = getCachedSameDomainSettingData();
         $('#enable-same-domain-handle').prop('checked', enableSameDomainHandle);
-        $('#enable-same-domain-handle').change(function() {
+        $('#enable-same-domain-handle').change(function () {
             var enable = $(this).is(":checked");
             localStorage.setItem("enableSameDomainHandle", enable);
         });
     }
-    
+
     function getCachedSameDomainSettingData() {
         var enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle");
         var enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
     }
-    
+
     function initcheckDomainInPartnerGroup() {
         var checkDomainInPartnerGroup = getCachedCheckDomainInPartnerGroupSettingData();
         $(checkDomainInPartnerGroupId).prop('checked', checkDomainInPartnerGroup);
-        $(checkDomainInPartnerGroupId).change(function() {
+        $(checkDomainInPartnerGroupId).change(function () {
             var enable = $(this).is(":checked");
             localStorage.setItem(checkDomainInPartnerGroupKey, enable);
         });
     }
-    
+
     function getCachedCheckDomainInPartnerGroupSettingData() {
         var checkDomainInPartnerGroupData = localStorage.getItem(checkDomainInPartnerGroupKey);
         var enablecheckDomainInPartnerGroup = typeof checkDomainInPartnerGroupData !== "string" ? false : !!JSON.parse(checkDomainInPartnerGroupData);
         return enablecheckDomainInPartnerGroup;
     }
-    
+
     function getInputIdFromUrl(url) {
         switch (url) {
             case sourcePrefixUrlKey:
@@ -1169,27 +1295,27 @@
                 return sourceConditionNameId;
         }
     }
-    
+
     function setInputValue(inputId, value) {
         $(inputId).val(value);
     }
-    
+
     function getInputValue(inputId) {
         return $(inputId).val();
     }
 
     function replaceCondition(rule) {
         var rules = rule.rules;
-        if(rules){
-            for(var i=rules.length-1;i>=0;i--){
-                if(rules[i].id){
-                    for(var j=0;j<ruleInvalidateIds.length;j++){
-                        if(rules[i].id == ruleInvalidateIds[j]){
+        if (rules) {
+            for (var i = rules.length - 1; i >= 0; i--) {
+                if (rules[i].id) {
+                    for (var j = 0; j < ruleInvalidateIds.length; j++) {
+                        if (rules[i].id == ruleInvalidateIds[j]) {
                             rules.splice(i, 1);
                             break;
                         }
                     }
-                }else{
+                } else {
                     replaceCondition(rules[i]);
                 }
             }
@@ -1198,7 +1324,7 @@
 
     function showNotificationModal(title, notificationList) {
         $('#notificationModal').modal();
-        $( '#notificationModalTitle').text(title);
+        $('#notificationModalTitle').text(title);
         updateNotificationList(notificationList);
         $('#notificationModalClose').off('click');
         $("#notificationModalClose").click(function () {
@@ -1206,12 +1332,12 @@
         });
         $('.notification-modal-show-more').addClass('hidden');
         $('#modal-body-content').off('scroll');
-        $('#modal-body-content').scroll(function() {
-            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
-                if($(this).scrollTop() > 0){
+        $('#modal-body-content').scroll(function () {
+            if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                if ($(this).scrollTop() > 0) {
                     $('.notification-modal-show-more').removeClass('hidden');
                 }
-            }else{
+            } else {
                 $('.notification-modal-show-more').addClass('hidden');
             }
         });
@@ -1219,10 +1345,11 @@
         $('.notification-modal-show-more').click(function () {
             $('.notification-modal-show-more').text('');
             $('.notification-modal-show-more').addClass('fa fa-spinner fa-spin');
+
             function onSuccess(response) {
-                if(response && response.status) {
+                if (response && response.status) {
                     var list = response.list;
-                    for(var i=0;i<list.length;i++){
+                    for (var i = 0; i < list.length; i++) {
                         notificationList.push(list[i]);
                     }
                     updateNotificationList(notificationList);
@@ -1241,15 +1368,15 @@
                 $('.notification-modal-show-more').removeClass('fa fa-spinner fa-spin');
             }
 
-            if(notificationList.length>0){
+            if (notificationList.length > 0) {
                 showMoreConditionNotification(notificationList[notificationList.length - 1], onSuccess, onError)
             }
         });
     }
-    
+
     function updateNotificationList(notificationList) {
         $('#modal-body-content').html("");
-        for(var i=0;i<notificationList.length;i++){
+        for (var i = 0; i < notificationList.length; i++) {
             switch (notificationList[i].status) {
                 case NOTIFICATION_NEW:
                     $('#modal-body-content').append(
@@ -1298,8 +1425,8 @@
                 buttons: {
                     confirm: {
                         text: 'はい',
-                        action: function(){
-                            if(notificationList[index] && notificationList[index] != null){
+                        action: function () {
+                            if (notificationList[index] && notificationList[index] != null) {
                                 notificationList[index].status = NOTIFICATION_ACCEPT;
                                 editConditionNotification(notificationList[index], function () {
                                     downNotification(notificationList[index].conditionType);
@@ -1307,12 +1434,12 @@
                                     applyCondition(notificationList[index]);
                                 });
                             }
-                            console.log(notificationList[index]);
                         }
                     },
                     cancel: {
                         text: 'いいえ',
-                        action: function(){}
+                        action: function () {
+                        }
                     },
                 }
             });
@@ -1327,20 +1454,20 @@
                 buttons: {
                     confirm: {
                         text: 'はい',
-                        action: function(){
-                            if(notificationList[index] && notificationList[index] != null){
+                        action: function () {
+                            if (notificationList[index] && notificationList[index] != null) {
                                 notificationList[index].status = NOTIFICATION_REJECT;
                                 editConditionNotification(notificationList[index], function () {
                                     downNotification(notificationList[index].conditionType);
                                     $('#notificationModal').modal('hide');
                                 });
                             }
-                            console.log(notificationList[index]);
                         }
                     },
                     cancel: {
                         text: 'いいえ',
-                        action: function(){}
+                        action: function () {
+                        }
                     },
                 }
             });
@@ -1363,7 +1490,7 @@
         replaceCondition(condition);
         $('#preview-builder').queryBuilder('setRules', condition);
         $('#previewConditionModal').modal();
-        $( '#previewConditionModalTitle').text("条件プレビュー");
+        $('#previewConditionModalTitle').text("条件プレビュー");
         $('#previewConditionModalClose').off('click');
         $("#previewConditionModalClose").click(function () {
             $('#previewConditionModal').modal('hide');
@@ -1374,9 +1501,10 @@
         $('.btn-notification-preview').button('loading');
         $('.btn-notification-accept').button('loading');
         $('.btn-notification-reject').button('loading');
+
         function onSuccess(response) {
-            if(response && response.status) {
-                if(typeof callback === "function"){
+            if (response && response.status) {
+                if (typeof callback === "function") {
                     callback();
                 }
             } else {
@@ -1399,23 +1527,23 @@
         updateConditionNotification(conditionNotification, onSuccess, onError)
     }
 
-    function downNotification(conditionType){
+    function downNotification(conditionType) {
         var number = 0;
         switch (conditionType) {
             case SOURCE_CONDITION:
-                number = $('#' +sourceNotificationNewId).text();
+                number = $('#' + sourceNotificationNewId).text();
                 break;
             case DESTINATION_CONDITION:
-                number = $('#' +destinationNotificationNewId).text();
+                number = $('#' + destinationNotificationNewId).text();
                 break;
             case MATCHING_CONDITION:
-                number = $('#' +matchingNotificationNewId).text();
+                number = $('#' + matchingNotificationNewId).text();
                 break;
         }
-        updateNotification(number-1, conditionType);
+        updateNotification(number - 1, conditionType);
     }
 
-    function applyCondition(conditionNotification){
+    function applyCondition(conditionNotification) {
         var queryBuilder = null;
         switch (conditionNotification.conditionType) {
             case SOURCE_CONDITION:

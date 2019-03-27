@@ -1,4 +1,3 @@
-
 (function () {
     var engineerTableId = "engineerTable";
     var selectAllCheckBoxId = "#selectAll";
@@ -23,7 +22,7 @@
     var engineerCondition = null;
     var hourlyMonneyCondition = null;
     var listEngineerCondition = [];
-    
+
     var collapsedPrefixKey = "/user/emailMatchingEngineer/collapsed";
     var destinationListKey = "/user/emailMatchingEngineer/listDestinationKey";
     var destinationPrefixUrlKey = "/user/emailMatchingEngineer/destination";
@@ -32,7 +31,7 @@
     var matchingConditionEmailMatchingEngineerKey = "matchingConditionData-email-matching-engineer";
     var distinguishEmailMatchingEngineerKey = "distinguish-email-matching-engineer";
     var spaceEffectiveEmailMatchingEngineerKey = "spaceEffective-email-matching-engineer";
-    
+
     var collapseViewPostfix = "-collapse-view-email-matching-engineer";
 
     var formFields = [
@@ -71,6 +70,8 @@
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
 
+    var ENGINEER_CONDITIONTYPE=4;
+
     var replaceRow = '<tr role="row" class="hidden">' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="name" name="engineerRow"><span></span></td>' +
         '<td style= "cursor: pointer;" class="clickable" rowspan="1" colspan="1" data="partnerName" name="engineerRow"><span></span></td>' +
@@ -85,142 +86,142 @@
         '</td>' +
         '<td style= "cursor: pointer;" align="center" rowspan="1" colspan="1" data="id"><input type="checkbox" class="selectEngineer" name="selectEngineer" checked value="id"/></td>' +
         '</tr>';
-    
+
     var default_destination_rules = {
-            condition: "AND",
-            rules: [
-                {
-                    id: "7",
-                    input: "ratio",
-                    type: "integer",
-                    value: 0
-                },
-                {
-                    id: "8",
-                    operator: "greater_or_equal",
-                    type:  "string",
-                    value: "-7"
-                },
-                {
-                    id: "2",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "Re:"
-                },
-                {
-                    id: "0",
-                    operator: "not_contains",
-                    type:  "string",
-                    value: "@world-link-system.com"
-                }
-            ]
-        };
+        condition: "AND",
+        rules: [
+            {
+                id: "7",
+                input: "ratio",
+                type: "integer",
+                value: 0
+            },
+            {
+                id: "8",
+                operator: "greater_or_equal",
+                type:  "string",
+                value: "-7"
+            },
+            {
+                id: "2",
+                operator: "not_contains",
+                type:  "string",
+                value: "Re:"
+            },
+            {
+                id: "0",
+                operator: "not_contains",
+                type:  "string",
+                value: "@world-link-system.com"
+            }
+        ]
+    };
     var default_hourlyMoney_rules = {
-            condition: "AND",
-            rules: [
-                {
-                    id: "4",
-                    operator: "greater_or_equal",
-                    type: "string",
-                    value: "",
-                }
-            ]
-        };
+        condition: "AND",
+        rules: [
+            {
+                id: "4",
+                operator: "greater_or_equal",
+                type: "string",
+                value: "",
+            }
+        ]
+    };
 
     $(function () {
-    	var default_plugins = [
-    	    'sortable',
-    	    'filter-description',
-    	    'unique-filter',
-    	    'bt-tooltip-errors',
-    	    'bt-selectpicker',
-    	    'bt-checkbox',
-    	    'invert',
-    	];
+        var default_plugins = [
+            'sortable',
+            'filter-description',
+            'unique-filter',
+            'bt-tooltip-errors',
+            'bt-selectpicker',
+            'bt-checkbox',
+            'invert',
+        ];
 
-    	var default_filters = [{
-    	    id: '0',
-    	    label: '送信者',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '1',
-    	    label: '受信者',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '9',
-    	    label: 'CC',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '10',
-    	    label: 'BCC',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '11',
-    	    label: '全て(受信者・CC・BCC)',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '12',
-    	    label: 'いずれか(受信者・CC・BCC)',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '2',
-    	    label: '件名',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '3',
-    	    label: '本文',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '13',
-    	    label: '全て(件名・本文)',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '14',
-    	    label: 'いずれか(件名・本文)',
-    	    type: 'string',
-    	    operators: ['contains', 'not_contains', 'equal', 'not_equal']
-    	}, {
-    	    id: '7',
-    	    label: '添付ファイル',
-    	    type: 'integer',
-    	    input: 'radio',
-    	    values: {
-    	       1: '有り',
-    	       0: '無し'
-    	    },
-    	    colors: {
-    	       1: 'success',
-    	       0: 'danger'
-    	    },
-    	    operators: ['equal']
-    	 }, {
-    	    id: '8',
-    	    label: '受信日',
-    	    type: 'string',
-    	       operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
-    	    }, {
-    	        id: '15',
-    	    label: 'マーク',
-    	        type: 'string',
-    	        operators: ['equal', 'not_equal']
-    	 }];
-    	
+        var default_filters = [{
+            id: '0',
+            label: '送信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '1',
+            label: '受信者',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '9',
+            label: 'CC',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '10',
+            label: 'BCC',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '11',
+            label: '全て(受信者・CC・BCC)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '12',
+            label: 'いずれか(受信者・CC・BCC)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '2',
+            label: '件名',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '3',
+            label: '本文',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '13',
+            label: '全て(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '14',
+            label: 'いずれか(件名・本文)',
+            type: 'string',
+            operators: ['contains', 'not_contains', 'equal', 'not_equal']
+        }, {
+            id: '7',
+            label: '添付ファイル',
+            type: 'integer',
+            input: 'radio',
+            values: {
+                1: '有り',
+                0: '無し'
+            },
+            colors: {
+                1: 'success',
+                0: 'danger'
+            },
+            operators: ['equal']
+        }, {
+            id: '8',
+            label: '受信日',
+            type: 'string',
+            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
+        }, {
+            id: '15',
+            label: 'マーク',
+            type: 'string',
+            operators: ['equal', 'not_equal']
+        }];
 
-    	 var default_filters_houtlyMoney = [];
-    	 
- 		var default_rules_houtlyMoney = {
-    			"condition":"AND",
-    			"rules":[],
-    			"valid":true};
+
+        var default_filters_houtlyMoney = [];
+
+        var default_rules_houtlyMoney = {
+            "condition":"AND",
+            "rules":[],
+            "valid":true};
 
         ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
         if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
@@ -278,29 +279,29 @@
         }
 
 
-    	 default_destination_configs = {
-    	    plugins: default_plugins,
-    	    allow_empty: true,
-    	    filters: default_filters,
-    	    rules: null,
-    	    lang: globalConfig.default_lang,
-    	 };
-    	 
-    	 var default_hourlyMoney_configs = {
-    	    plugins: default_plugins,
-    	    allow_empty: true,
-    	    filters: default_filters_houtlyMoney,
-    	    rules: null,
-    	    lang: globalConfig.default_lang,
-    	 };
+        default_destination_configs = {
+            plugins: default_plugins,
+            allow_empty: true,
+            filters: default_filters,
+            rules: null,
+            lang: globalConfig.default_lang,
+        };
 
-    	$(destinationBuilderId).queryBuilder(default_destination_configs);
-    	if(ruleNumberName != null && ruleNumberName != ""){
+        var default_hourlyMoney_configs = {
+            plugins: default_plugins,
+            allow_empty: true,
+            filters: default_filters_houtlyMoney,
+            rules: null,
+            lang: globalConfig.default_lang,
+        };
+
+        $(destinationBuilderId).queryBuilder(default_destination_configs);
+        if(ruleNumberName != null && ruleNumberName != ""){
             $(hourlyMoneyBuilderId).queryBuilder(default_hourlyMoney_configs);
         }else{
             $(".engineer-condition-filter").addClass('hidden');
         }
-    	    
+
         initLastMonthActive();
         initDuplicateHandle();
         initDomainHandle();
@@ -320,6 +321,7 @@
         loadDefaultSettings();
         loadEngineers();
         loadConditionNotification();
+        $(window).on('beforeunload', saveDefaultSettings);
     });
 
     function sendDestinationConditions() {
@@ -388,7 +390,7 @@
             notification.addClass('hidden');
         }
     }
-    
+
     function initDuplicateHandle() {
         var duplicateSettingData = getCachedDuplicationSettingData();
         $('#enable-duplicate-handle').prop('checked', duplicateSettingData.enable);
@@ -411,13 +413,13 @@
             localStorage.setItem("handleDuplicateSubject-email-matching-engineer", subjectEnable);
         });
     }
-    
+
     function initDomainHandle() {
         var domainSettingData = getCachedDomainSettingData();
         $('#domain-partner-current').prop('checked', domainSettingData.handleDomainPartnerCurrent);
         domainSettingData.handleDomainPartnerCurrent ? $('.domain-control.domain-control-option').show() : $('.domain-control.domain-control-option').hide();
         $('#domain-partner-group').prop('checked', domainSettingData.handleDomainPartnerGroup);
-        
+
         $('#domain-partner-current').change(function() {
             var enable = $(this).is(":checked");
             enable ? $('.domain-control.domain-control-option').show() : $('.domain-control.domain-control-option').hide();
@@ -429,7 +431,7 @@
             localStorage.setItem("handleDomainPartnerGroup-email-matching-engineer", enable);
         });
     }
-    
+
     function setButtonClickListenerByName(name, callback) {
         $("button[name='"+name+"']").off('click');
         $("button[name='"+name+"']").click(function () {
@@ -438,7 +440,7 @@
             }
         })
     }
-    
+
     function setupSelectBoxes() {
         $(selectAllCheckBoxId).click(function () {
             $('input[name="caseSelect"]').prop('checked', this.checked);
@@ -452,23 +454,23 @@
             }
         });
     }
-    
+
     function filterTypeChangeListener() {
-    	$('#filterEngineerFilterTime').change(function(){
-    		    var disabled = $(this).is(':checked');
-    		    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
-    	});
-    	
-    	$('#enableEngineerFilterTime').change(function(){
-		    var disabled = $(this).is(':checked');
-		    $('#filterEngineerFilterTime').prop('disabled', !disabled);
-		    $('#filterEngineerFilterNull').prop('disabled', !disabled);
-		    if(!disabled){
-			    $('#filterEngineerFilterTime').prop('checked', disabled);
-			    $('#filterEngineerFilterNull').prop('checked', disabled);
-			    $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
-		    }
-    	});
+        $('#filterEngineerFilterTime').change(function(){
+            var disabled = $(this).is(':checked');
+            $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+        });
+
+        $('#enableEngineerFilterTime').change(function(){
+            var disabled = $(this).is(':checked');
+            $('#filterEngineerFilterTime').prop('disabled', !disabled);
+            $('#filterEngineerFilterNull').prop('disabled', !disabled);
+            if(!disabled){
+                $('#filterEngineerFilterTime').prop('checked', disabled);
+                $('#filterEngineerFilterNull').prop('checked', disabled);
+                $(lastMonthActiveId).MonthPicker('option', 'Disabled', !disabled);
+            }
+        });
     }
 
     function initLastMonthActive() {
@@ -494,7 +496,7 @@
             AltFormat: '@',
             AltField: lastMonthActiveId + "Alt",
         });
-    	$(lastMonthActiveId).MonthPicker('option', 'Disabled', true);
+        $(lastMonthActiveId).MonthPicker('option', 'Disabled', true);
     }
 
     function initStickyHeader() {
@@ -528,7 +530,7 @@
         for (var i = 0; i < formFields.length; i++) {
             var field = formFields[i];
             if(field.name=="id"){
-            	$("input[name='id']").val(id);
+                $("input[name='id']").val(id);
             }else if(field.type == "checkbox"){
                 $("input" + "[name='" + field.name + "']").prop('checked', form[field.name]);
             } else if (field.type == "radio") {
@@ -538,7 +540,7 @@
             }
         }
     }
-    
+
     function setHourlyMoneyBuilder(data){
         if(ruleNumberName != null && ruleNumberName != ""){
             if(data.moneyCondition == null){
@@ -568,42 +570,42 @@
             }
         }
     }
-    
+
     function setMoneyCondition(listData){
-    	for(var i=0;i<listData.length;i++){
-        	if(listData[i].moneyCondition == null){
-            	var money = listData[i].monetaryMoney;
-        		if(money!=null && money.trim()!=""){
-               		var rules = {
-               			"condition":"AND",
-               			"rules":[{
-               				"id":"4",
-               				"field":"1",
-               				"type":"string",
-               				"input":"text",
-               				"operator":"greater_or_equal",
-               				"value":money
-               					}],
-               			"valid":true};
-               		listData[i].moneyCondition = rules;
-            	}
-        	}
-    	}
+        for(var i=0;i<listData.length;i++){
+            if(listData[i].moneyCondition == null){
+                var money = listData[i].monetaryMoney;
+                if(money!=null && money.trim()!=""){
+                    var rules = {
+                        "condition":"AND",
+                        "rules":[{
+                            "id":"4",
+                            "field":"1",
+                            "type":"string",
+                            "input":"text",
+                            "operator":"greater_or_equal",
+                            "value":money
+                        }],
+                        "valid":true};
+                    listData[i].moneyCondition = rules;
+                }
+            }
+        }
     }
-    
+
     function getListEngineerMatching(){
-    	var listEng = [];
+        var listEng = [];
         $("input[name=caseSelect]:checked").each(function () {
             var engineerId = $(this).attr("value");
             for(var i=0;i<engineers.length;i++){
-            	if(engineerId == engineers[i].id){
-            		listEng.push(engineers[i]);
-            	}
+                if(engineerId == engineers[i].id){
+                    listEng.push(engineers[i]);
+                }
             }
         });
         return listEng;
     }
-    
+
     function submit() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
@@ -626,7 +628,6 @@
         sessionStorage.setItem("distinguish-email-matching-engineer", distinguish);
         sessionStorage.setItem("spaceEffective-email-matching-engineer", spaceEffective);
         sessionStorage.setItem(matchingConditionEmailMatchingEngineerKey, JSON.stringify(form));
-        console.log(form);
         saveDefaultSettings();
         var win = window.open('/user/emailMatchingEngineerResult', '_blank');
         if (win) {
@@ -637,27 +638,27 @@
             alert('このサイトのポップアップを許可してください。');
         }
     }
-    
+
     function getCachedSameDomainSettingData() {
         var enableSameDomainHandleData = localStorage.getItem("enableSameDomainHandle-email-matching-engineer");
         var enableSameDomainHandle = typeof enableSameDomainHandleData !== "string" ? false : !!JSON.parse(enableSameDomainHandleData);
         return enableSameDomainHandle;
     }
-    
+
     function updateListEngineer(engineerCondition){
-    	if(engineerCondition==null) return;   	
-    	for(var i=0;i<engineers.length;i++){
-    		if(engineers[i]!=null){
-    			if(engineerCondition.id == engineers[i].id){
-    				engineers[i].matchingWord = engineerCondition.matchingWord;
-    				engineers[i].notGoodWord = engineerCondition.notGoodWord;
-    				if(ruleNumberName != null && ruleNumberName != ""){
+        if(engineerCondition==null) return;
+        for(var i=0;i<engineers.length;i++){
+            if(engineers[i]!=null){
+                if(engineerCondition.id == engineers[i].id){
+                    engineers[i].matchingWord = engineerCondition.matchingWord;
+                    engineers[i].notGoodWord = engineerCondition.notGoodWord;
+                    if(ruleNumberName != null && ruleNumberName != ""){
                         var monneyCondition = $(hourlyMoneyBuilderId).queryBuilder('getRules');
                         engineers[i].moneyCondition = monneyCondition;
                     }
-    			}
-    		}
-    	}
+                }
+            }
+        }
     }
 
     function applyConditionOnClick() {
@@ -673,11 +674,11 @@
         clearEngineerOnClick();
         selectNextRow(engineers);
     }
-    
+
     function disableApplyConditionEnginer(disable) {
         $(applyConditionBtnId).prop('disabled', disable);
     }
-    
+
     function engineerFormValidate() {
         var validate1 = engineerNameValidate();
         return validate1 ;
@@ -730,9 +731,9 @@
                 setupSelectBoxes();
                 setMoneyCondition(response.list);
             }
-            
+
             if(typeof callback == 'function'){
-            	callback(response.list);
+                callback(response.list);
             }
         }
 
@@ -752,7 +753,7 @@
             }
             $("#" + tableId + "> tbody").html(html);
             setRowClickListener("engineerRow", function () {
-            	var $this = $(this);
+                var $this = $(this);
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 selectedSourceTableRow = parseInt(index) + 1;
@@ -873,14 +874,14 @@
             }
         });
     }
-    
+
     function filterEngineerOnClick() {
         loadEngineers();
         clearEngineerOnClick();
     }
-    
+
     function getFilterForm() {
-    	var filterType = $('input[name=engineerFilter]:checked').val();
+        var filterType = $('input[name=engineerFilter]:checked').val();
         var filterDate = $(lastMonthActiveId + "Alt").val();
         var filterTime = $('#filterEngineerFilterTime').is(":checked");
         var filterTimeNull = $('#filterEngineerFilterNull').is(":checked");
@@ -888,41 +889,41 @@
             filterType: filterType,
             filterDate: filterDate,
             filterTime: filterTime,
-        	filterTimeNull: filterTimeNull,
+            filterTimeNull: filterTimeNull,
         }
     }
-    
+
     function selectNextRow(){
-    	if ($(checkboxNextSelectId).is(":checked")){
-    		selectedSourceTableRow = selectedSourceTableRow+1;
-    		selectNext(selectedSourceTableRow);
-    	}else{
-    		clearEngineerOnClick();
-    	}
+        if ($(checkboxNextSelectId).is(":checked")){
+            selectedSourceTableRow = selectedSourceTableRow+1;
+            selectNext(selectedSourceTableRow);
+        }else{
+            clearEngineerOnClick();
+        }
     }
-    
+
     function selectNext(index) {
         if(index>engineers.length) {
-        	$.alert("最終行まで更新しました");
-        	clearEngineerOnClick();
+            $.alert("最終行まで更新しました");
+            clearEngineerOnClick();
         } else {
-        	var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
+            var row = $('#' + engineerTableId).find(' tbody tr:eq('+index+')');
             selectedRow(row);
             var rowData = engineers[index-1];
-            setEngineer(rowData.id, rowData);  
+            setEngineer(rowData.id, rowData);
         }
     }
-    
+
     function selectedRow(row) {
         row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
     }
-    
+
     function loadDefaultSettings() {
         loadExpandCollapseSetting(destinationBuilderId);
         if(ruleNumberName != null && ruleNumberName != ""){
             loadExpandCollapseSetting(hourlyMoneyBuilderId);
         }
-        
+
         var destinationConditionsStr = localStorage.getItem(destinationConditionKey);
         var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
         replaceCondition(destinationConditions);
@@ -934,7 +935,7 @@
         var destinationConditionName = localStorage.getItem(destinationConditionNameKey) || "未登録の条件";
         setInputValue(destinationConditionNameId, destinationConditionName);
     }
-    
+
     function saveDefaultSettings() {
 
         var destinationConditions = $(destinationBuilderId).queryBuilder('getRules');
@@ -947,7 +948,7 @@
         var destinationConditionName = getInputValue(destinationConditionNameId);
         localStorage.setItem(destinationConditionNameKey, destinationConditionName);
     }
-    
+
     function loadExpandCollapseSetting(builderId) {
         var isHidden = localStorage.getItem(getCollapseKey(builderId)) === "true";
         var $builder = $(builderId);
@@ -963,15 +964,15 @@
             $builder.show();
         }
     }
-    
+
     function getCollapseKey(builderId) {
         return collapsedPrefixKey + "-" + builderId;
     }
-    
+
     function setInputValue(inputId, value) {
         $(inputId).val(value);
     }
-    
+
     function onExpandCollapseBuilder() {
         var builderId = this.getAttribute("data");
         if(builderId) {
@@ -992,55 +993,113 @@
             }
         }
     }
-    
     function saveDestinationListData(){
         var result = $(destinationBuilderId).queryBuilder('getRules');
+        var defaultName = $(destinationConditionNameId).val();
         if ($.isEmptyObject(result)) return;
-        var datalistStr = localStorage.getItem(destinationListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        var defaultPromptName = getInputValue(destinationConditionNameId);
-        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, defaultPromptName, function (name) {
-            if (name != null && name.length > 0) {
-                if(datalist.indexOf(name) < 0){
-                    datalist.push(name);
+        function onSuccess(response) {
+            showNamePrompt(response.list, ENGINEER_CONDITIONTYPE, defaultName, function (name) {
+                var data = {
+                    conditionName: name,
+                    condition: JSON.stringify(result),
+                    conditionType: ENGINEER_CONDITIONTYPE
                 }
-                localStorage.setItem(destinationListKey, JSON.stringify(datalist));
-                saveListData(
-                    destinationPrefixUrlKey,
-                    name,
-                    result
-                )
-            }
-        })
+                function onSuccess(response) {
+                    if (response && response.status) {
+                        $.alert("条件追加が成功しました")
+                        $(destinationConditionNameId).val(name)
+                    } else {
+                        $.alert("条件追加が失敗しました")
+                    }
+                }
+                function onError(response) {
+                    $.alert("条件追加が失敗しました")
+                }
+                addConditionSaved(data, onSuccess, onError);
+            })
+        }
+        function onError() {
+        }
+        getAllConditionSaved(ENGINEER_CONDITIONTYPE, onSuccess, onError)
     }
-    
+
+
     function getDestinationListData(skip) {
-        var datalistStr = localStorage.getItem(destinationListKey);
-        var datalist = JSON.parse(datalistStr);
-        datalist = datalist || [];
-        showNamePrompt(datalist, destinationListKey, destinationPrefixUrlKey, "", function (name) {
-            if (name != null && name.length > 0) {
-                getListData(destinationPrefixUrlKey, name, destinationBuilderId);
+        function onSuccess(response) {
+            if (response && response.status) {
+                showNamePrompt(response.list, ENGINEER_CONDITIONTYPE, "",function (name) {
+                    if (name != null && name.length > 0) {
+                        getListData(name, response.list, ENGINEER_CONDITIONTYPE,destinationBuilderId);
+                    }
+                    else {
+                    }
+                })
             }
-        })
+        }
+        function onError() {
+            console.error("条件データロードが失敗しました")
+        }
+        getAllConditionSaved(ENGINEER_CONDITIONTYPE, onSuccess, onError)
     }
-    
-    function showNamePrompt(datalist, listKey, prefixUrlKey, defaultName, callback) {
+
+    function removeDataListItem(name, datalist) {
+        var dataId;
+        var removeCondition;
+        for (var i = 0; i < datalist.length; i++) {
+            if (name == datalist[i].conditionName) {
+                dataId = datalist[i].id;
+                removeCondition = datalist[i]
+            }
+            var conditionPosition = datalist.indexOf(removeCondition)
+            if(conditionPosition != -1) {
+                datalist.splice(conditionPosition, 1);
+            }
+        }
+        function onSuccess() {
+            $.alert("条件消除が成功しました");
+            $("#dataModalName").val("");
+            updateKeyList(datalist);
+        }
+        function onError() {
+            console.error("条件消除が失敗しました")
+        }
+        deleteConditionSaved(dataId,onSuccess,onError);
+    }
+    function showNamePrompt(datalist, conditionType, defaultName, callback) {
         $('#dataModal').modal();
         $( '#dataModalName').val(defaultName);
+        if(defaultName == ""){
+            $('#dataModalName').attr('placeholder','')
+        }
+        $("input#dataModalName").css("border-color", "lightgray")
+        $("#warning").addClass("warning")
         updateKeyList(datalist);
         $("#dataModalName").off("change paste keyup");
         $("#dataModalName").on("change paste keyup", disableRemoveDatalistItem);
         setInputAutoComplete("dataModalName");
         $(removeDatalistItemBtnId).off('click');
-        $(removeDatalistItemBtnId).click(function () {
-            var name = $( '#dataModalName').val();
-            removeDatalistItem(listKey, prefixUrlKey, name);
+        $(removeDatalistItemBtnId).click(function (result) {
+            var name = $("#dataModalName").val();
+            removeDataListItem(name, datalist)
         });
+        $('#dataModalName').off('input');
+        $("#dataModalName").on('input', function () {
+            var x = $("#dataModalName").val().length;
+            if (x > 0) {
+                $("input#dataModalName").css("border-color", "lightgray")
+                $("#warning").addClass("warning")
+            }
+        })
         $('#dataModalOk').off('click');
         $("#dataModalOk").click(function () {
             var name = $( '#dataModalName').val();
+            if (name.length == 0) {
+                $("input#dataModalName").css("border-color", "red")
+                $("#warning").removeClass("warning")
+                return;
+            } else {
+                $("input#dataModalName").css("border-color", "lightgray")
+            }
             $('#dataModal').modal('hide');
             if(typeof callback === "function"){
                 callback(name);
@@ -1054,15 +1113,15 @@
             }
         });
     }
-    
+
     function updateKeyList(datalist) {
         datalist = datalist || [];
         $('#keylist').html('');
         for(var i = 0; i < datalist.length; i++){
-            $('#keylist').append("<option value='" + datalist[i] + "'>");
+            $('#keylist').append("<option value='" + datalist[i].conditionName + "'>");
         }
     }
-    
+
     function disableRemoveDatalistItem() {
         var name = $( '#dataModalName').val();
         if(!name || name.trim().length === 0){
@@ -1071,7 +1130,7 @@
             disableButton(removeDatalistItemBtnId, false);
         }
     }
-    
+
     function setInputAutoComplete(className) {
         $( "." + className ).off('click');
         $( "." + className ).off('mouseleave');
@@ -1086,30 +1145,31 @@
             }
         });
     }
-    
+
     function saveListData(url, name,  data) {
         var key = url + "@" + name;
         var inputId = getInputIdFromUrl(url);
         setInputValue(inputId, name);
         localStorage.setItem(key, JSON.stringify(data));
     }
-    
-    function getListData(url, name, builderId, skipAddDefaultRow) {
+
+    function getListData(name, datalist, conditionType, builderId) {
         var data = null;
-        if(name && name.length > 0){
-            var key = url + "@" + name;
-            data = localStorage.getItem(key) != null ? JSON.parse(localStorage.getItem(key)) : null;
+        for(var i = 0; i < datalist.length; i++){
+            if(name == datalist[i].conditionName){
+                data = datalist[i].condition
+            }
         }
-        if(data != null){
-            var inputId = getInputIdFromUrl(url);
-            setInputValue(inputId, name);
+        if(data == null){
+            $.alert("条件追加が失敗しました");
+        } else{
+            $(destinationConditionNameId).val(name)
+            data = JSON.parse(data);
             replaceCondition(data);
             $(builderId).queryBuilder('setRules', data);
-        } else {
-            alert("見つけませんでした。");
         }
     }
-    
+
     function extractDestination() {
         var destinationConditionData = buildDataFromBuilder(destinationBuilderId);
         if(!destinationConditionData) return;
@@ -1133,7 +1193,7 @@
             alert('このサイトのポップアップを許可してください。');
         }
     }
-    
+
     function getCachedDuplicationSettingData() {
         var enableDuplicateHandleData = localStorage.getItem("enableDuplicateHandle-email-matching-engineer");
         var enableDuplicateHandle = typeof enableDuplicateHandleData !== "string" ? false : !!JSON.parse(enableDuplicateHandleData);
@@ -1149,7 +1209,7 @@
             handleDuplicateSubject: enableDuplicateHandle && handleDuplicateSubject,
         }
     }
-    
+
     function getCachedDomainSettingData() {
         var handleDomainPartnerCurrentData = localStorage.getItem("handleDomainPartnerCurrent-email-matching-engineer");
         var handleDomainPartnerCurrent = typeof handleDomainPartnerCurrentData !== "string" ? false : !!JSON.parse(handleDomainPartnerCurrentData);
@@ -1161,7 +1221,7 @@
             handleDomainPartnerGroup: handleDomainPartnerCurrent && handleDomainPartnerGroup,
         }
     }
-    
+
     function buildGroupDataFromRaw(data){
         var result = {
             condition: data.condition,
@@ -1169,7 +1229,7 @@
         }
         return result;
     }
-    
+
     function buildRulesDataFromRaw(data) {
         var result = [];
         for(var i = 0; i < data.rules.length; i++){
@@ -1189,34 +1249,34 @@
         }
         return result;
     }
-    
+
     function buildDataFromBuilder(builderId) {
         var result = $(builderId).queryBuilder('getRules');
         if ($.isEmptyObject(result)) return;
         return buildGroupDataFromRaw(result);
     }
-    
+
     function getInputIdFromUrl(url) {
         switch (url) {
             case destinationPrefixUrlKey:
                 return destinationConditionNameId;
         }
     }
-    
+
     function disableButton(buttonId, disabled) {
         if(buttonId && buttonId.length > 0){
             $(buttonId).prop("disabled", disabled);
         }
     }
-    
+
     function setInputValue(inputId, value) {
         $(inputId).val(value);
     }
-    
+
     function getInputValue(inputId) {
         return $(inputId).val();
     }
-    
+
     function numberValidator(value, rule) {
         if (!value || value.trim().length === 0) {
             return "Value can not be empty!";
@@ -1455,5 +1515,5 @@
         replaceCondition(condition);
         queryBuilder.queryBuilder('setRules', condition);
     }
-    
+
 })(jQuery);
