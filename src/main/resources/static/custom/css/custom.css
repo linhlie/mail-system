@@ -1711,3 +1711,15 @@ div.bulletinboard-icon-wrapper {
     display: none;
 }
 
+.statistic-system-title{
+    margin-left: 100px;
+}
+.statistic-system-title-select{
+    margin-left: 85px;
+}
+.statistic-system-title-top-user{
+    padding-left: 0px;
+    padding-right: 100px; ;
+    padding-top: 8px;
+}
+

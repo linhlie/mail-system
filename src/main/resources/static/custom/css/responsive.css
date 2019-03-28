@@ -10,34 +10,52 @@
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
-
     .dashboard-bulletin-board-editor{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
-
     .dashboard-bulletin-board-header{
         margin-bottom: 5px;
         padding-left: 85px !important;
     }
-
     .dashboard-bulletin-board-header-title{
         font-size: 32px;
     }
-
     .dashboard-bulletin-board-header #changeShowType{
         margin-left: 5px;
     }
-
     .dashboard-bulletin-board-header .edit-history{
         margin-left: 5px !important;
         font-size: 12px;
     }
-
     #bulletinBoardTabs.nav > li > a{
         padding: 5px 10px;
     }
-    /* start dash board page*/
+    /* end dash board page*/
+
+    /* start statistic page*/
+    .statistic-system .stats-wrapper{
+        margin: 5px 50px 0px 70px;
+    }
+    .statistic-system-title{
+        margin-left: 70px !important;
+    }
+    .statistic-system-title-select{
+        margin-left: 55px !important;
+    }
+    .statistic-system-title-select>div{
+        padding-top: 0px !important;
+    }
+    .statistic-system-title-top-user{
+        padding-right: 50px; ;
+    }
+    .statistic-system-table td{
+        min-width: 15px !important;
+    }
+    .statistic-system-table th{
+        font-size: 10px; !important;
+    }
+    /* end statistic page*/
 
     /* start matching setting page*/
     .matching-setting-switch-conditions{
