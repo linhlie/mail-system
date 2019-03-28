@@ -152,6 +152,12 @@
     .engineer-form-field-button{
         width: 70px;
     }
+    .domain-avoid-modal{
+        width: 60% !important;
+    }
+    .people-in-charge-avoid-modal{
+        width: 60% !important;
+    }
     /* end minimine expansion*/
 
 

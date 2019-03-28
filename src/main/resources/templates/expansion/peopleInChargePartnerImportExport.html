@@ -20,23 +20,23 @@
                             <input id="peopleInChargeIncludeHeader" type="checkbox" th:checked="true"/>
                             <span id="peopleInChargeIncludeHeaderText">&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row"  id="importpeopleInChargeInputDiv" style="padding-top: 20px; padding-bottom: 20px">
-                                <div class="col-xs-10">
+                                <div class="col-md-10 col-xs-10">
                                     <input th:readonly="true" id="importPeopleInCharge" type="text" class="form-control" placeholder="担当者のファイルパス"/>
                                     <form enctype="multipart/form-data" method="post" id="importPeopleInChargeForm">
                                         <input id="importPeopleInChargeInput" type="file" style="display:none;" accept=".csv"/>
                                     </form>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-md-2 col-xs-2">
                                     <button id="importPeopleInChargeBtn" type="button" class="btn btn-default btn-file btn-block">
                                         ・・・
                                     </button>
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <div class="col-md-6" id="peopleInChargeDeleteOldDiv" style="padding: 5px 0;">
+                                <div class="col-md-10 col-xs-10" id="peopleInChargeDeleteOldDiv" style="padding: 5px 0;">
                                     <input id="peopleInChargeDeleteOld" type="checkbox"/><span>&nbsp;インポート時に登録済データを全て削除する</span>
                                 </div>
-                                <div class="col-md-6" style="padding: 0; text-align: right">
+                                <div class="col-md-2 col-xs-2" style="padding: 0; text-align: right">
                                     <button id="peopleInChargeActions" class="btn btn-default" type="button">実行</button>
                                 </div>
                             </div>
