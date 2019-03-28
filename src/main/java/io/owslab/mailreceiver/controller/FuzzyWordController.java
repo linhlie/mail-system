@@ -180,17 +180,6 @@ public class FuzzyWordController {
         }
     }
 
-    @RequestMapping(value = "/fuzzyWord/add", method = RequestMethod.GET)
-    public String getAddFuzzyWord(@RequestParam(value = "original", required = false) String original, Model model) {
-        FuzzyWordForm fuzzyWordForm = new FuzzyWordForm();
-        original = original == null ? original : original.toLowerCase();
-        fuzzyWordForm.setOriginal(original);
-        model.addAttribute("fuzzyWordForm", fuzzyWordForm);
-        model.addAttribute("original", original);
-        model.addAttribute("api", "/user/addFuzzyWord");
-        return "user/fuzzyword/form";
-    }
-
     @PostMapping("/fuzzyWord/editWord")
     @ResponseBody
     public ResponseEntity<?> editWord(@Valid @RequestBody EditWordForm form, BindingResult bindingResult) {

@@ -112,6 +112,26 @@
 
 
 
+    /* start setting fuzzyword page */
+    .fuzzy-word-arrow-down{
+        display: block;
+    }
+    .fuzzy-word-modal{
+        width: 70% !important;
+    }
+    .fuzzy .fuzzy-form-container{
+        height: 365px;
+    }
+    #divWords{
+        height: 250px !important;
+    }
+    .fuzzy-word-exclusion-table-container{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border: 1px solid #e6e6e6;
+    }
+    /* end setting fuzzyword page*/
+
 
     /* start engineer matching */
     .engineer-matching-filter-engineer{
