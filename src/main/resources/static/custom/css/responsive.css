@@ -139,11 +139,14 @@
 
 
 
-    /* start minimine side bar */
+    /* start minimine expansion */
     .bussiness-partner-alert {
         margin-bottom: 0px;
     }
-    /* end engineer matching*/
+    #countPeopleInChargeUnregister{
+        margin-left: 30px !important;
+    }
+    /* end minimine expansion*/
 
 
 
