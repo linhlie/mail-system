@@ -18,17 +18,10 @@ import java.util.Optional;
 public class DeletePeopleInChargePartnerUnregisterScheduler extends AbstractScheduler{
 
     private static final Logger logger = LoggerFactory.getLogger(DeletePeopleInChargePartnerUnregisterScheduler.class);
-    private static final long CHECK_TIME_TO_UPDATE_DOMAIN_UNREGISTER_INTERVAL_IN_SECEOND = 1L;
-    private static final int UPDATE_DOMAIN_UNREGISTER_INTERVAL_IN_MINUTE = 1;
-
-    @Autowired
-    private DomainService domainService;
+    private static final long CHECK_TIME_TO_UPDATE_DOMAIN_UNREGISTER_INTERVAL_IN_SECEOND = 60L;
 
     @Autowired
     PeopleInChargePartnerUnregisterService peopleInChargePartnerUnregisterService;
-
-    @Autowired
-    PeopleInChargePartnerService peopleInChargePartnerService;
 
     @Autowired
     private EnviromentSettingService enviromentSettingService;
@@ -58,7 +51,6 @@ public class DeletePeopleInChargePartnerUnregisterScheduler extends AbstractSche
         return true;
     }
     private void startDelete(){
-        logger.info("deletePeople");
         peopleInChargePartnerUnregisterService.deletePeopleInChargeUnregister();
         lastTimeUpdate = new Date();
     }
