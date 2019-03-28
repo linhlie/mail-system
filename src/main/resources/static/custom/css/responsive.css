@@ -33,6 +33,8 @@
     }
     /* end dash board page*/
 
+
+
     /* start statistic page*/
     .statistic-system .stats-wrapper{
         margin: 5px 50px 0px 70px;
@@ -56,6 +58,9 @@
         font-size: 10px; !important;
     }
     /* end statistic page*/
+
+
+
 
     /* start matching setting page*/
     .matching-setting-switch-conditions{
@@ -106,6 +111,8 @@
     /* end matching setting page*/
 
 
+
+
     /* start engineer matching */
     .engineer-matching-filter-engineer{
         margin-left: 5px;
@@ -130,8 +137,17 @@
     }
     /* end engineer matching*/
 
-    /* start minimine side bar */
 
+
+    /* start minimine side bar */
+    .bussiness-partner-alert {
+        margin-bottom: 0px;
+    }
+    /* end engineer matching*/
+
+
+
+    /* start minimine side bar */
     a.sidebar-toggle{
         display: none;
     }
