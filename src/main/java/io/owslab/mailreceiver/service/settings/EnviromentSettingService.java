@@ -44,6 +44,7 @@ public class EnviromentSettingService {
     public static final String UPDATE_DOMAIN_UNREGISTER_INTERVAL= "update_domain_unregister_interval";
     public static final String CHECK_TIME_FETCH_MAIL= "check_time_fetch_mail";
     public static final String IP_GLOBAL_KEY = "ip_global";
+    public static final String DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL= "delete_people_in_charge_in_unregister_interval";
 
     private static final String DEFAULT_STORAGE_PATH = ApplicationStartup.DEFAULT_STORAGE_PATH;
     private static final String DEFAULT_CHECK_MAIL_INTERVAL_IN_MINUTE = "10";
@@ -66,6 +67,7 @@ public class EnviromentSettingService {
     private static final String DEFAULT_MARK_REFLECTION_SCOPE = "1";
     private static final String DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL = "1";
     private static final String DEFAULT_IP_GLOBAL_VALUE = "";
+    private static final String DEFAULT_DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL = "10";
 
     public static final HashMap<String, String> defaultKVStore = createMap();
     private DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -93,6 +95,7 @@ public class EnviromentSettingService {
         map.put(MARK_B_CONDITIONS_KEY, DEFAULT_MARK_B_CONDITIONS);
         map.put(MARK_REFLECTION_SCOPE_KEY, DEFAULT_MARK_REFLECTION_SCOPE);
         map.put(UPDATE_DOMAIN_UNREGISTER_INTERVAL, DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL);
+        map.put(DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL,DEFAULT_DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL);
         map.put(IP_GLOBAL_KEY, DEFAULT_IP_GLOBAL_VALUE);
         return map;
     }
@@ -231,6 +234,11 @@ public class EnviromentSettingService {
 
     public int getUpdateDomainTimeInterval(){
         String timeIntervalStr = this.getSetting(UPDATE_DOMAIN_UNREGISTER_INTERVAL, DEFAULT_UPDATE_DOMAIN_UNREGISTER_INTERVAL);
+        return Integer.parseInt(timeIntervalStr);
+    }
+
+    public int getDeletePeopleInChargeUnregister(){
+        String timeIntervalStr = this.getSetting(DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL, DEFAULT_DELETE_PEOPLE_IN_CHARGE_UNREGISTER_INTERVAL);
         return Integer.parseInt(timeIntervalStr);
     }
 
