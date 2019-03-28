@@ -11,8 +11,8 @@
                 <div class="box box-default">
                     <div class="box-body">
                         <h4>技術者管理</h4>
-                        <div class="form-group row " >
-                            <div class="pull-left filterEngineer" style="padding-top:10px;">
+                        <div class="form-group row engineer-filter-engineer">
+                            <div class="pull-left filterEngineer" style="padding-top:10px; margin-bottom: 5px;">
                                 <label class="radio-inline">
                                     <input type="radio" name="engineerFilter" value="1" checked="checked"/>すべて表示
                                 </label>
@@ -30,13 +30,13 @@
                                 <label class="checkbox-inline">
                                     <input type="checkbox" id="filterEngineerFilterTime"/>最終稼働月指定
                                 </label>
-                                <input id="lastMonthActive" type="text" style="width: 100px;" disabled="disabled"/>
+                                <input id="lastMonthActive" type="text" class="engineer-matching-last-month-active"/>
                                 <input id="lastMonthActiveAlt" style="display: none;" type="text"/>
                                 <label class="checkbox-inline" style="margin-left: 20px;">
                                     <input type="checkbox" id="filterEngineerFilterNull"/>案件期間 未登録&nbsp;）
                                 </label>                             
                             </div>
-                            <button id="filterEngineerBtn" style="margin-left: 30px; height: 40px;" type="button" class="btn btn-default">実行</button>
+                            <button id="filterEngineerBtn" type="button" class="pull-left btn btn-default engineer-matching-filter-engineer">実行</button>
                         </div>
                         <div id="engineerBox" class="engineer-part table-container-section form-inline" style="height: 200px; position: relative">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
@@ -63,53 +63,53 @@
                             <div style="width: 100%; margin-top: 10px;">
                                 <form id="engineerForm" class="form-horizontal" action="javascript:void(0);">
                                     <div class="form-group row">
-                                        <label for="lastName" class="control-label col-md-1  text-left">技術者氏名</label>
-                                        <label class="control-label col-md-1 text-right">姓</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="lastName">技術者氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">姓</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="lastName" name="lastName" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="firstName" class="control-label col-md-1 text-left" style="visibility: hidden">担当者氏名</label>
-                                        <label class="control-label col-md-1 text-right">名</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="firstName" style="visibility: hidden">担当者氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">名</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="firstName" name="firstName" style="display: inline-block" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="kanaLastName" class="control-label col-md-1 text-left">カナ氏氏名</label>
-                                        <label class="control-label col-md-1 text-right">姓</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="kanaLastName">カナ氏氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">姓</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="kanaLastName" name="kanaLastName" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="kanaFirstName" class="control-label col-md-1 text-left" style="visibility: hidden">担当者氏名</label>
-                                        <label class="control-label col-md-1 text-right">名</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="kanaFirstName" style="visibility: hidden">担当者氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">名</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="kanaFirstName" name="kanaFirstName" style="display: inline-block" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="initial" class="control-label col-md-2 text-left">イニシャル</label>
-                                        <div class="col-md-3">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="initial">イニシャル</label>
+                                        <div class="col-md-3 col-xs-5">
                                             <input id="initial" name="initial" class="form-control" placeholder=""/>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="mailAddress" class="control-label col-md-2 text-left">メールアドレス</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="mailAddress">メールアドレス</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="mailAddress" name="mailAddress" class="form-control" placeholder=""/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="employmentStatus" class="control-label col-md-2 text-left">会社形態</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="employmentStatus">会社形態</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <select id="employmentStatus" class="form-control" name="employmentStatus">
                                                 <option th:disabled="true" th:selected="true" value="">選んでください</option>
                                                 <option value="1">自社正社員</option>
@@ -125,8 +125,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="partnerId" class="control-label col-md-2 text-left">所属企業</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="partnerId">所属企業</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <select id="partnerId" name="partnerId" class="form-control">
                                                 <option th:disabled="true" th:selected="true" value="">選んでください</option>
                                             </select>
@@ -135,8 +135,9 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label style="padding-top: 35px;" class="control-label col-md-2 text-left">案件期間</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" style="padding-top: 35px;">案件期間</label>
+                                        <div class="col-md-10 col-xs-9">
+                                            <div>
                                             <div class="engineer-form-field">
                                                 <span class="form-error">..</span>
                                                 <label for="projectPeriodStart" class="control-label" style="font-weight: normal">開始</label>
@@ -150,10 +151,10 @@
                                                 <label for="projectPeriodEnd" class="control-label" style="font-weight: normal">終了</label>
                                                 <input id="projectPeriodEnd" name="projectPeriodEnd" class="form-control" placeholder=""/>
                                             </div>
-                                            <div class="engineer-form-field" style="padding-left: 15px;">
+                                            <div class="engineer-form-field engineer-form-field-button" style="padding-left: 15px;">
                                                 <button id="extend" th:disabled="true" type="button" class="btn btn-default">延長</button>
                                             </div>
-                                            <br/>
+                                            </div>
                                             <div class="engineer-form-field" style="width: 100%; padding-top: 5px;">
                                                 <span>&nbsp;延長&nbsp;&nbsp;&nbsp;</span>
                                                 <input id="autoExtend" name="autoExtend" type="checkbox" value=""/>
@@ -166,22 +167,22 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="matchingWord" class="control-label col-md-2 text-left">マッチングワード</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="matchingWord">マッチングワード</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <textarea id="matchingWord" name="matchingWord" class="form-control" placeholder="" type="text"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="notGoodWord" class="control-label col-md-2 text-left">NGワード</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="notGoodWord">NGワード</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <textarea id="notGoodWord" name="notGoodWord" class="form-control" placeholder="" type="text"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="control-label col-md-2 text-left">NG企業</label>
-                                        <div class="col-md-10" >
+                                        <label class="col-md-2 col-xs-3 control-label text-left">NG企業</label>
+                                        <div class="col-md-10 col-xs-9" >
                                             <div class="partner-part table-container-section" style="height: 200px; position: relative">
-                                                <div style="overflow-y: scroll; height: 100%; border-style: ridge; border-color: black; border-width:1px;" class="table-container-wrapper" >
+                                                <div style="overflow-y: scroll; height: 100%; border: ridge black 1px;" class="table-container-wrapper" >
                                                     <table id="partnerTable" class="table table-bordered table-hover sticky-header-table stickyHeaderTable">
                                                         <thead class="sticky-header">
                                                         <tr>
@@ -213,8 +214,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="monetaryMoney" class="control-label col-md-2 text-left">単金</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="monetaryMoney">単金</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <div class="engineer-form-field">
                                                 <input id="monetaryMoney" name="monetaryMoney" class="form-control" placeholder=""/>
                                             </div>
@@ -228,8 +229,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="stationNearest" class="control-label col-md-2 text-left">最寄り駅</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="stationNearest">最寄り駅</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <div class="engineer-form-field">
                                                 <input id="stationLine" name="stationLine" class="form-control" placeholder=""/>
                                             </div>
@@ -257,39 +258,39 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="skillSheetEngineer" class="control-label col-md-2 text-left">スキルシートのフォルダー</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="skillSheetEngineer">スキルシートのフォルダー</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <input id="skillSheetEngineer" name="skillSheet" class="form-control" placeholder=""/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="introduction" class="control-label col-md-2 text-left">技術者紹介文</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="introduction">技術者紹介文</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <textarea id="introduction"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 col-xs-12">
                                             <label style="font-weight: 700;" class="checkbox-inline"><input id="dormant" type="checkbox" name="dormant" value=""/>休止中</label>
                                         </div>
                                     </div>
                                 </form>
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 col-xs-3">
                                             <div style="width: 90%;">
                                                 <button id="engineerAdd" name="engineerAdd" type="button" class="btn btn-success btn-block">登録</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 col-xs-3">
                                             <div style="width: 90%;">
                                                 <button id="engineerUpdate" disabled="true" name="engineerUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 col-xs-3">
                                             <label class="checkbox-inline"><input id="checkboxNext" type="checkbox" value=""/>更新後、次の行を編集</label>
                                        	</div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 col-xs-3">
                                             <div style="width: 90%; margin: auto;">
                                                 <button id="engineerClear" name="engineerClear" type="button" class="btn btn-default btn-block">クリア</button>
                                             </div>
