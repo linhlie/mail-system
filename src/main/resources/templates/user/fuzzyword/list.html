@@ -21,13 +21,13 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="fuzzy-form-container">
-                                    <div class="col-xs-6 full-height">
+                                    <div class="col-md-6 col-xs-12 full-height">
                                         <div class="fuzzy-table-container" style="background-color: white; ">
                                             <table id="wordList" style="margin: auto;" class="table table-bordered ">
                                                 <thead>
                                                     <tr class="main-table-row-head">
-                                                        <th class="col-xs-10" style="text-align: center">類似グループ一覧</th>
-                                                        <th class="col-xs-2 text-center">
+                                                        <th class="col-md-10 col-xs-9" style="text-align: center">類似グループ一覧</th>
+                                                        <th class="col-md-2 col-xs-3 text-center">
                                                             <span id="addGroupWord" class="glyphicon glyphicon-plus" style="cursor: pointer;" title="類似グループ登録"></span>
                                                         </th>
                                                     </tr>
@@ -46,15 +46,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-6 full-height">
+                                    <div class="col-md-0 col-xs-12 fuzzy-word-arrow-down" style="height: 90px;">
+                                        <div class="msw-header-arrow-down" style="margin: 10px;"></div>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12 full-height fuzzy-word-exclusion-table-container">
                                         <div class="fuzzy-table-container">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
                                                 <table id="wordExclusionTable" class="table table-bordered">
                                                     <thead class="sticky-header">
                                                     <tr>
                                                         <th class="col-xs-5">主ワード</th>
-                                                        <th class="col-xs-5">除外単語</th>
-                                                        <th class="col-xs-2" colspan="2" style="text-align: center">
+                                                        <th class="col-xs-4">除外単語</th>
+                                                        <th class="col-xs-3" colspan="2" style="text-align: center">
                                                             <span id="addExclusionWord" class="glyphicon glyphicon-plus" style="cursor: pointer; display: none;" title="除外単語登録"></span>
                                                         </th>
                                                     </tr>
@@ -77,7 +80,7 @@
         </div>
     </section>
     <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 40%;">
+        <div class="modal-dialog fuzzy-word-modal" role="document" style="width: 40%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -115,7 +118,7 @@
     </div><!-- /.modal -->
 
     <div id="modalAddGroup" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 40%;">
+        <div class="modal-dialog fuzzy-word-modal" role="document" style="width: 40%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

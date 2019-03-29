@@ -10,18 +10,18 @@
             週次報告
         </h1>
     </section>
-    <section class="content dashboard">
+    <section class="content dashboard statistic-system">
         <!-- Info boxes -->
         <div id="hasSystemError" style="display: none" class="callout callout-danger">
             <p>エラーが発生しました。 管理者に連絡してください。</p>
         </div>
         <div class="row">
-            <select id="accountSelector" style="margin-left: 100px;">
+            <select id="accountSelector" class="statistic-system-title">
                 <option value="">全ての受信アカウント</option>
             </select>
             <div class="stats-wrapper">
                 <b>メール受信件数</b>
-                <table id="receiveMailNumber">
+                <table id="receiveMailNumber" class="statistic-system-table">
                     <tr>
                         <th></th>
                         <th scope="col">本日</th>
@@ -46,28 +46,28 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
-                <div class="dashboard-icon-wrapper">
+                <div class="dashboard-icon-wrapper statistic-system-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-envelope-o"></i></span>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-3" style="padding-left: 100px; margin-top: 15px;">
+        <div class="row statistic-system-title-select" style="margin-top: 15px">
+            <div class="col-sm-3 col-xs-3" style="padding-left: 0px">
                 <select id="userSelector" style="width: 100%;">
                     <option value="">全てのユーザー</option>
                 </select>
             </div>
-            <div class="col-sm-3"  style="margin-top: 15px; padding-top: 8px">
+            <div class="col-sm-3 col-xs-3"  style="padding-top: 8px">
                 <label>本日のメール送信件数上位３名 &nbsp;&nbsp;&nbsp;&nbsp;</label>
             </div>
-            <div class="col-sm-6" style=" margin-top: 15px; padding-left: 0px; padding-right: 100px; ; padding-top: 8px"  id="topUserSentMail">
+            <div class="col-sm-6 col-xs-6 statistic-system-title-top-user" id="topUserSentMail">
             </div>
         </div>
         <div class="row" style="margin-top: 20px; ">
-            <b  style="margin-left: 100px;">メールマッチング</b>
+            <b class="statistic-system-title">メールマッチング</b>
             <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
-                <table id="clickCount">
+                <table id="clickCount" class="statistic-system-table">
                     <tr>
                         <th></th>
                         <th scope="col">本日</th>
@@ -119,13 +119,13 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
-                <div class="dashboard-icon-wrapper">
+                <div class="dashboard-icon-wrapper statistic-system-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
                 </div>
             </div>
             <div class="stats-wrapper">
                 <b>メール送信件数</b>
-                <table id="sendPerClick">
+                <table id="sendPerClick" class="statistic-system-table">
                     <tr>
                         <th></th>
                         <th scope="col">本日</th>
@@ -190,16 +190,16 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
-                <div class="dashboard-icon-wrapper">
+                <div class="dashboard-icon-wrapper statistic-system-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-send-o"></i></span>
                 </div>
             </div>
         </div>
         <div class="row" style="margin-top: 20px;">
-            <b style="margin-left: 100px;">DB⇔メールマッチング</b>
+            <b class="statistic-system-title">DB⇔メールマッチング</b>
             <div class="stats-wrapper">
                 <b>ボタン押下件数</b>
-                <table id="clickEmailMatchingEngineerCount">
+                <table id="clickEmailMatchingEngineerCount" class="statistic-system-table">
                     <tr>
                         <th></th>
                         <th scope="col">本日</th>
@@ -225,13 +225,13 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
-                <div class="dashboard-icon-wrapper">
+                <div class="dashboard-icon-wrapper statistic-system-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-hand-pointer-o"></i></span>
                 </div>
             </div>
             <div class="stats-wrapper">
                 <b>メール送信件数</b>
-                <table id="sendMailEmailMatchingEngineerClick">
+                <table id="sendMailEmailMatchingEngineerClick" class="statistic-system-table">
                     <tr>
                         <th></th>
                         <th scope="col">本日</th>
@@ -257,7 +257,7 @@
                         <td>&nbsp;</td>
                     </tr>
                 </table>
-                <div class="dashboard-icon-wrapper">
+                <div class="dashboard-icon-wrapper statistic-system-icon-wrapper">
                     <span class="dashboard-box-icon"><i class="fa fa-send-o"></i></span>
                 </div>
             </div>

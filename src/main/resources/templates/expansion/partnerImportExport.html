@@ -23,23 +23,23 @@
                             <input id="partnerIncludeHeader" type="checkbox" th:checked="true"/>
                             <span id="partnerIncludeHeaderText">&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row" id="importPartnerInputDiv" style="padding-top: 20px; padding-bottom: 20px">
-                                <div class="col-xs-10">
+                                <div class="col-md-10 col-xs-10">
                                     <input th:readonly="true" id="importPartner" type="text" class="form-control" placeholder="取引先のファイルのパス"/>
                                     <form enctype="multipart/form-data" method="post" id="importPartnerForm">
                                         <input id="importPartnerInput" type="file" style="display:none;" accept=".csv"/>
                                     </form>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-md-2 col-xs-2">
                                     <button id="importPartnerBtn" type="button" class="btn btn-default btn-file btn-block">
                                         ・・・
                                     </button>
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <div class="col-md-6" id="partnerDeleteOldDiv" style="padding: 5px 0;">
+                                <div class="col-md-10 col-xs-10" id="partnerDeleteOldDiv" style="padding: 5px 0;">
                                     <input id="partnerDeleteOld" type="checkbox"/><span>&nbsp;インポート時に登録済データを全て削除する</span>
                                 </div>
-                                <div class="col-md-6" style="padding: 0; text-align: right">
+                                <div class="col-md-2 col-xs-2" style="padding: 0; text-align: right">
                                     <button id="partnerActions" class="btn btn-default" type="button">実行</button>
                                 </div>
                             </div>
@@ -54,23 +54,23 @@
                             <input id="groupIncludeHeader" type="checkbox" th:checked="true"/>
                             <span id="groupIncludeHeaderText">&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row" id="importGroupInputDiv" style="padding-top: 20px; padding-bottom: 20px">
-                                <div class="col-xs-10">
+                                <div class="col-md-10 col-xs-10">
                                     <input th:readonly="true" id="importGroup" type="text" class="form-control" placeholder="取引先グループのファイルのパス"/>
                                     <form enctype="multipart/form-data" method="post" id="importGroupForm">
                                         <input id="importGroupInput" type="file" style="display:none;" accept=".csv"/>
                                     </form>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-md-2 col-xs-2">
                                     <button id="importGroupBtn" type="button" class="btn btn-default btn-file btn-block">
                                         ・・・
                                     </button>
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <div class="col-md-6" id="groupDeleteOldDiv" style="padding: 5px 0;">
+                                <div class="col-md-10 col-xs-10" id="groupDeleteOldDiv" style="padding: 5px 0;">
                                     <input id="groupDeleteOld" type="checkbox"/><span>&nbsp;インポート時に登録済データを全て削除する</span>
                                 </div>
-                                <div class="col-md-6" style="padding: 0; text-align: right">
+                                <div class="col-md-2 col-xs-2" style="padding: 0; text-align: right">
                                     <button id="groupActions" class="btn btn-default" type="button">実行</button>
                                 </div>
                             </div>

@@ -20,23 +20,23 @@
                             <input id="engineerIncludeHeader" type="checkbox" th:checked="true"/>
                             <span id="engineerIncludeHeaderText">&nbsp;先頭行はタイトルとみなす</span>
                             <div class="row"  id="importEngineerInputDiv" style="padding-top: 20px; padding-bottom: 20px">
-                                <div class="col-xs-10">
+                                <div class="col-md-10 col-xs-10">
                                     <input th:readonly="true" id="importEngineer" type="text" class="form-control" placeholder="技術者のファイルパス"/>
                                     <form enctype="multipart/form-data" method="post" id="importEngineerForm">
                                         <input id="importEngineerInput" type="file" style="display:none;" accept=".csv"/>
                                     </form>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-md-2 col-xs-2">
                                     <button id="importEngineerBtn" type="button" class="btn btn-default btn-file btn-block">
                                         ・・・
                                     </button>
                                 </div>
                             </div>
                             <div class="action-wrapper">
-                                <div class="col-md-6" id="engineerDeleteOldDiv" style="padding: 5px 0;">
+                                <div class="col-md-10 col-xs-10" id="engineerDeleteOldDiv" style="padding: 5px 0;">
                                     <input id="engineerDeleteOld" type="checkbox"/><span>&nbsp;インポート時に登録済データを全て削除する</span>
                                 </div>
-                                <div class="col-md-6" style="padding: 0; text-align: right">
+                                <div class="col-md-2 col-xs-2" style="padding: 0; text-align: right">
                                     <button id="engineerActions" class="btn btn-default" type="button">実行</button>
                                 </div>
                             </div>

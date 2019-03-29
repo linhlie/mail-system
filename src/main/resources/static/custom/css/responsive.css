@@ -10,34 +10,57 @@
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
-
     .dashboard-bulletin-board-editor{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
     }
-
     .dashboard-bulletin-board-header{
         margin-bottom: 5px;
         padding-left: 85px !important;
     }
-
     .dashboard-bulletin-board-header-title{
         font-size: 32px;
     }
-
     .dashboard-bulletin-board-header #changeShowType{
         margin-left: 5px;
     }
-
     .dashboard-bulletin-board-header .edit-history{
         margin-left: 5px !important;
         font-size: 12px;
     }
-
     #bulletinBoardTabs.nav > li > a{
         padding: 5px 10px;
     }
-    /* start dash board page*/
+    /* end dash board page*/
+
+
+
+    /* start statistic page*/
+    .statistic-system .stats-wrapper{
+        margin: 5px 50px 0px 70px;
+    }
+    .statistic-system-title{
+        margin-left: 70px !important;
+    }
+    .statistic-system-title-select{
+        margin-left: 55px !important;
+    }
+    .statistic-system-title-select>div{
+        padding-top: 0px !important;
+    }
+    .statistic-system-title-top-user{
+        padding-right: 50px; ;
+    }
+    .statistic-system-table td{
+        min-width: 15px !important;
+    }
+    .statistic-system-table th{
+        font-size: 10px; !important;
+    }
+    /* end statistic page*/
+
+
+
 
     /* start matching setting page*/
     .matching-setting-switch-conditions{
@@ -88,6 +111,28 @@
     /* end matching setting page*/
 
 
+
+    /* start setting fuzzyword page */
+    .fuzzy-word-arrow-down{
+        display: block;
+    }
+    .fuzzy-word-modal{
+        width: 70% !important;
+    }
+    .fuzzy .fuzzy-form-container{
+        height: 365px;
+    }
+    #divWords{
+        height: 250px !important;
+    }
+    .fuzzy-word-exclusion-table-container{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border: 1px solid #e6e6e6;
+    }
+    /* end setting fuzzyword page*/
+
+
     /* start engineer matching */
     .engineer-matching-filter-engineer{
         margin-left: 5px;
@@ -112,8 +157,51 @@
     }
     /* end engineer matching*/
 
-    /* start minimine side bar */
 
+
+    /* start minimine expansion */
+    .bussiness-partner-alert {
+        margin-bottom: 0px;
+    }
+    #countPeopleInChargeUnregister{
+        margin-left: 30px !important;
+    }
+    .engineer-filter-engineer{
+        padding-right: 0px;
+    }
+    .engineer-form-field-button{
+        width: 70px;
+    }
+    .domain-avoid-modal{
+        width: 60% !important;
+    }
+    .people-in-charge-avoid-modal{
+        width: 60% !important;
+    }
+    /* end minimine expansion*/
+
+
+    /* start setting email group page */
+    .email-group .email-group-form-container{
+        height: auto;
+        border: 0px;
+    }
+    .email-group .email-group-table-container{
+        height: 400px;
+    }
+    .email-group-arrow-down{
+        height: 70px !important;
+    }
+    .email-group-modal{
+        width: 70% !important;
+    }
+    .setting-scheduler-modal{
+        width: 70% !important;
+    }
+    /* end setting email group  page*/
+
+
+    /* start minimine side bar */
     a.sidebar-toggle{
         display: none;
     }
