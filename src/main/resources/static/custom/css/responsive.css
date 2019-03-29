@@ -108,6 +108,9 @@
     .matching-setting-action-button{
         margin-bottom: 3px;
     }
+    .matching-result-preview{
+        margin-top: 60px !important;
+    }
     /* end matching setting page*/
 
 
