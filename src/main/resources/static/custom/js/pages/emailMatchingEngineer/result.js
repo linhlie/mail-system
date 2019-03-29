@@ -4,11 +4,9 @@
     var destinationTableId = 'destinationMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
-    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
@@ -59,9 +57,6 @@
     var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
     var lastReceiver;
     var lastMessageId;
-    var lastTextRange;
-    var lastTextMatchRange;
-    var lastReplaceType;
     var lastSendTo;
 
     var dataLinesConfirm;
@@ -200,30 +195,26 @@
                 backgroundColor: 'rgb(0,0,0)',
                 animation: 'doubleBounce',
             });
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/emailMatchingEngineer/submitForm",
-                data: matchingConditionStr,
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    $('body').loadingModal('hide');
-                    if(data && data.status){
-                        matchingResult = data.list;
-                        mailList = data.mailList || {};
-                    } else {
-                        console.error("[ERROR] submit failed: ");
-                    }
-                    updateData();
-                },
-                error: function (e) {
-                    console.error("[ERROR] submit error: ", e);
-                    $('body').loadingModal('hide');
-                    updateData();
+
+            function onSuccess(response) {
+                $('body').loadingModal('hide');
+                if(response && response.status){
+                    matchingResult = response.list;
+                    mailList = response.mailList || {};
+                } else {
+                    console.error("[ERROR] submit failed: ");
                 }
-            });
+                updateData();
+            }
+
+            function onError(error) {
+                console.error("[ERROR] submit error: ", error);
+                $('body').loadingModal('hide');
+                updateData();
+            }
+
+            getEngineerMatchingResult(matchingConditionStr, onSuccess, onError);
+
         } else {
             updateData();
         }
@@ -290,22 +281,6 @@
             },
             thumbnail: function(file, dataUrl) {}
         })
-    }
-
-    function removeFile(fileId){
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: "/removeUploadedFile?fileId=" + fileId,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                console.log("removeFile SUCCESS : ", data);
-            },
-            error: function (e) {
-                console.error("removeFile ERROR : ", e);
-            }
-        });
     }
 
     function enableResizeSourceColumns() {
@@ -1164,35 +1139,6 @@
                 jumpTo();
             }
         });
-    }
-
-    function getFileExtension(fileName) {
-        var parts = fileName.split(".");
-        var extension = "." + parts[(parts.length - 1)];
-        return extension.toLowerCase();
-    }
-
-    function getOS() {
-        var userAgent = window.navigator.userAgent,
-            platform = window.navigator.platform,
-            macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-            windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-            iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-            os = null;
-
-        if (macosPlatforms.indexOf(platform) !== -1) {
-            os = 'Mac OS';
-        } else if (iosPlatforms.indexOf(platform) !== -1) {
-            os = 'iOS';
-        } else if (windowsPlatforms.indexOf(platform) !== -1) {
-            os = 'Windows';
-        } else if (/Android/.test(userAgent)) {
-            os = 'Android';
-        } else if (!os && /Linux/.test(platform)) {
-            os = 'Linux';
-        }
-
-        return os;
     }
     
     function previewDraggingSetup1() {

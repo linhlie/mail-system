@@ -145,22 +145,6 @@
         })
     }
 
-    function removeFile(fileId) {
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: "/removeUploadedFile?fileId=" + fileId,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                console.log("removeFile SUCCESS : ", data);
-            },
-            error: function (e) {
-                console.error("removeFile ERROR : ", e);
-            }
-        });
-    }
-
     function getEnvSettings() {
         $.ajax({
             type: "GET",
