@@ -254,7 +254,6 @@
         statisticConditionJson.statisticByDomain = statisticByDomain;
         statisticConditionJson.statisticByWord = statisticByWord;
 
-        console.log(statisticConditionJson);
         statisticConditionStr = JSON.stringify(statisticConditionJson);
         if(statisticConditionStr){
             $('body').loadingModal({
@@ -265,29 +264,25 @@
                 backgroundColor: 'rgb(0,0,0)',
                 animation: 'doubleBounce',
             });
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/emailStatistic/submitForm",
-                data: statisticConditionStr,
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    $('body').loadingModal('hide');
-                    if(data && data.status){
-                        statisticResult = data.list;
-                    } else {
-                        console.error("[ERROR] submit failed: ");
-                    }
-                    updateData();
-                },
-                error: function (e) {
-                    console.error("[ERROR] submit error: ", e);
-                    $('body').loadingModal('hide');
-                    updateData();
+
+            function onSuccess(response) {
+                $('body').loadingModal('hide');
+                if(response && response.status){
+                    statisticResult = response.list;
+                } else {
+                    console.error("[ERROR] submit failed: ");
                 }
-            });
+                updateData();
+            }
+
+            function onError(error) {
+                console.error("[ERROR] submit error: ", error);
+                $('body').loadingModal('hide');
+                updateData();
+            }
+
+            getStatisticMatchingResult(statisticConditionStr, onSuccess, onError);
+
         } else {
             updateData();
         }

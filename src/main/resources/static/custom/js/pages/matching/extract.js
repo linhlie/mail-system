@@ -3,7 +3,6 @@
     var sourceTableId = 'sourceMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
-    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
@@ -143,22 +142,6 @@
             thumbnail: function (file, dataUrl) {
             }
         })
-    }
-
-    function removeFile(fileId) {
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: "/removeUploadedFile?fileId=" + fileId,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                console.log("removeFile SUCCESS : ", data);
-            },
-            error: function (e) {
-                console.error("removeFile ERROR : ", e);
-            }
-        });
     }
 
     function getEnvSettings() {

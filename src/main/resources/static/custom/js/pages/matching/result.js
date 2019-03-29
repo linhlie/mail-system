@@ -5,7 +5,6 @@
     var destinationTableId = 'destinationMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
-    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var sakiPreviewContainerId = 'saki-preview-container';
     var mailSakiSubjectDivId = 'mailSakiSubject';
@@ -13,7 +12,6 @@
     var mailSakiAttachmentDivId = 'mailSakiAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
@@ -25,7 +23,6 @@
     var mailList = {};
     var currentDestinationResult = [];
     var onlyDisplayNonZeroRow = true;
-    var sourceMatchDataTable;
     var destinationMatchDataTable;
     var selectedRowData;
     var motoReplaceSelectorId = "#motoReplaceSelector";
@@ -239,30 +236,26 @@
                 backgroundColor: 'rgb(0,0,0)',
                 animation: 'doubleBounce',
             });
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/matchingSettings/submitForm",
-                data: matchingConditionStr,
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    $('body').loadingModal('hide');
-                    if(data && data.status){
-                        matchingResult = data.list;
-                        mailList = data.mailList || {};
-                    } else {
-                        console.error("[ERROR] submit failed: ");
-                    }
-                    updateData();
-                },
-                error: function (e) {
-                    console.error("[ERROR] submit error: ", e);
-                    $('body').loadingModal('hide');
-                    updateData();
+
+            function onSuccess(response) {
+                $('body').loadingModal('hide');
+                if(response && response.status){
+                    matchingResult = response.list;
+                    mailList = response.mailList || {};
+                } else {
+                    console.error("[ERROR] submit failed: ");
                 }
-            });
+                updateData();
+            }
+
+            function onError(error) {
+                console.error("[ERROR] submit error: ", error);
+                $('body').loadingModal('hide');
+                updateData();
+            }
+
+            getEmailMatchingResult(matchingConditionStr, onSuccess, onError);
+
         } else {
             updateData();
         }
@@ -393,22 +386,6 @@
             },
             thumbnail: function(file, dataUrl) {}
         })
-    }
-
-    function removeFile(fileId){
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: "/removeUploadedFile?fileId=" + fileId,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                console.log("removeFile SUCCESS : ", data);
-            },
-            error: function (e) {
-                console.error("removeFile ERROR : ", e);
-            }
-        });
     }
     
     function enableResizeSourceColumns() {
