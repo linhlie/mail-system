@@ -4,11 +4,9 @@
     var destinationTableId = 'destinationMatch';
     var mailSubjectDivId = 'mailSubject';
     var mailBodyDivId = 'mailBody';
-    var mailPreviewId = 'previewBody';
     var mailAttachmentDivId = 'mailAttachment';
     var rdMailSubjectId = 'rdMailSubject';
     var rdMailBodyId = 'rdMailBody';
-    var rdMailAttachmentId = 'rdMailAttachment';
     var rdMailSenderId = 'rdMailSender';
     var rdMailReceiverId = 'rdMailReceiver';
     var rdMailCCId = 'rdMailCC';
@@ -59,9 +57,6 @@
     var lastSelectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
     var lastReceiver;
     var lastMessageId;
-    var lastTextRange;
-    var lastTextMatchRange;
-    var lastReplaceType;
     var lastSendTo;
 
     var dataLinesConfirm;
@@ -97,17 +92,6 @@
         "separateWordSearch": false,
         "acrossElements": true,
     };
-
-    var extensionCommands = {
-        ".pdf": "ms-word:ofv|u|",
-        ".docx": "ms-word:ofv|u|",
-        ".doc": "ms-word:ofv|u|",
-        ".xls": "ms-excel:ofv|u|",
-        ".xlsx": "ms-excel:ofv|u|",
-        ".xlsm": "ms-excel:ofv|u|",
-        ".ppt": "ms-powerpoint:ofv|u|",
-        ".pptx": "ms-powerpoint:ofv|u|",
-    }
 
     var replaceEngineerHTML = '<tr role="row" class="hidden">'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.name"><span></span></td>'+
@@ -211,30 +195,26 @@
                 backgroundColor: 'rgb(0,0,0)',
                 animation: 'doubleBounce',
             });
-            $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: "/user/emailMatchingEngineer/submitForm",
-                data: matchingConditionStr,
-                dataType: 'json',
-                cache: false,
-                timeout: 600000,
-                success: function (data) {
-                    $('body').loadingModal('hide');
-                    if(data && data.status){
-                        matchingResult = data.list;
-                        mailList = data.mailList || {};
-                    } else {
-                        console.error("[ERROR] submit failed: ");
-                    }
-                    updateData();
-                },
-                error: function (e) {
-                    console.error("[ERROR] submit error: ", e);
-                    $('body').loadingModal('hide');
-                    updateData();
+
+            function onSuccess(response) {
+                $('body').loadingModal('hide');
+                if(response && response.status){
+                    matchingResult = response.list;
+                    mailList = response.mailList || {};
+                } else {
+                    console.error("[ERROR] submit failed: ");
                 }
-            });
+                updateData();
+            }
+
+            function onError(error) {
+                console.error("[ERROR] submit error: ", error);
+                $('body').loadingModal('hide');
+                updateData();
+            }
+
+            getEngineerMatchingResult(matchingConditionStr, onSuccess, onError);
+
         } else {
             updateData();
         }
@@ -301,22 +281,6 @@
             },
             thumbnail: function(file, dataUrl) {}
         })
-    }
-
-    function removeFile(fileId){
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: "/removeUploadedFile?fileId=" + fileId,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                console.log("removeFile SUCCESS : ", data);
-            },
-            error: function (e) {
-                console.error("removeFile ERROR : ", e);
-            }
-        });
     }
 
     function enableResizeSourceColumns() {
@@ -715,24 +679,7 @@
             '</div>';
             showMailBodyContent(elementIds[1], data);
             var files = data.files ? data.files : [];
-            if(files.length > 0){
-                var filesInnerHTML = "";
-                for(var i = 0; i < files.length; i++ ){
-                    var file = files[i];
-                    var fileExtension = getFileExtension(file.fileName);
-                    var command = extensionCommands[fileExtension];
-                    command = (isWindows() && !!command) ? command : "nope";
-                    var url = window.location.origin + "/download/" + encodeURIComponent(file.digest) + "/" + file.fileName;
-                    if(i > 0){
-                        filesInnerHTML += "<br/>";
-                    }
-                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
-                }
-                mailAttachmentDiv.innerHTML = filesInnerHTML;
-                setDownloadLinkClickListener();
-            } else {
-                mailAttachmentDiv.innerHTML = "添付ファイルなし";
-            }
+            showAttachFile(mailAttachmentDiv, files);
         }
     }
     
@@ -1193,86 +1140,6 @@
             }
         });
     }
-
-    function getFileExtension(fileName) {
-        var parts = fileName.split(".");
-        var extension = "." + parts[(parts.length - 1)];
-        return extension.toLowerCase();
-    }
-
-    function getOS() {
-        var userAgent = window.navigator.userAgent,
-            platform = window.navigator.platform,
-            macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-            windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-            iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-            os = null;
-
-        if (macosPlatforms.indexOf(platform) !== -1) {
-            os = 'Mac OS';
-        } else if (iosPlatforms.indexOf(platform) !== -1) {
-            os = 'iOS';
-        } else if (windowsPlatforms.indexOf(platform) !== -1) {
-            os = 'Windows';
-        } else if (/Android/.test(userAgent)) {
-            os = 'Android';
-        } else if (!os && /Linux/.test(platform)) {
-            os = 'Linux';
-        }
-
-        return os;
-    }
-    
-    function isWindows() {
-        var os = getOS();
-        return (os === "Windows");
-    }
-    
-    function setDownloadLinkClickListener() {
-        $('button.download-link').off("click");
-        $('button.download-link').click(function(event) {
-            var command = $(this).attr("data-command");
-            var href = $(this).attr("data-download");
-            var fileName = $(this).attr('data-filename');
-            if(command.startsWith("nope")) {
-                alert("Not support features");
-            } else {
-                doDownload(command+href, fileName);
-            }
-        });
-
-        $.contextMenu({
-            selector: 'button.download-link',
-            callback: function(key, options) {
-                var m = "clicked: " + key;
-                var command = $(this).attr("data-command");
-                var href = $(this).attr("data-download");
-                var fileName = $(this).attr('data-filename');
-                if(key === "open") {
-                    if(command.startsWith("nope")) {
-                        alert("Not support features");
-                    } else {
-                        doDownload(command+href, fileName);
-                    }
-                } else if (key === "save_as") {
-                    doDownload(href, fileName);
-                }
-            },
-            items: {
-                "open": {"name": "Open"},
-                "save_as": {"name": "Save as"},
-            }
-        });
-    }
-
-    function doDownload(href, fileName){
-        var a = document.createElement('A');
-        a.href = href;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
     
     function previewDraggingSetup1() {
         var dragging = false;
@@ -1364,22 +1231,6 @@
                 dragging = false;           
             }
         });
-    }
-
-    function initStickyHeader() {
-        $(".table-container-wrapper").scroll(function () {
-            $(this).find("thead.sticky-header")
-                .css({
-                    "user-select": "none",
-                    "position": "relative",
-                    "z-index": "10",
-                    "transform": "translate(0px, " + $(this).scrollTop() + "px)"
-                });
-        });
-    }
-
-    function wrapperWithRed(text) {
-        return '<div class="gmail_extra" style="color: #ff0000;">' + text + '</div>';
     }
 
     function emailMoveToFirst() {
@@ -1593,35 +1444,6 @@
             var files = data.files ? data.files : [];
             updateDropzoneData(attachmentDropzone, files);
         }
-    }
-    
-    function getMoreInformationMailContent(sentTo, enginnerId, callback){
-        function onSuccess(response) {
-            if(response && response.status) {
-            	if(response.list && response.list.length > 0) {
-                    var data = response.list[0];
-                    if(typeof callback == 'function'){
-                    	callback(data);
-                    }
-                } else {
-                    $.alert('所属企業の情報の取得に失敗しました。');
-                }
-            }
-        }
-        function onError() {
-        	if(typeof callback == 'function'){
-            	callback();
-            	alert('所属企業の情報の取得に失敗しました。');
-            }
-        }
-        getInforPartnerAndEngineerIntroductionAPI(
-        		{
-        			"emailAddress": sentTo,
-        			"engineerId": enginnerId,
-        		}, 
-        		onSuccess, 
-        		onError
-        );
     }
 
     function updateTotalDestinationMatching(total) {

@@ -20,7 +20,7 @@
                         </div>
                         <form id="partnerForm" class="form-horizontal" action="javascript:void(0);">
                         <div id="selectPartnerDiv" class="form-group row">
-                            <div class="col-md-5 showError">
+                            <div class="col-md-5 col-xs-5 showError">
                                 <select id="selectPartner" style="width: 100%;" class="form-control">
                                 </select>
                                 <span id="partnerError" class="form-error">..</span>
@@ -55,89 +55,82 @@
                             <div style="width: 100%; margin-top: 10px;">
                                 <form id="peopleForm" class="form-horizontal" action="javascript:void(0);">
                                     <div id="partnerIdDiv" class="form-group row" style="display: none">
-                                        <label for="partnerId" class="control-label col-md-2 text-left">所属企業</label>
-                                        <div class="col-md-5 showError">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="partnerId">所属企業</label>
+                                        <div class="col-md-5 col-xs-6 showError">
                                             <select id="partnerId" name="partnerId" class="form-control">
                                             </select>
                                             <span class="form-error">..</span>
                                         </div>
-                                        <span id="labelDomainPartner" class="control-label col-md-2 text-left" style="margin-top: 8px;"></span>
+                                        <span class="col-md-2 col-xs-3 control-label text-left" id="labelDomainPartner" style="margin-top: 8px;"></span>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="lastName" class="control-label col-md-1 text-left">担当者氏名</label>
-                                        <label class="control-label col-md-1 text-right">姓</label>
-                                        <div class="col-md-4">
-                                            <input id="lastName" name="lastName" class="form-control">
-                                            </input>
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="lastName">担当者氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">姓</label>
+                                        <div class="col-md-4 col-xs-6">
+                                            <input id="lastName" name="lastName" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="firstName" class="control-label col-md-1 text-left" style="visibility: hidden">担当者氏名</label>
-                                        <label class="control-label col-md-1 text-right">名</label>
-                                        <div class="col-md-4">
-                                            <input id="firstName" name="firstName" style="display: inline-block" class="form-control">
-                                            </input>
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="firstName" style="visibility: hidden">担当者氏名</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right">名</label>
+                                        <div class="col-md-4 col-xs-6">
+                                            <input id="firstName" name="firstName" style="display: inline-block" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="department" class="control-label col-md-2 text-left">所属部署</label>
-                                        <div class="col-md-6">
-                                            <input id="department" name="department" class="form-control">
-                                            </input>
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="department">所属部署</label>
+                                        <div class="col-md-6 col-xs-6">
+                                            <input id="department" name="department" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="position" class="control-label col-md-2 text-left">役 職</label>
-                                        <div class="col-md-6">
-                                            <input id="position" name="position" class="form-control">
-                                            </input>
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="position">役 職</label>
+                                        <div class="col-md-6 col-xs-6">
+                                            <input id="position" name="position" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="emailAddress" class="control-label col-md-2 text-left">メールアドレス</label>
-                                        <div class="col-md-6 showError">
-                                            <input id="emailAddress" name="emailAddress" class="form-control">
-                                            </input>
+                                        <label class="col-md-2 col-xs-3  control-label text-left" for="emailAddress">メールアドレス</label>
+                                        <div class="col-md-6 col-xs-6 showError">
+                                            <input id="emailAddress" name="emailAddress" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 col-xs-3">
                                             <div class="col-md-12">
                                                 <label class="checkbox-inline"><input id="emailInChargePartner" type="checkbox" name="emailInChargePartner" value=""/>&nbsp;代表メールアドレス</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="numberPhone1" class="control-label col-md-1 text-left">電話番号</label>
-                                        <label  class="control-label col-md-1 text-right" style="font-size: 18px;">①</label>
-                                        <div class="col-md-6 showError">
-                                            <input id="numberPhone1" name="numberPhone1" class="form-control">
-                                            </input>
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="numberPhone1">電話番号</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right" style="font-size: 18px;">①</label>
+                                        <div class="col-md-6 col-xs-6 showError">
+                                            <input id="numberPhone1" name="numberPhone1" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="numberPhone2" class="control-label col-md-1 text-left" style="visibility: hidden">電話番号</label>
-                                        <label  class="control-label col-md-1 text-right" style="font-size: 18px;">②</label>
-                                        <div class="col-md-6 showError">
-                                            <input id="numberPhone2" name="numberPhone2" class="form-control">
-                                            </input>
+                                        <label class="col-md-1 col-xs-2 control-label text-left" for="numberPhone2" style="visibility: hidden">電話番号</label>
+                                        <label class="col-md-1 col-xs-1 control-label text-right" style="font-size: 18px;">②</label>
+                                        <div class="col-md-6 col-xs-6 showError">
+                                            <input id="numberPhone2" name="numberPhone2" class="form-control"/>
                                             <span class="form-error">..</span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="note" class="control-label col-md-2 text-left">特記事項</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="note">特記事項</label>
+                                        <div class="col-md-10  col-xs-9">
                                             <textarea id="note" name="note" class="form-control" placeholder="" type="text"></textarea>
                                         </div>
                                         <span class="form-error">..</span>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-2 text-left">アラート</label>
-                                        <div class="col-md-10">
+                                    <div class="form-group row bussiness-partner-alert">
+                                        <label class="col-md-2 col-xs-3 control-label text-left">アラート</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <label class="radio-inline">
                                                 <input type="radio" name="alertType" checked="checked" value="0"/>無し
                                             </label>
@@ -161,33 +154,33 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="alertContent" class="control-label col-md-2 text-left"></label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="alertContent"></label>
+                                        <div class="col-md-10 col-xs-9">
                                             <textarea id="alertContent" name="alertContent" class="form-control" placeholder="" type="text" disabled="true"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="pause" class="control-label col-md-2 text-left">休止</label>
-                                        <div class="col-md-10">
+                                        <label class="col-md-2 col-xs-3 control-label text-left" for="pause">休止</label>
+                                        <div class="col-md-10 col-xs-9">
                                             <label class="checkbox-inline"><input id="pause" type="checkbox" name="pause" value=""/>&nbsp;</label>
                                         </div>
                                     </div>
                                 </form>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-xs-3">
                                         <div style="width: 90%;">
                                             <button id="peopleAdd" name="peopleAdd" type="button" class="btn btn-success btn-block">登録</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-xs-3">
                                         <div style="width: 90%;">
                                             <button id="peopleUpdate" disabled="true" name="peopleUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-xs-3">
                                         <label class="checkbox-inline"><input id="checkboxNext" type="checkbox" value=""/>更新後、次の行を編集</label>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-xs-3">
                                         <div style="width: 90%; margin: auto;">
                                             <button id="peopleClear" name="peopleClear" type="button" class="btn btn-default btn-block">クリア</button>
                                         </div>

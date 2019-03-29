@@ -225,4 +225,7 @@ public class PeopleInChargePartnerUnregisterService {
         }
         return false;
     }
+    public void deletePeopleInChargeUnregister(){
+        peopleInChargeUnregisterDAO.deletePeople();
+    }
 }

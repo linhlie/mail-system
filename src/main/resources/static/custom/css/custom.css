@@ -1394,6 +1394,10 @@ div.bulletinboard-icon-wrapper {
     background-color: #ffff8d;
 }
 
+.fuzzy-word-arrow-down{
+    display: none;
+}
+
 .groupFuzzyWord{
     border-top: 1px solid #eeeeee;
     padding-top: 5px;
@@ -1709,5 +1713,20 @@ div.bulletinboard-icon-wrapper {
 
 .warning{
     display: none;
+}
+
+.statistic-system-title{
+    margin-left: 100px;
+}
+.statistic-system-title-select{
+    margin-left: 85px;
+}
+.statistic-system-title-top-user{
+    padding-left: 0px;
+    padding-right: 100px; ;
+    padding-top: 8px;
+}
+.engineer-filter-engineer{
+    padding-right: 40px;
 }
 

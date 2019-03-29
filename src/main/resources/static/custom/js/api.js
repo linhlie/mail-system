@@ -723,9 +723,25 @@ function addConditionSaved(data, onSuccess, onError) {
     var url = "/user/extractConditionManagement/add";
     _post(url, data, onSuccess, onError);
 }
+
 function deleteConditionSaved(id, onSuccess, onError) {
     var url = "/user/extractConditionManagement/delete/" + id;
     _delete(url, onSuccess, onError);
+}
+
+function getEngineerMatchingResult(data, onSuccess, onError) {
+    var url = "/user/emailMatchingEngineer/submitForm";
+    _postString(url, data, onSuccess, onError);
+}
+
+function getEmailMatchingResult(data, onSuccess, onError) {
+    var url = "/user/matchingSettings/submitForm";
+    _postString(url, data, onSuccess, onError);
+}
+
+function getStatisticMatchingResult(data, onSuccess, onError) {
+    var url = "/user/emailStatistic/submitForm";
+    _postString(url, data, onSuccess, onError);
 }
 
 function _doDownload(href){
