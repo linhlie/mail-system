@@ -146,9 +146,9 @@ public class ApplicationStartup {
         addMemberAccount();
         mailBoxService.getAll(true);
         logger.info("AUTO_FETCH_MAIL "+MailReceiverApplication.AUTO_FETCH_MAIL);
-        if(MailReceiverApplication.AUTO_FETCH_MAIL){
+//        if(MailReceiverApplication.AUTO_FETCH_MAIL){
             fetchMailScheduler.start();
-        }else{
+//        }else{
             deleteOldMailsScheduler.start();
             deleteSentMailHistoryScheduler.start();
             receiveMailScheduler.start();
@@ -157,7 +157,7 @@ public class ApplicationStartup {
             motoringScheduler.start();
             checkIpScheduler.start();
             sendEmailScheduler.start();
-        }
+//        }
         getDomain();
         configWordDatabase();
         return;

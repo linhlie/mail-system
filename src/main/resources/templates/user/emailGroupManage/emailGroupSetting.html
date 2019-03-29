@@ -23,7 +23,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-12 email-group-form-container">
-                                    <div class="col-xs-5 full-height non-paddinng">
+                                    <div class="col-md-5 col-xs-12 full-height non-paddinng">
                                         <h3 style="padding-left: 10px;">メールグループ</h3>
                                         <div class="email-group-table-container" style="background-color: white; ">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
@@ -50,10 +50,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-1 full-height text-align: center;" >
+                                    <div class="col-md-1 col-xs-12 full-height email-group-arrow-down" style="text-align: center;">
                                         <span id="showEmailList" class="glyphicon glyphicon-arrow-right hidden" style="display: table; margin: 0 auto; padding-top: 300px; font-size: 40px"></span>
+                                        <div  id="showEmailListArrowDown" class="msw-header-arrow-down hidden" style="margin: 10px;"></div>
                                     </div>
-                                    <div class="col-xs-6 full-height non-paddinng">
+                                    <div class="col-md-6 col-xs-12 full-height non-paddinng email-group-email-list-table">
                                         <h3 style="padding-left: 10px;">メールリスト</h3>
                                         <div class="email-group-table-container">
                                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
@@ -93,7 +94,7 @@
         </div>
     </section>
     <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 50%;">
+        <div class="modal-dialog email-group-modal" role="document" style="width: 50%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -124,7 +125,7 @@
     </div><!-- /.modal -->
 
     <div id="modalAddGroup" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width: 50%;">
+        <div class="modal-dialog email-group-modal" role="document" style="width: 50%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

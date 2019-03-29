@@ -36,6 +36,9 @@
         '</tr>';
 
     $(function () {
+        if(screen.width==768){
+            showEmailListId = "showEmailListArrowDown";
+        }
         loadListGroup();
         setButtonClickListenter(addEmailGroupId, addEmailGroupOnclick);
         setButtonClickListenter(addEmailListId, addEmailListOnclick);

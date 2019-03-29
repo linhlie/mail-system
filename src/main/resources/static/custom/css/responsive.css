@@ -181,6 +181,25 @@
     /* end minimine expansion*/
 
 
+    /* start setting email group page */
+    .email-group .email-group-form-container{
+        height: auto;
+        border: 0px;
+    }
+    .email-group .email-group-table-container{
+        height: 400px;
+    }
+    .email-group-arrow-down{
+        height: 70px !important;
+    }
+    .email-group-modal{
+        width: 70% !important;
+    }
+    .setting-scheduler-modal{
+        width: 70% !important;
+    }
+    /* end setting email group  page*/
+
 
     /* start minimine side bar */
     a.sidebar-toggle{
