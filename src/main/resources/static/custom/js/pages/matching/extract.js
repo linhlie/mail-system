@@ -171,10 +171,23 @@
     function enableResizeColums() {
         $("#" + sourceTableId).colResizable(
             {
-                resizeMode: 'overflow',
-                minWidth: 30
+                disable: true,
             }
         );
+        if(screen.width > 768){
+            $("#" + sourceTableId).colResizable(
+                {
+                    resizeMode:'overflow',
+                    minWidth: 30
+                }
+            );
+        }else{
+            $("#" + sourceTableId).colResizable(
+                {
+                    minWidth: 30
+                }
+            );
+        }
     }
 
     function loadExtractData() {

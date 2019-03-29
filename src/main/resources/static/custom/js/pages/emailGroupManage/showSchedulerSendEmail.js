@@ -29,11 +29,15 @@
                 disable: true,
             }
         );
-        $("#" + sendMailHistoryTableId).colResizable(
-            {
-                resizeMode: 'overflow',
-            }
-        );
+        if(screen.width > 768){
+            $("#" + sendMailHistoryTableId).colResizable(
+                {
+                    resizeMode: 'overflow',
+                }
+            );
+        }else{
+            $("#" + sendMailHistoryTableId).colResizable();
+        }
     }
 
     function loadSchedulerData() {

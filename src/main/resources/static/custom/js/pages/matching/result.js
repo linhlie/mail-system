@@ -402,12 +402,20 @@
                 disable: true,
             }
         );
-        $("#" + tableId).colResizable(
-            {
-                resizeMode:'overflow',
-                minWidth: 30
-            }
-        );
+        if(screen.width > 768){
+            $("#" + tableId).colResizable(
+                {
+                    resizeMode:'overflow',
+                    minWidth: 30
+                }
+            );
+        }else{
+            $("#" + tableId).colResizable(
+                {
+                    minWidth: 30
+                }
+            );
+        }
     }
 
     function setButtonClickListenter(id, callback) {
