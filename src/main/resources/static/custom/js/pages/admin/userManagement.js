@@ -38,11 +38,15 @@
                 disable: true,
             }
         );
-        $("#" + usersTableId).colResizable(
-            {
-                resizeMode: 'overflow',
-            }
-        );
+        if(screen.width > 768){
+            $("#" + usersTableId).colResizable(
+                {
+                    resizeMode: 'overflow',
+                }
+            );
+        }else{
+            $("#" + usersTableId).colResizable();
+        }
     }
 
     function loadUserData() {

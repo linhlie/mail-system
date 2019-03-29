@@ -394,11 +394,16 @@
                 disable: true,
             }
         );
-        $("#" + inboxTableId).colResizable(
-            {
-                resizeMode: 'overflow',
-            }
-        );
+        if(screen.width > 768){
+            $("#" + inboxTableId).colResizable(
+                {
+                    resizeMode: 'overflow',
+                }
+            );
+        }else{
+            $("#" + inboxTableId).colResizable();
+        }
+
     }
 
     function updateData() {

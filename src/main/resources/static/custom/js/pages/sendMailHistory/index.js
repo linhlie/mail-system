@@ -175,11 +175,20 @@
                 disable: true,
             }
         );
-        $("#" + sendMailHistoryTableId).colResizable(
-            {
-                resizeMode: 'overflow',
-            }
-        );
+        if(screen.width > 768){
+            $("#" + sendMailHistoryTableId).colResizable(
+                {
+                    resizeMode:'overflow',
+                    minWidth: 30
+                }
+            );
+        }else{
+            $("#" + sendMailHistoryTableId).colResizable(
+                {
+                    minWidth: 30
+                }
+            );
+        }
     }
 
     function loadHistoryData(payload) {
