@@ -41,11 +41,6 @@
 
     var SHOW_DETAIL_EMAIL_STATISTIC_KEY = "show-detail-email-statistic";
 
-    var markOptions = {
-        "element": "mark",
-        "separateWordSearch": false,
-    };
-
     var markSearchOptions = {
         "element": "mark",
         "className": "mark-search",
@@ -58,17 +53,6 @@
         "separateWordSearch": false,
         "acrossElements": true,
     };
-
-    var extensionCommands = {
-        ".pdf": "ms-word:ofv|u|",
-        ".docx": "ms-word:ofv|u|",
-        ".doc": "ms-word:ofv|u|",
-        ".xls": "ms-excel:ofv|u|",
-        ".xlsx": "ms-excel:ofv|u|",
-        ".xlsm": "ms-excel:ofv|u|",
-        ".ppt": "ms-powerpoint:ofv|u|",
-        ".pptx": "ms-powerpoint:ofv|u|",
-    }
 
     var headerOrigin = '<tr>'+
         '<th class="col-sm-2" >受信日時</th>'+
@@ -490,24 +474,7 @@
                 '</div>';
             showMailBodyContent(data);
             var files = data.files ? data.files : [];
-            if (files.length > 0) {
-                var filesInnerHTML = "";
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    var fileExtension = getFileExtension(file.fileName);
-                    var command = extensionCommands[fileExtension];
-                    command = (isWindows() && !!command) ? command : "nope";
-                    var url = window.location.origin + "/download/" + encodeURIComponent(file.digest) + "/" + file.fileName;
-                    if (i > 0) {
-                        filesInnerHTML += "<br/>";
-                    }
-                    filesInnerHTML += ("<button type='button' class='btn btn-link download-link' data-filename='" + file.fileName + "' data-command='" + command + "' data-download='" + url + "'>" + file.fileName + "(" + getFileSizeString(file.size) + "); </button>")
-                }
-                mailAttachmentDiv.innerHTML = filesInnerHTML;
-                setDownloadLinkClickListener();
-            } else {
-                mailAttachmentDiv.innerHTML = "添付ファイルなし";
-            }
+            showAttachFile(mailAttachmentDiv, files);
         }
     }
 
@@ -914,64 +881,6 @@
             }
         });
     }
-
-    function setDownloadLinkClickListener() {
-        $('button.download-link').off("click");
-        $('button.download-link').click(function(event) {
-            var command = $(this).attr("data-command");
-            var href = $(this).attr("data-download");
-            var fileName = $(this).attr('data-filename');
-            if(command.startsWith("nope")) {
-                alert("Not support features");
-            } else {
-                doDownload(command+href, fileName);
-            }
-        });
-
-        $.contextMenu({
-            selector: 'button.download-link',
-            callback: function(key, options) {
-                var m = "clicked: " + key;
-                var command = $(this).attr("data-command");
-                var href = $(this).attr("data-download");
-                var fileName = $(this).attr('data-filename');
-                if(key === "open") {
-                    if(command.startsWith("nope")) {
-                        alert("Not support features");
-                    } else {
-                        doDownload(command+href, fileName);
-                    }
-                } else if (key === "save_as") {
-                    doDownload(href, fileName);
-                }
-            },
-            items: {
-                "open": {"name": "Open"},
-                "save_as": {"name": "Save as"},
-            }
-        });
-    }
-
-    function doDownload(href, fileName){
-        var a = document.createElement('A');
-        a.href = href;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-    function initStickyHeader() {
-        $(".table-container-wrapper").scroll(function () {
-            $(this).find("thead.sticky-header")
-                .css({
-                    "user-select": "none",
-                    "position": "relative",
-                    "z-index": "10",
-                    "transform": "translate(0px, " + $(this).scrollTop() + "px)"
-                });
-        });
-    }
     
     function getReplyWrapper(data) {
         var wrapperText = '<div class="gmail_extra"><br>' +
@@ -985,12 +894,6 @@
                 '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
                 '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
         return wrapperText;
-    }
-
-    function countSubstring(source, term) {
-        var regex = new RegExp(term,"g");
-        var count = (source.match(regex) || []).length;
-        return count;
     }
     
     function getHistoryType() {
@@ -1086,30 +989,6 @@
                 dragging = false;
             }
         });
-    }
-    
-    function getInforPartner(sentTo, callback){
-        function onSuccess(response) {
-            if(response) {
-            	if(response.status){
-            		if(typeof callback == 'function'){
-                    	callback(response.msg);
-                    }
-            	}else{
-            		if(typeof callback == 'function'){
-                    	callback();
-                    }
-            	}
-            }
-        }
-        function onError() {
-        	if(typeof callback == 'function'){
-            	callback();
-            	alert('所属企業の情報の取得に失敗しました。');
-            }
-        }
-
-        getInforPartnerAPI(sentTo, onSuccess, onError);
     }
 
 })(jQuery);
