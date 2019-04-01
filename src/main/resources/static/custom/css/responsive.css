@@ -138,6 +138,15 @@
     .email-statistic-table > tr > th{
         overflow-x: hidden;
     }
+    .send-email-history-table > tr > th{
+        overflow-x: hidden;
+    }
+    #historyFromDate{
+        width: 150px;
+    }
+    #historyToDate{
+        width: 150px;
+    }
     /* end matching setting page*/
 
 
