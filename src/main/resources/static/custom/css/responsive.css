@@ -129,6 +129,12 @@
     .matching-result-preview{
         margin-top: 60px !important;
     }
+    .extract-table-thead > tr > th{
+        overflow-x: hidden;
+    }
+    .matching-result-table-thead > tr > th{
+        overflow-x: hidden;
+    }
     /* end matching setting page*/
 
 
@@ -220,6 +226,13 @@
         width: 70% !important;
     }
     /* end setting email group  page*/
+
+
+    /* start inbox */
+    .inbox-table-container{
+        font-size: 12px;
+    }
+    /* end inbox*/
 
 
     /* start minimine side bar */
