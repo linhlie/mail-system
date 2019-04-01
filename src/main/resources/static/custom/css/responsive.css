@@ -135,6 +135,9 @@
     .matching-result-table-thead > tr > th{
         overflow-x: hidden;
     }
+    .email-statistic-table > tr > th{
+        overflow-x: hidden;
+    }
     /* end matching setting page*/
 
 
@@ -172,6 +175,14 @@
 
     .engineer-matching-action-engineer-div{
         margin-bottom: 3px;
+    }
+
+    .engineer-matching-table > tr > th{
+        overflow-x: hidden;
+    }
+
+    .engineer-matching-engineer-info{
+        font-size: 11px;
     }
 
     .filterEngineer{
@@ -224,6 +235,9 @@
     }
     .setting-scheduler-modal{
         width: 70% !important;
+    }
+    .show-scheduler-table > tr > th{
+        overflow-x: hidden;
     }
     /* end setting email group  page*/
 
