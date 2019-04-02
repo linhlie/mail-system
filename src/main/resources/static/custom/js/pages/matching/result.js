@@ -110,15 +110,15 @@
     };
 
     var headerOriginSource = '<tr>'+
-        '<th class="col-sm-1" >ワード</th>'+
-        '<th class="col-sm-1" >マッチ件数</th>'+
-        '<th class="col-sm-2" >受信日時</th>'+
-        '<th class="col-sm-2" >送信者</th>'+
-        '<th class="col-sm-6" >件名</th>';
+        '<th class="col-xs-1" >ワード</th>'+
+        '<th class="col-xs-2" >マッチ件数</th>'+
+        '<th class="col-xs-2" >受信日時</th>'+
+        '<th class="col-xs-2" >送信者</th>'+
+        '<th class="col-xs-4" >件名</th>';
         // </tr>
 
-    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
-    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+    var headerAlertPartner = '<th class="col-xs-2" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-xs-2" style="color: red">担当アラート</th>';
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="word"><span></span></td>' +
@@ -135,14 +135,14 @@
         '<span style="display: inline-block;"></span></td>' ;
 
     var headerDestination = '<tr>'+
-        '<th class="col-sm-2">ワード</th>'+
-        '<th class="col-sm-2">元数値</th>'+
-        '<th class="col-sm-2">先数値</th>'+
-        '<th class="col-sm-4">受信日時</th>'+
-        '<th class="col-sm-4">送信者</th>'+
-        '<th class="col-sm-10">件名</th>'+
-        '<th class="col-sm-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>'+
-        '<th class="col-sm-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+        '<th class="col-xs-2">ワード</th>'+
+        '<th class="col-xs-2">元数値</th>'+
+        '<th class="col-xs-2">先数値</th>'+
+        '<th class="col-xs-4">受信日時</th>'+
+        '<th class="col-xs-3">送信者</th>'+
+        '<th class="col-xs-6">件名</th>'+
+        '<th class="col-xs-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>'+
+        '<th class="col-xs-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="showDestinationMail" rowspan="1" colspan="1" data="word"><span></span></td>' +
@@ -402,12 +402,20 @@
                 disable: true,
             }
         );
-        $("#" + tableId).colResizable(
-            {
-                resizeMode:'overflow',
-                minWidth: 30
-            }
-        );
+        if(screen.width > 768){
+            $("#" + tableId).colResizable(
+                {
+                    resizeMode:'overflow',
+                    minWidth: 30
+                }
+            );
+        }else{
+            $("#" + tableId).colResizable(
+                {
+                    minWidth: 30
+                }
+            );
+        }
     }
 
     function setButtonClickListenter(id, callback) {
@@ -638,7 +646,6 @@
                 $('body').loadingModal('hide');
                 enableResizeDestinationColumns();
                 updateTotalDestinationMatching(currentDestinationResult.length);
-                $("#"+ tableId).closest('.table-container-wrapper').scrollTop(0);
             }, 10)
         }, 10)
     }

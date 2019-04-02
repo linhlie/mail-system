@@ -29,11 +29,15 @@
                 disable: true,
             }
         );
-        $("#" + sendMailHistoryTableId).colResizable(
-            {
-                resizeMode: 'overflow',
-            }
-        );
+        if(screen.width > 768){
+            $("#" + sendMailHistoryTableId).colResizable(
+                {
+                    resizeMode: 'overflow',
+                }
+            );
+        }else{
+            $("#" + sendMailHistoryTableId).colResizable();
+        }
     }
 
     function loadSchedulerData() {
@@ -207,18 +211,6 @@
 
     function removeAllRow(tableId, replaceHtml) { //Except header row
         $("#" + tableId + "> tbody").html(replaceHtml);
-    }
-
-    function initStickyHeader() {
-        $(".table-container-wrapper").scroll(function () {
-            $(this).find("thead.sticky-header")
-                .css({
-                    "user-select": "none",
-                    "position": "relative",
-                    "z-index": "10",
-                    "transform": "translate(0px, " + $(this).scrollTop() + "px)",
-                });
-        });
     }
 
     function showDetailScheduler(id) {

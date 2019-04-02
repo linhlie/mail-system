@@ -6,6 +6,21 @@
 @media screen and (max-width: 768px){
 
     /* start dash board page*/
+    .bulletinboard #accountSelector{
+        margin-left: 50px !important;
+    }
+    .bulletinboard .stats-wrapper{
+        margin: 5px 50px 0px 50px;
+    }
+    .bulletinboard-icon-wrapper{
+        left: -70px !important;
+    }
+    .bulletinboard .bulletin-preview{
+        margin: 0px 50px 0px 50px;
+    }
+    .bulletinboard .bulletin{
+        margin: 0px 50px 0px 50px;
+    }
     #bulletinBoardEditor_ifr{
         overflow-y: scroll !important;
         -webkit-overflow-scrolling: touch;
@@ -16,7 +31,10 @@
     }
     .dashboard-bulletin-board-header{
         margin-bottom: 5px;
-        padding-left: 85px !important;
+        padding-left: 55px !important;
+    }
+    .bulletin-board-tabs{
+        padding: 0px 50px 5px 50px !important;
     }
     .dashboard-bulletin-board-header-title{
         font-size: 32px;
@@ -111,6 +129,24 @@
     .matching-result-preview{
         margin-top: 60px !important;
     }
+    .extract-table-thead > tr > th{
+        overflow-x: hidden;
+    }
+    .matching-result-table-thead > tr > th{
+        overflow-x: hidden;
+    }
+    .email-statistic-table > tr > th{
+        overflow-x: hidden;
+    }
+    .send-email-history-table > tr > th{
+        overflow-x: hidden;
+    }
+    #historyFromDate{
+        width: 150px;
+    }
+    #historyToDate{
+        width: 150px;
+    }
     /* end matching setting page*/
 
 
@@ -148,6 +184,14 @@
 
     .engineer-matching-action-engineer-div{
         margin-bottom: 3px;
+    }
+
+    .engineer-matching-table > tr > th{
+        overflow-x: hidden;
+    }
+
+    .engineer-matching-engineer-info{
+        font-size: 11px;
     }
 
     .filterEngineer{
@@ -201,7 +245,17 @@
     .setting-scheduler-modal{
         width: 70% !important;
     }
+    .show-scheduler-table > tr > th{
+        overflow-x: hidden;
+    }
     /* end setting email group  page*/
+
+
+    /* start inbox */
+    .inbox-table-container{
+        font-size: 12px;
+    }
+    /* end inbox*/
 
 
     /* start minimine side bar */

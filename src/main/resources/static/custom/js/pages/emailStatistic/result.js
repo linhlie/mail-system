@@ -51,12 +51,20 @@
                 disable: true,
             }
         );
-        $("#" + tableId).colResizable(
-            {
-                resizeMode:'overflow',
-                minWidth: 30
-            }
-        );
+        if(screen.width > 768){
+            $("#" + tableId).colResizable(
+                {
+                    resizeMode:'overflow',
+                    minWidth: 30
+                }
+            );
+        }else{
+            $("#" + tableId).colResizable(
+                {
+                    minWidth: 30
+                }
+            );
+        }
     }
     
     function updateData() {
@@ -168,18 +176,6 @@
 
     function updateTotalStatisticResult(total) {
         $('#totalStatisticResult').text("絞りこみの結果:" + total + "件")
-    }
-
-    function initStickyHeader() {
-        $(".table-container-wrapper").scroll(function () {
-            $(this).find("thead.sticky-header")
-                .css({
-                    "user-select": "none",
-                    "position": "relative",
-                    "z-index": "10",
-                    "transform": "translate(0px, " + $(this).scrollTop() + "px)"
-                });
-        });
     }
 
     function replaceCondition(rule) {

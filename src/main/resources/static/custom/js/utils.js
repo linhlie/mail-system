@@ -355,6 +355,14 @@ function isWindows() {
     return (os === "Windows");
 }
 
+function isTablet() {
+    if(screen.width <= 768){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function getFileSizeString(fileSize) {
     return fileSize >= 1000 ? (Math.round( (fileSize/1000) * 10 ) / 10) + " KB " : fileSize + " B"
 }
@@ -661,13 +669,15 @@ function getDefaultFilterMatching(ruleNumberDownRateName, ruleNumberUpRateName, 
 }
 
 function initStickyHeader() {
-    $(".table-container-wrapper").scroll(function () {
-        $(this).find("thead.sticky-header")
-            .css({
-                "user-select": "none",
-                "position": "relative",
-                "z-index": "10",
-                "transform": "translate(0px, " + $(this).scrollTop() + "px)"
-            });
-    });
+    if(!isTablet()){
+        $(".table-container-wrapper").scroll(function () {
+            $(this).find("thead.sticky-header")
+                .css({
+                    "user-select": "none",
+                    "position": "relative",
+                    "z-index": "10",
+                    "transform": "translate(0px, " + $(this).scrollTop() + "px)"
+                });
+        });
+    }
 }
