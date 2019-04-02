@@ -111,12 +111,12 @@
         '<th class="col-sm-2" >金額</th>'+
         '<th class="col-sm-2" >受信日時</th>'+
         '<th class="col-sm-2" >送信者</th>'+
-        '<th class="col-sm-5" >件名</th>'+
-        '<th class="col-sm-1" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+        '<th class="col-sm-4" >件名</th>'+
+        '<th class="col-sm-2" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
 
-    var headerSendToEngineer = '<th class="col-sm-1" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
-    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
-    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+    var headerSendToEngineer = '<th class="col-sm-2" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+    var headerAlertPartner = '<th class="col-sm-2" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-sm-2" style="color: red">担当アラート</th>';
     
 
     var replaceDestinationHTML = '<tr role="row" class="hidden">' +

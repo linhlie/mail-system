@@ -52,15 +52,15 @@
     };
 
     var headerOrigin = '<tr>'+
-        '<th class="col-sm-1" >金額</th>'+
-        '<th class="col-sm-1" >受信日時</th>'+
-        '<th class="col-sm-2" >送信者</th>'+
-        '<th class="col-sm-7" >件名</th>'+
-        '<th class="col-sm-1" ></th>';
+        '<th class="col-xs-1" >金額</th>'+
+        '<th class="col-xs-2" >受信日時</th>'+
+        '<th class="col-xs-2" >送信者</th>'+
+        '<th class="col-xs-4" >件名</th>'+
+        '<th class="col-xs-1" ></th>';
     // </tr>
 
-    var headerAlertPartner = '<th class="col-sm-1" style="color: red">取引先アラート</th>';
-    var headerAlertPeople = '<th class="col-sm-1" style="color: red">担当アラート</th>';
+    var headerAlertPartner = '<th class="col-xs-2" style="color: red">取引先アラート</th>';
+    var headerAlertPeople = '<th class="col-xs-2" style="color: red">担当アラート</th>';
 
     var replaceSourceHTML = '<tr role="row" class="hidden">' +
         '<td class="clickable" name="sourceRow" rowspan="1" colspan="1" data="range"><span></span></td>' +

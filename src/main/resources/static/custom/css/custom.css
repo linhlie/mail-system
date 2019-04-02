@@ -1711,6 +1711,13 @@ div.bulletinboard-icon-wrapper {
     width: 100px;
 }
 
+.engineer-matching-engineer-info{
+    width: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .warning{
     display: none;
 }
@@ -1728,5 +1735,9 @@ div.bulletinboard-icon-wrapper {
 }
 .engineer-filter-engineer{
     padding-right: 40px;
+}
+
+.email-statistic-table{
+    font-size: 12px;
 }
 
