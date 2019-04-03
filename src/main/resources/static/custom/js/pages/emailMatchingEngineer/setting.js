@@ -750,7 +750,7 @@
         }
 
         var destinationConditionsStr = localStorage.getItem(destinationConditionKey);
-        var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_condition_rules : JSON.parse(destinationConditionsStr);
+        var destinationConditions = destinationConditionsStr == null || JSON.parse(destinationConditionsStr) == null ? default_destination_rules : JSON.parse(destinationConditionsStr);
         replaceCondition(destinationConditions);
         $(destinationBuilderId).queryBuilder('setRules', destinationConditions);
         if(ruleNumberName != null && ruleNumberName != ""){
