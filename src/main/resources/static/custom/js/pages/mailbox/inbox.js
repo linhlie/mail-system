@@ -71,158 +71,23 @@
         '</tr>';
 
     $(function () {
-        var default_plugins = [
-            'sortable',
-            'filter-description',
-            'unique-filter',
-            'bt-tooltip-errors',
-            'bt-selectpicker',
-            'bt-checkbox',
-            'invert',
-        ];
-
-        var default_filters = [{
-            id: '0',
-            label: '送信者',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '1',
-            label: '受信者',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '9',
-            label: 'CC',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '10',
-            label: 'BCC',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '11',
-            label: '全て(受信者・CC・BCC)',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '12',
-            label: 'いずれか(受信者・CC・BCC)',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '2',
-            label: '件名',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '3',
-            label: '本文',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '13',
-            label: '全て(件名・本文)',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '14',
-            label: 'いずれか(件名・本文)',
-            type: 'string',
-            operators: ['contains', 'not_contains', 'equal', 'not_equal']
-        }, {
-            id: '7',
-            label: '添付ファイル',
-            type: 'integer',
-            input: 'radio',
-            values: {
-                1: '有り',
-                0: '無し'
-            },
-            colors: {
-                1: 'success',
-                0: 'danger'
-            },
-            operators: ['equal']
-        }, {
-            id: '8',
-            label: '受信日',
-            type: 'string',
-            operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less']
-        }, {
-            id: '15',
-            label: 'マーク',
-            type: 'string',
-            operators: ['equal', 'not_equal']
-        }, {
-            id: '16',
-            label: '受信ルール合致',
-            type: 'integer',
-            input: 'radio',
-            values: {
-                1: '有り',
-                0: '無し'
-            },
-            colors: {
-                1: 'success',
-                0: 'danger'
-            },
-            operators: ['equal']
-        }];
-
         ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
+        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
+        ruleNumberName = $('#'+ruleNumberId).text();
+
         if(!ruleNumberDownRateName || ruleNumberDownRateName==null){
             ruleInvalidateIds.push(RULE_NUMBER_DOWN_RATE_ID);
-        }else{
-            default_filters.splice(10,0,{
-                id: RULE_NUMBER_DOWN_RATE_ID,
-                label: ruleNumberDownRateName,
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: numberValidator
-                },
-            })
         }
 
-        ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
         if(!ruleNumberUpRateName || ruleNumberUpRateName==null){
             ruleInvalidateIds.push(RULE_NUMBER_UP_RATE_ID);
-        }else{
-            default_filters.splice(10,0,{
-                id: RULE_NUMBER_UP_RATE_ID,
-                label: ruleNumberUpRateName,
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: numberValidator
-                },
-            })
         }
 
-        ruleNumberName = $('#'+ruleNumberId).text();
         if(!ruleNumberName || ruleNumberName==null){
             ruleInvalidateIds.push(RULE_NUMBER_ID);
-        }else{
-            default_filters.splice(10,0,{
-                id: RULE_NUMBER_ID,
-                label: ruleNumberName,
-                type: 'string',
-                operators: ['equal', 'not_equal', 'greater_or_equal', 'greater', 'less_or_equal', 'less', 'in'],
-                validation: {
-                    callback: numberValidator
-                },
-            })
         }
 
-        var default_configs = {
-            plugins: default_plugins,
-            allow_empty: true,
-            filters: default_filters,
-            rules: null,
-            lang: globalConfig.default_lang,
-        };
+        var default_configs = getDefaultConditionConfig(ruleNumberDownRateName, ruleNumberUpRateName, ruleNumberName);
 
         $('#'+inboxBuilderId).queryBuilder(default_configs);
         loadEmailData(0);
@@ -676,6 +541,7 @@
                 '<h6>送信者:&nbsp;' + data.from + '&nbsp;&nbsp;&nbsp;&nbsp;受信者:&nbsp;' + data.to + '<span class="mailbox-read-time pull-right">' + data.sentAt + '</span></h6>' +
                 '</div>';
             showMailBodyContent(data);
+            var files = data.files ? data.files : [];
             showAttachFile(mailAttachmentDiv, files);
         }
     }
