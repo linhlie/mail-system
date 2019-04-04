@@ -233,12 +233,13 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type, @RequestParam(value = "accountId", required = false) String accountId){
+    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type,
+                                           @RequestParam(value = "receiver") String receiver, @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
-            List<EmailAccount> accountList = mailAccountsService.list();
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);

@@ -1,3 +1,8 @@
+
+function composeEmailAPI(url, onSuccess, onError) {
+    _get(url, onSuccess, onError);
+}
+
 function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback) {
     messageId = messageId.replace(/\+/g, '%2B');
     replyId = replyId.replace(/\+/g, '%2B');
