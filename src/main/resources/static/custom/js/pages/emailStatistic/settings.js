@@ -208,7 +208,7 @@
     function loadDefaultSettings() {
         loadExpandCollapseSetting(statisticConditionBuilderId);
         var conditionsStr = localStorage.getItem(STATISTIC_CONDITION_KEY);
-        var conditions = conditionsStr == null || JSON.parse(conditionsStr) == null ? default_condition_rules : JSON.parse(conditionsStr);
+        var conditions = conditionsStr == null || JSON.parse(conditionsStr) == null ? default_destination_rules : JSON.parse(conditionsStr);
         replaceCondition(conditions);
         $(statisticConditionBuilderId).queryBuilder('setRules', conditions);
         var conditionName = localStorage.getItem(STATISTIC_CONDITION_NAME_KEY) || "未登録の条件";

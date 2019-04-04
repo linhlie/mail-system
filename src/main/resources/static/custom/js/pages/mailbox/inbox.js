@@ -409,21 +409,6 @@
         $("#" + tableId + "> tbody").html(replaceHtml);
     }
 
-    function numberValidator(value, rule) {
-        if (!value || value.trim().length === 0) {
-            return "Value can not be empty!";
-        } else if (rule.operator.type !== 'in') {
-            value = fullWidthNumConvert(value);
-            value = value.replace(/，/g, ",");
-            var pattern = /^\d+(,\d{3})*(\.\d+)?$/;
-            var match = pattern.test(value);
-            if(!match){
-                return "Value must be a number greater than or equal to 0";
-            }
-        }
-        return true;
-    }
-
     function showSettingCondition() {
         showModal(loadEmailData);
     }
