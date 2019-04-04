@@ -23,7 +23,6 @@
     var mailList = {};
     var currentDestinationResult = [];
     var onlyDisplayNonZeroRow = true;
-    var destinationMatchDataTable;
     var selectedRowData;
     var motoReplaceSelectorId = "#motoReplaceSelector";
     var sakiReplaceSelectorId = "#sakiReplaceSelector";
@@ -81,6 +80,9 @@
     var ruleNumberDownRateName = "";
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
+
+    var currentEmail;
+    var emailAccounts = [];
 
     var markOptions = {
         "element": "mark",
@@ -650,12 +652,6 @@
         }, 10)
     }
 
-    function destroySortDestination() {
-        if(!!destinationMatchDataTable){
-            destinationMatchDataTable.destroy();
-        }
-    }
-
     function initSortDestination() {
         $("#destinationMatch").tablesorter(
             {
@@ -887,27 +883,77 @@
         highlight(id, data);
     }
 
-    function showMailContenttToEditor(data, accounts, receiverData, sendTo) {
-        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartner(receiverListStr, function(partnerInfor){
-        	showMailContentToEditorFinal(data, accounts, receiverData, sendTo, partnerInfor);
+    function composeEmail(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, receiver) {
+        messageId = messageId.replace(/\+/g, '%2B');
+        replyId = replyId.replace(/\+/g, '%2B');
+        var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType;
+        var type = sendTo === "moto" ? 4 : 5;
+        var receiverStr = receiver.replyTo ? receiver.replyTo : receiver.from;
+        url = url + "&type=" + type + "&receiver=" + receiverStr;
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                currentEmail = response.mail;
+                emailAccounts = response.list;
+                updateSenderSelector(receiver, sendTo);
+                showMailContentToEditor(receiver, sendTo)
+            }
+        }
+
+        function onError() {
+            console.error("composeEmail ERROR : ", e);
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+        composeMatchingEmailAPI(url, onSuccess, onError);
+    }
+
+    function updateSenderSelector(receiver, sendTo) {
+        var accounts = emailAccounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id== lastSelectedSendMailAccountId)
+            }));
+        });
+
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            localStorage.setItem("selectedSendMailAccountId", lastSelectedSendMailAccountId);
+            showMailContentToEditor(receiver, sendTo)
         });
     }
+
+    function getSenderSelected() {
+        var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
+        for(var i=0;i< emailAccounts.length ;i++){
+            if(emailAccounts[i].id == accountId){
+                console.log(emailAccounts[i]);
+                return emailAccounts[i];
+            }
+        }
+        return null;
+    }
     
-    function showMailContentToEditorFinal(data, accounts, receiverData, sendTo, partnerInfor) {
+    function showMailContentToEditor(receiverData, sendTo) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
-        if(data){
-            updateSenderSelector(data, accounts);
-            senderGlobal = data.account;
+        var data = currentEmail;
+        var sender = getSenderSelected();
+        if (data && data != null && sender != null) {
+            senderGlobal = sender.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = sender.cc ? sender.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
             cc = updateCCList(cc,to);
-            var indexOfSender = cc.indexOf(data.account);
+            var indexOfSender = cc.indexOf(sender.account);
             if(indexOfSender > -1){
                 cc.splice(indexOfSender, 1);
             }
@@ -925,48 +971,27 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
-            data.originalBody = wrapText(data.originalBody);
-            data.originalBody = wrapInDivWithId(originalContentWrapId,data.originalBody);
-            var stripped = strip(data.originalBody, originalContentWrapId);
+            var replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
+            var originalBody = wrapText(data.originalBody);
+            originalBody = wrapInDivWithId(originalContentWrapId, originalBody);
+            var stripped = strip(originalBody, originalContentWrapId);
             dataLinesConfirm = getHeaderFooterLines(stripped);
-            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
-            data.replyOrigin = getReplyWrapper(data);
-            data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
-            data.excerpt = getDecorateExcerpt(data.excerpt, sendTo, $('#' + rdMailSenderId+' option:selected').text());
-            data.originalBody = data.excerpt + data.originalBody;
-            data.originalBody = data.originalBody + data.signature;
-            if(partnerInfor != null && partnerInfor != ""){
-                data.originalBody = partnerInfor + data.originalBody;
-            }
-            updateMailEditorContent(data.originalBody);
-            if( data.replacedBody != null){
-                data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
-                stripped = strip(data.replacedBody, originalContentWrapId);
+            var replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            replyOrigin = getReplyWrapper(data, replyOrigin);
+            originalBody = replyOrigin ? originalBody + replyOrigin : originalBody;
+            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            updateMailEditorContent(originalBody);
+            if( replacedBody != null){
+                replacedBody = wrapInDivWithId(originalContentWrapId, replacedBody);
+                stripped = strip(replacedBody, originalContentWrapId);
                 dataLinesConfirm = getHeaderFooterLines(stripped);
-                data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
-                data.replacedBody = data.excerpt + data.replacedBody;
-                data.replacedBody = data.replacedBody + data.signature;
-                if(partnerInfor != null && partnerInfor != ""){
-                    data.replacedBody = partnerInfor + data.replacedBody;
-                }
-                updateMailEditorContent(data.replacedBody, true);
+                replacedBody = replyOrigin ? replacedBody + replyOrigin : replacedBody;
+                replacedBody = sender.greeting + "<br/><br/>" + replacedBody + sender.signature;
+                updateMailEditorContent(replacedBody, true);
             }
             var files = data.files ? data.files : [];
             updateDropzoneData(attachmentDropzone, files);
         }
-    }
-
-    function updateSenderSelector(email, accounts) {
-        accounts = accounts || [];
-        $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id.toString() === lastSelectedSendMailAccountId)
-            }));
-        });
     }
 
     function updateMailEditorContent(content, preventClear){
@@ -981,12 +1006,6 @@
     function getMailEditorContent() {
         var editor = tinymce.get(rdMailBodyId);
         return editor.getContent();
-    }
-
-    function disableButton(buttonId, disabled) {
-        if(buttonId && buttonId.length > 0){
-            $(buttonId).prop("disabled", disabled);
-        }
     }
     
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
@@ -1031,16 +1050,9 @@
         lastTextMatchRange = textMatchRange;
         lastReplaceType = replaceType;
         lastSendTo = sendTo;
-        showMailWithReplacedRange(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, function (email, accounts) {
-            showMailContenttToEditor(email, accounts, receiver, sendTo)
-        });
-        $('#' + rdMailSenderId).off('change');
-        $('#' + rdMailSenderId).change(function() {
-            lastSelectedSendMailAccountId = this.value;
-            showMailWithReplacedRange(this.value, lastMessageId, lastReceiver.messageId, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, function (email, accounts) {
-                showMailContenttToEditor(email, accounts, lastReceiver, lastSendTo)
-            });
-        });
+
+        composeEmail(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, receiver);
+
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function() {
@@ -1211,20 +1223,6 @@
 
     function updateTotalDestinationMatching(total) {
         $('#' + totalDestinationMatchingContainId).text("絞り込み先: " + total + "件")
-    }
-
-    function setInputChangeListener(id, acceptEmpty, callback) {
-        $('#' + id).on('input', function() {
-            var valid = validateEmailListInput(id);
-            if(!acceptEmpty) {
-                var value = $('#' + id).val();
-                valid = valid && (value.length > 0);
-            }
-            valid ? $('#' + id + '-container').removeClass('has-error') : $('#' + id + '-container').addClass('has-error');
-            if(typeof callback === "function") {
-                callback(valid);
-            }
-        });
     }
 
     function resetValidation() {

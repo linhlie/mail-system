@@ -532,6 +532,14 @@
         $("#printElement").print();
         $("#printElement").hide();
     }
+
+    function showMailBodyContent(data) {
+        data.originalBody = wrapText(data.originalBody);
+        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        mailBodyDiv.scrollTop = 0;
+        mailBodyDiv.innerHTML = data.originalBody;
+        highlight(data);
+    }
     
     function showMailEditor(messageId, accountId, receiver) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
@@ -668,15 +676,37 @@
                 callback();
             }
         }
-        composeEmailAPI(url, onSuccess, onError);
+        composeExtractEmailAPI(url, onSuccess, onError);
     }
 
-    function showMailBodyContent(data) {
-        data.originalBody = wrapText(data.originalBody);
-        var mailBodyDiv = document.getElementById(mailBodyDivId);
-        mailBodyDiv.scrollTop = 0;
-        mailBodyDiv.innerHTML = data.originalBody;
-        highlight(data);
+    function updateSenderSelector(receiver) {
+        var accounts = emailAccounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id== lastSelectedSendMailAccountId)
+            }));
+        });
+
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            localStorage.setItem("selectedSendMailAccountId", lastSelectedSendMailAccountId);
+            showMailContentToEditor(receiver);
+        });
+    }
+
+    function getSenderSelected() {
+        var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
+        for(var i=0;i< emailAccounts.length ;i++){
+            if(emailAccounts[i].id == accountId){
+                console.log(emailAccounts[i]);
+                return emailAccounts[i];
+            }
+        }
+        return null;
     }
 
     function showMailContentToEditor(receiverData) {
@@ -719,36 +749,6 @@
             updateMailEditorContent(originalBody);
         }
         updateDropzoneData(attachmentDropzone);
-    }
-    
-    function updateSenderSelector(receiver) {
-        var accounts = emailAccounts || [];
-        $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id== lastSelectedSendMailAccountId)
-            }));
-        });
-
-        $('#' + rdMailSenderId).off('change');
-        $('#' + rdMailSenderId).change(function() {
-            lastSelectedSendMailAccountId = this.value;
-            localStorage.setItem("selectedSendMailAccountId", lastSelectedSendMailAccountId);
-            showMailContentToEditor(receiver);
-        });
-    }
-
-    function getSenderSelected() {
-        var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
-        for(var i=0;i< emailAccounts.length ;i++){
-            if(emailAccounts[i].id == accountId){
-                console.log(emailAccounts[i]);
-                return emailAccounts[i];
-            }
-        }
-        return null;
     }
 
     function updateMailEditorContent(content, preventClear) {

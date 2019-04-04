@@ -202,6 +202,7 @@ public class MatchingSettingsController {
     ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
                                           @RequestParam(value = "type") int type,
                                           @RequestParam(value = "replyId") String replyId,
+                                          @RequestParam(value = "receiver") String receiver,
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
@@ -216,7 +217,7 @@ public class MatchingSettingsController {
                 List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer(id);
                 result.setList(accountList);
             }else{
-                List<EmailAccount> accountList = mailAccountsService.list();
+                List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
                 result.setList(accountList);
             }
             result.setMsg("done");

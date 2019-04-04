@@ -25,7 +25,7 @@ function wrapPlainText(text) {
     return text;
 }
 
-function getReplyWrapper(data) {
+function getReplyWrapper(data, replyOrigin) {
     var wrapperText = '<div class="gmail_extra"><br>' +
         '<div class="gmail_quote">' +
         data.replySentAt +
@@ -34,8 +34,12 @@ function getReplyWrapper(data) {
         '" target="_blank" rel="noopener">' +
         data.replyFrom +
         '</a>&gt;</span>:<br />' +
-        '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
-        '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
+        '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">';
+    if(replyOrigin && replyOrigin!=null){
+        wrapperText = wrapperText + '<div dir="ltr">' + replyOrigin + '</div></blockquote></div></div>';
+    }else{
+        wrapperText = wrapperText + '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
+    }
     return wrapperText;
 }
 
