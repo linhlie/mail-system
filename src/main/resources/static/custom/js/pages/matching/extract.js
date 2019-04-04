@@ -600,7 +600,7 @@
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
                 }
@@ -647,7 +647,7 @@
                 },
                 error: function (e) {
                     btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     $('#sendMailModal').modal('hide');
                     //TODO: noti send mail error
                 }
@@ -672,11 +672,8 @@
 
         function onError() {
             console.error("composeEmail ERROR : ", e);
-            if (typeof callback === "function") {
-                callback();
-            }
         }
-        composeExtractEmailAPI(url, onSuccess, onError);
+        composeEmailAPI(url, onSuccess, onError);
     }
 
     function updateSenderSelector(receiver) {
@@ -702,7 +699,6 @@
         var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
         for(var i=0;i< emailAccounts.length ;i++){
             if(emailAccounts[i].id == accountId){
-                console.log(emailAccounts[i]);
                 return emailAccounts[i];
             }
         }

@@ -1,9 +1,5 @@
 
-function composeExtractEmailAPI(url, onSuccess, onError) {
-    _get(url, onSuccess, onError);
-}
-
-function composeMatchingEmailAPI(url, onSuccess, onError) {
+function composeEmailAPI(url, onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 

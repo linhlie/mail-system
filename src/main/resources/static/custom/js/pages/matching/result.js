@@ -902,11 +902,8 @@
 
         function onError() {
             console.error("composeEmail ERROR : ", e);
-            if (typeof callback === "function") {
-                callback();
-            }
         }
-        composeMatchingEmailAPI(url, onSuccess, onError);
+        composeEmailAPI(url, onSuccess, onError);
     }
 
     function updateSenderSelector(receiver, sendTo) {
@@ -932,7 +929,6 @@
         var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
         for(var i=0;i< emailAccounts.length ;i++){
             if(emailAccounts[i].id == accountId){
-                console.log(emailAccounts[i]);
                 return emailAccounts[i];
             }
         }
