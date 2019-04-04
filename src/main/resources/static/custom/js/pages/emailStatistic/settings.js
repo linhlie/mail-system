@@ -14,11 +14,7 @@
     var STATISTIC_MATCHING_WORD_KEY = "statistic-matching-word";
     var STATISTIC_CONDITION_DATA_KEY = "statistic-condition-data";
 
-
     var removeDatalistItemBtnId = "#dataRemoveItem";
-
-    var STATISTIC_CONDITION_LIST_KEY = "/user/statisticSettings/listCondition";
-    var STATISTIC_PRE_FIX_URL_KEY = "/user/statisticSettings/statistic";
 
     var collapsedPrefixKey = "/user/statisticSettings/collapsed";
     var collapseViewPostfix = "-collapse-view";
@@ -56,47 +52,7 @@
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
 
-
-    var default_condition_rules = {
-        condition: "AND",
-        rules: [
-            {
-                id: "7",
-                input: "ratio",
-                type: "integer",
-                value: 0
-            },
-            {
-                id: "8",
-                operator: "greater_or_equal",
-                type:  "string",
-                value: "-7"
-            },
-            {
-                id: "2",
-                operator: "not_contains",
-                type:  "string",
-                value: "Re:"
-            },
-            {
-                id: "0",
-                operator: "not_contains",
-                type:  "string",
-                value: "@world-link-system.com"
-            }
-        ]
-    };
-
     $(function () {
-        var default_plugins = [
-            'sortable',
-            'filter-description',
-            'unique-filter',
-            'bt-tooltip-errors',
-            'bt-selectpicker',
-            'bt-checkbox',
-            'invert',
-        ];
 
         ruleNumberDownRateName = $('#'+ruleNumberDownRateId).text();
         ruleNumberUpRateName = $('#'+ruleNumberUpRateId).text();
@@ -114,16 +70,7 @@
             ruleInvalidateIds.push(RULE_NUMBER_ID);
         }
 
-        var default_filters = getDefaultFilter(ruleNumberDownRateName, ruleNumberUpRateName, ruleNumberName);
-
-        default_condition_configs = {
-            plugins: default_plugins,
-            allow_empty: true,
-            filters: default_filters,
-            rules: null,
-            lang: globalConfig.default_lang,
-        };
-
+        default_condition_configs = getDefaultConditionConfig(ruleNumberDownRateName, ruleNumberUpRateName, ruleNumberName);
 
         $(statisticConditionBuilderId).queryBuilder(default_condition_configs);
 
@@ -261,7 +208,7 @@
     function loadDefaultSettings() {
         loadExpandCollapseSetting(statisticConditionBuilderId);
         var conditionsStr = localStorage.getItem(STATISTIC_CONDITION_KEY);
-        var conditions = conditionsStr == null || JSON.parse(conditionsStr) == null ? default_condition_rules : JSON.parse(conditionsStr);
+        var conditions = conditionsStr == null || JSON.parse(conditionsStr) == null ? default_destination_rules : JSON.parse(conditionsStr);
         replaceCondition(conditions);
         $(statisticConditionBuilderId).queryBuilder('setRules', conditions);
         var conditionName = localStorage.getItem(STATISTIC_CONDITION_NAME_KEY) || "未登録の条件";
