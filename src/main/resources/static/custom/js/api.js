@@ -385,9 +385,24 @@ function forceFetchMail(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getEmailAccounts(onSuccess, onError) {
-    var url ="/user/greetingRegistration/getEmailAccounts";
+function getGreetingAPI(emailAccountId, onSuccess, onError) {
+    var url ="/user/greetingRegistration/"+emailAccountId;
     _get(url, onSuccess, onError);
+}
+
+function addGreetingAPI(data, onSuccess, onError) {
+    var url ="/user/greetingRegistration/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateGreetingAPI(data, onSuccess, onError) {
+    var url ="/user/greetingRegistration/update";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteGreetingAPI(id, onSuccess, onError) {
+    var url ="/user/greetingRegistration/delete/"+id;
+    _delete(url, onSuccess, onError);
 }
 
 function getBulletinBoardAPI(onSuccess, onError) {

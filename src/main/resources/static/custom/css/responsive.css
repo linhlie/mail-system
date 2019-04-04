@@ -172,6 +172,19 @@
     /* end setting fuzzyword page*/
 
 
+    .greeting-type-part{
+        font-size: 12px;
+    }
+    .greeting-type-part input{
+        transform: translateY(-4px);
+    }
+    .greeting-modal{
+        width: 90% !important;
+    }
+    .greeting-modal-body{
+        font-size: 12px;
+    }
+
     /* start engineer matching */
     .engineer-matching-filter-engineer{
         margin-left: 5px;
