@@ -41,6 +41,7 @@
 
     var currentEmail;
     var emailAccounts = [];
+    var REPLY_EMAIL = "reply";
 
     var markSearchOptions = {
         "element": "mark",
@@ -532,6 +533,7 @@
     
     function showMailEditorInNewTab(messageId, accountId, receiver) {
         var data = {
+            "type": REPLY_EMAIL,
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,
