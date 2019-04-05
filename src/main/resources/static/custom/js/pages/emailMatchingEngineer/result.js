@@ -791,7 +791,7 @@
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
                 }
@@ -840,7 +840,7 @@
                     },
                     error: function (e) {
                         btn.button('reset');
-                        console.log("ERROR : sendSuggestMail: ", e);
+                        console.error("ERROR : sendSuggestMail: ", e);
                         $('#sendMailModal').modal('hide');
                         //TODO: noti send mail error
                     }
@@ -1275,7 +1275,6 @@
         var url = "/user/engineerMatching/replyEngineer?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
         var type = 10;
         url = url + "&type=" + type;
-        console.log(url);
 
         function onSuccess(response) {
             if(response && response.status) {
@@ -1284,7 +1283,6 @@
                 emailAccounts = response.list;
                 updateSenderSelector(receiver, response.emailAccountId, "replyEngineer");
                 showMailContentToEditorEngineer();
-                console.log(response);
             }
         }
 
@@ -1307,7 +1305,6 @@
                 emailAccounts = response.list;
                 updateSenderSelector(receiver, response.emailAccountId, "replyEmail");
                 showMailContentToEditor(receiver);
-                console.log(response);
             }
         }
 
@@ -1394,7 +1391,6 @@
     }
 
     function showMailContentToEditorEngineer() {
-        console.log(currentEngineer);
         if(!currentEngineer && currentEngineer == null) return
         var receiverListStr = currentEngineer.mailAddress;
         resetValidation();

@@ -865,20 +865,6 @@
         });
     }
     
-    function getReplyWrapper(data, replyOrigin) {
-        var wrapperText = '<div class="gmail_extra"><br>' +
-                '<div class="gmail_quote">' +
-            data.replySentAt +
-                ' <span dir="ltr">&lt;<a href="mailto:' +
-                data.replyFrom +
-                '" target="_blank" rel="noopener">' +
-            data.replyFrom +
-                '</a>&gt;</span>:<br />' +
-                '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
-                '<div dir="ltr">' + replyOrigin + '</div></blockquote></div></div>';
-        return wrapperText;
-    }
-    
     function getHistoryType() {
         return window.location.href.indexOf("extractSource") >= 0 ? 3 : 4;
     }
