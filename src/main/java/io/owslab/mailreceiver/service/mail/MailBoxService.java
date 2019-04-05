@@ -403,25 +403,13 @@ public class MailBoxService {
         return results;
     }
 
-    public DetailMailDTO getContentRelyEmail(String replyId, String accountId) throws Exception {
+    public DetailMailDTO getContentRelyEmail(String replyId) throws Exception {
         List<Email> replyList = emailDAO.findByMessageId(replyId);
         Email replyEmail = replyList.size() > 0 ? replyList.get(0) : null;
         if(replyEmail == null) {
             throw new Exception("This mail has been deleted or does not exist");
         }
-        List<EmailAccount> listAccount = accountId != null ? mailAccountsService.findById(Long.parseLong(accountId)) : mailAccountsService.list();
-        EmailAccount emailAccount = listAccount.size() > 0 ? listAccount.get(0) : null;
-        if(emailAccount == null) {
-            throw new Exception("Missing sender account info. Can't reply this email");
-        }
-        SendAccountForm sendAccountForm = emailAccountSettingService.getSendAccountForm(emailAccount.getId());
-        if(sendAccountForm == null) {
-            throw new Exception("Missing sender account info. Can't reply this email");
-        }
-        DetailMailDTO result = new DetailMailDTO(replyEmail, emailAccount);
-        result.setExternalCC(sendAccountForm.getCc());
-        String signature = emailAccount.getSignature().length() > 0 ? "<br>--<br>" + emailAccount.getSignature() : "";
-        result.setSignature(signature);
+        DetailMailDTO result = new DetailMailDTO(replyEmail);
         result.setExcerpt(getExcerpt(replyEmail));
         String replyText = replyEmail.getOriginalBody();
         result.setReplyOrigin(replyText);

@@ -93,6 +93,10 @@
         "acrossElements": true,
     };
 
+    var currentEmail;
+    var currentEngineer;
+    var emailAccounts = [];
+
     var replaceEngineerHTML = '<tr role="row" class="hidden">'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.name"><span></span></td>'+
         '<td class="clickable" name="sourceRow" data="engineerMatchingDTO.partnerName"><span></span></td>'+
@@ -700,43 +704,6 @@
         highlight(id, data);
     }
 
-    function updateSenderSelector(email, accounts, domains) {
-        accounts = accounts || [];
-        $('#' + rdMailSenderId).empty();
-        var selectAccount;
-        if(domains){
-            for(var i=0;i<accounts.length;i++){
-            	var account = accounts[i].account.trim();
-            	var index = account.indexOf("@");
-            	var domain = account.substring(index+1);
-            	for(var j=0;j<domains.length;j++){
-            		if(domain==domains[j]){
-            			selectAccount = account;
-            		}
-            	}
-            	$('#' + rdMailSenderId).append($('<option>', {
-                    value: accounts[i].id,
-                    text : accounts[i].account
-                }));
-            }
-            if(selectAccount){
-                $('#' + rdMailSenderId +' option').filter(function() {
-                    return this.text == selectAccount; 
-                }).attr('selected', true);
-            }else{
-            	$('#' + rdMailSenderId).val(lastSelectedSendMailAccountId);
-            }
-        }else{
-            $.each(accounts, function (i, item) {
-                $('#' + rdMailSenderId).append($('<option>', {
-                    value: item.id,
-                    text : item.account,
-                    selected: (item.id.toString() === lastSelectedSendMailAccountId)
-                }));
-            });
-        }
-    }
-
     function updateMailEditorContent(content, preventClear){
         var editor = tinymce.get(rdMailBodyId);
         editor.setContent(content);
@@ -785,19 +752,15 @@
         }
     }
 
-    function showMailEditorInTab(messageId, accountId, emailData, engineer, sendTo) {
+    function showMailEditorInTab(messageId, accountId, receiver, engineer, sendTo) {
         $('#sendMailModal').modal();
-        lastReceiver = emailData;
+        lastReceiver = receiver;
         lastMessageId = messageId;
         lastSendTo = sendTo;
         if(lastSendTo == "sendToEngineer") {
-            showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, function (email, accounts) {
-                showMailContentToEditorEngineer(email, messageId, accounts, emailData, engineer)
-            });
+            composeEmailToEngineer(messageId, receiver, engineer.id);
         } else {
-            showMailWithReplacedRangeNew(messageId, accountId, function (email, accounts) {
-                showMailContentToEditor(email, accounts, emailData, engineer.id)
-            });
+            composeEmail(messageId, receiver, engineer.id);
         }
 
         $("button[name='sendSuggestMailClose']").off('click');
@@ -1302,92 +1265,107 @@
             return 6;
         }
     }
-    
-    function showMailWithReplacedRangeNew(messageId, accountId, callback) {
+
+    function composeEmailToEngineer(messageId, receiver, engineerId) {
         messageId = messageId.replace(/\+/g, '%2B');
-        var type = 9;
-        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
-        if(!!accountId){
-            url = url + "&accountId=" + accountId;
+        var replyId = messageId;
+        var range = receiver.matchRange;
+        var matchRange = receiver.range;
+        var replaceType = 1;
+        var url = "/user/engineerMatching/replyEngineer?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
+        var type = 10;
+        url = url + "&type=" + type;
+        console.log(url);
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                currentEmail = response.mail;
+                currentEngineer = response.engineer;
+                emailAccounts = response.list;
+                updateSenderSelector(receiver, response.emailAccountId, "replyEngineer");
+                showMailContentToEditorEngineer();
+                console.log(response);
+            }
         }
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                var email;
-                var accounts;
-                if (data.status) {
-                    email = data.mail;
-                    accounts = data.list;
-                }
-                if (typeof callback === "function") {
-                    callback(email, accounts);
-                }
-            },
-            error: function (e) {
-                console.error("showMailWithReplacedRange ERROR : ", e);
-                if (typeof callback === "function") {
-                    callback();
-                }
+
+        function onError(e) {
+            console.error("composeEmailToEngineer ERROR : ", e);
+        }
+        composeEmailAPI(url, onSuccess, onError);
+    }
+
+    function composeEmail(messageId, receiver, engineerId) {
+        messageId = messageId.replace(/\+/g, '%2B');
+        var receiverStr = receiver.replyTo ? receiver.replyTo : receiver.from;
+        var type = 9;
+        var url = "/user/engineerMatching/replyEmail?messageId=" + messageId + "&type=" + type + "&receiver=" + receiverStr + "&engineerId=" +engineerId;
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                currentEmail = response.mail;
+                currentEngineer = response.engineer;
+                emailAccounts = response.list;
+                updateSenderSelector(receiver, response.emailAccountId, "replyEmail");
+                showMailContentToEditor(receiver);
+                console.log(response);
+            }
+        }
+
+        function onError(e) {
+            console.error("composeEmail ERROR: ", e);
+        }
+        composeEmailAPI(url, onSuccess, onError);
+    }
+
+    function updateSenderSelector(receiver, accountId, type) {
+        var accounts = emailAccounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (accountId > 0? item.id == accountId : item.id == lastSelectedSendMailAccountId)
+            }));
+        });
+        lastSelectedSendMailAccountId = $( '#' + rdMailSenderId +' option:selected' ).val();
+
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            localStorage.setItem("selectedSendMailAccountId", lastSelectedSendMailAccountId);
+            if(type === "replyEmail"){
+                showMailContentToEditor(receiver)
+            }else {
+                showMailContentToEditorEngineer();
             }
         });
     }
-    
-    function showMailContentToEditor(data, accounts, receiverData, engineerId) {
-        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getMoreInformationMailContent(receiverListStr, engineerId, function(moreInfor){
-            updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
-            $('#' + rdMailSenderId).off('change');
-            $('#' + rdMailSenderId).change(function() {
-                lastSelectedSendMailAccountId = this.value;
-                getMailData(receiverData, this.value, moreInfor);
-            });
-            getMailData(receiverData, $('#' + rdMailSenderId).val(), moreInfor);
-        });
+
+    function getSenderSelected() {
+        var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
+        for(var i=0;i< emailAccounts.length ;i++){
+            if(emailAccounts[i].id == accountId){
+                return emailAccounts[i];
+            }
+        }
+        return null;
     }
 
-    function showMailContentToEditorEngineer(data, messageId, accounts, receiver, engineer) {
-        var receiverListStr = engineer.mailAddress;
-        getMoreInformationMailContent(receiverListStr, engineer.id, function(moreInfor){
-            updateSenderSelector(data, accounts, moreInfor.domainPartnersOfEngineer);
-            $('#' + rdMailSenderId).off('change');
-            $('#' + rdMailSenderId).change(function() {
-                lastSelectedSendMailAccountId = this.value;
-                getMailDataToSendEngineer(messageId, lastSelectedSendMailAccountId, receiver, engineer, moreInfor)
-            });
-            lastSelectedSendMailAccountId = $('#' + rdMailSenderId).val();
-            getMailDataToSendEngineer(messageId, lastSelectedSendMailAccountId, receiver, engineer, moreInfor)
-        });
-    }
-
-    function getMailDataToSendEngineer(messageId, accountId, receiver, engineer, moreInfor){
-        showMailWithReplacedRangeEngineer(messageId, accountId, receiver, engineer, function (email, accounts) {
-            showMailContentToEditorFinalEngineer(email, accountId, accounts, receiver , engineer, moreInfor);
-        });
-    }
-    
-    function getMailData(receiverData, accountId, moreInfor){
-    	showMailWithReplacedRangeNew(lastMessageId, accountId, function (email, accounts) {
-        	showMailContentToEditorFinal(email, accounts, receiverData, moreInfor);
-        });
-    }
-    
-    function showMailContentToEditorFinal(data, accounts, receiverData, moreInfor) {
+    function showMailContentToEditor(receiverData) {
     	var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
-        if (data) {
-            senderGlobal = data.account;
+        var data = currentEmail;
+        var sender = getSenderSelected();
+        if (data && data != null && sender != null && currentEngineer && currentEngineer != null) {
+            senderGlobal = sender.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = sender.cc ? sender.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
             cc = updateCCList(cc,to);
-            var indexOfSender = cc.indexOf(data.account);
+            var indexOfSender = cc.indexOf(sender.account);
             if (indexOfSender > -1) {
                 cc.splice(indexOfSender, 1);
             }
@@ -1405,50 +1383,49 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
-            data.replyOrigin = getReplyWrapper(data);
-            data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            if(moreInfor != null && moreInfor.engineerIntroduction != null && moreInfor.engineerIntroduction != ""){
-            	data.originalBody = moreInfor.engineerIntroduction + data.originalBody;
-            }
-            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId+' option:selected').text()) + data.originalBody;
-            data.originalBody = data.originalBody + data.signature;
-            if(moreInfor != null && moreInfor.partnerInfor != null && moreInfor.partnerInfor != ""){
-                data.originalBody = moreInfor.partnerInfor + data.originalBody;
-            }
-            updateMailEditorContent(data.originalBody);
+            var replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            replyOrigin = getReplyWrapper(data, replyOrigin);
+            var originalBody = replyOrigin ? replyOrigin : "";
+            originalBody = currentEngineer.introduction + originalBody;
+            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            updateMailEditorContent(originalBody);
         }
         updateDropzoneData(attachmentDropzone);
     }
 
-    function showMailContentToEditorFinalEngineer(data, accountId, accounts, receiverData, engineer, partnerInfor) {
-        var receiverListStr = engineer.mailAddress;
+    function showMailContentToEditorEngineer() {
+        console.log(currentEngineer);
+        if(!currentEngineer && currentEngineer == null) return
+        var receiverListStr = currentEngineer.mailAddress;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
-        if(data){
-            senderGlobal = data.account;
-            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+        var data = currentEmail;
+        var sender = getSenderSelected();
+        if (data && data != null && sender != null) {
+            senderGlobal = sender.account;
+            var externalCC = sender.cc ? sender.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
             $('#' + rdMailCCId).importTags(externalCC.join(","));
+
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
-            data.originalBody = wrapText(data.originalBody);
-            data.originalBody = wrapInDivWithId(originalContentWrapId,data.originalBody);
-            var stripped = strip(data.originalBody, originalContentWrapId);
+            var replacedBody = data.replacedBody ? (isHTML(data.originalBody) ? data.replacedBody : wrapPlainText(data.replacedBody)) : data.replacedBody;
+            var originalBody = wrapText(originalBody);
+            originalBody = wrapInDivWithId(originalContentWrapId,originalBody);
+            var stripped = strip(originalBody, originalContentWrapId);
             dataLinesConfirm = getHeaderFooterLines(stripped);
-            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
-            data.replyOrigin = getReplyWrapper(data);
-            data.originalBody = data.replyOrigin ? data.originalBody + data.replyOrigin : data.originalBody;
-            var greeting = getGreeting(accountId, accounts);
-            var signature = getSignature(accountId, accounts);
-            updateMailEditorContent(greeting + data.originalBody + signature);
-            if( data.replacedBody != null){
-                data.replacedBody = wrapInDivWithId(originalContentWrapId, data.replacedBody);
-                stripped = strip(data.replacedBody, originalContentWrapId);
+            var replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
+            replyOrigin = getReplyWrapper(data, replyOrigin);
+            originalBody = replyOrigin ? originalBody + replyOrigin : originalBody;
+            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            updateMailEditorContent(originalBody);
+            if( replacedBody != null){
+                replacedBody = wrapInDivWithId(originalContentWrapId, replacedBody);
+                stripped = strip(replacedBody, originalContentWrapId);
                 dataLinesConfirm = getHeaderFooterLines(stripped);
-                data.replacedBody = data.replyOrigin ? data.replacedBody + data.replyOrigin : data.replacedBody;
-                updateMailEditorContent(greeting + data.replacedBody + signature, true);
+                replacedBody = replyOrigin ? replacedBody + replyOrigin : replacedBody;
+                replacedBody = sender.greeting + "<br/><br/>" + replacedBody + sender.signature;
+                updateMailEditorContent(replacedBody, true);
             }
             var files = data.files ? data.files : [];
             updateDropzoneData(attachmentDropzone, files);

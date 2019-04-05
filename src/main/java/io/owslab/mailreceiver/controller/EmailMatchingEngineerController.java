@@ -1,20 +1,23 @@
 package io.owslab.mailreceiver.controller;
 
-import io.owslab.mailreceiver.dto.AccountDTO;
-import io.owslab.mailreceiver.dto.ConditionNotificationDTO;
-import io.owslab.mailreceiver.dto.EngineerMatchingDTO;
+import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailMatchingEngineerForm;
 import io.owslab.mailreceiver.form.EngineerFilterForm;
 import io.owslab.mailreceiver.model.ConditionNotification;
+import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
 import io.owslab.mailreceiver.response.ConditionNotificationResponseBody;
+import io.owslab.mailreceiver.response.DetailMailResponseBody;
 import io.owslab.mailreceiver.response.MatchingResponeBody;
 import io.owslab.mailreceiver.service.condition.ConditionNotificationService;
+import io.owslab.mailreceiver.service.expansion.BusinessPartnerService;
 import io.owslab.mailreceiver.service.expansion.EngineerService;
+import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.EmailMatchingEngineerService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.security.AccountService;
+import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalEmailMatchingEngineerResult;
 import io.owslab.mailreceiver.utils.SelectOption;
@@ -71,6 +74,15 @@ public class EmailMatchingEngineerController {
 
     @Autowired
     ConditionNotificationService conditionNotificationService;
+
+    @Autowired
+    MailBoxService mailBoxService;
+
+    @Autowired
+    MailAccountsService mailAccountsService;
+
+    @Autowired
+    private BusinessPartnerService partnerService;
 
     @RequestMapping(value = "/emailMatchingEngineerSetting", method = RequestMethod.GET)
     public String getMatchingSettings(Model model) {
@@ -163,5 +175,70 @@ public class EmailMatchingEngineerController {
             result.setStatus(false);
         }
         return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value="/engineerMatching/replyEmail", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> replyEmail (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type,
+                                           @RequestParam(value = "receiver") String receiver, @RequestParam(value = "engineerId") long engineerId){
+        DetailMailResponseBody result = new DetailMailResponseBody();
+        try {
+            clickHistoryService.save(type);
+            DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId);
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
+            Engineer engineer = engineerService.getEngineerById(engineerId);
+            if (engineer == null){
+                throw new Exception("[Engineer Matching] replyEmail engineer null");
+            }
+            long emailAccountId = partnerService.getEmailAccountId(engineer, accountList);
+            result.setMsg("done");
+            result.setStatus(true);
+            result.setEmailAccountId(emailAccountId);
+            result.setEngineer(engineer);
+            result.setMail(mailDetail);
+            result.setList(accountList);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("replyEmail: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
+    }
+
+    @RequestMapping(value="/engineerMatching/replyEngineer", method = RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
+                                          @RequestParam(value = "type") int type,
+                                          @RequestParam(value = "replyId") String replyId,
+                                          @RequestParam(value = "engineerId") long engineerId,
+                                          @RequestParam(value = "range", required = false) String range,
+                                          @RequestParam(value = "matchRange", required = false) String matchRange,
+                                          @RequestParam(value = "replaceType", required = false) int replaceType,
+                                          @RequestParam(value = "accountId", required = false) String accountId){
+        System.out.println(engineerId);
+        DetailMailResponseBody result = new DetailMailResponseBody();
+        try {
+            clickHistoryService.save(type);
+            DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
+            Engineer engineer = engineerService.getEngineerById(engineerId);
+            if (engineer == null){
+                throw new Exception("[Engineer Matching] replyEngineer engineer null");
+            }
+            long emailAccountId = partnerService.getEmailAccountId(engineer, accountList);
+            result.setEmailAccountId(emailAccountId);
+            result.setEngineer(engineer);
+            result.setMail(mailDetail);
+            result.setList(accountList);
+            result.setMsg("done");
+            result.setStatus(true);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("replyEngineer: " + e.getMessage());
+            result.setMsg(e.getMessage());
+            result.setStatus(false);
+            return ResponseEntity.ok(result);
+        }
     }
 }

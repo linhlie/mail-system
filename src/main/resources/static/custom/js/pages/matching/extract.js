@@ -670,7 +670,7 @@
             }
         }
 
-        function onError() {
+        function onError(e) {
             console.error("composeEmail ERROR : ", e);
         }
         composeEmailAPI(url, onSuccess, onError);
