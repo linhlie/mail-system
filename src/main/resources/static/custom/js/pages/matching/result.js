@@ -83,6 +83,7 @@
 
     var currentEmail;
     var emailAccounts = [];
+    var SEND_TO_EMAIL_MATCHING = "send to email matching";
 
     var markOptions = {
         "element": "mark",
@@ -1015,6 +1016,7 @@
     
     function showMailEditorInNewTab(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo) {
         var data = {
+            "type": SEND_TO_EMAIL_MATCHING,
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,
