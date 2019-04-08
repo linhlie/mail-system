@@ -418,35 +418,6 @@ public class MailBoxService {
         result.setSubject("Re: " + replyEmail.getSubject());
         return result;
     }
-    
-    public List<MoreInformationMailContentDTO> getMoreinforMailContent(MoreInformationMailContentForm form) throws Exception {
-    	MoreInformationMailContentDTO infor = new MoreInformationMailContentDTO();
-    	if(form.getEmailAddress() !=null){
-        	String inforPartner  = getInforPartner(form.getEmailAddress());
-        	infor.setPartnerInfor(inforPartner);
-    	}
-    	if(form.getEngineerId()!=null){
-    		Engineer engineer = engineerService.getEngineerById(form.getEngineerId());
-    		if(engineer!=null){
-    			infor.setEngineerIntroduction(engineer.getIntroduction());
-    			BusinessPartner partner = partnerService.findOne(engineer.getPartnerId());
-    			if(partner!=null){
-    				if(partner.getDomain1()!=null){
-    					infor.addDomainPartnersOfEngineer(partner.getDomain1());
-    				}
-    				if(partner.getDomain2()!=null){
-    					infor.addDomainPartnersOfEngineer(partner.getDomain2());
-    				}
-    				if(partner.getDomain3()!=null){
-    					infor.addDomainPartnersOfEngineer(partner.getDomain3());
-    				}
-    			}
-    		}
-    	}
-    	List<MoreInformationMailContentDTO> result = new ArrayList<MoreInformationMailContentDTO>();
-    	result.add(infor);
-    	return result;
-    }
 
     public String getInforPartner(String sentTo) throws Exception {
     	String replyTo = "";
@@ -463,7 +434,7 @@ public class MailBoxService {
 		String domainEmail =  replyTo.substring(index+1).toLowerCase();
     	String inforPartner="";
     	List<BusinessPartner> listPartner = partnerService.getPartnersByDomain(domainEmail);
-    	if(listPartner==null) {
+    	if(listPartner.size() <= 0) {
     		return inforPartner;
     	}
     	BusinessPartner partner = listPartner.get(0);
@@ -853,7 +824,7 @@ public class MailBoxService {
         String domainEmail =  fromAddress.substring(index+1).toLowerCase();
 
         List<BusinessPartner> partners = partnerService.getPartnersByDomain(domainEmail);
-        if(partners==null || partners.size()<=0){
+        if(partners.size()<=0){
             greeting = greeting + "お取引先";
         }else{
             greeting = greeting + partners.get(0).getName();

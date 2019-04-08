@@ -12,6 +12,7 @@ import java.util.List;
 @Transactional
 public interface GreetingDAO extends JpaRepository<Greeting, Long> {
     List<Greeting> findByAccountCreatedIdAndEmailAccountId(long accountId, long emailAccountId);
+    List<Greeting> findByAccountCreatedIdAndEmailAccountIdAndGreetingTypeAndActive(long accountId, long emailAccountId, int greetingType, boolean active);
     List<Greeting> findByAccountCreatedIdAndEmailAccountIdAndTitle(long accountId, long emailAccountId, String title);
 
     @Modifying(clearAutomatically = true)

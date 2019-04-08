@@ -42,6 +42,7 @@
     var currentEmail;
     var emailAccounts = [];
     var REPLY_EMAIL = "reply";
+    var REPLY_EMAIL_STATISTIC = "11";
 
     var markSearchOptions = {
         "element": "mark",
@@ -534,6 +535,7 @@
     function showMailEditorInNewTab(messageId, accountId, receiver) {
         var data = {
             "type": REPLY_EMAIL,
+            "sendTo": REPLY_EMAIL_STATISTIC,
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,
@@ -641,8 +643,7 @@
     function composeEmail(messageId, receiver) {
         messageId = messageId.replace(/\+/g, '%2B');
         var receiverStr = receiver.replyTo ? receiver.replyTo : receiver.from;
-        var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
-        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type + "&receiver=" + receiverStr;
+        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + REPLY_EMAIL_STATISTIC + "&receiver=" + receiverStr;
 
         function onSuccess(response) {
             if(response && response.status) {

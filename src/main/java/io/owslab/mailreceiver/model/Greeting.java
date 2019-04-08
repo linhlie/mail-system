@@ -74,4 +74,12 @@ public class Greeting {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public class Type{
+        public static final int MATCHING_SOURCE = 1;
+        public static final int MATCHING_DESTINATION = 2;
+        public static final int REPLY = 3;
+        public static final int SEND_TO_ENGINEER = 4;
+        public static final int SEND_TO_MULTIL_EMAIL_ADDRESS = 5;
+    }
 }

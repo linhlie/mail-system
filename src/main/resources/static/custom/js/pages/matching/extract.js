@@ -552,8 +552,10 @@
     }
     
     function showMailEditorInNewTab(messageId, accountId, receiver) {
+        var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
         var data = {
             "type": REPLY_EMAIL,
+            "sendTo": type,
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,

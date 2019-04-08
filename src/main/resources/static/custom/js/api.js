@@ -431,16 +431,6 @@ function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError)
     _import(url, data, onSuccess, onError);
 }
 
-function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
-    var url = "/user/matchingResult/getInforPartnerAndEngineerIntroduction";
-    _post(url, data, onSuccess, onError);
-}
-
-function getInforPartnerAPI(data, onSuccess, onError) {
-    var url = "/user/matchingResult/getInforPartner";
-    _postString(url, data, onSuccess, onError);
-}
-
 function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {
     var url = "/expansion/peopleInChargePartner/getPartners";
     _get(url, onSuccess, onError);

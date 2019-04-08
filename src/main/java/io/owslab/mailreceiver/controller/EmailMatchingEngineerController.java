@@ -216,7 +216,6 @@ public class EmailMatchingEngineerController {
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
                                           @RequestParam(value = "accountId", required = false) String accountId){
-        System.out.println(engineerId);
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);

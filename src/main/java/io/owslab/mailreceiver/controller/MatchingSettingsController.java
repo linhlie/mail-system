@@ -240,7 +240,7 @@ public class MatchingSettingsController {
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId);
-            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver);
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);
@@ -400,28 +400,6 @@ public class MatchingSettingsController {
         	String info = mailBoxService.getInforPartner(sentTo);
             result.setMsg(info);
             result.setStatus(true);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-            return ResponseEntity.ok(result);
-        }
-    }
-    
-    @PostMapping("/matchingResult/getInforPartnerAndEngineerIntroduction")
-    @ResponseBody
-    public ResponseEntity<?> getInforPartner(Model model, @Valid @RequestBody MoreInformationMailContentForm form, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
-        MatchingResponeBody result = new MatchingResponeBody();
-        if (bindingResult.hasErrors()) {
-            result.setMsg(bindingResult.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
-        }
-        try {
-        	List<MoreInformationMailContentDTO> listInfor = mailBoxService.getMoreinforMailContent(form);
-            result.setMsg("done");
-            result.setStatus(true);
-            result.setList(listInfor);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error(e.getMessage());

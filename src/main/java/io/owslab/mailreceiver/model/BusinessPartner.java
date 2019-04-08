@@ -81,6 +81,19 @@ public class BusinessPartner {
         return domain1;
     }
 
+    public String getDomain(){
+        if(domain1 != null){
+            return domain1;
+        }
+        if(domain2 != null){
+            return domain2;
+        }
+        if(domain3 != null){
+            return domain3;
+        }
+        return null;
+    }
+
     public String getDomain2() {
         return domain2;
     }

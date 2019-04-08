@@ -259,7 +259,7 @@
             var type = 9;
             var url = "/user/engineerMatching/replyEmail?messageId=" + messageId + "&type=" + type + "&receiver=" + receiverStr + "&engineerId=" +engineer.id;
         }else{
-            var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
+            var type = lastSendTo;
             var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type + "&receiver=" + receiverStr;
         }
 
