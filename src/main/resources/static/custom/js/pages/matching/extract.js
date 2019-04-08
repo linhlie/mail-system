@@ -743,7 +743,9 @@
             replyOrigin = replyOrigin ? wrapText(replyOrigin) : replyOrigin;
             replyOrigin = getReplyWrapper(data, replyOrigin);
             var originalBody = replyOrigin ? replyOrigin : "";
-            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            var greeting = sender.greeting == null ? "" : sender.greeting;
+            var signature = sender.signature == null ? "" : sender.signature;
+            originalBody = greeting + "<br/><br/>" + originalBody + "<br/><br/>"  + signature;
             updateMailEditorContent(originalBody);
         }
         updateDropzoneData(attachmentDropzone);

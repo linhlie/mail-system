@@ -34,87 +34,14 @@ function getReplyWrapper(data, replyOrigin) {
         '" target="_blank" rel="noopener">' +
         data.replyFrom +
         '</a>&gt;</span>:<br />' +
-        '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">';
-    if(replyOrigin && replyOrigin!=null){
-        wrapperText = wrapperText + '<div dir="ltr">' + replyOrigin + '</div></blockquote></div></div>';
-    }else{
-        wrapperText = wrapperText + '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
-    }
+        '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
+        '<div dir="ltr">' + replyOrigin + '</div></blockquote></div></div>';
     return wrapperText;
-}
-
-function getDecorateExcerpt(excerpt, sendTo, emailAccount) {
-    if(sendTo === "moto") {
-        excerpt = getExcerptWithGreeting(excerpt, "元", emailAccount);
-        // excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング元へ送信</span></div>' + excerpt;
-    } else if (sendTo === "saki") {
-        excerpt = getExcerptWithGreeting(excerpt, "先", emailAccount);
-        // excerpt = '<div class="gmail_extra"><span>【送り先は】マッチング先へ送信</span></div>' + excerpt;
-    }
-    return excerpt;
 }
 
 function wrapInDivWithId(id, content) {
     var div = '<div class="gmail_extra" id="'+ id +'">' + content + '</div>';
     return div;
-}
-
-function getExcerptWithGreeting(excerpt, type, emailAccount) {
-    var greeting = loadGreeting(type, emailAccount);
-    if(greeting == null) {
-        greeting = getExceprtLine("---------------------");
-    }
-    return '<div class="gmail_extra">' + greeting + '</div><br /><br />';
-    // if(greeting == null) {
-    //     greeting = getExceprtLine("---------------------");
-    //     greeting = greeting + '<br /><br /><br /><br /><br />';
-    // } else {
-    //     greeting = '<br /><br />' + greeting + '<br /><br />';
-    // }
-    // excerpt = excerpt + greeting;
-    // return excerpt;
-}
-
-function getExceprtLine(line) {
-    var exceprtLine = '<div class="gmail_extra"><span>' + line + '</span></div>';
-    return exceprtLine;
-}
-
-function loadGreeting(type, emailAccount) {
-    var greeting = null;
-    var greetingData = loadGreetingData(emailAccount);
-    for(var i = 0; i < greetingData.length; i++){
-        var item = greetingData[i];
-        if(item && item.type === type) {
-            greeting = item.greeting;
-            break;
-        }
-    }
-    return greeting
-}
-
-
-function getSignature(accountId, accounts) {
-    for (var i=0;i<accounts.length;i++){
-        if (accountId == accounts[i].id){
-            return accounts[i].signature;
-        }
-    }
-}
-
-function getGreeting(accountId, accounts) {
-    for (var i=0;i<accounts.length;i++){
-        if (accountId == accounts[i].id){
-            return accounts[i].greeting;
-        }
-    }
-}
-
-function loadGreetingData(emailAccount) {
-    var greetingDataInStr = localStorage.getItem("greetingData-"+emailAccount);
-    var greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
-    greetingData = Array.isArray(greetingData) ? greetingData : [];
-    return greetingData;
 }
 
 function updateDropzoneData(dropzone, files) {

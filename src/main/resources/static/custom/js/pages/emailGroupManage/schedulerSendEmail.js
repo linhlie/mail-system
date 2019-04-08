@@ -196,7 +196,7 @@
         });
         for(var i=0;i<accounts.length;i++){
             if(accounts[i].id == lastSelectedSendMailAccountId){
-                $('#' + rdMailCCId).importTags(accounts[i].cc);
+                updateSenderInfo(accounts[i]);
             }
         }
 
@@ -205,10 +205,21 @@
             lastSelectedSendMailAccountId = this.value;
             for(var i=0;i<accounts.length;i++){
                 if(accounts[i].id == lastSelectedSendMailAccountId){
-                    $('#' + rdMailCCId).importTags(accounts[i].cc);
+                    updateSenderInfo(accounts[i]);
                 }
             }
         });
+    }
+
+    function updateSenderInfo(sender){
+        var editor = tinymce.get(rdMailBodyId);
+        var greeting = sender.greeting == null ? "" : sender.greeting;
+        var signature = sender.signature == null ? "" : sender.signature;
+        var placeholder = '<span style="color: #999999">--------------------------------------------------</span>' +
+            '<br> <span style="color: #999999"> Please typing email content here</span>' +
+            '<span style="color: #999999"><br>--------------------------------------------------</span>';
+        editor.setContent(greeting + "<br><br>" +  placeholder + "<br><br>" + signature);
+        $('#' + rdMailCCId).importTags(sender.cc);
     }
 
     function getMailEditorContent() {

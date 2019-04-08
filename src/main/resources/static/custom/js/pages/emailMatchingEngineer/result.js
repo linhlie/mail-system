@@ -1384,7 +1384,9 @@
             replyOrigin = getReplyWrapper(data, replyOrigin);
             var originalBody = replyOrigin ? replyOrigin : "";
             originalBody = currentEngineer.introduction + originalBody;
-            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            var greeting = sender.greeting == null ? "" : sender.greeting;
+            var signature = sender.signature == null ? "" : sender.signature;
+            originalBody = greeting + "<br/><br/>" + originalBody + "<br/><br/>"  + signature;
             updateMailEditorContent(originalBody);
         }
         updateDropzoneData(attachmentDropzone);
@@ -1413,14 +1415,16 @@
             var replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
             replyOrigin = getReplyWrapper(data, replyOrigin);
             originalBody = replyOrigin ? originalBody + replyOrigin : originalBody;
-            originalBody = sender.greeting + "<br/><br/>" + originalBody + sender.signature;
+            var greeting = sender.greeting == null ? "" : sender.greeting;
+            var signature = sender.signature == null ? "" : sender.signature;
+            originalBody = greeting + "<br/><br/>" + originalBody + "<br/><br/>"  + signature;
             updateMailEditorContent(originalBody);
             if( replacedBody != null){
                 replacedBody = wrapInDivWithId(originalContentWrapId, replacedBody);
                 stripped = strip(replacedBody, originalContentWrapId);
                 dataLinesConfirm = getHeaderFooterLines(stripped);
                 replacedBody = replyOrigin ? replacedBody + replyOrigin : replacedBody;
-                replacedBody = sender.greeting + "<br/><br/>" + replacedBody + sender.signature;
+                replacedBody = greeting + "<br/><br/>" + replacedBody + "<br/><br/>"  + signature;
                 updateMailEditorContent(replacedBody, true);
             }
             var files = data.files ? data.files : [];
