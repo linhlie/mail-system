@@ -206,20 +206,13 @@ public class MatchingSettingsController {
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
-                                          @RequestParam(value = "engineerId", required = false) String engineerId,
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
-            if(engineerId != null){
-                long id = Long.parseLong(engineerId);
-                List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer(id);
-                result.setList(accountList);
-            }else{
-                List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
-                result.setList(accountList);
-            }
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver, -1);
+            result.setList(accountList);
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);
@@ -240,7 +233,7 @@ public class MatchingSettingsController {
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId);
-            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver);
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver, -1);
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);

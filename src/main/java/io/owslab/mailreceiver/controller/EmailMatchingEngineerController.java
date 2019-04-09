@@ -185,7 +185,7 @@ public class EmailMatchingEngineerController {
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId);
-            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver, -1);
             Engineer engineer = engineerService.getEngineerById(engineerId);
             if (engineer == null){
                 throw new Exception("[Engineer Matching] replyEmail engineer null");
@@ -219,12 +219,12 @@ public class EmailMatchingEngineerController {
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
-            DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
-            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccountToSendMail();
             Engineer engineer = engineerService.getEngineerById(engineerId);
             if (engineer == null){
                 throw new Exception("[Engineer Matching] replyEngineer engineer null");
             }
+            DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, "", engineer.getPartnerId());
             long emailAccountId = partnerService.getEmailAccountId(engineer, accountList);
             result.setEmailAccountId(emailAccountId);
             result.setEngineer(engineer);

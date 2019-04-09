@@ -12,6 +12,7 @@ import io.owslab.mailreceiver.utils.ConvertDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -83,20 +84,36 @@ public class GreetingService {
         greetingDAO.delete(id);
     }
 
-    public String getGreetings(long emailAccountId, int clickType, String emailAddress, long accountId) throws Exception {
+
+    public Greeting getGreetingStructure(long accountId, long emailAccountId, int greetingType){
+        List<Greeting> list = greetingDAO.findByAccountCreatedIdAndEmailAccountIdAndGreetingTypeAndActive(accountId, emailAccountId, greetingType, true);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
+    public String getGreetings(long emailAccountId, int clickType, String emailAddress, long accountId, long busineesPartnerId) throws Exception {
         int greetingType = ClickType.getGreetingType(clickType);
         List<Greeting> list = greetingDAO.findByAccountCreatedIdAndEmailAccountIdAndGreetingTypeAndActive(accountId, emailAccountId, greetingType, true);
         if(list.size() <= 0) return  "";
         String greetingStructor = list.get(0).getGreeting();
-        greetingStructor = greetingDecode(greetingStructor, emailAddress, accountId);
+        greetingStructor = greetingDecode(greetingStructor, emailAddress, accountId, busineesPartnerId);
         return greetingStructor;
     }
 
-    private String greetingDecode(String greetingStructure, String emailAddress, long accountId) throws Exception {
-        if(isDetectComapany(greetingStructure) >= 0){
-            greetingStructure = detextCompany(greetingStructure, emailAddress);
+    private String greetingDecode(String greetingStructure, String emailAddress, long accountId, long busineesPartnerId) throws Exception {
+        if(isDetectComapany(greetingStructure) > -4){
+            List<BusinessPartner> listPartner = new ArrayList<>();
+            if(busineesPartnerId <= 0){
+                if(emailAddress != null && !emailAddress.equals("")){
+                    String domain = ConvertDomain.convertEmailToDomain(emailAddress);
+                    listPartner = partnerService.getPartnersByDomain(domain);
+                }
+            }else{
+                BusinessPartner partner = partnerService.findOne(busineesPartnerId);
+                if(partner != null) listPartner.add(partner);
+            }
+            greetingStructure = detextCompany(greetingStructure, listPartner);
         }
-        if(isDetectLoginUser(greetingStructure) >= 0){
+        if(isDetectLoginUser(greetingStructure) > -3){
             greetingStructure = detextLoginUser(greetingStructure, accountId);
         }
         return greetingStructure;
@@ -107,9 +124,7 @@ public class GreetingService {
         return sum;
     }
 
-    private String detextCompany(String greetingStructure, String emailAddress) {
-       String domain = ConvertDomain.convertEmailToDomain(emailAddress);
-       List<BusinessPartner> listPartner = partnerService.getPartnersByDomain(domain);
+    private String detextCompany(String greetingStructure, List<BusinessPartner> listPartner) {
        BusinessPartner partner = null;
        if(listPartner.size() <= 0 ){
            greetingStructure = greetingStructure.replaceAll(Pattern.quote(COMPANY_FULL_NAME), "お取引先");

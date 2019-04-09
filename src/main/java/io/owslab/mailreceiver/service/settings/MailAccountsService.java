@@ -75,15 +75,35 @@ public class MailAccountsService {
         return emailAccountDTOs;
     }
 
-    public List<EmailAccountToSendMailDTO> getListEmailAccount(int clickType, String emailAddress) throws Exception {
+    public List<EmailAccountToSendMailDTO> getListEmailAccount(int clickType, String emailAddress, long partnerId) throws Exception {
         long userLoggedId = accountService.getLoggedInAccountId();
         List<EmailAccount> emailAccounts =  list();
         List<EmailAccountToSendMailDTO> emailAccountDTOs =  new ArrayList<>();
         for(EmailAccount account : emailAccounts){
             EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
             if(accountSetting!=null){
-                String greeting = greetingService.getGreetings(account.getId(), clickType, emailAddress, userLoggedId);
+                String greeting = greetingService.getGreetings(account.getId(), clickType, emailAddress, userLoggedId, partnerId);
                 EmailAccountToSendMailDTO acc = new EmailAccountToSendMailDTO(account, accountSetting.getCc(), greeting);
+                emailAccountDTOs.add(acc);
+            }
+        }
+        return emailAccountDTOs;
+    }
+
+    public List<EmailAccountToSendMailDTO> getListEmailAccountSendToMany() throws Exception {
+        long userLoggedId = accountService.getLoggedInAccountId();
+        List<EmailAccount> emailAccounts =  list();
+        List<EmailAccountToSendMailDTO> emailAccountDTOs =  new ArrayList<>();
+        for(EmailAccount account : emailAccounts){
+            EmailAccountSetting accountSetting = emailAccountSettingService.findOneSend(account.getId());
+            if(accountSetting!=null){
+                Greeting greeting = greetingService.getGreetingStructure(userLoggedId, account.getId(), Greeting.Type.SEND_TO_MULTIL_EMAIL_ADDRESS);
+                EmailAccountToSendMailDTO acc = null;
+                if(greeting != null){
+                    acc = new EmailAccountToSendMailDTO(account, accountSetting.getCc(), greeting.getGreeting());
+                }else{
+                    acc = new EmailAccountToSendMailDTO(account, accountSetting.getCc());
+                }
                 emailAccountDTOs.add(acc);
             }
         }
