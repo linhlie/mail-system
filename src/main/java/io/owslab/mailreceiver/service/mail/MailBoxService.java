@@ -13,6 +13,7 @@ import io.owslab.mailreceiver.form.SendMultilMailForm;
 import io.owslab.mailreceiver.job.FetchMailJob;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.*;
+import io.owslab.mailreceiver.service.greeting.GreetingService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberRangeService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
@@ -70,9 +71,6 @@ public class MailBoxService {
     
     @Autowired
     private DomainService domainService;
-    
-    @Autowired
-    private EngineerService engineerService;
 
     @Autowired
     private FileDAO fileDAO;
@@ -115,6 +113,9 @@ public class MailBoxService {
 
     @Autowired
     SendMailService sendMailService;
+
+    @Autowired
+    private GreetingService greetingService;
     
     private List<Email> cachedEmailList = null;
 
@@ -418,30 +419,6 @@ public class MailBoxService {
         result.setSubject("Re: " + replyEmail.getSubject());
         return result;
     }
-
-    public String getInforPartner(String sentTo) throws Exception {
-    	String replyTo = "";
-    	if(sentTo==null || sentTo.trim().equals("")){
-    		return replyTo;
-    	}
-    	String str[] = sentTo.split(",");
-    	if(str==null || str.length==0){
-    		return replyTo;
-    	}
-    	replyTo = str[0];
-    	int index = replyTo.indexOf("@");
-		if(index<=0) return "";
-		String domainEmail =  replyTo.substring(index+1).toLowerCase();
-    	String inforPartner="";
-    	List<BusinessPartner> listPartner = partnerService.getPartnersByDomain(domainEmail);
-    	if(listPartner.size() <= 0) {
-    		return inforPartner;
-    	}
-    	BusinessPartner partner = listPartner.get(0);
-    	String companyType = CompanyType.fromValue(partner.getCompanyType()).getText();
-    	inforPartner ="<div class=\"gmail_extra\"><span>" + companyType+partner.getName()+BODY_HEADEAR + "</span></div>\n";
-		return inforPartner;
-	}
 
 	public  DetailMailDTO getMailDetailWithReplacedRange(String messageId, String replyId, String rangeStr, String matchRangeStr, int replaceType, String accountId) throws Exception {
         List<Email> emailList = emailDAO.findByMessageId(messageId);
@@ -756,7 +733,7 @@ public class MailBoxService {
         emailDAO.updateStatusByMessageIdIn(Email.Status.ERROR_OCCURRED, Email.Status.DELETED, msgIds);
     }
 
-    public void sendMultiMail(SendMultilMailForm form){
+    public void sendMultilMail(SendMultilMailForm form){
         List<String> listMailId = form.getListId();
         if(listMailId.size()<=0) return;
         if(form.getContent()==null) return;
