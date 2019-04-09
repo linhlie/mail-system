@@ -44,7 +44,7 @@ public class SendEmailScheduler extends AbstractScheduler {
                 emailAddressGroupService.changeStatusScheduler(scheduler);
                 List<Long> listFileId = emailAddressGroupService.getListFileUpload(scheduler.getId());
                 SendMailForm form  = new SendMailForm(scheduler, listFileId);
-                sendMailService.sendMailScheduler(form, scheduler.getAccountId());
+                sendMailService.sendMailScheduler(form);
                 if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.SEND_BY_HOUR){
                     scheduler.setStatus(SchedulerSendEmail.Status.INACTIVE);
                 }else{

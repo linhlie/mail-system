@@ -52,6 +52,7 @@
     var emailSenders = [];
 
     var emailForm = null;
+    var SEND_MAIL_SCHEDULER = 8;
 
     $(function () {
         initDropzone();
@@ -230,7 +231,7 @@
             originAttachment: attachmentData.origin,
             uploadAttachment: attachmentData.upload,
             accountId: !!lastSelectedSendMailAccountId ? lastSelectedSendMailAccountId : undefined,
-            sendType: 16,
+            sendType: SEND_MAIL_SCHEDULER,
             historyType: 16,
         };
 
