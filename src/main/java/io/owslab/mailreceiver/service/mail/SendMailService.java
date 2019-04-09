@@ -307,7 +307,7 @@ public class SendMailService {
         }
     }
 
-    public void sendMailScheduler(SendMailForm form, long accountUserId){
+    public void sendMailScheduler(SendMailForm form){
         String formAccountId = form.getAccountId();
         long accountId = Long.parseLong(formAccountId);
         List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
@@ -397,6 +397,10 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
+            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, "", "", form, hasAttachment, accountId);
+            if(sentMail!=null){
+                sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
+            }
             logger.info("Send email scheduler from "+from+" to "+to);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
