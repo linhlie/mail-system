@@ -23,9 +23,6 @@ public class SendEmailScheduler extends AbstractScheduler {
     @Autowired
     EmailAddressGroupService emailAddressGroupService;
 
-    @Autowired
-    SendMailService sendMailService;
-
     public SendEmailScheduler() {
         super(DELAY_IN_SECOND, INTERVAL_IN_SECOND);
     }
@@ -44,7 +41,7 @@ public class SendEmailScheduler extends AbstractScheduler {
                 emailAddressGroupService.changeStatusScheduler(scheduler);
                 List<Long> listFileId = emailAddressGroupService.getListFileUpload(scheduler.getId());
                 SendMailForm form  = new SendMailForm(scheduler, listFileId);
-                sendMailService.sendMailScheduler(form, false);
+                emailAddressGroupService.preSendEmail(form, scheduler.getAccountId(), false);
                 if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.SEND_BY_HOUR){
                     scheduler.setStatus(SchedulerSendEmail.Status.INACTIVE);
                 }else{

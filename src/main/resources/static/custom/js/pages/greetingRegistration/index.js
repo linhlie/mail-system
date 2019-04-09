@@ -308,8 +308,7 @@
             return false;
         }
         if(!form || form == null) return false;
-
-        if(form.title==null){
+        if(form.title==null || form.title==""){
             $.alert("you must fill greeting title");
             return false;
         }

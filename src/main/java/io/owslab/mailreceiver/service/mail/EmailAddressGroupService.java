@@ -3,12 +3,14 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.*;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
 import io.owslab.mailreceiver.dto.FileDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
+import io.owslab.mailreceiver.service.greeting.GreetingService;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.utils.ConvertDate;
@@ -51,6 +53,9 @@ public class EmailAddressGroupService {
 
     @Autowired
     SendMailService sendMailService;
+
+    @Autowired
+    GreetingService greetingService;
 
     public void createGroup(EmailAddressGroup emailGroup) throws Exception {
         long accountId = accountService.getLoggedInAccountId();
@@ -189,7 +194,7 @@ public class EmailAddressGroupService {
         String sendEmailId = scheduler.getSendMailForm().getAccountId();
         if(sendEmailId == null) return;
         if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.NOW){
-            sendMailService.sendMailScheduler(scheduler.getSendMailForm(), true);
+            preSendEmail(scheduler.getSendMailForm(), accountId, true);
             if(scheduler.getId()>0){
                 schedulerSendEmailDAO.delete(scheduler.getId());
             }
@@ -257,5 +262,20 @@ public class EmailAddressGroupService {
             result.add(new FileDTO(file));
         }
         return  result;
+    }
+
+    public void preSendEmail(SendMailForm form, long accounId,  boolean canDelete) throws Exception {
+        System.out.println(form.getContent());
+        String receivers = form.getReceiver();
+        String[] receiverArr = receivers.split(",");
+        for(int i=0;i<receiverArr.length;i++){
+            if(receiverArr[i]==null || receiverArr[i].equals("")){
+                continue;
+            }
+            String contentReplace = greetingService.greetingDecode(form.getContent(), receiverArr[i], accounId, -1);
+            SendMailForm formForOne = new SendMailForm(form, receiverArr[i], contentReplace);
+            sendMailService.sendMailScheduler(formForOne, canDelete);
+            System.out.println(contentReplace);
+        }
     }
 }

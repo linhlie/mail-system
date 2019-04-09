@@ -375,8 +375,19 @@
     }
 
     function createScheduler(form) {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+
         function onSuccess(response) {
             if(response){
+                $('body').loadingModal('hide');
                 if(response.status){
                     $.alert({
                         title: "",
@@ -392,6 +403,7 @@
         }
 
         function onError(error) {
+            $('body').loadingModal('hide');
             console.log("create scheduler fail");
         }
         if(schedulerType == "update-scheduler"){

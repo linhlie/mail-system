@@ -99,16 +99,16 @@ public class GreetingService {
         return greetingStructor;
     }
 
-    private String greetingDecode(String greetingStructure, String emailAddress, long accountId, long busineesPartnerId) throws Exception {
+    public String greetingDecode(String greetingStructure, String emailAddress, long accountId, long businessPartnerId) throws Exception {
         if(isDetectComapany(greetingStructure) > -4){
             List<BusinessPartner> listPartner = new ArrayList<>();
-            if(busineesPartnerId <= 0){
+            if(businessPartnerId <= 0){
                 if(emailAddress != null && !emailAddress.equals("")){
                     String domain = ConvertDomain.convertEmailToDomain(emailAddress);
                     listPartner = partnerService.getPartnersByDomain(domain);
                 }
             }else{
-                BusinessPartner partner = partnerService.findOne(busineesPartnerId);
+                BusinessPartner partner = partnerService.findOne(businessPartnerId);
                 if(partner != null) listPartner.add(partner);
             }
             greetingStructure = detextCompany(greetingStructure, listPartner);
