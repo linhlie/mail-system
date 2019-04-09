@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.form;
 
+import io.owslab.mailreceiver.enums.SentMailType;
 import io.owslab.mailreceiver.model.SchedulerSendEmail;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class SendMailForm {
         this.originAttachment = new ArrayList<>();
         this.uploadAttachment = uploadAttachment;
         this.accountId = scheduler.getAccountSentMailId()+"";
-        this.sendType = 16;
+        this.sendType = SentMailType.SEND_MAIL_SCHEDULER.getValue();
         this.historyType =16;
     }
 

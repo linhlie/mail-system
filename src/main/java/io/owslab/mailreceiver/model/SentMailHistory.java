@@ -54,6 +54,8 @@ public class SentMailHistory {
 
     private long accountSentMailId;
 
+    private boolean canDelete;
+
     public SentMailHistory() {
     }
 
@@ -61,7 +63,7 @@ public class SentMailHistory {
         this.id = id;
     }
 
-    public SentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId) {
+    public SentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId,  boolean canDelete) {
         this.messageId = originalMail.getMessageId();
         this.accountId = emailAccount.getId();
         this.from = emailAccount.getAccount();
@@ -81,9 +83,10 @@ public class SentMailHistory {
             this.matchingMailAddress = matchingMail.getFrom();
         }
         this.accountSentMailId = accountSentMailId;
+        this.canDelete = canDelete;
     }
 
-    public SentMailHistory(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId) {
+    public SentMailHistory(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountSentMailId, boolean canDelete) {
         this.messageId = "send-email-scheduler";
         this.accountId = emailAccount.getId();
         this.from = emailAccount.getAccount();
@@ -97,6 +100,7 @@ public class SentMailHistory {
         this.body = form.getContent();
         this.sendType = form.getSendType();
         this.accountSentMailId = accountSentMailId;
+        this.canDelete = canDelete;
     }
 
 
@@ -242,5 +246,13 @@ public class SentMailHistory {
 
     public void setAccountSentMailId(long accountSentMailId) {
         this.accountSentMailId = accountSentMailId;
+    }
+
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
     }
 }

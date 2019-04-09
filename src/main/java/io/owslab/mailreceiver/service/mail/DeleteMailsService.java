@@ -57,20 +57,13 @@ public class DeleteMailsService {
     public void deleteSentMailHistory(Date beforeDate) {
         List<SentMailHistory> histories = sentMailHistoryDAO.findBySentAtLessThanEqual(beforeDate);
         for (SentMailHistory sentMail : histories){
-            if(sentMail.isHasAttachment()){
+            if(sentMail.isHasAttachment() && sentMail.isCanDelete()){
                 List<SentMailFiles> sentMailFiles = sentMailFileService.getByMailId(sentMail.getId());
                 for(SentMailFiles file : sentMailFiles){
-                    List<SentMailFiles> listFiles = sentMailFileService.getByFileId(file.getId());
-                    if(listFiles.size() == 1){
-                        sentMailHistoryDAO.delete(sentMail);
-                        uploadFileService.delete(file.getId());
-                    }else{
-                        sentMailHistoryDAO.delete(sentMail);
-                    }
+                    uploadFileService.delete(file.getUploadFilesId());
                 }
-            }else{
-                sentMailHistoryDAO.delete(sentMail);
             }
+            sentMailHistoryDAO.delete(sentMail);
         }
     }
 

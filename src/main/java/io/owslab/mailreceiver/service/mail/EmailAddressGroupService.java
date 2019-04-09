@@ -189,7 +189,7 @@ public class EmailAddressGroupService {
         String sendEmailId = scheduler.getSendMailForm().getAccountId();
         if(sendEmailId == null) return;
         if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.NOW){
-            sendMailService.sendMailScheduler(scheduler.getSendMailForm(), accountId);
+            sendMailService.sendMailScheduler(scheduler.getSendMailForm(), true);
             if(scheduler.getId()>0){
                 schedulerSendEmailDAO.delete(scheduler.getId());
             }
