@@ -255,14 +255,14 @@ public class SendMailService {
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return null;
         long accountSentMailId = accountService.getLoggedInAccountId();
-        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountSentMailId);
+        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountSentMailId, true);
         return sentMailHistoryDAO.save(history);
     }
 
-    private SentMailHistory saveSentMailScheduler(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountId) {
+    private SentMailHistory saveSentMailScheduler(EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment, long accountId, boolean canDelete) {
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return null;
-        SentMailHistory history = new SentMailHistory(emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountId);
+        SentMailHistory history = new SentMailHistory(emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountId, canDelete);
         return sentMailHistoryDAO.save(history);
     }
 
@@ -307,7 +307,7 @@ public class SendMailService {
         }
     }
 
-    public void sendMailScheduler(SendMailForm form){
+    public void sendMailScheduler(SendMailForm form, boolean canDelete){
         String formAccountId = form.getAccountId();
         long accountId = Long.parseLong(formAccountId);
         List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
@@ -397,7 +397,7 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
-            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, "", "", form, hasAttachment, accountId);
+            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, "", "", form, hasAttachment, accountId, canDelete);
             if(sentMail!=null){
                 sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
             }
