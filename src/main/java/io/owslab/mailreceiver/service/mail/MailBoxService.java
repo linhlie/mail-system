@@ -5,6 +5,7 @@ import io.owslab.mailreceiver.dao.EmailDAO;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.dto.MoreInformationMailContentDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.form.MoreInformationMailContentForm;
 import io.owslab.mailreceiver.form.SendAccountForm;
@@ -733,7 +734,7 @@ public class MailBoxService {
         emailDAO.updateStatusByMessageIdIn(Email.Status.ERROR_OCCURRED, Email.Status.DELETED, msgIds);
     }
 
-    public void sendMultilMail(SendMultilMailForm form){
+    public void sendMultilMail(SendMultilMailForm form) throws Exception {
         List<String> listMailId = form.getListId();
         if(listMailId.size()<=0) return;
         if(form.getContent()==null) return;
@@ -752,7 +753,9 @@ public class MailBoxService {
             emailBody = getReplyWrapper(Utils.formatGMT(email.getSentAt()), email.getFrom(), emailBody);
             emailBody = form.getContent() + "<br /><br /><br />" + emailBody;
 
-            emailBody = getGreeting(email.getFrom(), emailAccountId) + "<br /><br />" + emailBody;
+            long userLoggedId = accountService.getLoggedInAccountId();
+            String greeting = greetingService.getGreetings(emailAccountId, ClickType.REPLY_EMAIL_VIA_INBOX.getValue(), email.getFrom(), userLoggedId, -1);
+            emailBody =  greeting + "<br /><br />" + emailBody;
             emailBody = emailBody + "<br />" + getSignature(emailAccountId);
             String cc = getEmailCc(email, emailAccountId);
 
@@ -793,34 +796,6 @@ public class MailBoxService {
                 "<div dir=\"ltr\">" +
                 replyOrigin + "</div></blockquote></div></div>";
         return wrapperText;
-    }
-
-    public String getGreeting(String fromAddress, long accountId){
-        String greeting = "";
-        int index = fromAddress.indexOf("@");
-        String domainEmail =  fromAddress.substring(index+1).toLowerCase();
-
-        List<BusinessPartner> partners = partnerService.getPartnersByDomain(domainEmail);
-        if(partners.size()<=0){
-            greeting = greeting + "お取引先";
-        }else{
-            greeting = greeting + partners.get(0).getName();
-        }
-
-        PeopleInChargePartner peopleInChargePartner = peopleInChargePartnerService.getByEmailAddress(fromAddress);
-        if(peopleInChargePartner != null){
-            greeting = greeting + "　" + peopleInChargePartner.getLastName()+"様";
-        }else{
-            greeting = greeting + "　" + "ご担当者様";
-        }
-
-        EmailAccount emailAccount = mailAccountsService.getEmailAccountById(accountId);
-        String inChargeCompany = emailAccount.getInChargeCompany();
-        if(inChargeCompany == null){
-            inChargeCompany = "";
-        }
-        greeting = greeting + "<br />" + "お世話になっております。" + inChargeCompany + "の" + accountService.getLastNameUserLogged() + "です。";
-        return greeting;
     }
 
     public String getSignature(long accountId){
