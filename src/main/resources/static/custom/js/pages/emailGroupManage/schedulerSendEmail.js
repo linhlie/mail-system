@@ -216,9 +216,9 @@
         var editor = tinymce.get(rdMailBodyId);
         var greeting = sender.greeting == null ? "" : sender.greeting;
         var signature = sender.signature == null ? "" : sender.signature;
-        var placeholder = '<span style="color: #999999">--------------------------------------------------</span>' +
-            '<br> <span style="color: #999999"> Please typing email content here</span>' +
-            '<span style="color: #999999"><br>--------------------------------------------------</span>';
+        var placeholder = '<span style="color: #999999">================================</span>' +
+            '<br> <span style="color: #999999">メール本文を記入してください</span>' +
+            '<span style="color: #999999"><br>================================</span>';
         editor.setContent(greeting + "<br><br>" +  placeholder + "<br><br>" + signature);
         $('#' + rdMailCCId).importTags(sender.cc);
     }

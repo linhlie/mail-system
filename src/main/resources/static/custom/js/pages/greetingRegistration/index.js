@@ -73,19 +73,18 @@
 
     function loadGreetingData() {
         if (!currentEmailAccountId || currentEmailAccountId == null) return;
-        console.log(currentEmailAccountId);
 
         function onSuccess(response) {
             if(response && response.status) {
                 greetingData = response.list;
                 showGreetingTable(greetingData);
             } else {
-                $.alert("load greeting fail");
+                $.alert("挨拶ロードが失敗しました");
             }
         }
 
         function onError(response) {
-            $.alert("load greeting fail");
+            $.alert("挨拶ロードが失敗しました");
         }
         getGreetingAPI(currentEmailAccountId, onSuccess, onError)
     }
@@ -105,7 +104,6 @@
                 var index = row.getAttribute("data");
                 var rowData = greetingData[index];
                 if (rowData && rowData.id) {
-                    console.log(rowData);
                     selectedRow(rowSelected.closest('tr'));
                     setGreetingForm(rowData);
                 }
@@ -115,9 +113,7 @@
                 var row = $(this)[0].parentNode;
                 var index = row.getAttribute("data");
                 var rowData = greetingData[index];
-                console.log(rowData);
                 if (rowData && rowData.id) {
-                    console.log(rowData);
                     doDeleteGreeting(rowData.id);
                 }
             });
@@ -196,19 +192,18 @@
         var form = getGreetingForm();
         if(!checkValidateForm(form)) return;
 
-        console.log(form);
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("add greeting success");
+                $.alert("挨拶追加が成功しました");
                 clearGreetingForm();
                 loadGreetingData();
             } else {
-                $.alert("add greeting fail");
+                $.alert("挨拶追加が失敗しました");
             }
         }
 
         function onError(response) {
-            $.alert("add greeting fail");
+            $.alert("挨拶追加が失敗しました");
         }
         addGreetingAPI(form, onSuccess, onError)
     }
@@ -217,22 +212,21 @@
         var form = getGreetingForm();
         if(!checkValidateForm(form)) return;
         if(currentGreetingId == null){
-            $.alert("You must select greeting first");
+            $.alert("先に挨拶を選択してください");
         }
         form.id = currentGreetingId;
-        console.log(form);
         function onSuccess(response) {
             if(response && response.status) {
-                $.alert("update greeting success");
+                $.alert("挨拶更新が成功しました");
                 clearGreetingForm();
                 loadGreetingData();
             } else {
-                $.alert("update greeting fail");
+                $.alert("挨拶更新が失敗しました");
             }
         }
 
         function onError(response) {
-            $.alert("update greeting fail");
+            $.alert("挨拶更新が失敗しました");
         }
         updateGreetingAPI(form, onSuccess, onError)
     }
@@ -243,12 +237,12 @@
             loadGreetingData();
         }
         function onError() {
-            $.alert("Delete fail");
+            $.alert("消除が成功しました");
         }
         $.confirm({
-            title: '<b>【Delete Greeting】</b>',
+            title: '<b>【挨拶消除】</b>',
             titleClass: 'text-center',
-            content: '<div class="text-center" style="font-size: 16px;">Do you want delete it？<br/></div>',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
             buttons: {
                 confirm: {
                     text: 'はい',
@@ -304,17 +298,17 @@
 
     function checkValidateForm(form) {
         if (!currentEmailAccountId || currentEmailAccountId == null){
-            $.alert("You must select email account first");
+            $.alert("先にメールアカウントを選択してください");
             return false;
         }
         if(!form || form == null) return false;
         if(form.title==null || form.title==""){
-            $.alert("you must fill greeting title");
+            $.alert("挨拶タイトルを記入ください");
             return false;
         }
 
         if(form.greetingType==null){
-            $.alert("you must select  greeting type");
+            $.alert("挨拶タイプを選択してください");
             return false;
         }
         return true;
