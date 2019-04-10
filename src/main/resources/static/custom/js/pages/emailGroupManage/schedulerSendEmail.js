@@ -197,7 +197,7 @@
         });
         for(var i=0;i<accounts.length;i++){
             if(accounts[i].id == lastSelectedSendMailAccountId){
-                $('#' + rdMailCCId).importTags(accounts[i].cc);
+                updateSenderInfo(accounts[i]);
             }
         }
 
@@ -206,10 +206,21 @@
             lastSelectedSendMailAccountId = this.value;
             for(var i=0;i<accounts.length;i++){
                 if(accounts[i].id == lastSelectedSendMailAccountId){
-                    $('#' + rdMailCCId).importTags(accounts[i].cc);
+                    updateSenderInfo(accounts[i]);
                 }
             }
         });
+    }
+
+    function updateSenderInfo(sender){
+        var editor = tinymce.get(rdMailBodyId);
+        var greeting = sender.greeting == null ? "" : sender.greeting;
+        var signature = sender.signature == null ? "" : sender.signature;
+        var placeholder = '<span style="color: #999999">================================</span>' +
+            '<br> <span style="color: #999999">メール本文を記入してください</span>' +
+            '<span style="color: #999999"><br>================================</span>';
+        editor.setContent(greeting + "<br><br>" +  placeholder + "<br><br>" + signature);
+        $('#' + rdMailCCId).importTags(sender.cc);
     }
 
     function getMailEditorContent() {
@@ -364,8 +375,19 @@
     }
 
     function createScheduler(form) {
+        $('body').loadingModal('destroy');
+        $('body').loadingModal({
+            position: 'auto',
+            text: 'ローディング...',
+            color: '#fff',
+            opacity: '0.7',
+            backgroundColor: 'rgb(0,0,0)',
+            animation: 'doubleBounce',
+        });
+
         function onSuccess(response) {
             if(response){
+                $('body').loadingModal('hide');
                 if(response.status){
                     $.alert({
                         title: "",
@@ -381,6 +403,7 @@
         }
 
         function onError(error) {
+            $('body').loadingModal('hide');
             console.log("create scheduler fail");
         }
         if(schedulerType == "update-scheduler"){

@@ -41,6 +41,19 @@ public class SendMailForm {
         this.historyType =16;
     }
 
+    public SendMailForm(SendMailForm form, String receiver, String contentReplace) {
+        this.subject = form.getSubject();
+        this.receiver = receiver;
+        this.activeCC = form.activeCC;
+        this.cc = form.cc;
+        this.content = contentReplace;
+        this.originAttachment = form.originAttachment;
+        this.uploadAttachment = form.uploadAttachment;
+        this.accountId = form.accountId;
+        this.sendType = form.sendType;
+        this.historyType = form.historyType;
+    }
+
     public String getMessageId() {
         return messageId;
     }

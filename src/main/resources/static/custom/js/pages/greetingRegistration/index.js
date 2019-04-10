@@ -2,24 +2,27 @@
 (function () {
     var formChange = false;
 
-    var greetingDataCacheKey = "greetingData";
     var greetingTableId = "greetingTable";
     var greetingSettingId = "greetingSetting";
     var greetingTittleId = "greetingTittle";
-
-    var editingGreetingIndex = null;
+    var accountSelectId = "sendMailAccountSelect";
+    var activeId = "activeGreeting"
+    var showGuideSettingId = "showGuideSetting";
 
     var firstRowHTML = '<tr class="hidden" role="row">' +
-        '<td rowspan="1" colspan="1" data="title"><span></span></td>' +
-        '<td rowspan="1" colspan="1" data="type"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="元" src="/custom/img/checkmark.png"/></td>' +
-        '<td rowspan="1" colspan="1" data="type"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="先" src="/custom/img/checkmark.png"/></td>' +
-        '<td rowspan="1" colspan="1" data="type"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="返" src="/custom/img/checkmark.png"/></td>' +
-        '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="editGreetimg" type="button">修正</button></td>' +
-        '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="removeGreeting" type="button">削除</button></td>' +
+        '<td rowspan="1" colspan="1" data="title" style="cursor: pointer" name="editGreeting"><span></span></td>' +
+        '<td rowspan="1" colspan="1" data="greetingType"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="1" src="/custom/img/checkmark.png"/></td>' +
+        '<td rowspan="1" colspan="1" data="greetingType"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="2" src="/custom/img/checkmark.png"/></td>' +
+        '<td rowspan="1" colspan="1" data="greetingType"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="3" src="/custom/img/checkmark.png"/></td>' +
+        '<td rowspan="1" colspan="1" data="greetingType"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="4" src="/custom/img/checkmark.png"/></td>' +
+        '<td rowspan="1" colspan="1" data="greetingType"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="5" src="/custom/img/checkmark.png"/></td>' +
+        '<td rowspan="1" colspan="1" data="active" style="text-align: center;"><img class="hidden" style="padding: 5px; width:20px; height: 20px;" data="true" src="/custom/img/dot.png"/></td>' +
+        '<td class="fit action" rowspan="1" colspan="1" data="id" name="removeGreeting"><button type="button">削除</button></td>' +
         '</tr>';
     
     var greetingData = [];
-    var emailAccounts = [];
+    var currentGreetingId = null;
+    var currentEmailAccountId = null;
     
     $(function () {
         tinymce.init({
@@ -45,89 +48,85 @@
                 });
             }
         });
-        loadEmailAccounts();
+        onChangeAccountListenner();
+        onClickShowGuildeListenner();
         initStickyHeader();
-        updateEnableAddGreetingBtn();
-        updateEnableUpdateGreetingBtn();
-        setButtonClickListener("greetingAdd", addGreeting);
-        setButtonClickListener("greetingUpdate", updateGreeting);
-        setButtonClickListener("greetingClear", clearEditingGreeting);
-        $( "#" + greetingTittleId ).on('input', function() {
-            updateEnableAddGreetingBtn();
-            updateEnableUpdateGreetingBtn();
-        });
+        disableUpdateGreetingBtn(true);
+        setButtonClickListener("greetingAdd", onAddGreetingListenner);
+        setButtonClickListener("greetingUpdate", onUpdateGreetingListenner);
+        setButtonClickListener("greetingClear", clearGreetingForm);
+        disableUpdateGreetingBtn(true);
     });
-    
-    function loadEmailAccounts() {
-        function onSuccess(response) {
-            if(response && response.status){
-            	emailAccounts = response.list;
-                initAccountSelect(emailAccounts);
-                initGreetingTable();
-            }
-            
-            if(typeof callback == 'function'){
-            	callback(response.list);
-            }
-        }
 
-        function onError(error) {
-        }
+    function onChangeAccountListenner() {
+        $('#' + accountSelectId).change(function () {
+            currentEmailAccountId = $(this).find("option:selected").val();
+            loadGreetingData();
+        })
+    }
 
-        getEmailAccounts(onSuccess, onError);
-    }
-    
-    function initAccountSelect(emailAccounts){
-    	var selectedSendMailAccountId = localStorage.getItem("selectedSendMailAccountId");
-        $.each(emailAccounts, function (i, item) {
-            $('#sendMailAccountSelect').append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id.toString() === selectedSendMailAccountId)
-            }));
-        });
-        
-        $('#sendMailAccountSelect').on('change', function() {
-        	initGreetingTable();
-        });
-    }
-    
-    function initGreetingTable() {
-        loadGreetingData();
-        pushGreetingData(greetingTableId);
+    function onClickShowGuildeListenner() {
+        $('#'+showGuideSettingId).click(function () {
+            showGuideModal();
+        })
     }
 
     function loadGreetingData() {
-    	var emailAddress = $('#sendMailAccountSelect option:selected').text();
-        greetingDataCacheKey =  "greetingData-" + emailAddress;
-        var greetingDataInStr = localStorage.getItem(greetingDataCacheKey);
-        greetingData = greetingDataInStr == null ? [] : JSON.parse(greetingDataInStr);
-        greetingData = Array.isArray(greetingData) ? greetingData : [];
-        return greetingData;
+        if (!currentEmailAccountId || currentEmailAccountId == null) return;
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                greetingData = response.list;
+                showGreetingTable(greetingData);
+            } else {
+                $.alert("挨拶ロードが失敗しました");
+            }
+        }
+
+        function onError(response) {
+            $.alert("挨拶ロードが失敗しました");
+        }
+        getGreetingAPI(currentEmailAccountId, onSuccess, onError)
     }
     
-    function pushGreetingData(tableId) {
-        removeAllRow(tableId, firstRowHTML);
+    function showGreetingTable(data) {
+        removeAllRow(greetingTableId, firstRowHTML);
         var html = firstRowHTML;
-        if (greetingData.length > 0) {
-            for(var i = 0; i < greetingData.length; i++) {
-                html = html + addRowWithData(tableId, greetingData[i], i);
+        if (data.length > 0) {
+            for(var i = 0; i < data.length; i++) {
+                html = html + addRowWithData(greetingTableId, data[i], i);
             }
-            $("#" + tableId + "> tbody").html(html);
-            setButtonClickListener("editGreetimg", function () {
-                var index = $(this).closest('tr')[0].getAttribute("data");
+            $("#" + greetingTableId + "> tbody").html(html);
+
+            setRowClickListener("editGreeting", function () {
+                var rowSelected = $(this);
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
                 var rowData = greetingData[index];
-                selectGreeting(rowData, index);
+                if (rowData && rowData.id) {
+                    selectedRow(rowSelected.closest('tr'));
+                    setGreetingForm(rowData);
+                }
             });
-            setButtonClickListener("removeGreeting", function () {
-                var index = $(this).closest('tr')[0].getAttribute("data");
-                removeGreeting(index);
+
+            setRowClickListener("removeGreeting", function () {
+                var row = $(this)[0].parentNode;
+                var index = row.getAttribute("data");
+                var rowData = greetingData[index];
+                if (rowData && rowData.id) {
+                    doDeleteGreeting(rowData.id);
+                }
             });
         }
     }
 
-    function saveGreetingData() {
-        localStorage.setItem(greetingDataCacheKey, JSON.stringify(greetingData));
+    function setRowClickListener(name, callback) {
+        $("td[name='" + name + "']").off('click');
+        $("td[name='" + name + "']").click(function () {
+            if (typeof callback == "function") {
+                callback.apply(this);
+            }
+        })
     }
 
     function removeAllRow(tableId, replaceHtml) {
@@ -150,7 +149,13 @@
             if (cellNode) {
                 if(cellNode.nodeName == "IMG") {
                     var cellData = data[cellKey];
-                    cellNode.className = cellNode.getAttribute("data") === cellData ? undefined : cellNode.className;
+                    if(cellKey == "active"){
+                        if(cellData==true){
+                            cellNode.className = undefined;
+                        }
+                    }else{
+                        cellNode.className = cellNode.getAttribute("data") == cellData ? undefined : cellNode.className;
+                    }
                 }
                 if (cellNode.nodeName == "SPAN") {
                     var cellData = data[cellKey];
@@ -170,47 +175,6 @@
         })
     }
 
-    function selectGreeting(greeting, index) {
-        editingGreetingIndex = index;
-        setGreetingTitle(greeting.title);
-        setGreeting(greeting.greeting);
-        setGreetingType(greeting.type);
-    }
-    
-    function removeGreeting(index) {
-        var greeting = greetingData[index];
-        if(index === editingGreetingIndex) {
-            clearEditingGreeting();
-        }
-        greetingData.splice(index, 1);
-        saveGreetingData();
-        pushGreetingData(greetingTableId);
-    }
-
-    function clearEditingGreeting() {
-        clearGreetingInput();
-        editingGreetingIndex = null;
-    }
-
-    function clearGreetingInput() {
-        setGreetingTitle();
-        setGreeting();
-        setGreetingType();
-    }
-    
-    function setGreetingTitle(title) {
-        title = title || "";
-        $('#' + greetingTittleId).val(title);
-        updateEnableAddGreetingBtn();
-        updateEnableUpdateGreetingBtn();
-    }
-    
-    function getGreetingTittle() {
-        var title = $('#' + greetingTittleId).val();
-        title = title || "";
-        return title;
-    }
-    
     function setGreeting(greeting) {
         greeting = greeting || "";
         var editor = tinymce.get(greetingSettingId);
@@ -223,79 +187,144 @@
         var editor = tinymce.get(greetingSettingId);
         return editor.getContent();
     }
-    
-    function setGreetingType(type) {
-        type = type || "";
-        $("#greetingType1").prop("checked", (type==="元"));
-        $("#greetingType2").prop("checked", (type==="先"));
-        $("#greetingType3").prop("checked", (type==="返"));
-    }
-    
-    function getGreetingType() {
-        var type = $('input[name=greetingType]:checked').val();
-        type = type || "";
-        return type;
-    }
-    
-    function addGreeting() {
-        var type = getGreetingType();
-        clearGreetingType(type);
-        var greeting = {
-            title: getGreetingTittle(),
-            greeting: getGreeting(),
-            type: type,
-            last_touch: new Date().getTime(),
-        };
-        greetingData.push(greeting);
-        clearEditingGreeting();
-        saveGreetingData();
-        pushGreetingData(greetingTableId);
-    }
-    
-    function updateGreeting() {
-        var type = getGreetingType();
-        clearGreetingType(type);
-        var greeting = {
-            title: getGreetingTittle(),
-            greeting: getGreeting(),
-            type: type,
-            last_touch: new Date().getTime(),
-        };
-        greetingData[editingGreetingIndex] = greeting;
-        clearEditingGreeting();
-        saveGreetingData();
-        pushGreetingData(greetingTableId);
-    }
 
-    function clearGreetingType(type) {
-        if(type.length > 0) {
-            for(var i = 0; i < greetingData.length; i++) {
-                var item = greetingData[i];
-                if(item.type === type){
-                    item.type = "";
-                    greetingData[i] = item;
-                }
+    function onAddGreetingListenner() {
+        var form = getGreetingForm();
+        if(!checkValidateForm(form)) return;
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                $.alert("挨拶追加が成功しました");
+                clearGreetingForm();
+                loadGreetingData();
+            } else {
+                $.alert("挨拶追加が失敗しました");
             }
         }
-    }
-    
-    function updateEnableAddGreetingBtn() {
-        var disabled = isInvalidGreetingTitle();
-        $("button[name='greetingAdd']").prop("disabled", disabled);
+
+        function onError(response) {
+            $.alert("挨拶追加が失敗しました");
+        }
+        addGreetingAPI(form, onSuccess, onError)
     }
 
-    function updateEnableUpdateGreetingBtn() {
-        var disabled = !isUpdate() || isInvalidGreetingTitle();
+    function onUpdateGreetingListenner() {
+        var form = getGreetingForm();
+        if(!checkValidateForm(form)) return;
+        if(currentGreetingId == null){
+            $.alert("先に挨拶を選択してください");
+        }
+        form.id = currentGreetingId;
+        function onSuccess(response) {
+            if(response && response.status) {
+                $.alert("挨拶更新が成功しました");
+                clearGreetingForm();
+                loadGreetingData();
+            } else {
+                $.alert("挨拶更新が失敗しました");
+            }
+        }
+
+        function onError(response) {
+            $.alert("挨拶更新が失敗しました");
+        }
+        updateGreetingAPI(form, onSuccess, onError)
+    }
+
+    function doDeleteGreeting(id) {
+        function onSuccess() {
+            clearGreetingForm();
+            loadGreetingData();
+        }
+        function onError() {
+            $.alert("消除が成功しました");
+        }
+        $.confirm({
+            title: '<b>【挨拶消除】</b>',
+            titleClass: 'text-center',
+            content: '<div class="text-center" style="font-size: 16px;">本当に消除したいですか。<br/></div>',
+            buttons: {
+                confirm: {
+                    text: 'はい',
+                    action: function(){
+                        deleteGreetingAPI(id, onSuccess, onError);
+                    }
+                },
+                cancel: {
+                    text: 'いいえ',
+                    action: function(){}
+                },
+            }
+        });
+    }
+
+
+    function disableUpdateGreetingBtn(disabled) {
         $("button[name='greetingUpdate']").prop("disabled", disabled);
     }
-    
-    function isInvalidGreetingTitle() {
-        var greetingTitle = getGreetingTittle();
-        return !greetingTitle || greetingTitle.length == 0;
+
+    function clearGreetingForm(){
+        currentGreetingId = null;
+        $('#' + greetingTittleId).val("");
+        setGreeting("");
+        $('input[name=greetingType]').prop("checked", false);
+        $('#' + activeId).prop("checked", false);
+        disableUpdateGreetingBtn(true);
     }
-    
-    function isUpdate() {
-        return !!editingGreetingIndex;
+
+    function getGreetingForm() {
+        var title = $('#' + greetingTittleId).val();
+        var greeting = getGreeting();
+        var greetingType = $('input[name=greetingType]:checked').val();
+        var active = $('#' + activeId).is(":checked")
+
+        return{
+            title: title,
+            greeting: greeting,
+            greetingType: greetingType,
+            emailAccountId: currentEmailAccountId,
+            active: active
+        }
+    }
+
+    function setGreetingForm(data) {
+        currentGreetingId = data.id;
+        $('#' + greetingTittleId).val(data.title);
+        setGreeting(data.greeting);
+        $('input[name=greetingType][value ='+ data.greetingType +']').prop("checked", true);
+        $('#' + activeId).prop("checked", data.active);
+        disableUpdateGreetingBtn(false);
+    }
+
+    function checkValidateForm(form) {
+        if (!currentEmailAccountId || currentEmailAccountId == null){
+            $.alert("先にメールアカウントを選択してください");
+            return false;
+        }
+        if(!form || form == null) return false;
+        if(form.title==null || form.title==""){
+            $.alert("挨拶タイトルを記入ください");
+            return false;
+        }
+
+        if(form.greetingType==null){
+            $.alert("挨拶タイプを選択してください");
+            return false;
+        }
+        return true;
+    }
+
+    function selectedRow(row) {
+        row.addClass('highlight-selected').siblings().removeClass('highlight-selected');
+    }
+
+    function showGuideModal() {
+        $('#dataModal').modal();
+
+        $('#dataModalClose').off('click');
+        $("#dataModalClose").click(function () {
+            $('#dataModal').modal('hide');
+        });
     }
 
 })(jQuery);

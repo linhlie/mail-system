@@ -5,19 +5,34 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <section class="content-header">
+        <h1>挨拶文登録</h1>
+    </section>
     <section class="content greeting">
         <div class="row">
             <div class="col-md-10">
                 <div class="box box-default">
                     <div class="box-body">
-                        <h4>挨拶文登録</h4>
-                        	<select id="sendMailAccountSelect" style="width: 70%; margin-bottom: 20px;">
-                            	<option value="" selected="selected" th:disabled="true">選んでください</option>
-                            	<option th:each="account : ${accounts}"
-                                    	th:value="${account.id}"
-                                    	th:utext="${account.account}"/>
-                        	</select>
-                        <div class="greeting-part table-container-section" style="height: 150px; position: relative">
+                        <div class="row" style="margin: 20px 0px 20px 0px">
+                            <div class="col-md-12">
+                                <div class="fuzzy-description">
+                                    <p style="word-wrap: break-word">挨拶を含めるメール送信の場合、挨拶はここに設定できます。
+                                    </p>
+                                    <p style="word-wrap: break-word">挨拶に受信者の会社の商号（受信者ドメインによっ区別）を含めたい時は[%fcom]を入れてください。<br/>
+                                        →「取引先登録」に登録された場合、商号が表示されます。<br/>
+                                        →「取引先登録」に登録されない場合は「お取引先」が表示されます。
+                                    </p>
+                                    <span id="showGuideSetting" class="greeting-show-setting-guide">こちらで参照してください。</span>
+                                </div>
+                            </div>
+                        </div>
+                        <select id="sendMailAccountSelect" style="width: 70%; margin-bottom: 20px;">
+                            <option value="" selected="selected" th:disabled="true">選んでください</option>
+                            <option th:each="account : ${accounts}"
+                                    th:value="${account.id}"
+                                    th:utext="${account.account}"/>
+                        </select>
+                        <div class="greeting-part table-container-section" style="height: 150px; position: relative; margin-bottom: 50px;">
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: black; z-index: 1;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background-color: black; z-index: 1;"></div>
                             <div style="overflow-y: scroll; height: 100%" class="table-container-wrapper">
@@ -28,7 +43,10 @@
                                         <th class="fit dark" style="text-align: center">元</th>
                                         <th class="fit dark" style="text-align: center">先</th>
                                         <th class="fit dark" style="text-align: center">返</th>
-                                        <th th:colspan="2"></th>
+                                        <th class="fit dark" style="text-align: center">技術者</th>
+                                        <th class="fit dark" style="text-align: center">複数</th>
+                                        <th class="fit dark" style="text-align: center">アクティブ</th>
+                                        <th th:colspan="1"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -38,34 +56,50 @@
                         </div>
                         <h4>タイトル</h4>
                         <div class="greeting-part" style="height: 25px;">
-                            <input id="greetingTittle" placeholder="挨拶文タイトル" type="text" style="width: 100%; height: 100%; border: none"/>
+                            <input id="greetingTittle" placeholder="挨拶文タイトル" type="text" style="width: 100%; height: 100%; border: none; padding-left: 10px;"/>
                         </div>
                         <h4>挨拶文</h4>
-                        <textarea id="greetingSetting"></textarea>
-                        <div class="greeting-part row" style="min-height: 50px; margin: 20px 0px 20px 0px;">
+                        <div class="greeting-registration" style="padding-right: 2px">
+                            <textarea id="greetingSetting"></textarea>
+                        </div>
+                        <div class="greeting-part row greeting-type-part" style="min-height: 50px; margin: 20px 0px 20px 0px;">
                             <div class="col-md-4 col-xs-4 greeting-radio">
-                                <label><input type="radio" id="greetingType1" name="greetingType" value="元"/>マッチング元 送信時挨拶文</label>
+                                <label><input type="radio" name="greetingType" value="1"/>マッチング元 送信時挨拶文</label>
                             </div>
                             <div class="col-md-4 col-xs-4 greeting-radio">
-                                <label><input type="radio" id="greetingType2" name="greetingType" value="先"/>マッチング先 送信時挨拶文</label>
+                                <label><input type="radio" name="greetingType" value="2"/>マッチング先 送信時挨拶文</label>
                             </div>
                             <div class="col-md-4 col-xs-4 greeting-radio">
-                                <label><input type="radio" id="greetingType3" name="greetingType" value="返"/>返信時挨拶文</label>
+                                <label><input type="radio" name="greetingType" value="3"/>返信時挨拶文</label>
+                            </div>
+                            <div class="col-md-4 col-xs-4 greeting-radio">
+                                <label><input type="radio" name="greetingType" value="4"/>技術者に返信</label>
+                            </div>
+                            <div class="col-md-4 col-xs-4 greeting-radio">
+                                <label><input type="radio" name="greetingType" value="5"/>複数メールアドレスに一斉送信</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-xs-3 control-label text-left" for="activeGreeting">アクティブ</label>
+                            <div class="col-md-10 col-xs-9">
+                                <label style="font-weight: 700;" class="checkbox-inline">
+                                    <input id="activeGreeting" type="checkbox" name="active" value="" style="transform: translateY(-10px)"/>
+                                </label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3 col-xs-3">
+                            <div class="col-md-4 col-xs-4">
                                 <div style="width: 90%;">
-                                    <button disabled="true" name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
+                                    <button name="greetingAdd" type="button" class="btn btn-success btn-block">新規登録</button>
                                 </div>
                             </div>
-                            <div class="col-md-3 col-xs-3">
+                            <div class="col-md-4 col-xs-4">
                                 <div style="width: 90%;">
-                                    <button disabled="true" name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
+                                    <button name="greetingUpdate" type="button" class="btn btn-primary btn-block">更新</button>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-xs-6">
-                                <div style="width: 45%; margin: auto;">
+                            <div class="col-md-4 col-xs-4">
+                                <div style="width: 90%;">
                                     <button name="greetingClear" type="button" class="btn btn-default btn-block">クリア</button>
                                 </div>
                             </div>
@@ -75,6 +109,22 @@
             </div>
         </div>
     </section>
+
+    <div id="dataModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog greeting-modal" role="document" style="width: 70%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="dataModalTitle" class="modal-title" >挨拶設定案内</h4>
+                </div>
+                <div th:replace="fragments/greeting-setting-guide"></div>
+                <div class="modal-footer">
+                    <button type="button" id="dataModalClose" class="btn btn-primary">閉める</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 </div>
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>

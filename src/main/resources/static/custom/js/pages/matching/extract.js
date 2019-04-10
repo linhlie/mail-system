@@ -38,6 +38,10 @@
     var lastReceiver;
     var lastMessageId;
 
+    var currentEmail;
+    var emailAccounts = [];
+    var REPLY_EMAIL = "reply";
+
     var markSearchOptions = {
         "element": "mark",
         "className": "mark-search",
@@ -529,6 +533,14 @@
         $("#printElement").print();
         $("#printElement").hide();
     }
+
+    function showMailBodyContent(data) {
+        data.originalBody = wrapText(data.originalBody);
+        var mailBodyDiv = document.getElementById(mailBodyDivId);
+        mailBodyDiv.scrollTop = 0;
+        mailBodyDiv.innerHTML = data.originalBody;
+        highlight(data);
+    }
     
     function showMailEditor(messageId, accountId, receiver) {
         var cachedSeparateTab = getCachedSeparateTabSetting();
@@ -540,7 +552,10 @@
     }
     
     function showMailEditorInNewTab(messageId, accountId, receiver) {
+        var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
         var data = {
+            "type": REPLY_EMAIL,
+            "sendTo": type,
             "accountId" : accountId,
             "messageId" : messageId,
             "receiver" : receiver,
@@ -559,16 +574,8 @@
         $('#sendMailModal').modal();
         lastReceiver = receiver;
         lastMessageId = messageId;
-        showMailWithReplacedRange(messageId, accountId, function (email, accounts) {
-            showMailContentToEditor(email, accounts, receiver)
-        });
-        $('#' + rdMailSenderId).off('change');
-        $('#' + rdMailSenderId).change(function() {
-            lastSelectedSendMailAccountId = this.value;
-            showMailWithReplacedRange(lastMessageId, this.value, function (email, accounts) {
-                showMailContentToEditor(email, accounts, lastReceiver)
-            });
-        });
+        composeEmail(messageId, receiver);
+
         $("button[name='sendSuggestMailClose']").off('click');
         $('#cancelSendSuggestMail').button('reset');
         $("button[name='sendSuggestMailClose']").click(function () {
@@ -597,7 +604,7 @@
 
                 },
                 error: function (e) {
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     btn.button('reset');
                     $('#sendMailModal').modal('hide');
                 }
@@ -644,7 +651,7 @@
                 },
                 error: function (e) {
                     btn.button('reset');
-                    console.log("ERROR : sendSuggestMail: ", e);
+                    console.error("ERROR : sendSuggestMail: ", e);
                     $('#sendMailModal').modal('hide');
                     //TODO: noti send mail error
                 }
@@ -652,68 +659,71 @@
         })
     }
 
-    function showMailWithReplacedRange(messageId, accountId, callback) {
+    function composeEmail(messageId, receiver) {
         messageId = messageId.replace(/\+/g, '%2B');
+        var receiverStr = receiver.replyTo ? receiver.replyTo : receiver.from;
         var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
-        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
-        if(!!accountId){
-            url = url + "&accountId=" + accountId;
-        }
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: url,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-                var email;
-                var accounts;
-                if (data.status) {
-                    email = data.mail;
-                    accounts = data.list;
-                }
-                if (typeof callback === "function") {
-                    callback(email, accounts);
-                }
-            },
-            error: function (e) {
-                console.error("showMailWithReplacedRange ERROR : ", e);
-                if (typeof callback === "function") {
-                    callback();
-                }
+        var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type + "&receiver=" + receiverStr;
+
+        function onSuccess(response) {
+            if(response && response.status) {
+                currentEmail = response.mail;
+                emailAccounts = response.list;
+                updateSenderSelector(receiver);
+                showMailContentToEditor(receiver)
             }
+        }
+
+        function onError(e) {
+            console.error("composeEmail ERROR : ", e);
+        }
+        composeEmailAPI(url, onSuccess, onError);
+    }
+
+    function updateSenderSelector(receiver) {
+        var accounts = emailAccounts || [];
+        $('#' + rdMailSenderId).empty();
+        $.each(accounts, function (i, item) {
+            $('#' + rdMailSenderId).append($('<option>', {
+                value: item.id,
+                text : item.account,
+                selected: (item.id== lastSelectedSendMailAccountId)
+            }));
+        });
+
+        $('#' + rdMailSenderId).off('change');
+        $('#' + rdMailSenderId).change(function() {
+            lastSelectedSendMailAccountId = this.value;
+            localStorage.setItem("selectedSendMailAccountId", lastSelectedSendMailAccountId);
+            showMailContentToEditor(receiver);
         });
     }
 
-    function showMailBodyContent(data) {
-        data.originalBody = wrapText(data.originalBody);
-        var mailBodyDiv = document.getElementById(mailBodyDivId);
-        mailBodyDiv.scrollTop = 0;
-        mailBodyDiv.innerHTML = data.originalBody;
-        highlight(data);
-    }
-    
-    function showMailContentToEditor(data, accounts, receiverData, sendTo) {
-        var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
-        getInforPartner(receiverListStr, function(partnerInfor){
-        	showMailContentToEditorFinal(data, accounts, receiverData, partnerInfor);
-        });
+    function getSenderSelected() {
+        var accountId = $( '#' + rdMailSenderId +' option:selected' ).val();
+        for(var i=0;i< emailAccounts.length ;i++){
+            if(emailAccounts[i].id == accountId){
+                return emailAccounts[i];
+            }
+        }
+        return null;
     }
 
-    function showMailContentToEditorFinal(data, accounts, receiverData, partnerInfor) {
+    function showMailContentToEditor(receiverData) {
         var receiverListStr = receiverData.replyTo ? receiverData.replyTo : receiverData.from;
         resetValidation();
         document.getElementById(rdMailReceiverId).value = receiverListStr;
         updateMailEditorContent("");
-        if (data) {
-            updateSenderSelector(data, accounts);
-            senderGlobal = data.account;
+        var data = currentEmail;
+        var sender = getSenderSelected();
+        if (data && data != null && sender != null) {
+            senderGlobal = sender.account;
             var to = data.to ? data.to.replace(/\s*,\s*/g, ",").split(",") : [];
             var cc = data.cc ? data.cc.replace(/\s*,\s*/g, ",").split(",") : [];
-            var externalCC = data.externalCC ? data.externalCC.replace(/\s*,\s*/g, ",").split(",") : [];
+            var externalCC = sender.cc ? sender.cc.replace(/\s*,\s*/g, ",").split(",") : [];
             externalCCGlobal = externalCC;
             cc = updateCCList(cc,to);
-            var indexOfSender = cc.indexOf(data.account);
+            var indexOfSender = cc.indexOf(sender.account);
             if (indexOfSender > -1) {
                 cc.splice(indexOfSender, 1);
             }
@@ -731,29 +741,16 @@
             cc = updateCCList(cc, externalCC);
             $('#' + rdMailCCId).importTags(cc.join(","));
             document.getElementById(rdMailSubjectId).value = data.subject;
-            data.replyOrigin = data.replyOrigin ? wrapText(data.replyOrigin) : data.replyOrigin;
-            data.replyOrigin = getReplyWrapper(data);
-            data.originalBody = data.replyOrigin ? data.replyOrigin : "";
-            data.originalBody = getExcerptWithGreeting(data.excerpt, "返", $('#' + rdMailSenderId+' option:selected').text()) + data.originalBody;
-            data.originalBody = data.originalBody + data.signature;
-            if(partnerInfor != null && partnerInfor != ""){
-                data.originalBody = partnerInfor + data.originalBody;
-            }
-            updateMailEditorContent(data.originalBody);
+            var replyOrigin = data.replyOrigin;
+            replyOrigin = replyOrigin ? wrapText(replyOrigin) : replyOrigin;
+            replyOrigin = getReplyWrapper(data, replyOrigin);
+            var originalBody = replyOrigin ? replyOrigin : "";
+            var greeting = sender.greeting == null ? "" : sender.greeting;
+            var signature = sender.signature == null ? "" : sender.signature;
+            originalBody = greeting + "<br/><br/>" + originalBody + "<br/><br/>"  + signature;
+            updateMailEditorContent(originalBody);
         }
         updateDropzoneData(attachmentDropzone);
-    }
-    
-    function updateSenderSelector(email, accounts) {
-        accounts = accounts || [];
-        $('#' + rdMailSenderId).empty();
-        $.each(accounts, function (i, item) {
-            $('#' + rdMailSenderId).append($('<option>', {
-                value: item.id,
-                text : item.account,
-                selected: (item.id.toString() === lastSelectedSendMailAccountId)
-            }));
-        });
     }
 
     function updateMailEditorContent(content, preventClear) {
@@ -872,20 +869,6 @@
                 jumpTo();
             }
         });
-    }
-    
-    function getReplyWrapper(data) {
-        var wrapperText = '<div class="gmail_extra"><br>' +
-                '<div class="gmail_quote">' +
-            data.replySentAt +
-                ' <span dir="ltr">&lt;<a href="mailto:' +
-                data.replyFrom +
-                '" target="_blank" rel="noopener">' +
-            data.replyFrom +
-                '</a>&gt;</span>:<br />' +
-                '<blockquote class="gmail_quote" style="margin: 0 0 0 .8ex; border-left: 1px #ccc solid; padding-left: 1ex;">' +
-                '<div dir="ltr">' + data.replyOrigin + '</div></blockquote></div></div>';
-        return wrapperText;
     }
     
     function getHistoryType() {

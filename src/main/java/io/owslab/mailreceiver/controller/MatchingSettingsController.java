@@ -2,7 +2,6 @@ package io.owslab.mailreceiver.controller;
 
 import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.ClickType;
-import io.owslab.mailreceiver.exception.EngineerException;
 import io.owslab.mailreceiver.form.*;
 import io.owslab.mailreceiver.model.*;
 import io.owslab.mailreceiver.response.AjaxResponseBody;
@@ -19,7 +18,6 @@ import io.owslab.mailreceiver.service.settings.EnviromentSettingService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.FinalMatchingResult;
-import io.owslab.mailreceiver.utils.PageWrapper;
 import io.owslab.mailreceiver.utils.SelectOption;
 
 import org.json.JSONException;
@@ -27,8 +25,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,8 +35,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -202,23 +196,17 @@ public class MatchingSettingsController {
     ResponseEntity<?> getEditEmailInJSON (@RequestParam(value = "messageId") String messageId,
                                           @RequestParam(value = "type") int type,
                                           @RequestParam(value = "replyId") String replyId,
+                                          @RequestParam(value = "receiver") String receiver,
                                           @RequestParam(value = "range", required = false) String range,
                                           @RequestParam(value = "matchRange", required = false) String matchRange,
                                           @RequestParam(value = "replaceType", required = false) int replaceType,
-                                          @RequestParam(value = "engineerId", required = false) String engineerId,
                                           @RequestParam(value = "accountId", required = false) String accountId){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
             DetailMailDTO mailDetail = mailBoxService.getMailDetailWithReplacedRange(messageId, replyId, range, matchRange, replaceType, accountId);
-            if(engineerId != null){
-                long id = Long.parseLong(engineerId);
-                List<EmailAccountEngineerDTO> accountList = mailAccountsService.getEmailAccountForSendMailEngineer(id);
-                result.setList(accountList);
-            }else{
-                List<EmailAccount> accountList = mailAccountsService.list();
-                result.setList(accountList);
-            }
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver, -1);
+            result.setList(accountList);
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);
@@ -233,12 +221,13 @@ public class MatchingSettingsController {
 
     @RequestMapping(value="/matchingResult/replyEmail", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type, @RequestParam(value = "accountId", required = false) String accountId){
+    ResponseEntity<?> getReplyEmailInJSON (@RequestParam(value = "messageId") String messageId, @RequestParam(value = "type") int type,
+                                           @RequestParam(value = "receiver") String receiver){
         DetailMailResponseBody result = new DetailMailResponseBody();
         try {
             clickHistoryService.save(type);
-            DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId, accountId);
-            List<EmailAccount> accountList = mailAccountsService.list();
+            DetailMailDTO mailDetail = mailBoxService.getContentRelyEmail(messageId);
+            List<EmailAccountToSendMailDTO> accountList = mailAccountsService.getListEmailAccount(type, receiver, -1);
             result.setMsg("done");
             result.setStatus(true);
             result.setMail(mailDetail);
@@ -308,7 +297,7 @@ public class MatchingSettingsController {
             return ResponseEntity.badRequest().body(result);
         }
         try {
-            mailBoxService.sendMultiMail(sendMailForm);
+            mailBoxService.sendMultilMail(sendMailForm);
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);
@@ -384,49 +373,6 @@ public class MatchingSettingsController {
     @RequestMapping(value = "/sendTab", method = RequestMethod.GET)
     public String getSendTab() {
         return "user/matching/sendTab";
-    }
-    
-    @PostMapping("/matchingResult/getInforPartner")
-    @ResponseBody
-    public ResponseEntity<?> getInforPartner(Model model, @Valid @RequestBody String sentTo, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
-        MatchingResponeBody result = new MatchingResponeBody();
-        if (bindingResult.hasErrors()) {
-            result.setMsg(bindingResult.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
-        }
-        try {
-        	String info = mailBoxService.getInforPartner(sentTo);
-            result.setMsg(info);
-            result.setStatus(true);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-            return ResponseEntity.ok(result);
-        }
-    }
-    
-    @PostMapping("/matchingResult/getInforPartnerAndEngineerIntroduction")
-    @ResponseBody
-    public ResponseEntity<?> getInforPartner(Model model, @Valid @RequestBody MoreInformationMailContentForm form, BindingResult bindingResult, final RedirectAttributes redirectAttributes) {
-        MatchingResponeBody result = new MatchingResponeBody();
-        if (bindingResult.hasErrors()) {
-            result.setMsg(bindingResult.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.joining(",")));
-            return ResponseEntity.badRequest().body(result);
-        }
-        try {
-        	List<MoreInformationMailContentDTO> listInfor = mailBoxService.getMoreinforMailContent(form);
-            result.setMsg("done");
-            result.setStatus(true);
-            result.setList(listInfor);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            result.setMsg(e.getMessage());
-            result.setStatus(false);
-            return ResponseEntity.ok(result);
-        }
     }
 
     @RequestMapping(value = { "/matchingSettings/matchingConditionNotification" }, method = RequestMethod.GET)

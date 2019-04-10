@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.controller;
 import io.owslab.mailreceiver.dto.EmailAccountToSendMailDTO;
 import io.owslab.mailreceiver.dto.EmailsAddressInGroupDTO;
 import io.owslab.mailreceiver.dto.FileDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.EmailsAddressInGroupForm;
 import io.owslab.mailreceiver.form.IdsForm;
 import io.owslab.mailreceiver.form.SchedulerSendEmailForm;
@@ -13,6 +14,7 @@ import io.owslab.mailreceiver.response.SchedulerSendEmailResponseBody;
 import io.owslab.mailreceiver.service.expansion.PeopleInChargePartnerService;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.mail.EmailAddressGroupService;
+import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +197,7 @@ public class EmailGroupSettingController {
     public ResponseEntity<?> getListEmailSender() {
         AjaxResponseBody result = new AjaxResponseBody();
         try {
-            List<EmailAccountToSendMailDTO> listEmailAccount = mailAccountsService.getListEmailAccountToSendMail();
+            List<EmailAccountToSendMailDTO> listEmailAccount = mailAccountsService.getListEmailAccountSendToMany();
             result.setList(listEmailAccount);
             result.setMsg("done");
             result.setStatus(true);

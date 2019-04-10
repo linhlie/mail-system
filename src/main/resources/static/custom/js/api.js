@@ -1,108 +1,6 @@
-function showMailWithReplacedRange(accountId, messageId, replyId, range, matchRange, replaceType, sendTo, callback) {
-    messageId = messageId.replace(/\+/g, '%2B');
-    replyId = replyId.replace(/\+/g, '%2B');
-    var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType;
-    var type = sendTo === "moto" ? 4 : 5
-    url = url + "&type=" + type;
-    if(!!accountId){
-        url = url + "&accountId=" + accountId;
-    }
-    $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: url,
-        cache: false,
-        timeout: 600000,
-        success: function (data) {
-            var email;
-            var accounts;
-            if(data.status){
-                email = data.mail;
-                accounts = data.list;
-            }
-            if(typeof callback === "function"){
-                callback(email, accounts);
-            }
-        },
-        error: function (e) {
-            console.error("getMail ERROR : ", e);
-            if(typeof callback === "function"){
-                callback();
-            }
-        }
-    });
-}
 
-function showMailWithReplacedRangeEngineer(messageId, accountId, emailData, engineer, callback) {
-    messageId = messageId.replace(/\+/g, '%2B');
-    var replyId = messageId;
-    var range = emailData.matchRange;
-    var matchRange = emailData.range;
-    var replaceType = 1;
-    var engineerId = engineer.id+"";
-    var url = "/user/matchingResult/editEmail?messageId=" + messageId + "&replyId=" + replyId + "&range=" + range + "&matchRange=" + matchRange + "&replaceType=" + replaceType + "&engineerId=" + engineerId;
-    var type = 10;
-    url = url + "&type=" + type;
-    if(!!accountId){
-        url = url + "&accountId=" + accountId;
-    }
-    $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: url,
-        cache: false,
-        timeout: 600000,
-        success: function (data) {
-            var email;
-            var accounts;
-            if(data.status){
-                email = data.mail;
-                accounts = data.list;
-            }
-            if(typeof callback === "function"){
-                callback(email, accounts);
-            }
-        },
-        error: function (e) {
-            console.error("getMail ERROR : ", e);
-            if(typeof callback === "function"){
-                callback();
-            }
-        }
-    });
-}
-
-function showReplyMail(accountId, messageId, callback) {
-    messageId = messageId.replace(/\+/g, '%2B');
-    var type = window.location.href.indexOf("extractSource") >= 0 ? 6 : 7;
-    var url = "/user/matchingResult/replyEmail?messageId=" + messageId + "&type=" + type;
-    if(!!accountId){
-        url = url + "&accountId=" + accountId;
-    }
-    $.ajax({
-        type: "GET",
-        contentType: "application/json",
-        url: url,
-        cache: false,
-        timeout: 600000,
-        success: function (data) {
-            var email;
-            var accounts;
-            if (data.status) {
-                email = data.mail;
-                accounts = data.list;
-            }
-            if (typeof callback === "function") {
-                callback(email, accounts);
-            }
-        },
-        error: function (e) {
-            console.error("showReplyMail ERROR : ", e);
-            if (typeof callback === "function") {
-                callback();
-            }
-        }
-    });
+function composeEmailAPI(url, onSuccess, onError) {
+    _get(url, onSuccess, onError);
 }
 
 function showMailReSendHistories(id, callback){
@@ -385,9 +283,24 @@ function forceFetchMail(onSuccess, onError) {
     _get(url, onSuccess, onError);
 }
 
-function getEmailAccounts(onSuccess, onError) {
-    var url ="/user/greetingRegistration/getEmailAccounts";
+function getGreetingAPI(emailAccountId, onSuccess, onError) {
+    var url ="/user/greetingRegistration/"+emailAccountId;
     _get(url, onSuccess, onError);
+}
+
+function addGreetingAPI(data, onSuccess, onError) {
+    var url ="/user/greetingRegistration/add";
+    _post(url, data, onSuccess, onError);
+}
+
+function updateGreetingAPI(data, onSuccess, onError) {
+    var url ="/user/greetingRegistration/update";
+    _post(url, data, onSuccess, onError);
+}
+
+function deleteGreetingAPI(id, onSuccess, onError) {
+    var url ="/user/greetingRegistration/delete/"+id;
+    _delete(url, onSuccess, onError);
 }
 
 function getBulletinBoardAPI(onSuccess, onError) {
@@ -516,16 +429,6 @@ function importPeopleInChargePartners(data, includeHeader, deleteOld, onSuccess,
 function importPartnerGroups(data, includeHeader, deleteOld, onSuccess, onError) {
     var url = '/expansion/importPartnerGroup?header=' + includeHeader + "&deleteOld=" + deleteOld;
     _import(url, data, onSuccess, onError);
-}
-
-function getInforPartnerAndEngineerIntroductionAPI(data, onSuccess, onError) {
-    var url = "/user/matchingResult/getInforPartnerAndEngineerIntroduction";
-    _post(url, data, onSuccess, onError);
-}
-
-function getInforPartnerAPI(data, onSuccess, onError) {
-    var url = "/user/matchingResult/getInforPartner";
-    _postString(url, data, onSuccess, onError);
 }
 
 function getBusinessPartnersForPeopleInCharge(onSuccess, onError) {

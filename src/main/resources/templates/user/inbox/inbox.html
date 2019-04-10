@@ -145,7 +145,7 @@
                         </div>
                     </form>
                     <textarea id="rdMailBodyInbox" class="tinymce"
-                              placeholder="下記の様な書き出しの挨拶は自動作成されます。&#10;-----------------------------------------------------------------&#10;ABCシステム 山田様&#10;お世話になっております。XYZの田中です。&#10;-----------------------------------------------------------------&#10;ここでは以降に続く文章を記入してください。">
+                              placeholder="メール返信内容をここに記入してください。&#10;-----------------------------------------------------------------&#10;挨拶が挨拶設定にアカウントによって設定されます。&#10;署名はメールアカウント設定にアカウントによって設定されます。&#10;メール送信の時、挨拶、CC、引用と署名は自動的に追加されます。&#10;-----------------------------------------------------------------&#10;メールは以下のように送信されます：&#10;挨拶＋メール本文＋引用＋署名。">
                     </textarea>
                     <div id="rdMailAttachment" class="mail-attachment"></div>
                     <div style="margin-top: 10px; padding: 10px;" class="dropzone" id="reply-dropzone"></div>
@@ -161,7 +161,7 @@
 <th:block layout:fragment="scripts">
     <script src="/custom/js/utils.js"></script>
     <script src="/custom/js/utils/downloadFileAttach.js"></script>
-    <script src="/custom/js/utils/conditionConfig.js"></script>
+    <script src="/custom/js/utils/conditionConfig.js"></script>kh
     <script src="/custom/js/api.js"></script>
     <script src="/custom/js/pages/mailbox/inbox.js"></script>
 

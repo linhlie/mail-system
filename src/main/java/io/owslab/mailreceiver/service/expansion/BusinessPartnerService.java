@@ -2,15 +2,13 @@ package io.owslab.mailreceiver.service.expansion;
 
 import io.owslab.mailreceiver.dao.BusinessPartnerDAO;
 import io.owslab.mailreceiver.dao.BusinessPartnerGroupDAO;
-import io.owslab.mailreceiver.dto.CSVPartnerDTO;
-import io.owslab.mailreceiver.dto.CSVPartnerGroupDTO;
-import io.owslab.mailreceiver.dto.ImportLogDTO;
-import io.owslab.mailreceiver.dto.PartnerForPeopleInChargeDTO;
+import io.owslab.mailreceiver.dto.*;
 import io.owslab.mailreceiver.enums.CompanyType;
 import io.owslab.mailreceiver.exception.PartnerCodeException;
 import io.owslab.mailreceiver.form.PartnerForm;
 import io.owslab.mailreceiver.model.BusinessPartner;
 import io.owslab.mailreceiver.model.BusinessPartnerGroup;
+import io.owslab.mailreceiver.model.Engineer;
 import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.utils.CSVBundle;
 
@@ -21,6 +19,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import io.owslab.mailreceiver.utils.ConvertDomain;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
@@ -419,7 +418,6 @@ public class BusinessPartnerService {
     
     public List<BusinessPartner> getPartnersByDomain(String domain){
     	List<BusinessPartner> listPartner= partnerDAO.findByDomain(domain);
-    	if(listPartner==null || listPartner.size()==0) return null;
     	return listPartner;
     }
 
@@ -474,6 +472,26 @@ public class BusinessPartnerService {
             result.add(p);
         }
         return result;
+    }
+
+    public long getEmailAccountId(Engineer engineer, List<EmailAccountToSendMailDTO> accountList) throws Exception {
+        BusinessPartner partner = partnerDAO.findOne(engineer.getPartnerId());
+        if(partner == null){
+            throw new Exception("[Partner Service][get email account] partner null");
+        }
+        for(EmailAccountToSendMailDTO account : accountList){
+            String domain = ConvertDomain.convertEmailToDomain(account.getAccount().toLowerCase());
+            if(partner.getDomain1()!=null && partner.getDomain1().equalsIgnoreCase(domain)){
+                return account.getId();
+            }
+            if(partner.getDomain2()!=null && partner.getDomain2().equalsIgnoreCase(domain)){
+                return account.getId();
+            }
+            if(partner.getDomain3()!=null && partner.getDomain3().equalsIgnoreCase(domain)){
+                return account.getId();
+            }
+        }
+        return -1;
     }
 
     public class BusinessPartnerComparator implements Comparator<BusinessPartner> {

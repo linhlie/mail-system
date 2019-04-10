@@ -803,6 +803,10 @@ mark.mark-range {
     margin-bottom: 20px;
 }
 
+.greeting-registration .mce-tinymce.mce-container.mce-panel {
+    border: 1px solid black !important;
+}
+
 .condition-management .condition-management-part {
     margin-bottom: 15px;
 }
@@ -843,6 +847,19 @@ mark.mark-range {
 
 #greetingTable th.dark {
     background-color: #dee3ea;
+}
+
+.greeting-show-setting-guide{
+    color: blue;
+    cursor: pointer;
+}
+
+.greeting-show-guide-setting:hover{
+    text-decoration: underline;
+}
+
+.getting-setting-key{
+    font-weight: bold;
 }
 
 div.table-container-section {

@@ -1,5 +1,6 @@
 package io.owslab.mailreceiver.service.statistics;
 
+import io.owslab.mailreceiver.controller.EmailMatchingEngineerController;
 import io.owslab.mailreceiver.dto.EmailDTO;
 import io.owslab.mailreceiver.dto.EmailStatisticDTO;
 import io.owslab.mailreceiver.dto.ExtractMailDTO;
@@ -16,6 +17,8 @@ import io.owslab.mailreceiver.utils.FilterRule;
 import io.owslab.mailreceiver.utils.FullNumberRange;
 import io.owslab.mailreceiver.utils.MatchingResult;
 import io.owslab.mailreceiver.utils.MatchingWordResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ import java.util.*;
 
 @Service
 public class EmailStatisticService {
+    private static final Logger logger = LoggerFactory.getLogger(EmailStatisticService.class);
 
     @Autowired
     MatchingConditionService matchingConditionService;
@@ -47,7 +51,7 @@ public class EmailStatisticService {
 
         List<EmailStatisticDTO> listResult = new ArrayList<>();
         List<Email> emailList = getStatisEmail(form.getStatisticConditionData());
-        System.out.println("[Email Statistic] matching condition done : "+emailList.size());
+        logger.info("[Email Statistic] matching condition done : "+emailList.size());
         List<String> matchingWords = matchingConditionService.getWordList(form.getMatchingWords());
         if(matchingWords==null || matchingWords.size()<=0){
             for(Email email : emailList){
@@ -66,7 +70,7 @@ public class EmailStatisticService {
                 }
             }
         }
-        System.out.println("[Email Statistic] matching word done : "+listResult.size());
+        logger.info("[Email Statistic] matching word done : "+listResult.size());
         List<EmailStatisticDTO> listResultFinal = new ArrayList<>();
         if(!isDate && !isHour){
             findDupliateMatching(listResult, listResultFinal, 0, listResult.size(), isFrom, isWord);

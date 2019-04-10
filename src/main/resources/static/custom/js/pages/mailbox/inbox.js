@@ -56,6 +56,8 @@
     var ruleNumberUpRateName = "";
     var ruleNumberName = "";
 
+    var SEND_VIA_INBOX = 7;
+
     var replaceBody = '<tr role="row" class="hidden">' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="from"><span></span></td>' +
         '<td class="clickable tableInbox" name="showEmailInbox" rowspan="1" colspan="1" data="to"><span></span></td>' +
@@ -641,7 +643,7 @@
                                 content: content,
                                 originAttachment: attachmentData.origin,
                                 uploadAttachment: attachmentData.upload,
-                                sendType: 7,
+                                sendType: SEND_VIA_INBOX,
                                 historyType: 7,
                             };
 
