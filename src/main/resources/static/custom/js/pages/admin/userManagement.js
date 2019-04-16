@@ -14,8 +14,8 @@
     var editingUserIndex = null;
 
     var replaceUserHTML = '<tr role="row" class="hidden">' +
-        '<td name="selectUser" rowspan="1" colspan="3" data="userName"><span></span></td>' +
-        '<td name="selectUser" rowspan="1" colspan="3" data="name"><span></span></td>' +
+        '<td name="selectUser" rowspan="1" colspan="3" data="userName" style="cursor: pointer"><span></span></td>' +
+        '<td name="selectUser" rowspan="1" colspan="3" data="name" style="cursor: pointer"><span></span></td>' +
         '<td class="fit text-center" name="userRow" rowspan="1" colspan="1" data="expansion"><input type="checkbox" disabled="true" /></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="deleteUser" type="button">削除</button></td>' +
         '</tr>';
