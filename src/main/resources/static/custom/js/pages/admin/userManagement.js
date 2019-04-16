@@ -14,10 +14,9 @@
     var editingUserIndex = null;
 
     var replaceUserHTML = '<tr role="row" class="hidden">' +
-        '<td name="userRow" rowspan="1" colspan="3" data="userName"><span></span></td>' +
-        '<td name="userRow" rowspan="1" colspan="3" data="name"><span></span></td>' +
+        '<td name="selectUser" rowspan="1" colspan="3" data="userName"><span></span></td>' +
+        '<td name="selectUser" rowspan="1" colspan="3" data="name"><span></span></td>' +
         '<td class="fit text-center" name="userRow" rowspan="1" colspan="1" data="expansion"><input type="checkbox" disabled="true" /></td>' +
-        '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="selectUser" type="button">編集</button></td>' +
         '<td class="fit action" rowspan="1" colspan="1" data="id"><button name="deleteUser" type="button">削除</button></td>' +
         '</tr>';
     $(function () {
@@ -95,7 +94,7 @@
             }
             $("#" + tableId + "> tbody").html(html);
         }
-        setButtonClickListener("selectUser", function () {
+        setRowClickListener("selectUser", function () {
             var index = $(this).closest('tr')[0].getAttribute("data");
             var rowData = users[index];
             selectedRow.call(this);
@@ -103,7 +102,17 @@
         });
         setButtonClickListener("deleteUser", function () {
             var index = $(this).closest('tr')[0].getAttribute("data");
-            deleteUser(index);
+            $.alert({
+                title: "",
+                content: "本当に消除したいですか。",
+                buttons:{
+                    削除する: function(){
+                        deleteUser(index);
+                    },
+                    キャンセル: function(){
+                    }
+                }
+            });
         });
         initSortUser();
         updateUserDataTrigger(tableId);
@@ -201,6 +210,15 @@
         })
     }
 
+    function setRowClickListener(name, callback) {
+        $("td[name='" + name + "']").off('click');
+        $("td[name='" + name + "']").click(function () {
+            if (typeof callback == "function") {
+                callback.apply(this);
+            }
+        })
+    }
+
     function selectedRow() {
         $(this).closest('tr').addClass('highlight-selected').siblings().removeClass('highlight-selected');
         var row = $(this)[0].parentNode;
@@ -223,7 +241,7 @@
         setConfirmPassword();
         setExpansion(user.expansion);
     }
-    
+
     function addUser() {
         var user = {
             userName: getAccount(),
@@ -235,7 +253,7 @@
         };
         postSaveUser(user);
     }
-    
+
     function updateUser() {
         var user = {
             id: users[editingUserIndex] ? users[editingUserIndex].id : undefined,
@@ -294,7 +312,7 @@
             }
         }
     }
-    
+
     function clearErrors() {
         var fields = [accountInput, lastNameInput, firstNameInput, newPasswordInput, confirmNewPasswordInput];
         for(var i = 0; i < fields.length; i++ ){
@@ -310,7 +328,7 @@
         editingUserIndex = null;
         updateEnableUpdateUserAccountBtn();
     }
-    
+
     function clearUserFormInput() {
         setAccount();
         setLastName();
@@ -352,7 +370,7 @@
         userName = userName || "";
         return userName;
     }
-    
+
     function setPassword(password) {
         password = password || "";
         $("input[name='" + newPasswordInput + "']").val(password);
@@ -363,7 +381,7 @@
         password = password || "";
         return password;
     }
-    
+
     function setConfirmPassword(confirmPassword) {
         confirmPassword = confirmPassword || "";
         $("input[name='" + confirmNewPasswordInput + "']").val(confirmPassword);
@@ -374,11 +392,11 @@
         confirmPassword = confirmPassword || "";
         return confirmPassword;
     }
-    
+
     function setExpansion(expansion) {
         $("input[name='" + expansionCheckboxInput + "']").prop('checked', expansion);
     }
-    
+
     function getExpansion() {
         var expansion = $("input[name='" + expansionCheckboxInput + "']").is(":checked");
         return !!expansion;
