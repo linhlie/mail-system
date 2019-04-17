@@ -96,21 +96,7 @@
         lastHistoryType = separateSendMailData.historyType;
         type = separateSendMailData.type;
         engineer = separateSendMailData.engineer;
-        matching = !!lastSendTo;
         showMailEditor(separateSendMailData.accountId, lastMessageId, lastReceiver, lastTextRange, lastTextMatchRange, lastReplaceType, lastSendTo, type, engineer);
-    }
-
-    function autoResizeHeight() {
-        var mainHeight = $('#sendDiv').height();
-        var oldHeight = $('#' + rdMailBodyId + '_ifr').height();
-        var remain = mainHeight - oldHeight;
-        var newHeight = $(window).height() - remain;
-        newHeight = newHeight > 350 ? newHeight : 350;
-        resizeHeightEditor(newHeight);
-    }
-    
-    function resizeHeightEditor(newHeight) {
-        tinyMCE.DOM.setStyle(tinyMCE.DOM.get(rdMailBodyId + '_ifr'), 'height', newHeight + 'px');
     }
 
     function showMailEditor(accountId, messageId, receiver, textRange, textMatchRange, replaceType, sendTo, type, enginner) {
@@ -124,6 +110,7 @@
                 composeReplyEmail(messageId, receiver, enginner);
                 break;
             case SEND_TO_EMAIL_MATCHING:
+                matching = true;
                 composeMatchingEmail(accountId, messageId, receiver.messageId, textRange, textMatchRange, replaceType, sendTo, receiver);
                 break;
         }
@@ -214,7 +201,9 @@
             }
             var stripped = strip(form.content, originalContentWrapId);
             var afterEditDataLines = getHeaderFooterLines(stripped);
-            if(matching || type === "sendToEngineer") {
+            console.log(matching);
+            console.log(type);
+            if(matching || type === SEND_TO_ENGINEER) {
                 checkDataLines(dataLinesConfirm, afterEditDataLines, function (allowSend) {
                     if(allowSend) {
                         sendMail();
