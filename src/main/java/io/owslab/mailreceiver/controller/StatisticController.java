@@ -107,6 +107,10 @@ public class StatisticController {
             List<String> sendPerClick = clickHistoryService.getTotalSentStats(now, accountId);
             List<String> clickEmailMatchingEngineerCount = clickHistoryService.getClickEmailMatchingEngineerCount(now, accountId);
             List<String> sendMailEmailMatchingEngineerClick = clickHistoryService.getSendMailEmailMatchingEngineerClick(now, accountId);
+            List<String> replyEmailsInboxCount = clickHistoryService.getReplyEmailsInboxCount(accountId);
+            List<String> clickReplyEmailViaInboxCount = clickHistoryService.getClickReplyEmailsViaInboxCount(now, accountId);
+            List<String> createSchedulerCount = clickHistoryService.getCreateSchedulerCount(now, accountId);
+            List<String> sendMailSchedulerCount = clickHistoryService.getSendMailSchedulerCount(accountId);
             List<Account> accounts = accountService.getAllUserRoleAccounts();
             List<AccountDTO> accountDTOList = new ArrayList<>();
             for(Account account : accounts) {
@@ -117,6 +121,10 @@ public class StatisticController {
             responseBody.setSendPerClick(sendPerClick);
             responseBody.setClickEmailMatchingEngineerCount(clickEmailMatchingEngineerCount);
             responseBody.setSendMailEmailMatchingEngineerClick(sendMailEmailMatchingEngineerClick);
+            responseBody.setReplyEmailsViaInboxCount(replyEmailsInboxCount);
+            responseBody.setClickReplyEmailsViaInboxCount(clickReplyEmailViaInboxCount);
+            responseBody.setCreateSchedulerCount(createSchedulerCount);
+            responseBody.setSendMailSchedulerCount(sendMailSchedulerCount);
             responseBody.setMsg("done");
             responseBody.setStatus(true);
             return ResponseEntity.ok(responseBody);

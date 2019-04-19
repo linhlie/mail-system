@@ -548,6 +548,11 @@
             }
         }
 
+        $.ajax({
+            type: "GET",
+            url: "/user/inbox/getForm",
+        })
+
         showPopupTyping(listEmailSelected);
     }
 

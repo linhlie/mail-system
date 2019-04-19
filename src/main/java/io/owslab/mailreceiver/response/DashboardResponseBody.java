@@ -24,6 +24,10 @@ public class DashboardResponseBody extends AjaxResponseBody {
     private int checkMailInterval;
     private List<BulletinBoardDTO> listBulletinBoardDTO;
     private long accountId;
+    private List<String> replyEmailsViaInboxCount;
+    private List<String> clickReplyEmailsViaInboxCount;
+    private List<String> createSchedulerCount;
+    private List<String> sendMailSchedulerCount;
 
     public DashboardResponseBody(String msg, boolean status, int errorCode) {
         super(msg, status);
@@ -116,4 +120,36 @@ public class DashboardResponseBody extends AjaxResponseBody {
     public long getAccountId() { return accountId; }
 
     public void setAccountId(long accountId) { this.accountId = accountId; }
+
+    public List<String> getReplyEmailsViaInboxCount() {
+        return replyEmailsViaInboxCount;
+    }
+
+    public void setReplyEmailsViaInboxCount(List<String> replyEmailsViaInboxCount) {
+        this.replyEmailsViaInboxCount = replyEmailsViaInboxCount;
+    }
+
+    public List<String> getClickReplyEmailsViaInboxCount() {
+        return clickReplyEmailsViaInboxCount;
+    }
+
+    public void setClickReplyEmailsViaInboxCount(List<String> clickReplyEmailsViaInboxCount) {
+        this.clickReplyEmailsViaInboxCount = clickReplyEmailsViaInboxCount;
+    }
+
+    public List<String> getCreateSchedulerCount() {
+        return createSchedulerCount;
+    }
+
+    public void setCreateSchedulerCount(List<String> createSchedulerCount) {
+        this.createSchedulerCount = createSchedulerCount;
+    }
+
+    public List<String> getSendMailSchedulerCount() {
+        return sendMailSchedulerCount;
+    }
+
+    public void setSendMailSchedulerCount(List<String> sendMailSchedulerCount) {
+        this.sendMailSchedulerCount = sendMailSchedulerCount;
+    }
 }

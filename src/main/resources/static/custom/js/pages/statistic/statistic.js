@@ -194,6 +194,18 @@
         if(data && data.sendMailEmailMatchingEngineerClick){
             pushDataToTable(data.sendMailEmailMatchingEngineerClick, "sendMailEmailMatchingEngineerClick");
         }
+        if(data && data.replyEmailsViaInboxCount){
+            pushDataToTable(data.replyEmailsViaInboxCount, "replyEmailsInboxCount");
+        }
+        if(data && data.clickReplyEmailsViaInboxCount){
+            pushDataToTable(data.clickReplyEmailsViaInboxCount, "clickReplyEmailsInboxCount")
+        }
+        if(data && data.createSchedulerCount){
+            pushDataToTable(data.createSchedulerCount, "createScheduler")
+        }
+        if(data && data.sendMailSchedulerCount){
+            pushDataToTable(data.sendMailSchedulerCount, "sendMailScheduler")
+        }
     }
 
     function pushDataToTable(data, tableId) {

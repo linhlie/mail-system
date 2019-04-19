@@ -3,6 +3,7 @@ package io.owslab.mailreceiver.service.mail;
 import io.owslab.mailreceiver.dao.FileDAO;
 import io.owslab.mailreceiver.dao.SentMailHistoryDAO;
 import io.owslab.mailreceiver.dao.UploadFileDAO;
+import io.owslab.mailreceiver.enums.SentMailType;
 import io.owslab.mailreceiver.form.SendMailForm;
 import io.owslab.mailreceiver.form.SendMultilMailForm;
 import io.owslab.mailreceiver.model.*;
@@ -250,12 +251,12 @@ public class SendMailService {
     }
 
     private SentMailHistory saveSentMailHistory(Email originalMail, Email matchingMail, EmailAccount emailAccount, String to, String cc, String bcc, String replyTo, SendMailForm form, boolean hasAttachment) {
+        long userId = accountService.getLoggedInAccountId();
         int sentType = form.getHistoryType();
-        clickHistoryService.saveSent(sentType);
+        clickHistoryService.saveSent(sentType, userId);
         String keepSentMailHistoryDay = enviromentSettingService.getKeepSentMailHistoryDay();
         if(keepSentMailHistoryDay != null && keepSentMailHistoryDay.length() > 0 && Integer.parseInt(keepSentMailHistoryDay) == 0) return null;
-        long accountSentMailId = accountService.getLoggedInAccountId();
-        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, accountSentMailId, true);
+        SentMailHistory history = new SentMailHistory(originalMail, matchingMail, emailAccount, to, cc, bcc, replyTo, form, hasAttachment, userId, true);
         return sentMailHistoryDAO.save(history);
     }
 
@@ -307,7 +308,7 @@ public class SendMailService {
         }
     }
 
-    public void sendMailScheduler(SendMailForm form, boolean canDelete){
+    public void sendMailScheduler(SendMailForm form, boolean canDelete, long userId){
         String formAccountId = form.getAccountId();
         long accountId = Long.parseLong(formAccountId);
         List<EmailAccount> emailAccounts = mailAccountsService.findById(accountId);
@@ -397,10 +398,11 @@ public class SendMailService {
 
             // Send message
             Transport.send(message);
-            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, "", "", form, hasAttachment, accountId, canDelete);
+            SentMailHistory sentMail = saveSentMailScheduler(account, to, cc, "", "", form, hasAttachment, userId, canDelete);
             if(sentMail!=null){
                 sentMailFileService.saveSentMailFiles(uploadFileReality, sentMail.getId());
             }
+            clickHistoryService.saveSent(SentMailType.SEND_MAIL_SCHEDULER.getValue(), userId);
             logger.info("Send email scheduler from "+from+" to "+to);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
