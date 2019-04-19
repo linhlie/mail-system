@@ -190,11 +190,11 @@ public class EmailAddressGroupService {
         if(scheduler==null || scheduler.getSendMailForm()==null){
             return;
         }
-        long accountId = accountService.getLoggedInAccountId();
+        long userId = accountService.getLoggedInAccountId();
         String sendEmailId = scheduler.getSendMailForm().getAccountId();
         if(sendEmailId == null) return;
         if(scheduler.getTypeSendEmail() == SchedulerSendEmail.Type.NOW){
-            preSendEmail(scheduler.getSendMailForm(), accountId, true);
+            preSendEmail(scheduler.getSendMailForm(), userId, true);
             if(scheduler.getId()>0){
                 schedulerSendEmailDAO.delete(scheduler.getId());
             }
@@ -202,7 +202,7 @@ public class EmailAddressGroupService {
         }
         long sendEmailAccountId = Long.parseLong(sendEmailId);
         EmailAccount emailAccount = mailAccountsService.getEmailAccountById(sendEmailAccountId);
-        SchedulerSendEmail schedulerSendEmail = new SchedulerSendEmail(scheduler, emailAccount, accountId);
+        SchedulerSendEmail schedulerSendEmail = new SchedulerSendEmail(scheduler, emailAccount, userId);
         if(schedulerSendEmail.getTypeSendEmail() == SchedulerSendEmail.Type.SEND_BY_HOUR){
             Date date = ConvertDate.convertDateScheduler(schedulerSendEmail.getDateSendEmail() + " " + schedulerSendEmail.getHourSendEmail());
             Date now = new Date();
@@ -264,18 +264,16 @@ public class EmailAddressGroupService {
         return  result;
     }
 
-    public void preSendEmail(SendMailForm form, long accounId,  boolean canDelete) throws Exception {
-        System.out.println(form.getContent());
+    public void preSendEmail(SendMailForm form, long userId,  boolean canDelete) throws Exception {
         String receivers = form.getReceiver();
         String[] receiverArr = receivers.split(",");
         for(int i=0;i<receiverArr.length;i++){
             if(receiverArr[i]==null || receiverArr[i].equals("")){
                 continue;
             }
-            String contentReplace = greetingService.greetingDecode(form.getContent(), receiverArr[i], accounId, -1);
+            String contentReplace = greetingService.greetingDecode(form.getContent(), receiverArr[i], userId, -1);
             SendMailForm formForOne = new SendMailForm(form, receiverArr[i], contentReplace);
-            sendMailService.sendMailScheduler(formForOne, canDelete);
-            System.out.println(contentReplace);
+            sendMailService.sendMailScheduler(formForOne, canDelete, userId);
         }
     }
 }

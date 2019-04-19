@@ -38,9 +38,8 @@ public class ClickHistoryService {
         clickHistoryDAO.save(history);
     }
 
-    public void saveSent(int type) {
-        long loggedInAccountId = accountService.getLoggedInAccountId();
-        ClickSentHistory history = new ClickSentHistory(type, loggedInAccountId);
+    public void saveSent(int type, long userId) {
+        ClickSentHistory history = new ClickSentHistory(type, userId);
         clickSentHistoryDAO.save(history);
     }
 
@@ -58,6 +57,20 @@ public class ClickHistoryService {
     public List<String> getClickEmailMatchingEngineerCount(Date now, String accountId) {
         List<String> clickCount = new ArrayList<>();
         List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.EMAIL_MATCHING_ENGINEER.getValue());
+        clickCount.addAll(clickCount1);
+        return clickCount;
+    }
+
+    public List<String> getClickReplyEmailsViaInboxCount(Date now, String accountId){
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.REPLY_EMAIL_VIA_INBOX.getValue());
+        clickCount.addAll(clickCount1);
+        return clickCount;
+    }
+
+    public List<String> getCreateSchedulerCount(Date now, String accountId){
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickCountByType(now, accountId, ClickType.SEND_EMAIL_SCHEDULE.getValue());
         clickCount.addAll(clickCount1);
         return clickCount;
     }
@@ -96,6 +109,20 @@ public class ClickHistoryService {
         List<String> sent1 = getClickSentCountByType(accountId, SentMailType.REPLY_EMAIL_MATCHING_ENGINEER.getValue());
         stats.addAll(sent1);
         return stats;
+    }
+
+    public List<String> getReplyEmailsInboxCount(String accountId){
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickSentCountByType(accountId, SentMailType.SEND_VIA_INBOX.getValue());
+        clickCount.addAll(clickCount1);
+        return clickCount;
+    }
+
+    public List<String> getSendMailSchedulerCount(String accountId){
+        List<String> clickCount = new ArrayList<>();
+        List<String> clickCount1 = getClickSentCountByType(accountId, SentMailType.SEND_MAIL_SCHEDULER.getValue());
+        clickCount.addAll(clickCount1);
+        return clickCount;
     }
 
     private List<String> getClickSentCountByType(String accountId, int type) {

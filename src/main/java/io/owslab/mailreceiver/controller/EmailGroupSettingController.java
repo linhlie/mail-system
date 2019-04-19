@@ -16,6 +16,7 @@ import io.owslab.mailreceiver.service.file.UploadFileService;
 import io.owslab.mailreceiver.service.mail.EmailAddressGroupService;
 import io.owslab.mailreceiver.service.security.AccountService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class EmailGroupSettingController {
 
     @Autowired
     MailAccountsService mailAccountsService;
+
+    @Autowired
+    ClickHistoryService clickHistoryService;
 
     @RequestMapping(value = "/emailGroupSetting", method = RequestMethod.GET)
     public String emailGroupSetting(Model model) {
@@ -263,6 +267,7 @@ public class EmailGroupSettingController {
         }
         try {
             emailAddressGroupService.createScheduler(scheduler);
+            clickHistoryService.save(ClickType.SEND_EMAIL_SCHEDULE.getValue());
             result.setMsg("done");
             result.setStatus(true);
             return ResponseEntity.ok(result);

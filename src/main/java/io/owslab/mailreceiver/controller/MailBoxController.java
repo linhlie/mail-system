@@ -4,6 +4,7 @@ import io.owslab.mailreceiver.dto.DetailMailDTO;
 import io.owslab.mailreceiver.dto.EmailInboxDTO;
 import io.owslab.mailreceiver.dto.FileDTO;
 import io.owslab.mailreceiver.dto.InboxDTO;
+import io.owslab.mailreceiver.enums.ClickType;
 import io.owslab.mailreceiver.form.InboxForm;
 import io.owslab.mailreceiver.form.TrashBoxForm;
 import io.owslab.mailreceiver.model.AttachmentFile;
@@ -17,6 +18,7 @@ import io.owslab.mailreceiver.service.mail.MailBoxService;
 import io.owslab.mailreceiver.service.matching.MatchingConditionService;
 import io.owslab.mailreceiver.service.replace.NumberTreatmentService;
 import io.owslab.mailreceiver.service.settings.MailAccountsService;
+import io.owslab.mailreceiver.service.statistics.ClickHistoryService;
 import io.owslab.mailreceiver.utils.PageWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,9 @@ public class MailBoxController {
 
     @Autowired
     NumberTreatmentService numberTreatmentService;
+
+    @Autowired
+    ClickHistoryService clickHistoryService;
 
     @RequestMapping(value = "/admin/mailbox", method = RequestMethod.GET)
     public String getMailBox(
@@ -294,6 +299,14 @@ public class MailBoxController {
             result.setStatus(false);
             return ResponseEntity.ok(result);
         }
+    }
+
+    @GetMapping("/user/inbox/getForm")
+    @ResponseBody
+    public ResponseEntity<?> getForm(Model model){
+        AjaxResponseBody result = new AjaxResponseBody();
+        clickHistoryService.save(ClickType.REPLY_EMAIL_VIA_INBOX.getValue());
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/user/mailbox/getFileAttach" , method = RequestMethod.GET)
