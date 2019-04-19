@@ -265,7 +265,6 @@ public class EmailAddressGroupService {
     }
 
     public void preSendEmail(SendMailForm form, long userId,  boolean canDelete) throws Exception {
-        System.out.println(form.getContent());
         String receivers = form.getReceiver();
         String[] receiverArr = receivers.split(",");
         for(int i=0;i<receiverArr.length;i++){
