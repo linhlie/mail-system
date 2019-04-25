@@ -47,9 +47,9 @@ public class DeleteMailsService {
         for(int i = 0, n = emailList.size(); i < n; i++){
             Email email = emailList.get(i);
             logger.info("Start delete mail: " + email.getSubject());
-            emailDAO.delete(email);
             //TODO: transac with delete mail and delete file?
             this.deleteFileBelongToMail(email.getMessageId());
+            emailDAO.delete(email);
         }
         mailBoxService.getAll(true);
     }
@@ -73,8 +73,14 @@ public class DeleteMailsService {
             AttachmentFile fileDoc = files.get(i);
             File file = new File(fileDoc.getStoragePath());
             try {
-                FileUtils.cleanDirectory(file);
+                if(file.isDirectory()){
+                    FileUtils.cleanDirectory(file);
+                }
+                File parrent = file.getParentFile();
                 file.delete();
+                if(parrent.isDirectory() && parrent.listFiles().length==0){
+                    FileUtils.deleteDirectory(parrent);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
